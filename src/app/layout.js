@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Nav from './_components/Nav';
+import BottomNav from './_components/BottomNav';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -13,10 +14,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className=" mx-auto max-w-screen-xl">
-          <Nav />
+        <Nav />
+        <div className=" mx-auto max-w-screen-xl h-screen bg-red-300 mt-20 px-10 max-md:px-0 max-md:mt-14">
           {children}
         </div>
+        <BottomNav />
       </body>
     </html>
   );
