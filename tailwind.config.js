@@ -13,5 +13,11 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      const newUtilities = {};
+
+      addUtilities(newUtilities);
+    },
+  ],
 };

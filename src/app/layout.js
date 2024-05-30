@@ -13,12 +13,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Nav />
-        <div className=" mx-auto max-w-screen-xl h-screen bg-red-300 mt-20 px-10 max-md:px-0 max-md:mt-14">
-          {children}
+      <body className={inter.className + 'flex flex-col justify-center items-center '}>
+        <div className="relative mx-auto max-w-screen-xl  bg-red-30  max-md:my-14">
+          <Nav />
+          <div className="px-10 mt-24 max-md:px-5">{children}</div>
+          <BottomNav />
         </div>
-        <BottomNav />
       </body>
     </html>
   );

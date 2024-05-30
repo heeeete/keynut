@@ -1,22 +1,21 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import Search from './Search';
 
 export default function Nav() {
   return (
-    <nav className="flex fixed w-full max-w-screen-xl px-10 bg-white justify-between h-20 top-0  left-1/2 -translate-x-1/2 max-md:px-0 max-md:h-14">
-      <div className="flex relative w-32 ">
-        <Link href={'/'}>
-          <Image
-            className="flex justify-start"
-            style={{ objectFit: 'contain' }}
-            src={'/logo.png'}
-            alt="logo"
-            fill
-            sizes="(max-width: 768px) 10vw, 100vw, 33vw"
-          />
-        </Link>
+    <nav
+      className="flex fixed top-0  w-full max-w-screen-xl bg-white justify-between h-20  max-md:h-14 z-50"
+      style={{ boxShadow: '0 5px 5px -7px black' }}
+    >
+      <div className="pl-10 w-40 max-md:pl-5 max-md:w-28">
+        <div className="flex relative  w-full h-full">
+          <Link href={'/'}>
+            <Image className="" style={{ objectFit: 'contain' }} src={'/logo.png'} alt="logo" fill />
+          </Link>
+        </div>
       </div>
-      <ul className=" flex flex-col justify-around max-md:hidden">
+      <ul className=" flex flex-col justify-around max-md:hidden pr-10">
         <div className="flex justify-end space-x-8 text-xs">
           <li>
             <Link href="/search?c=keyboard">고객센터</Link>
@@ -42,7 +41,7 @@ export default function Nav() {
             <Link href={'/shop'}>SHOP</Link>
           </li>
           <li>
-            <Link href={'/search'}>SEARCH</Link>
+            <Search />
           </li>
           <li>
             <Link href={'/chat'}>CHAT</Link>
