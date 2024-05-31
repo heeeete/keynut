@@ -6,7 +6,7 @@ export default function Nav() {
   return (
     <nav
       className="flex fixed top-0  w-full max-w-screen-xl bg-white justify-between h-20  max-md:h-14 z-50"
-      style={{ boxShadow: '0 5px 5px -7px black' }}
+      style={{ boxShadow: '0 5px 5px -6px black' }}
     >
       <div className="pl-10 w-40 max-md:pl-5 max-md:w-28">
         <div className="flex relative  w-full h-full">

@@ -9,7 +9,7 @@ export default function Search() {
   return (
     <>
       <button onClick={() => setSearchState(!searchState)}>SEARCH</button>
-      <SearchModal isOpen={searchState} />
+      <SearchModal isOpen={searchState} setSearchStatus={setSearchState} />
     </>
   );
 }
