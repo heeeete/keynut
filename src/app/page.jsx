@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import Product from './_components/Product';
+import HomeProduct from './_components/HomeProduct';
 
 const images = [
   { path: '/키보드1.webp', name: 'orange keyboard', price: '12,5000원', bookMarked: false },
@@ -47,7 +47,7 @@ export default function Home() {
           </div>
           <div className="font-medium text-sm">더보기 +</div>
         </div>
-        <Product images={images} />
+        <HomeProduct images={images} />
       </section>
       <section className="flex flex-col space-y-5">
         <div className="flex items-end">
@@ -57,7 +57,7 @@ export default function Home() {
           </div>
           <div className="font-medium text-sm">더보기 +</div>
         </div>
-        <Product images={images} />
+        <HomeProduct images={images} />
       </section>
       <section className="flex flex-col space-y-5">
         <div className="flex items-end">

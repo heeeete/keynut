@@ -1,8 +1,8 @@
 import Image from 'next/image';
 
-export default function Product(props) {
+export default function HomeProduct(props) {
   return (
-    <div className="grid grid-cols-5 gap-5 max-md:flex overflow-auto scrollbar-hide">
+    <div className={`grid grid-cols-5 gap-5 max-md:flex overflow-auto scrollbar-hide`}>
       {props.images.map((img, idx) => (
         <div className="flex flex-col" key={idx}>
           <div className="w-full aspect-square relative min-h-32 min-w-32">

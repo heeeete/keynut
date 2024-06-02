@@ -29,10 +29,10 @@ export default function Gallery() {
         <input
           type="text"
           //   placeholder="상품검색"
-          className="border-b-2 border-black border-solid w-1/3 min-w-48"
+          className="border-b border-gray-400 border-solid w-1/3 min-w-48"
         ></input>
         <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-          <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+          <g fill="none" stroke="rgb(156,163,175)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21l-4.3-4.3" />
           </g>
