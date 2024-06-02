@@ -15,6 +15,30 @@ module.exports = {
       aspectRatio: {
         '4/5': '4 / 5',
       },
+      width: {
+        '12vw': '12vw',
+        '70vw': '70vw',
+        '80vw': '80vw',
+        '85vw': '85vw',
+        '90vw': '90vw',
+      },
+      height: {
+        '70vh': '70vh',
+        '80vh': '80vh',
+        '85vh': '85vh',
+        '90vh': '90vh',
+        '100vh': '100vh',
+      },
+      backgroundColor: {
+        'gray-5': '#D9D9D9',
+      },
+      margin: {
+        '12vw': '12vw',
+      },
+      spacing: {
+        34: '136px',
+        205: '205px',
+      },
     },
   },
 
@@ -24,7 +48,6 @@ module.exports = {
 
       addUtilities(newUtilities);
     },
-    require('tailwind-scrollbar-hide')
+    require('tailwind-scrollbar-hide'),
   ],
-
 };
