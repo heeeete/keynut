@@ -15,9 +15,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className + 'flex flex-col justify-center items-center '}>
-        <div className="relative mx-auto max-w-screen-xl  bg-red-30  max-md:mt-14 max-md:mb-bottom-nav-heigth">
+        <div className="relative mx-auto max-w-screen-xl  max-md:mt-14 max-md:mb-bottom-nav-heigth">
           <Nav />
-          <main className="px-10 mt-24 max-md:px-5">{children}</main>
+          <main className="relative px-10 mt-24 max-md:px-5">{children}</main>
           <Footer />
           <BottomNav />
         </div>

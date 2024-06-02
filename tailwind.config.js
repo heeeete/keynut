@@ -21,14 +21,35 @@ module.exports = {
         'safe-left': 'env(safe-area-inset-left)',
         'safe-right': 'env(safe-area-inset-right)',
       },
-      margin: {
-        'bottom-nav-heigth': 'calc(50px + env(safe-area-inset-bottom))',
-      },
       fontSize: {
         xxs: ['0.5rem', '0.75rem'], // [fontSize, lineHeight]
       },
       flex: {
         0.5: '0.5',
+      width: {
+        '12vw': '12vw',
+        '70vw': '70vw',
+        '80vw': '80vw',
+        '85vw': '85vw',
+        '90vw': '90vw',
+      },
+      height: {
+        '70vh': '70vh',
+        '80vh': '80vh',
+        '85vh': '85vh',
+        '90vh': '90vh',
+        '100vh': '100vh',
+      },
+      backgroundColor: {
+        'gray-5': '#D9D9D9',
+      },
+      margin: {
+        '12vw': '12vw',
+         'bottom-nav-heigth': 'calc(50px + env(safe-area-inset-bottom))',
+      },
+      spacing: {
+        34: '136px',
+        205: '205px',
       },
     },
   },
