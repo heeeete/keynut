@@ -1,7 +1,9 @@
 'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import Product from '../_components/HomeProduct';
 import Image from 'next/image';
+
 const images = [
   { path: '/키보드1.webp', name: 'orange keyboard', price: '12,5000원', bookMarked: false },
   { path: '/키보드4.png', name: 'yellow keyboard', price: '60,5000원', bookMarked: true },

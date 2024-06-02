@@ -15,6 +15,17 @@ module.exports = {
       aspectRatio: {
         '4/5': '4 / 5',
       },
+      padding: {
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+      },
+      fontSize: {
+        xxs: ['0.5rem', '0.75rem'], // [fontSize, lineHeight]
+      },
+      flex: {
+        0.5: '0.5',
       width: {
         '12vw': '12vw',
         '70vw': '70vw',
@@ -34,6 +45,7 @@ module.exports = {
       },
       margin: {
         '12vw': '12vw',
+         'bottom-nav-heigth': 'calc(50px + env(safe-area-inset-bottom))',
       },
       spacing: {
         34: '136px',
@@ -44,7 +56,22 @@ module.exports = {
 
   plugins: [
     function ({ addUtilities }) {
-      const newUtilities = {};
+      const newUtilities = {
+        '.bottom-nav-calc-heigth': {
+          height: 'calc(50px + env(safe-area-inset-bottom))',
+        },
+        '.radio-checked-before::before': {
+          content: '""',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '10px', // 원하는 크기로 조정
+          height: '10px', // 원하는 크기로 조정
+          'border-radius': '50%',
+          'background-color': '#000', // Tailwind CSS의 blue-500 색상
+        },
+      };
 
       addUtilities(newUtilities);
     },
