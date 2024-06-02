@@ -1,3 +1,5 @@
+const { openAsBlob } = require('fs');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -79,6 +81,18 @@ module.exports = {
           height: '10px', // 원하는 크기로 조정
           'border-radius': '50%',
           'background-color': '#000', // 원하는 색상으로 조정
+        },
+        '.radio-hover::after': {
+          content: '""',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '30px', // 원하는 크기로 조정
+          height: '30px', // 원하는 크기로 조정
+          'border-radius': '50%',
+          'background-color': '#000', // 원하는 색상으로 조정
+          opacity: 0.1,
         },
       };
 

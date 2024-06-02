@@ -12,12 +12,15 @@ export default function Sell() {
   const [mainCategory, setMainCategory] = useState('keyboard');
   const [subCategory, setSubCategory] = useState(null);
   const [condition, setCondition] = useState(null);
+  const [description, setDescription] = useState(''); // 설명 상태 변수 추가
+  const [price, setPrice] = useState('');
   const fileInputRef = useRef(null); //file input ref
 
   console.log('TITLE = ', title);
   console.log('MAIN-CATEGORY = ', mainCategory);
   console.log('SUB-CATEGORY = ', subCategory);
   console.log('CONDITHION = ', condition);
+  console.log('DESCRIPTION = ', description);
 
   const handleImageUpload = e => {
     if (!e.target.files) return;
@@ -40,6 +43,16 @@ export default function Sell() {
       }
     } else {
       window.alert('사진은 최대 5장까지 가능합니다.');
+    }
+  };
+
+  const handlePrice = e => {
+    const value = e.target.value.replace(/,/g, ''); // 기존 쉼표 제거
+    console.log(value);
+    console.log(isNaN(value));
+    if (!isNaN(value) && value.length <= 9) {
+      console.log('HELLO');
+      setPrice(value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')); // 3자리 단위로 쉼표 추가
     }
   };
 
@@ -241,7 +254,7 @@ export default function Sell() {
         <p className="flex text-xs text-gray-400 items-center">{`(${title.length}/40)`}</p>
       </div>
 
-      <div className="flex flex-1 justify-between my-3 max-md:flex-col">
+      <div className="flex flex-1 justify-between my-10 max-md:flex-col">
         <div className="flex flex-col flex-0.4 h-full  min-w-72">
           <div className="flex font-medium text-xl my-3">카테고리</div>
           <div className="flex h-64 border ">
@@ -275,7 +288,7 @@ export default function Sell() {
           <div className="flex flex-col h-64 justify-around text-lg">
             <label className="flex items-center space-x-2">
               <input
-                className="relative checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
                 type="radio"
                 name="condition"
                 id="1"
@@ -285,7 +298,7 @@ export default function Sell() {
             </label>
             <label className="flex items-center space-x-2">
               <input
-                className="relative checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
                 type="radio"
                 name="condition"
                 id="2"
@@ -295,7 +308,7 @@ export default function Sell() {
             </label>
             <label className="flex items-center space-x-2">
               <input
-                className="relative checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
                 type="radio"
                 name="condition"
                 id="3"
@@ -305,7 +318,7 @@ export default function Sell() {
             </label>
             <label className="flex items-center space-x-2">
               <input
-                className="relative checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
                 type="radio"
                 name="condition"
                 id="4"
@@ -315,7 +328,7 @@ export default function Sell() {
             </label>
             <label className="flex items-center space-x-2">
               <input
-                className="relative checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
                 type="radio"
                 name="condition"
                 id="5"
@@ -325,6 +338,31 @@ export default function Sell() {
             </label>
           </div>
         </div>
+      </div>
+
+      <p className="mt-10 mb-3 font-medium text-xl">상품 설명</p>
+      <div className="flex ">
+        <textarea
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          maxLength={1000}
+          placeholder="상품 설명을 입력해주세요."
+          className="flex-0.8 outline-none no-underline text-xl  border scrollbar-hide resize-none"
+          rows={10}
+        />
+        <p className="flex-0.2 text-xs text-gray-400 content-end ">{`(${description.length}/1000)`}</p>
+      </div>
+
+      <p className="mt-10 mb-3 font-medium text-xl">상품 가격</p>
+      <div className="flex no-underline max-w-36 border-b">
+        <input
+          type="text"
+          value={price}
+          onChange={handlePrice}
+          placeholder="0"
+          className="w-full outline-none no-underline text-xl"
+        />
+        <p className="text-lg">원</p>
       </div>
     </>
   );
