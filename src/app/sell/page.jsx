@@ -21,6 +21,8 @@ export default function Sell() {
 
   const handleImageUpload = e => {
     if (!e.target.files) return;
+    if (uploadImages.imageUrls.length + e.target.files.length > 5)
+      return window.alert('사진은 최대 5장까지 가능합니다.');
     const files = e.target.files;
     const filesArray = Array.from(files);
 
@@ -92,43 +94,43 @@ export default function Sell() {
         <>
           <li
             onClick={() => handleSubCategoryClick('housing')}
-            className={`p-3  ${subCategory === 'housing' ? 'bg-slate-200' : ''}`}
+            className={`p-3 hover:bg-slate-200  ${subCategory === 'housing' ? 'bg-slate-200' : ''}`}
           >
             하우징
           </li>
           <li
             onClick={() => handleSubCategoryClick('switch')}
-            className={`p-3 ${subCategory === 'switch' ? 'bg-slate-200' : ''}`}
+            className={`p-3 hover:bg-slate-200 ${subCategory === 'switch' ? 'bg-slate-200' : ''}`}
           >
             스위치
           </li>
           <li
             onClick={() => handleSubCategoryClick('plate')}
-            className={`p-3 ${subCategory === 'plate' ? 'bg-slate-200' : ''}`}
+            className={`p-3 hover:bg-slate-200 ${subCategory === 'plate' ? 'bg-slate-200' : ''}`}
           >
             보강판
           </li>
           <li
             onClick={() => handleSubCategoryClick('artisan')}
-            className={`p-3 ${subCategory === 'artisan' ? 'bg-slate-200' : ''}`}
+            className={`p-3 hover:bg-slate-200 ${subCategory === 'artisan' ? 'bg-slate-200' : ''}`}
           >
             아티산
           </li>
           <li
             onClick={() => handleSubCategoryClick('keycap')}
-            className={`p-3 ${subCategory === 'keycap' ? 'bg-slate-200' : ''}`}
+            className={`p-3 hover:bg-slate-200 ${subCategory === 'keycap' ? 'bg-slate-200' : ''}`}
           >
             키캡
           </li>
           <li
             onClick={() => handleSubCategoryClick('pcb')}
-            className={`p-3 ${subCategory === 'pcb' ? 'bg-slate-200' : ''}`}
+            className={`p-3 hover:bg-slate-200 ${subCategory === 'pcb' ? 'bg-slate-200' : ''}`}
           >
             PCB
           </li>
           <li
             onClick={() => handleSubCategoryClick('others')}
-            className={`p-3 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
+            className={`p-3 hover:bg-slate-200 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
           >
             기타
           </li>
@@ -139,7 +141,7 @@ export default function Sell() {
         <>
           <li
             onClick={() => handleSubCategoryClick('others')}
-            className={`p-3 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
+            className={`p-3 hover:bg-slate-200 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
           >
             기타
           </li>
@@ -239,8 +241,8 @@ export default function Sell() {
         <p className="flex text-xs text-gray-400 items-center">{`(${title.length}/40)`}</p>
       </div>
 
-      <div className="flex justify-between my-3">
-        <div className="flex flex-col h-full w-2/5 min-w-72">
+      <div className="flex flex-1 justify-between my-3 max-md:flex-col">
+        <div className="flex flex-col flex-0.4 h-full  min-w-72">
           <div className="flex font-medium text-xl my-3">카테고리</div>
           <div className="flex h-64 border ">
             <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
@@ -268,7 +270,7 @@ export default function Sell() {
             </ul>
           </div>
         </div>
-        <div className="w-2/5 min-w-72 ">
+        <div className="flex-0.4 min-w-72 ">
           <div className="flex font-medium text-xl my-3 ">상품상태</div>
           <div className="flex flex-col h-64 justify-around text-lg">
             <label className="flex items-center space-x-2">
