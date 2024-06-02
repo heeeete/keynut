@@ -35,21 +35,30 @@ export default function Nav() {
               <Link href="/search?c=mouse">로그인</Link>
             </li>
           </div>
-          <div className="flex justify-end space-x-8  text-lg">
-            <li className="max-md:hidden">
+          <div className="flex justify-end space-x-8  text-lg max-md:hidden">
+            <li>
               <Link href={'/gallery'}>GALLERY</Link>
             </li>
-            <li className="max-md:hidden">
+            <li>
               <Link href={'/shop'}>SHOP</Link>
             </li>
-            <li className="max-md:text-sm">
-              <Search />
+            <li>
+              <Search isMobile={false} />
             </li>
-            <li className="max-md:hidden ">
+            <li>
               <Link href={'/chat'}>CHAT</Link>
             </li>
-            <li className="relative max-md:text-sm">
+            <li className="relative">
               <Add />
+            </li>
+          </div>
+
+          <div className="hidden justify-center items-center space-x-8 text-lg      max-md:flex">
+            <li>
+              <Link href={'/sell'}>판매하기</Link>
+            </li>
+            <li className="flex justify-center items-center">
+              <Search isMobile={true} />
             </li>
           </div>
         </ul>
