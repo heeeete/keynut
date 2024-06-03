@@ -39,6 +39,8 @@ module.exports = {
       },
       width: {
         '12vw': '12vw',
+        // '55vw': '55vw',
+
         '70vw': '70vw',
         '80vw': '80vw',
         '85vw': '85vw',
@@ -61,6 +63,7 @@ module.exports = {
       spacing: {
         34: '136px',
         205: '205px',
+        250: '250px',
       },
     },
   },

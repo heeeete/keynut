@@ -24,39 +24,43 @@ const picks = [
 export default function Gallery() {
   const [sortOption, setSortOption] = useState(true);
   return (
-    <div className="flex flex-col space-y-2 mt-36 max-md:mt-24">
-      <div className="flex  justify-center items-end mb-12 max-md:mb-9">
-        <input
-          type="text"
-          //   placeholder="상품검색"
-          className="border-b border-gray-400 border-solid w-1/3 min-w-48"
-        ></input>
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-          <g fill="none" stroke="rgb(156,163,175)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21l-4.3-4.3" />
-          </g>
-        </svg>
+    <div className="flex flex-col space-y-2 relative ">
+      <div className="sticky top-20 z-20  bg-white">
+        <div className="flex left-0 w-full justify-center items-center min-h-40 max-md:min-h-20">
+          <input
+            type="text"
+            placeholder="상품검색"
+            className="border-b rounded-none border-gray-400 border-solid w-2/5 min-w-48 outline-none"
+          ></input>
+          <button>
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
+              <g fill="none" stroke="rgb(156,163,175)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21l-4.3-4.3" />
+              </g>
+            </svg>
+          </button>
+        </div>
+        <div className="flex space-x-2 justify-end py-2">
+          <button
+            onClick={() => {
+              !sortOption && setSortOption(true);
+            }}
+            className={`${sortOption ? 'text-black' : 'text-gray-500'}`}
+          >
+            인기순
+          </button>
+          <button
+            onClick={() => {
+              sortOption && setSortOption(false);
+            }}
+            className={`${sortOption ? 'text-gray-500' : 'text-black'}`}
+          >
+            최신순
+          </button>
+        </div>
       </div>
-      <div className="flex space-x-2 justify-end">
-        <button
-          onClick={() => {
-            !sortOption && setSortOption(true);
-          }}
-          className={`${sortOption ? 'text-black' : 'text-gray-500'}`}
-        >
-          인기순
-        </button>
-        <button
-          onClick={() => {
-            sortOption && setSortOption(false);
-          }}
-          className={`${sortOption ? 'text-gray-500' : 'text-black'}`}
-        >
-          최신순
-        </button>
-      </div>
-      <div className="grid grid-cols-4 gap-5 max-md:grid-cols-3 max-[480px]:grid-cols-2">
+      <div className="grid grid-cols-4 gap-5 py-3 max-md:grid-cols-3 max-[480px]:grid-cols-2">
         {picks.map((pick, idx) => (
           <div className="flex flex-col w-full" key={idx}>
             <div className="w-full aspect-4/5 relative min-h-32 min-w-32">

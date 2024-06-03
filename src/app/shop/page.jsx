@@ -96,6 +96,7 @@ export default function Shop() {
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [activeMainFilter, setActiveMainFilter] = useState([]);
   const [filterActive, setFilterActive] = useState(false);
+  const [sortOption, setSortOption] = useState(true);
   const innerContainerRef = useRef(null);
   const filterRef = useRef(null);
   const toggleFilter = id => {
@@ -115,29 +116,31 @@ export default function Shop() {
     }
     toggleFilter(id);
   };
-  return (
-    <div className="flex items-start justify-start mt-56">
-      <div className="fixed top-20 flex left-0 w-full justify-center h-20 items-end z-20 bg-white mb-12 max-md:mb-9 max-md:top-14">
-        <input
-          type="text"
-          placeholder="상품검색"
-          className="border-b rounded-none border-gray-400 border-solid w-1/4 min-w-48 outline-none"
-        ></input>
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-          <g fill="none" stroke="rgb(156,163,175)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21l-4.3-4.3" />
-          </g>
-        </svg>
-      </div>
 
+  return (
+    <div className="flex items-start justify-start">
       <div
         className={`${
           filterActive ? 'flex' : 'hidden'
-        } sticky w-44 space-y-5 z-20 top-205 bg-white flex-col mt-14 md:flex max-md:fixed max-md:top-24 max-md:h-full`}
+        } sticky w-44 space-y-5 z-30 top-72 flex-col mt-60 bg-white md:flex max-md:fixed max-md:top-0 max-md:mt-14 max-md:pt-10 max-md:h-full max-md:border-r`}
         ref={filterRef}
-        // style={{ top: '205px' }}
       >
+        <div className="md:hidden flex justify-end pr-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="1em"
+            height="1em"
+            viewBox="0 0 2048 2048"
+            onClick={() => {
+              setFilterActive(false);
+            }}
+          >
+            <path
+              fill="currentColor"
+              d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+            />
+          </svg>
+        </div>
         {filters.map(filter => (
           <div className="flex flex-col space-y-2" key={filter.id}>
             <div className="font-semibold">{filter.option}</div>
@@ -145,7 +148,7 @@ export default function Shop() {
               <div className="  flex-col" key={sub.id}>
                 <button
                   className={`flex items-center px-2 rounded-md ${
-                    selectedFilters.includes(sub.id) ? 'bg-gray-5' : 'bg-transparent'
+                    selectedFilters.includes(sub.id) ? 'bg-slate-200' : 'bg-transparent'
                   }`}
                   onClick={() => {
                     handleMainFilter(sub);
@@ -160,7 +163,7 @@ export default function Shop() {
                     sub.subfilters.map((sub, key) => (
                       <button
                         className={`flex mt-2 ml-3 px-2 rounded-md ${
-                          selectedFilters.includes(sub.id) ? 'bg-gray-5' : 'bg-transparent'
+                          selectedFilters.includes(sub.id) ? 'bg-slate-200' : 'bg-transparent'
                         } ${key === 4 ? 'mb-3' : ''}`}
                         key={sub.id}
                         onClick={() => toggleFilter(sub.id)}
@@ -174,31 +177,65 @@ export default function Shop() {
           </div>
         ))}
       </div>
-      <div className="flex h-full">
-        <div className="fixed top-40 z-20 flex w-full h-11 space-x-2 px-2 items-center bg-white max-md:top-34">
-          <div className="flex items-center space-x-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="1.5em"
-              height="1.5em"
-              viewBox="0 0 24 24"
-              onClick={() => setFilterActive(!filterActive)}
-              className="md:hidden"
-            >
-              <path
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeMiterlimit="10"
-                strokeWidth="1.5"
-                d="M21.25 12H8.895m-4.361 0H2.75m18.5 6.607h-5.748m-4.361 0H2.75m18.5-13.214h-3.105m-4.361 0H2.75m13.214 2.18a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm-9.25 6.607a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm6.607 6.608a2.18 2.18 0 1 0 0-4.361a2.18 2.18 0 0 0 0 4.36Z"
-              />
-            </svg>
+      {/* </div> */}
+      <div className="flex flex-col">
+        <div className="sticky top-20 flex flex-col z-20 bg-white max-md:top-10">
+          <div className="flex left-0 w-full justify-center items-center min-h-40 max-md:min-h-20">
+            <input
+              type="text"
+              placeholder="상품검색"
+              className="border-b rounded-none border-gray-400 border-solid w-1/2 min-w-48 outline-none"
+            ></input>
+            <button>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
+                <g fill="none" stroke="rgb(156,163,175)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21l-4.3-4.3" />
+                </g>
+              </svg>
+            </button>
           </div>
-          <div className="flex">
+          <div className="flex space-x-2 justify-end py-1">
+            <button>
+              <div
+                className={`${sortOption ? 'text-black' : 'text-gray-500'}`}
+                onClick={() => !sortOption && setSortOption(true)}
+              >
+                인기순
+              </div>
+            </button>
+            <button>
+              <div
+                className={`${!sortOption ? 'text-black' : 'text-gray-500'}`}
+                onClick={() => sortOption && setSortOption(false)}
+              >
+                최신순
+              </div>
+            </button>
+          </div>
+          <div className="z-20 flex flex-wrap min-h-11 items-center max-w-3xl max-md:top-34">
+            <div className="flex items-center mb-1 mr-3 md:hidden">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="1.5em"
+                height="1.5em"
+                viewBox="0 0 24 24"
+                onClick={() => setFilterActive(true)}
+                // className="md:hidden"
+              >
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeMiterlimit="10"
+                  strokeWidth="1.5"
+                  d="M21.25 12H8.895m-4.361 0H2.75m18.5 6.607h-5.748m-4.361 0H2.75m18.5-13.214h-3.105m-4.361 0H2.75m13.214 2.18a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm-9.25 6.607a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm6.607 6.608a2.18 2.18 0 1 0 0-4.361a2.18 2.18 0 0 0 0 4.36Z"
+                />
+              </svg>
+            </div>
             {selectedFilters.length
               ? selectedFilters.map(id => (
-                  <div className="flex px-2 rounded-md items-center bg-gray-5 space-x-1" key={id}>
+                  <div className="flex px-2 space-x-1 rounded-md items-center bg-slate-200 mr-1 mb-1" key={id}>
                     <div>{optionMap[id]}</div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -219,7 +256,7 @@ export default function Shop() {
               : ''}
           </div>
         </div>
-        <div className="flex w-full justify-center p-2 " ref={innerContainerRef}>
+        <div className="flex justify-center py-2 " ref={innerContainerRef}>
           <div
             className={`grid grid-cols-4 gap-5 max-md:grid-cols-3 max-[510px]:grid-cols-2 overflow-auto scrollbar-hide`}
           >
