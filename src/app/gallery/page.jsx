@@ -24,13 +24,13 @@ const picks = [
 export default function Gallery() {
   const [sortOption, setSortOption] = useState(true);
   return (
-    <div className="flex flex-col space-y-2 relative ">
-      <div className="sticky top-20 z-20  bg-white">
-        <div className="flex left-0 w-full justify-center items-center min-h-40 max-md:min-h-20">
+    <div className="flex w-full flex-col space-y-2">
+      <div className="sticky top-20 z-20  bg-white max-md:top-10">
+        <div className="flex w-full justify-center items-center min-h-40 max-md:min-h-20">
           <input
             type="text"
             placeholder="상품검색"
-            className="border-b rounded-none border-gray-400 border-solid w-2/5 min-w-48 outline-none"
+            className="border-b rounded-none border-gray-400 border-solid w-96 min-w-48 outline-none max-md:w-64"
           ></input>
           <button>
             <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
@@ -41,7 +41,7 @@ export default function Gallery() {
             </svg>
           </button>
         </div>
-        <div className="flex space-x-2 justify-end py-2">
+        <div className="flex space-x-2 max-w-screen-xl mx-auto px-2 justify-end py-2">
           <button
             onClick={() => {
               !sortOption && setSortOption(true);
@@ -59,8 +59,9 @@ export default function Gallery() {
             최신순
           </button>
         </div>
+        <hr className="max-w-screen-xl mx-auto" />
       </div>
-      <div className="grid grid-cols-4 gap-5 py-3 max-md:grid-cols-3 max-[480px]:grid-cols-2">
+      <div className="grid grid-cols-4 gap-5 py-3 max-w-screen-xl mx-auto px-2 max-md:grid-cols-3 max-[480px]:grid-cols-2">
         {picks.map((pick, idx) => (
           <div className="flex flex-col w-full" key={idx}>
             <div className="w-full aspect-4/5 relative min-h-32 min-w-32">
