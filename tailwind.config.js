@@ -97,6 +97,18 @@ module.exports = {
           'background-color': '#000', // 원하는 색상으로 조정
           opacity: 0.1,
         },
+        '.nav-1280': {
+          height: '5rem',
+        },
+        '.nav-768': {
+          height: '3.5rem',
+        },
+        '.main-1280': {
+          paddingTop: '6rem',
+        },
+        '.main-768': {
+          paddingTop: '4rem',
+        },
       };
 
       addUtilities(newUtilities);
