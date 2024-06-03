@@ -53,6 +53,7 @@ module.exports = {
       spacing: {
         34: '136px',
         205: '205px',
+        250: '250px',
       },
     },
   },
