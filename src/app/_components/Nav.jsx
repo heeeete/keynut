@@ -5,11 +5,11 @@ import Add from './Add';
 
 export default function Nav() {
   return (
-    <header>
-      <nav
-        className="flex fixed top-0  w-full max-w-screen-xl bg-white justify-between h-20  max-md:h-14 z-50"
-        style={{ boxShadow: '0 5px 5px -6px black' }}
-      >
+    <header
+      className="w-full top-0 fixed  bg-white nav-1280  max-md:nav-768 z-50"
+      style={{ boxShadow: '0 1px 5px -1px black' }}
+    >
+      <nav className="flex w-full h-full max-w-screen-xl mx-auto  justify-between">
         <div className="pl-10 w-40 max-md:pl-5 max-md:w-28">
           <div className="flex relative  w-full h-full">
             <Link href={'/'}>

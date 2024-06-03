@@ -26,7 +26,7 @@ const picks = [
 
 export default function Home() {
   return (
-    <div className="flex flex-col space-y-5">
+    <div className="flex max-w-screen-xl mx-auto px-10 flex-col space-y-5">
       <section className="flex flex-col space-y-5">
         <div className="flex flex-col">
           <div className="font-medium text-2xl">cateory</div>
