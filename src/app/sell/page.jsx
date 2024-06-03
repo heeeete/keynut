@@ -1,7 +1,73 @@
 'use client';
 import Image from 'next/image';
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
+const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
+  if (mainCategory === 'keyboard') {
+    return (
+      <>
+        <li
+          onClick={() => handleSubCategoryClick('housing')}
+          className={`p-3 ${subCategory === 'housing' ? 'bg-slate-200' : ''}`}
+        >
+          하우징
+        </li>
+        <li
+          onClick={() => handleSubCategoryClick('switch')}
+          className={`p-3 ${subCategory === 'switch' ? 'bg-slate-200' : ''}`}
+        >
+          스위치
+        </li>
+        <li
+          onClick={() => handleSubCategoryClick('plate')}
+          className={`p-3 ${subCategory === 'plate' ? 'bg-slate-200' : ''}`}
+        >
+          보강판
+        </li>
+        <li
+          onClick={() => handleSubCategoryClick('artisan')}
+          className={`p-3 ${subCategory === 'artisan' ? 'bg-slate-200' : ''}`}
+        >
+          아티산
+        </li>
+        <li
+          onClick={() => handleSubCategoryClick('keycap')}
+          className={`p-3 ${subCategory === 'keycap' ? 'bg-slate-200' : ''}`}
+        >
+          키캡
+        </li>
+        <li
+          onClick={() => handleSubCategoryClick('pcb')}
+          className={`p-3 ${subCategory === 'pcb' ? 'bg-slate-200' : ''}`}
+        >
+          PCB
+        </li>
+        <li
+          onClick={() => handleSubCategoryClick('others')}
+          className={`p-3 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
+        >
+          기타
+        </li>
+      </>
+    );
+  } else if (mainCategory === 'mouse') {
+    return (
+      <>
+        <li
+          onClick={() => handleSubCategoryClick('others')}
+          className={`p-3 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
+        >
+          기타
+        </li>
+      </>
+    );
+  } else {
+    return <></>;
+  }
+});
+
+RenderSubcategories.displayName = 'RenderSubcategories';
 
 export default function Sell() {
   const [uploadImages, setUploadImages] = useState({
@@ -16,27 +82,24 @@ export default function Sell() {
   const [price, setPrice] = useState('');
   const fileInputRef = useRef(null); //file input ref
 
-  console.log('TITLE = ', title);
-  console.log('MAIN-CATEGORY = ', mainCategory);
-  console.log('SUB-CATEGORY = ', subCategory);
-  console.log('CONDITHION = ', condition);
-  console.log('DESCRIPTION = ', description);
+  const handleImageUpload = useCallback(
+    e => {
+      if (!e.target.files) return;
+      if (uploadImages.imageUrls.length + e.target.files.length > 5)
+        return window.alert('사진은 최대 5장까지 가능합니다.');
+      const files = e.target.files;
+      const filesArray = Array.from(files);
 
-  const handleImageUpload = e => {
-    if (!e.target.files) return;
-    if (uploadImages.imageUrls.length + e.target.files.length > 5)
-      return window.alert('사진은 최대 5장까지 가능합니다.');
-    const files = e.target.files;
-    const filesArray = Array.from(files);
+      const newArray = filesArray.map(file => URL.createObjectURL(file));
+      setUploadImages({
+        imageFiles: [...uploadImages.imageFiles, ...filesArray],
+        imageUrls: [...uploadImages.imageUrls, ...newArray],
+      });
+    },
+    [uploadImages],
+  );
 
-    const newArray = filesArray.map(file => URL.createObjectURL(file));
-    setUploadImages({
-      imageFiles: [...uploadImages.imageFiles, ...filesArray],
-      imageUrls: [...uploadImages.imageUrls, ...newArray],
-    });
-  };
-
-  const handleImageUploadClick = () => {
+  const handleImageUploadClick = useCallback(() => {
     if (uploadImages.imageUrls.length < 5) {
       if (fileInputRef.current) {
         fileInputRef.current.click();
@@ -44,126 +107,65 @@ export default function Sell() {
     } else {
       window.alert('사진은 최대 5장까지 가능합니다.');
     }
-  };
+  }, [uploadImages]);
 
-  const handlePrice = e => {
-    const value = e.target.value.replace(/,/g, ''); // 기존 쉼표 제거
-    console.log(value);
-    console.log(isNaN(value));
+  const handlePrice = useCallback(e => {
+    const value = e.target.value.replace(/,/g, '');
     if (!isNaN(value) && value.length <= 9) {
-      console.log('HELLO');
-      setPrice(value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')); // 3자리 단위로 쉼표 추가
+      setPrice(value.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
     }
-  };
+  }, []);
 
-  const removeImage = idx => {
-    const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
-    const newImageUrls = uploadImages.imageUrls.filter((_, index) => index !== idx);
-    setUploadImages({
-      imageFiles: newImageFiles,
-      imageUrls: newImageUrls,
-    });
-  };
+  const removeImage = useCallback(
+    idx => {
+      const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
+      const newImageUrls = uploadImages.imageUrls.filter((_, index) => index !== idx);
+      setUploadImages({
+        imageFiles: newImageFiles,
+        imageUrls: newImageUrls,
+      });
+    },
+    [uploadImages],
+  );
 
-  const onChangeTitle = e => {
+  const onChangeTitle = useCallback(e => {
     setTitle(e.target.value);
-  };
+  }, []);
 
-  const onDragEnd = result => {
-    if (!result.destination) {
-      return;
-    }
-    const newImageFiles = Array.from(uploadImages.imageFiles);
-    const newImageUrls = Array.from(uploadImages.imageUrls);
+  const onDragEnd = useCallback(
+    result => {
+      if (!result.destination) {
+        return;
+      }
+      const newImageFiles = Array.from(uploadImages.imageFiles);
+      const newImageUrls = Array.from(uploadImages.imageUrls);
 
-    const [removedFile] = newImageFiles.splice(result.source.index, 1);
-    const [removedUrl] = newImageUrls.splice(result.source.index, 1);
+      const [removedFile] = newImageFiles.splice(result.source.index, 1);
+      const [removedUrl] = newImageUrls.splice(result.source.index, 1);
 
-    newImageFiles.splice(result.destination.index, 0, removedFile);
-    newImageUrls.splice(result.destination.index, 0, removedUrl);
+      newImageFiles.splice(result.destination.index, 0, removedFile);
+      newImageUrls.splice(result.destination.index, 0, removedUrl);
 
-    setUploadImages({
-      imageFiles: newImageFiles,
-      imageUrls: newImageUrls,
-    });
-  };
+      setUploadImages({
+        imageFiles: newImageFiles,
+        imageUrls: newImageUrls,
+      });
+    },
+    [uploadImages],
+  );
 
-  const handleMainCategoryClick = id => {
+  const handleMainCategoryClick = useCallback(id => {
     setMainCategory(id);
     setSubCategory(null);
-  };
+  }, []);
 
-  const handleSubCategoryClick = id => {
+  const handleSubCategoryClick = useCallback(id => {
     setSubCategory(id);
-  };
+  }, []);
 
-  const handleConditionClick = id => {
+  const handleConditionClick = useCallback(id => {
     setCondition(id);
-  };
-
-  function RenderSubcategories() {
-    if (mainCategory === 'keyboard') {
-      return (
-        <>
-          <li
-            onClick={() => handleSubCategoryClick('housing')}
-            className={`p-3 hover:bg-slate-200  ${subCategory === 'housing' ? 'bg-slate-200' : ''}`}
-          >
-            하우징
-          </li>
-          <li
-            onClick={() => handleSubCategoryClick('switch')}
-            className={`p-3 hover:bg-slate-200 ${subCategory === 'switch' ? 'bg-slate-200' : ''}`}
-          >
-            스위치
-          </li>
-          <li
-            onClick={() => handleSubCategoryClick('plate')}
-            className={`p-3 hover:bg-slate-200 ${subCategory === 'plate' ? 'bg-slate-200' : ''}`}
-          >
-            보강판
-          </li>
-          <li
-            onClick={() => handleSubCategoryClick('artisan')}
-            className={`p-3 hover:bg-slate-200 ${subCategory === 'artisan' ? 'bg-slate-200' : ''}`}
-          >
-            아티산
-          </li>
-          <li
-            onClick={() => handleSubCategoryClick('keycap')}
-            className={`p-3 hover:bg-slate-200 ${subCategory === 'keycap' ? 'bg-slate-200' : ''}`}
-          >
-            키캡
-          </li>
-          <li
-            onClick={() => handleSubCategoryClick('pcb')}
-            className={`p-3 hover:bg-slate-200 ${subCategory === 'pcb' ? 'bg-slate-200' : ''}`}
-          >
-            PCB
-          </li>
-          <li
-            onClick={() => handleSubCategoryClick('others')}
-            className={`p-3 hover:bg-slate-200 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
-          >
-            기타
-          </li>
-        </>
-      );
-    } else if (mainCategory === 'mouse') {
-      return (
-        <>
-          <li
-            onClick={() => handleSubCategoryClick('others')}
-            className={`p-3 hover:bg-slate-200 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
-          >
-            기타
-          </li>
-        </>
-      );
-    } else {
-      return <></>;
-    }
-  }
+  }, []);
 
   return (
     <>
@@ -241,7 +243,7 @@ export default function Sell() {
         </Droppable>
       </DragDropContext>
 
-      <p className="my-3 font-medium text-xl">상품명</p>
+      <p className="mt-10 mb-3 font-medium text-xl">상품명</p>
       <div className="flex no-underline max-w-lg border-b">
         <input
           type="text"
@@ -260,26 +262,30 @@ export default function Sell() {
           <div className="flex h-64 border ">
             <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
               <li
-                className={`hover:bg-gray-200 p-3 ${mainCategory === 'keyboard' ? 'bg-gray-200' : ''}`}
+                className={`p-3 ${mainCategory === 'keyboard' ? 'bg-gray-200' : ''}`}
                 onClick={() => handleMainCategoryClick('keyboard')}
               >
                 키보드
               </li>
               <li
-                className={`hover:bg-gray-200 p-3 ${mainCategory === 'mouse' ? 'bg-gray-200' : ''}`}
+                className={`p-3 ${mainCategory === 'mouse' ? 'bg-gray-200' : ''}`}
                 onClick={() => handleMainCategoryClick('mouse')}
               >
                 마우스
               </li>
               <li
-                className={`hover:bg-gray-200 p-3 ${mainCategory === 'others' ? 'bg-gray-200' : ''}`}
+                className={`p-3 ${mainCategory === 'others' ? 'bg-gray-200' : ''}`}
                 onClick={() => handleMainCategoryClick('others')}
               >
                 기타
               </li>
             </ul>
             <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
-              <RenderSubcategories />
+              <RenderSubcategories
+                mainCategory={mainCategory}
+                subCategory={subCategory}
+                handleSubCategoryClick={handleSubCategoryClick}
+              />
             </ul>
           </div>
         </div>
@@ -344,14 +350,16 @@ export default function Sell() {
       <div className="flex ">
         <textarea
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={e => {
+            setDescription(e.target.value);
+          }}
           maxLength={1000}
           placeholder="상품 설명을 입력해주세요."
-          className="flex-0.8 outline-none no-underline text-xl  border scrollbar-hide resize-none"
-          rows={10}
+          className="flex-1 outline-none no-underline text-xl  border scrollbar-hide resize-none"
+          rows={8}
         />
-        <p className="flex-0.2 text-xs text-gray-400 content-end ">{`(${description.length}/1000)`}</p>
       </div>
+      <p className="text-xs text-gray-400 content-end ">{`(${description.length}/1000)`}</p>
 
       <p className="mt-10 mb-3 font-medium text-xl">상품 가격</p>
       <div className="flex no-underline max-w-36 border-b">
