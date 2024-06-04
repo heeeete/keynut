@@ -45,7 +45,7 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
         </li>
         <li
           onClick={() => handleSubCategoryClick('others')}
-          className={`p-3 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
+          className={`p-3 ${subCategory === 'keyboard-others' ? 'bg-slate-200' : ''}`}
         >
           기타
         </li>
@@ -56,7 +56,7 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
       <>
         <li
           onClick={() => handleSubCategoryClick('others')}
-          className={`p-3 ${subCategory === 'others' ? 'bg-slate-200' : ''}`}
+          className={`p-3 ${subCategory === 'mouse-others' ? 'bg-slate-200' : ''}`}
         >
           기타
         </li>
@@ -168,7 +168,7 @@ export default function Sell() {
   }, []);
 
   return (
-    <>
+    <div className="max-w-screen-xl px-10 mx-auto">
       <div className="flex w-full items-center py-3">
         <input
           type="file"
@@ -372,6 +372,6 @@ export default function Sell() {
         />
         <p className="text-lg">원</p>
       </div>
-    </>
+    </div>
   );
 }
