@@ -10,7 +10,7 @@ export default function Nav() {
       style={{ boxShadow: '0 1px 5px -1px black' }}
     >
       <nav className="flex w-full h-full max-w-screen-xl mx-auto  justify-between">
-        <div className="pl-10 w-40 max-md:pl-5 max-md:w-28">
+        <div className="pl-10 w-40 max-md:pl-2 max-md:w-28">
           <div className="flex relative  w-full h-full">
             <Link href={'/'}>
               <Image className="" style={{ objectFit: 'contain' }} src={'/logo.png'} alt="logo" fill />
