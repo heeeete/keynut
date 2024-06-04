@@ -116,7 +116,7 @@ export default function ImageSlider({ images }) {
         } absolute flex items-center left-0 top-0 w-screen h-screen bg-black bg-opacity-80 z-50 overflow-hidden`}
         onClick={closeFullSizeModal}
       >
-        <div className="h-80vh w-full">
+        <div className=" w-full" style={{ height: '50vw' }}>
           <div className="flex h-full w-full" style={{ translate: `calc(50% - ${offset}px)` }} ref={fullSizeImagesRef}>
             {images.map((img, idx) => (
               <div key={idx} className="relative min-w-fit h-full w-full mr-10">

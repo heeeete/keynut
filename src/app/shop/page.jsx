@@ -257,7 +257,7 @@ export default function Shop() {
           </div>
           <div className="flex justify-center w-full" ref={innerContainerRef}>
             <div
-              className={`grid grid-cols-4 gap-5 max-md:grid-cols-3 px-2 py-2 max-[510px]:grid-cols-2 overflow-auto scrollbar-hide`}
+              className={`grid grid-cols-4 gap-5 max-md:grid-cols-3 py-2 max-[510px]:grid-cols-2 overflow-auto scrollbar-hide`}
             >
               {images.map((img, idx) => (
                 <div className="flex flex-col" key={idx}>
