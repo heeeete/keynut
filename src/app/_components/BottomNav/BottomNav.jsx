@@ -3,6 +3,7 @@ import HomeLink from './HomeLink';
 import ShopLink from './ShopLink';
 import GalleryLink from './GalleryLink';
 import MyPageLink from './MyPageLink';
+import Link from 'next/link';
 
 export default function BottomNav() {
   return (
@@ -26,7 +27,9 @@ export default function BottomNav() {
         </li>
         <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
           <MyPageLink />
-          <p className="text-xxs">MY</p>
+          <Link href="/mypage" className="text-xxs">
+            MY
+          </Link>
         </li>
       </ul>
     </nav>

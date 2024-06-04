@@ -23,7 +23,7 @@ export default function Nav() {
               <Link href="/search?c=keyboard">고객센터</Link>
             </li>
             <li>
-              <Link href="/search?c=keyboard">마이페이지</Link>
+              <Link href="/mypage">마이페이지</Link>
             </li>
             <li>
               <Link href="/search?c=mouse">알림</Link>
