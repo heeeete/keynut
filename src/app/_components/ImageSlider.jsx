@@ -2,9 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import debounce from '../utils/debounce';
 
 export default function ImageSlider({ images }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [fullSizeCurrentImageIndex, setFullSizeCurrentImageIndex] = useState(currentImageIndex);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [modalStatus, setModalStatus] = useState(false);
   const fullSizeImagesRef = useRef(null);
@@ -12,7 +14,7 @@ export default function ImageSlider({ images }) {
   const [offset, setOffset] = useState(null);
 
   useEffect(() => {
-    const asd = () => {
+    const imagesWidthInit = () => {
       if (fullSizeImagesRef.current) {
         const widths = Array.from(fullSizeImagesRef.current.children).map((child, idx) => {
           if (idx === 0) setOffset(child.clientWidth / 2);
@@ -22,11 +24,14 @@ export default function ImageSlider({ images }) {
       }
     };
 
-    asd();
-    window.addEventListener('resize', asd);
-    return () => window.removeEventListener('resize', asd);
+    imagesWidthInit();
+
+    const debounceImagesWidthInit = debounce(imagesWidthInit, 100);
+    window.addEventListener('resize', debounceImagesWidthInit);
+    return () => window.removeEventListener('resize', debounceImagesWidthInit);
   }, []);
 
+  //이미지 슬라이더의 IDX가 변경이 되면 이미지 크게보는 곳에서 IDX도 함께 변경 해주고 offset을 맞춤
   useEffect(() => {
     let off = 0;
     for (let i = 0; i <= currentImageIndex; i++) {
@@ -34,9 +39,25 @@ export default function ImageSlider({ images }) {
       else off += imagesWidth[i] + 40;
     }
     setOffset(off);
+    setFullSizeCurrentImageIndex(currentImageIndex);
   }, [currentImageIndex, imagesWidth]);
 
-  console.log(imagesWidth);
+  useEffect(() => {
+    let off = 0;
+    for (let i = 0; i <= fullSizeCurrentImageIndex; i++) {
+      if (i === fullSizeCurrentImageIndex) off += imagesWidth[i] / 2;
+      else off += imagesWidth[i] + 40;
+    }
+    setOffset(off);
+  }, [fullSizeCurrentImageIndex, imagesWidth]);
+
+  const handleNextFullSizeImage = e => {
+    setFullSizeCurrentImageIndex(prevIndex => (prevIndex + 1) % images.length);
+  };
+
+  const handlePrevFullSizeImage = e => {
+    setFullSizeCurrentImageIndex(prevIndex => (prevIndex - 1 + images.length) % images.length);
+  };
 
   const handleNextImage = e => {
     e.stopPropagation(); // 이벤트 전파 중지
@@ -48,7 +69,7 @@ export default function ImageSlider({ images }) {
   };
 
   const handlePrevImage = e => {
-    e.stopPropagation(); // 이벤트 전파 중지
+    e.stopPropagation();
     if (!isTransitioning) {
       setIsTransitioning(true);
       setCurrentImageIndex(prevIndex => (prevIndex - 1 + images.length) % images.length);
@@ -57,24 +78,25 @@ export default function ImageSlider({ images }) {
   };
 
   const closeFullSizeModal = e => {
-    if (e.target === e.currentTarget) setModalStatus(false);
+    setModalStatus(false);
   };
-
-  console.log(offset);
 
   return (
     <div className="max-w-screen-xl mx-auto flex flex-col items-center justify-center">
       <div
         className="flex relative w-full max-w-lg aspect-square items-center group"
-        onClick={e => setModalStatus(true)}
+        onClick={_ => setModalStatus(true)}
       >
+        {/* 왼쪽 넘기기 버튼 */}
         <button
+          className="absolute hidden group-hover:flex left-1 z-10 p-4 cursor-pointer max-md:flex max-md:p-2"
           onClick={handlePrevImage}
-          className="absolute hidden group-hover:flex left-1 z-10 opacity-55 bg-black rounded-full w-10 h-10 justify-center items-center"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 20 20">
-            <path fill="white" d="m4 10l9 9l1.4-1.5L7 10l7.4-7.5L13 1z" />
-          </svg>
+          <div className="flex justify-center items-center opacity-55 bg-black rounded-full w-10 h-10">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 20 20">
+              <path fill="white" d="m4 10l9 9l1.4-1.5L7 10l7.4-7.5L13 1z" />
+            </svg>
+          </div>
         </button>
         {images.map((img, idx) => (
           <Image
@@ -90,15 +112,19 @@ export default function ImageSlider({ images }) {
             style={{ objectFit: 'cover' }}
           />
         ))}
+        {/* 오른쪽 넘기기 버튼 */}
         <button
+          className="absolute hidden group-hover:flex right-1 z-10 p-4 cursor-pointer max-md:flex max-md:p-2"
           onClick={handleNextImage}
-          className="absolute hidden group-hover:flex right-1 z-10 opacity-55 bg-black rounded-full w-10 h-10 justify-center items-center"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 20 20">
-            <path fill="white" d="M7 1L5.6 2.5L13 10l-7.4 7.5L7 19l9-9z" />
-          </svg>
+          <div className="flex justify-center items-center opacity-55 bg-black rounded-full w-10 h-10">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 20 20">
+              <path fill="white" d="M7 1L5.6 2.5L13 10l-7.4 7.5L7 19l9-9z" />
+            </svg>
+          </div>
         </button>
       </div>
+      {/* 인디게이터 */}
       <div className="flex space-x-3 mt-3">
         {images.map((_, idx) => {
           return (
@@ -110,12 +136,23 @@ export default function ImageSlider({ images }) {
           );
         })}
       </div>
+      {/* 전체 이미지 모달*/}
       <div
         className={`${
           modalStatus ? 'visible' : 'invisible'
         } absolute flex items-center left-0 top-0 w-screen h-screen bg-black bg-opacity-80 z-50 overflow-hidden`}
-        onClick={closeFullSizeModal}
       >
+        <button className="absolute h-full w-1/2 left-0 z-40" onClick={handlePrevFullSizeImage}></button>
+        <button className="absolute h-full w-1/2 right-0 z-40" onClick={handleNextFullSizeImage}></button>
+        {/* 모달끄기 버튼 */}
+        <button className="absolute right-3 top-3 z-50" onClick={closeFullSizeModal}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="4rem" height="4rem" viewBox="0 0 2048 2048">
+            <path
+              fill="white"
+              d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+            />
+          </svg>
+        </button>
         <div className=" w-full" style={{ height: '50vw' }}>
           <div className="flex h-full w-full" style={{ translate: `calc(50% - ${offset}px)` }} ref={fullSizeImagesRef}>
             {images.map((img, idx) => (
@@ -123,6 +160,20 @@ export default function ImageSlider({ images }) {
                 <img src={img} alt="product image" className="h-full w-auto object-contain" draggable="false" />
               </div>
             ))}
+          </div>
+          {/* 전체 이미지 인디게이터 */}
+          <div className="flex justify-center space-x-3 mt-3 z-50 ">
+            {images.map((_, idx) => {
+              return (
+                <button
+                  className={`w-4 h-4 rounded-full border z-50 ${
+                    fullSizeCurrentImageIndex === idx ? `bg-gray-400` : 'bg-white'
+                  }`}
+                  onClick={() => setFullSizeCurrentImageIndex(idx)}
+                  key={idx}
+                ></button>
+              );
+            })}
           </div>
         </div>
       </div>

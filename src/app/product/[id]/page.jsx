@@ -6,11 +6,11 @@ import ImageSlider from '@/app/_components/ImageSlider';
 
 const item = {
   img: ['/img-1.jpeg', '/img-2.jpeg', '/키보드1.webp', '/키보드3.jpeg', '/키보드4.png', '/키보드4.png', '/키보드4.png'],
-  title: '스플릿 키보드 팝니다.',
+  title: '스플릿 키보드 팝니다',
   description: '구매하고 1달 사용',
   price: 120000,
   interest: 3,
-  date: '2024-06-01',
+  date: 1717564205998,
   condition: 2,
   category: ['keyboard', 'assembled'],
   user: {
@@ -18,25 +18,6 @@ const item = {
     profile: '/맹구.webp',
   },
 };
-
-// const RenderCondition = React.memo(() => {
-//   let condition = '';
-
-//   if (item.condition === 1) condition = '미사용';
-//   else if (item.condition === 2) condition = '사용감 없음';
-//   else if (item.condition === 3) condition = '사용감 적음';
-//   else if (item.condition === 4) condition = '사용감 많음';
-//   else if (item.condition === 5) condition = '고장 / 파손';
-
-//   return (
-//     <div className="space-x-10">
-//       <span>상품상태</span>
-//       <span>{condition}</span>
-//     </div>
-//   );
-// });
-
-// RenderCondition.displayName = RenderCondition;
 
 const RenderCondition = () => {
   let condition = '';
@@ -48,8 +29,11 @@ const RenderCondition = () => {
   else if (item.condition === 5) condition = '고장 / 파손';
 
   return (
-    <div className="space-x-10">
-      <span>상품상태</span>
+    <div className="flex space-x-10 justify-center items-center">
+      <div className="flex  items-center space-x-2">
+        <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+        <span>상품상태</span>
+      </div>
       <span>{condition}</span>
     </div>
   );
@@ -85,20 +69,51 @@ const RenderInfo = React.memo(() => {
       <Link href={'/shop?q='}>{category[item.category[1]]}</Link>
     </span>
   );
-  category;
 });
 
 RenderInfo.displayName = 'RenderInfo';
+
+function timeAgo(date) {
+  const now = new Date();
+  const secondsPast = (now.getTime() - date) / 1000;
+
+  if (secondsPast < 60) {
+    return `${Math.floor(secondsPast)}초 전`;
+  }
+  if (secondsPast < 3600) {
+    return `${Math.floor(secondsPast / 60)}분 전`;
+  }
+  if (secondsPast < 86400) {
+    return `${Math.floor(secondsPast / 3600)}시간 전`;
+  }
+  if (secondsPast < 2592000) {
+    return `${Math.floor(secondsPast / 86400)}일 전`;
+  }
+  if (secondsPast < 31536000) {
+    return `${Math.floor(secondsPast / 2592000)}개월 전`;
+  }
+  return `${Math.floor(secondsPast / 31536000)}년 전`;
+}
+
+const RenderTimeAgo = ({ date }) => {
+  return <p>{timeAgo(date)}</p>;
+};
 
 export default function Product() {
   return (
     <div className="max-w-screen-xl mx-auto">
       <RenderInfo />
       <ImageSlider images={item.img} />
-      <div className="px-10 max-md:px-2">
-        <p>{item.title}</p>
-        <p>{item.price}</p>
-        <RenderCondition />
+      <div className="px-10 space-y-6 max-md:px-2">
+        <p className="text-xl font-bold">{item.title}</p>
+        <p className="space-x-2">
+          <span className="text-2xl font-bold">{item.price.toLocaleString()}</span>
+          <span className="text-xl">원</span>
+        </p>
+        <div className="flex w-full justify-between text-sm text-slate-500 font-semibold">
+          <RenderCondition />
+          <RenderTimeAgo date={item.date} />
+        </div>
       </div>
     </div>
   );
