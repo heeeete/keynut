@@ -2,9 +2,9 @@ import Image from 'next/image';
 
 export default function HomeProduct(props) {
   return (
-    <div className={`grid grid-cols-5 gap-5 max-md:flex overflow-auto scrollbar-hide`}>
+    <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
       {props.images.map((img, idx) => (
-        <div className="flex flex-col" key={idx}>
+        <div className="flex flex-col max-md:w-32" key={idx}>
           <div className="w-full aspect-square relative min-h-32 min-w-32">
             <div className="absolute top-1 right-1 z-10">
               <svg
@@ -21,10 +21,10 @@ export default function HomeProduct(props) {
                 />
               </svg>
             </div>
-            <Image src={img.path} alt={img.name} fill className="rounded-md" />
+            <Image src={img.path} alt={img.name} fill className="rounded-sm" />
           </div>
-          <div className="mt-2">
-            <div className="text-lg line-clamp-2">{img.name}</div>
+          <div className="mt-2 w-full">
+            <div className="text-lg break-all overflow-hidden line-clamp-2">{img.name}</div>
             <div>{img.price}</div>
           </div>
         </div>
