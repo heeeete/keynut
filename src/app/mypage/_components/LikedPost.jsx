@@ -4,9 +4,9 @@ export default function LikedPost(props) {
   return (
     <>
       {props.posts.map((post, idx) => (
-        <div className="flex flex-col w-full p-2" key={idx}>
+        <div className="flex flex-col w-full" key={idx}>
           <div className="w-full aspect-4/5 relative min-h-32 min-w-32">
-            <Image className="rounded-md" src={post.path} alt={post.name} fill />
+            <Image className="rounded-sm" src={post.path} alt={post.name} fill />
             {/* <div className="absolute flex items-center space-x-1 bottom-1 right-1">
               <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 256 256">
                 <path

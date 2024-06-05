@@ -11,7 +11,12 @@ const images = [
   { path: '/키보드1.webp', name: 'orange keyboard', price: '35,5000원', bookMarked: false },
   { path: '/키보드1.webp', name: 'orange keyboard', price: '12,5000원', bookMarked: false },
   { path: '/키보드4.png', name: 'yellow keyboard', price: '60,5000원', bookMarked: true },
-  { path: '/키보드3.jpeg', name: 'purple keyboard sjdhfkajshd', price: '20,5000원', bookMarked: true },
+  {
+    path: '/키보드3.jpeg',
+    name: 'purple keyboard sjdhfkajshdajclajdcklajsdckajl',
+    price: '20,5000원',
+    bookMarked: true,
+  },
   { path: '/키보드3.jpeg', name: 'purple keyboard', price: '15,5000원', bookMarked: false },
   { path: '/키보드1.webp', name: 'orange keyboard', price: '35,5000원', bookMarked: false },
   { path: '/키보드1.webp', name: 'orange keyboard', price: '12,5000원', bookMarked: false },
@@ -24,7 +29,7 @@ const images = [
   { path: '/키보드1.webp', name: 'orange keyboard', price: '35,5000원', bookMarked: false },
   { path: '/키보드1.webp', name: 'orange keyboard', price: '12,5000원', bookMarked: false },
   { path: '/키보드4.png', name: 'yellow keyboard', price: '60,5000원', bookMarked: true },
-  { path: '/키보드3.jpeg', name: 'purple keyboard sjdhfkajshd', price: '20,5000원', bookMarked: true },
+  { path: '/키보드3.jpeg', name: 'purplekeyboardsjdhfkajshd', price: '20,5000원', bookMarked: true },
   { path: '/키보드3.jpeg', name: 'purple keyboard', price: '15,5000원', bookMarked: false },
   { path: '/키보드1.webp', name: 'orange keyboard', price: '35,5000원', bookMarked: false },
   { path: '/키보드3.jpeg', name: 'purple keyboard sjdhfkajshd', price: '20,5000원', bookMarked: true },
@@ -118,13 +123,13 @@ export default function Shop() {
 
   return (
     <div className="flex items-start justify-start">
-      <div className="flex flex-col w-full max-w-screen-xl mx-auto">
-        <div className="sticky top-20 flex flex-col z-20 bg-white border-b max-md:top-10">
-          <div className="flex w-full justify-center items-center min-h-40 max-md:min-h-20">
+      <div className="flex px-10 flex-col w-full max-w-screen-xl mx-auto max-md:px-2">
+        <div className="sticky top-20 flex flex-col z-20 bg-white border-b max-md:top-14">
+          <div className="flex w-full justify-center items-center min-h-40 max-md:min-h-16">
             <input
               type="text"
               placeholder="상품검색"
-              className="border-b rounded-none border-gray-400 border-solid w-96 min-w-48 outline-none max-md:w-64"
+              className="border-b rounded-none border-gray-400 border-solid w-96 min-w-48 outline-none max-md:w-56"
             ></input>
             <button>
               <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
@@ -135,33 +140,14 @@ export default function Shop() {
               </svg>
             </button>
           </div>
-          <div className="flex space-x-2 justify-end py-2 px-2">
-            <button>
-              <div
-                className={`${sortOption ? 'text-black' : 'text-gray-500'}`}
-                onClick={() => !sortOption && setSortOption(true)}
-              >
-                인기순
-              </div>
-            </button>
-            <button>
-              <div
-                className={`${!sortOption ? 'text-black' : 'text-gray-500'}`}
-                onClick={() => sortOption && setSortOption(false)}
-              >
-                최신순
-              </div>
-            </button>
-          </div>
-          <div className="z-20 flex flex-wrap ml-3 items-center  max-md:top-34">
-            <div className="flex items-center mb-1 mr-3 md:hidden">
+          <div className="flex justify-end items-center py-2 max-md:justify-between">
+            <div className="flex items-center md:hidden">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1.5em"
                 height="1.5em"
                 viewBox="0 0 24 24"
                 onClick={() => setFilterActive(true)}
-                // className="md:hidden"
               >
                 <path
                   fill="none"
@@ -173,6 +159,26 @@ export default function Shop() {
                 />
               </svg>
             </div>
+            <div className="flex space-x-2">
+              <button>
+                <div
+                  className={`${sortOption ? 'text-black' : 'text-gray-500'}`}
+                  onClick={() => !sortOption && setSortOption(true)}
+                >
+                  인기순
+                </div>
+              </button>
+              <button>
+                <div
+                  className={`${!sortOption ? 'text-black' : 'text-gray-500'}`}
+                  onClick={() => sortOption && setSortOption(false)}
+                >
+                  최신순
+                </div>
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center max-md:top-34">
             {selectedFilters.length
               ? selectedFilters.map(id => (
                   <div className="flex px-2 space-x-1 rounded-md items-center bg-slate-200 mr-1 mb-1" key={id}>
@@ -196,11 +202,11 @@ export default function Shop() {
               : ''}
           </div>
         </div>
-        <div className="flex items-start w-full px-2">
+        <div className="flex items-start w-full">
           <div
             className={`${
               filterActive ? 'flex' : 'hidden'
-            } sticky w-44 space-y-5 z-30 top-80 flex-col mt-20 bg-white md:flex max-md:fixed max-md:top-0 max-md:pt-36 max-md:left-0 max-md:mt-14 max-md:h-full max-md:border-r max-md:pl-4`}
+            } sticky w-44 space-y-5 z-30 top-80 flex-col mt-20 bg-white md:flex max-md:fixed max-md:top-0 max-md:pt-20 max-md:left-0 max-md:mt-14 max-md:h-full max-md:border-r max-md:pl-4`}
             ref={filterRef}
           >
             <div className="md:hidden absolute top-10 right-2 flex justify-end pr-3">
@@ -256,9 +262,7 @@ export default function Shop() {
             ))}
           </div>
           <div className="flex justify-center w-full" ref={innerContainerRef}>
-            <div
-              className={`grid grid-cols-4 gap-5 max-md:grid-cols-3 py-2 max-[510px]:grid-cols-2 overflow-auto scrollbar-hide`}
-            >
+            <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
               {images.map((img, idx) => (
                 <div className="flex flex-col" key={idx}>
                   <div className="w-full aspect-square relative min-h-32 min-w-32">
@@ -277,10 +281,10 @@ export default function Shop() {
                         />
                       </svg>
                     </div>
-                    <Image src={img.path} alt={img.name} fill className="rounded-md" />
+                    <Image src={img.path} alt={img.name} fill className="rounded-sm" />
                   </div>
-                  <div className="mt-2">
-                    <div className="text-lg line-clamp-2">{img.name}</div>
+                  <div className="py-1">
+                    <div className="text-lg break-all overflow-hidden line-clamp-2">{img.name}</div>
                     <div>{img.price}</div>
                   </div>
                 </div>
