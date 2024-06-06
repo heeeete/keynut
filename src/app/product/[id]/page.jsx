@@ -3,11 +3,18 @@
 import Link from 'next/link';
 import React from 'react';
 import ImageSlider from '@/app/_components/ImageSlider';
+import Image from 'next/image';
 
 const item = {
-  img: ['/img-1.jpeg', '/img-2.jpeg', '/키보드1.webp', '/키보드3.jpeg', '/키보드4.png', '/키보드4.png', '/키보드4.png'],
+  img: ['/img-1.jpeg', '/img-2.jpeg', '/키보드1.webp', '/키보드3.jpeg', '/키보드4.png'],
   title: '스플릿 키보드 팝니다',
-  description: '구매하고 1달 사용',
+  description: `제가 애지중지 사용하던 키보드를 판매합니다. 모델은 [키보드 모델명]이고, 스위치는 [스위치 종류]입니다. 타건감 정말 좋고, LED 백라이트 덕분에 밤에도 사용하기 편리합니다.
+
+약 [사용 기간] 동안 사용했지만, 깔끔하게 관리해서 큰 흠집이나 문제는 없습니다. 모든 키 정상 작동합니다. 여분의 키캡과 키캡 풀러도 같이 드릴게요.
+
+개인적인 사정으로 판매하는 것이니 관심 있으신 분들은 편하게 연락 주세요. 빠른 거래 원합니다!
+
+감사합니다.`,
   price: 120000,
   interest: 3,
   date: 1717564205998,
@@ -15,7 +22,7 @@ const item = {
   category: ['keyboard', 'assembled'],
   user: {
     nickname: '우유먹은송아지',
-    profile: '/맹구.webp',
+    profile: '/키보드1.webp',
   },
 };
 
@@ -113,6 +120,26 @@ export default function Product() {
         <div className="flex w-full justify-between text-sm text-slate-500 font-semibold">
           <RenderCondition />
           <RenderTimeAgo date={item.date} />
+        </div>
+        <div className="border px-3 py-1 rounded min-h-24">
+          <p className="whitespace-pre-wrap">{item.description}</p>
+        </div>
+        <div className="flex h-16 justify-between space-x-2 ">
+          <div className="flex flex-0.8 h-full border rounded items-center px-4 max-md:px-2">
+            <div className="rounded-full w-14 aspect-square relative max-md:w-16">
+              <Image className="rounded-full" src={item.user.profile} alt="" fill />
+            </div>
+            <div className="flex w-full items-center justify-between pl-4 max-md:flex-col max-md:items-start max-md:space-y-1">
+              <div className="text-lg max-md:text-base">{item.user.nickname}</div>
+              <button>
+                <div className="flex text-base px-3 py-1 border border-gray-300 rounded max-md:text-sm ">상점 가기</div>
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-0.2 justify-end space-x-2">
+            <div className="w-16 rounded bg-orange-300"></div>
+            <div className="w-16 rounded bg-purple-400"></div>
+          </div>
         </div>
       </div>
     </div>

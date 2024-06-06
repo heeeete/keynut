@@ -52,11 +52,11 @@ export default function ImageSlider({ images }) {
   }, [fullSizeCurrentImageIndex, imagesWidth]);
 
   const handleNextFullSizeImage = e => {
-    setFullSizeCurrentImageIndex(prevIndex => (prevIndex + 1) % images.length);
+    setFullSizeCurrentImageIndex(prevIndex => Math.min(prevIndex + 1, images.length - 1));
   };
 
   const handlePrevFullSizeImage = e => {
-    setFullSizeCurrentImageIndex(prevIndex => (prevIndex - 1 + images.length) % images.length);
+    setFullSizeCurrentImageIndex(prevIndex => Math.max(prevIndex - 1, 0));
   };
 
   const handleNextImage = e => {
@@ -79,6 +79,7 @@ export default function ImageSlider({ images }) {
 
   const closeFullSizeModal = e => {
     setModalStatus(false);
+    setFullSizeCurrentImageIndex(currentImageIndex);
   };
 
   return (
@@ -109,6 +110,8 @@ export default function ImageSlider({ images }) {
             className={`absolute transition-opacity duration-200 ${
               idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
             }`}
+            placeholder="blur"
+            blurDataURL="img"
             style={{ objectFit: 'cover' }}
           />
         ))}
@@ -140,13 +143,13 @@ export default function ImageSlider({ images }) {
       <div
         className={`${
           modalStatus ? 'visible' : 'invisible'
-        } absolute flex items-center left-0 top-0 w-screen h-screen bg-black bg-opacity-80 z-50 overflow-hidden`}
+        } fixed flex items-center left-0 top-0 w-screen h-screen bg-black bg-opacity-80 z-50 overflow-hidden`}
       >
         <button className="absolute h-full w-1/2 left-0 z-40" onClick={handlePrevFullSizeImage}></button>
         <button className="absolute h-full w-1/2 right-0 z-40" onClick={handleNextFullSizeImage}></button>
         {/* 모달끄기 버튼 */}
-        <button className="absolute right-3 top-3 z-50" onClick={closeFullSizeModal}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="4rem" height="4rem" viewBox="0 0 2048 2048">
+        <button className="absolute right-5 top-3 z-50" onClick={closeFullSizeModal}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="2.5rem" height="2.5rem" viewBox="0 0 2048 2048">
             <path
               fill="white"
               d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
@@ -166,7 +169,7 @@ export default function ImageSlider({ images }) {
             {images.map((_, idx) => {
               return (
                 <button
-                  className={`w-4 h-4 rounded-full border z-50 ${
+                  className={`w-2 h-2 rounded-full border z-50 ${
                     fullSizeCurrentImageIndex === idx ? `bg-gray-400` : 'bg-white'
                   }`}
                   onClick={() => setFullSizeCurrentImageIndex(idx)}
