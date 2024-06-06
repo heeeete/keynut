@@ -10,12 +10,17 @@ export default function Nav() {
       style={{ boxShadow: '0 1px 5px -1px black' }}
     >
       <nav className="flex w-full h-full max-w-screen-xl mx-auto  justify-between">
-        <div className="pl-10 w-40 max-md:pl-2 max-md:w-28">
-          <div className="flex relative  w-full h-full">
-            <Link href={'/'}>
-              <Image className="" style={{ objectFit: 'contain' }} src={'/logo.png'} alt="logo" fill />
-            </Link>
-          </div>
+        <div className="pl-10 w-40 max-md:pl-2 max-md:w-28 flex items-center">
+          <Link href={'/'}>
+            <Image
+              className=""
+              style={{ width: 'auto', height: 'auto' }}
+              src={'/logo.png'}
+              alt="logo"
+              width={100}
+              height={0}
+            />
+          </Link>
         </div>
         <ul className=" flex flex-col justify-around  pr-10">
           <div className="flex justify-end space-x-8 text-xs max-md:hidden">
