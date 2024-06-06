@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   if (mainCategory === 'keyboard') {
@@ -181,7 +181,7 @@ export default function Sell() {
         />
         <button
           onClick={handleImageUploadClick}
-          className="flex flex-col justify-center items-center aspect-square w-28  mr-1 border rounded-xl "
+          className="flex flex-col justify-center items-center aspect-square w-28  mr-1 border rounded "
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="40%" height="40%" viewBox="0 0 16 16">
             <g fill="#878787">
@@ -211,7 +211,7 @@ export default function Sell() {
                         src={url}
                         fill
                         alt={`item-${idx}`}
-                        className="rounded-xl border"
+                        className="rounded border"
                         style={{ objectFit: 'cover' }}
                       />
                       {idx === 0 && (
