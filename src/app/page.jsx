@@ -89,13 +89,6 @@ export default function Home() {
                 </div>
                 <Image className="rounded-sm" src={pick.path} alt={pick.name} fill />
               </div>
-              {/* <div className="flex items-center space-x-2 w-full py-2 max-md:max-w-32">
-                <div className="flex-1 line-clamp-1">{pick.title}</div>
-                <div className="flex-none flex items-center space-x-1">
-                  <Image src="/heart.svg" alt="Heart" width={18} height={18} />
-                  <div className="font-light">{pick.heart}</div>
-                </div>
-              </div> */}
             </div>
           ))}
         </div>

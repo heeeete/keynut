@@ -23,23 +23,38 @@ const picks = [
 ];
 export default function Gallery() {
   const [sortOption, setSortOption] = useState(true);
+  const [searchText, setSearchText] = useState('');
   return (
-    <div className="flex w-full flex-col max-w-screen-xl mx-auto px-10 max-md:px-2">
-      <div className="sticky top-20 z-20  bg-white max-md:top-14">
-        <div className="flex w-full justify-center items-center min-h-40 max-md:min-h-16">
-          <input
-            type="text"
-            placeholder="상품검색"
-            className="border-b rounded-none border-gray-400 border-solid w-96 min-w-48 outline-none max-md:w-56"
-          ></input>
-          <button>
-            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-              <g fill="none" stroke="rgb(156,163,175)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21l-4.3-4.3" />
-              </g>
-            </svg>
-          </button>
+    <div className="flex w-full flex-col">
+      <div className="sticky top-20 z-20 bg-white  border-b w-full max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:top-14">
+        <div className="flex w-full justify-center items-center min-h-24 max-md:min-h-12 max-md:h-12 max-md:pt-2">
+          <div className="flex rounded-none border-b-2 w-450 px-1 py-1 max-md:border-none max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full">
+            <input
+              type="text"
+              placeholder="상품검색"
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              className="outline-none w-450 pr-2 max-md:w-full max-md:bg-transparent"
+            />
+            {searchText.length ? (
+              <button onClick={() => setSearchText('')}>
+                <svg
+                  className=""
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="0.7em"
+                  height="0.7em"
+                  viewBox="0 0 2048 2048"
+                >
+                  <path
+                    fill="currentColor"
+                    d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                  />
+                </svg>
+              </button>
+            ) : (
+              ''
+            )}
+          </div>
         </div>
         <div className="flex space-x-2 justify-end py-2">
           <button
@@ -59,9 +74,9 @@ export default function Gallery() {
             최신순
           </button>
         </div>
-        <hr className="max-w-screen-xl mx-auto" />
+        {/* <hr className="" /> */}
       </div>
-      <div className="grid grid-cols-4 gap-2 py-2 max-md:grid-cols-2">
+      <div className="grid grid-cols-4 gap-2 py-2 w-full max-w-screen-xl mx-auto px-10 max-md:px-2  max-md:grid-cols-2">
         {picks.map((pick, idx) => (
           <div className="flex flex-col w-full" key={idx}>
             <div className="w-full aspect-4/5 relative min-h-32 min-w-32">

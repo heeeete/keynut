@@ -49,6 +49,7 @@ module.exports = {
         '85vw': '85vw',
         '90vw': '90vw',
         '100vw': '100vw',
+        450: '450px',
       },
       height: {
         '10vh': '10vh',

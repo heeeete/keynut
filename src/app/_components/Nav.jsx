@@ -34,7 +34,7 @@ export default function Nav() {
               <Link href="/search?c=mouse">알림</Link>
             </li>
             <li>
-              <Link href="/search?c=keyboard">찜</Link>
+              <Link href="/bookmark">찜</Link>
             </li>
             <li>
               <Link href="/search?c=mouse">로그인</Link>
