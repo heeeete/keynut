@@ -160,35 +160,6 @@ export default function Shop() {
     <div className="flex items-start justify-start">
       <div className="flex px-10 flex-col w-full max-w-screen-xl mx-auto max-md:px-2">
         <div className="sticky top-20 flex flex-col z-20 bg-white border-b max-md:top-14">
-          <div className="flex w-full justify-center items-center min-h-24 max-md:min-h-12 max-md:h-12 max-md:pt-2">
-            <div className="flex rounded-none border-b-2 w-450 px-1 py-1 max-md:border-none max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full">
-              <input
-                type="text"
-                placeholder="상품검색"
-                value={searchText}
-                onChange={e => setSearchText(e.target.value)}
-                className="outline-none w-450 pr-2 max-md:w-full max-md:bg-transparent"
-              />
-              {searchText.length ? (
-                <button onClick={() => setSearchText('')}>
-                  <svg
-                    className=""
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="0.7em"
-                    height="0.7em"
-                    viewBox="0 0 2048 2048"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
-                    />
-                  </svg>
-                </button>
-              ) : (
-                ''
-              )}
-            </div>
-          </div>
           <div className="flex justify-end items-center py-2 max-md:justify-between">
             <div className="flex items-center md:hidden">
               <svg
