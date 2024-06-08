@@ -1,7 +1,6 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
-import BookMarked from './_components/BookMarked';
 import Selling from './_components/Selling';
 import SellCompleted from './_components/SellCompleted';
 import MyPost from './_components/MyPost';
@@ -39,17 +38,35 @@ export default function MyPage() {
   const [productOption, setProductOption] = useState('selling');
   const [postOption, setPostOption] = useState('mypost');
   const [nickname, setNickname] = useState('우유먹은송아지');
+  const [isEditing, setIsEditing] = useState(false);
   return (
     <div className="flex flex-col h-full max-w-screen-xl mx-auto px-10 max-md:px-2">
       <div className="flex h-24 border border-gray-300 rounded-md items-center my-5 px-4 max-md:px-2">
         <div className="rounded-full w-20 aspect-square relative max-md:w-16">
-          <Image className="rounded-full" src="/키보드1.webp" alt="" fill />
+          <Image className="rounded-full" src="/키보드1.webp" alt="myprofile" fill />
         </div>
         <div className="flex w-full items-center justify-between pl-4 max-md:flex-col max-md:items-start max-md:space-y-1">
-          <div className="text-lg max-md:text-base">우유먹은송아지</div>
+          <div className="text-lg max-md:text-base">
+            {!isEditing ? (
+              nickname
+            ) : (
+              <input
+                className="border-b outline-none"
+                type="text"
+                value={nickname}
+                onChange={e => setNickname(e.target.value)}
+                autoFocus
+              />
+            )}
+          </div>
           <button>
-            <div className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm ">
-              프로필 수정
+            <div
+              className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm"
+              onClick={() => {
+                !isEditing ? setIsEditing(true) : setIsEditing(false);
+              }}
+            >
+              {isEditing ? '완료' : '프로필 수정'}
             </div>
           </button>
         </div>
@@ -85,7 +102,7 @@ export default function MyPage() {
               </button>
             </ul>
           </nav>
-          <div className="grid grid-cols-3 gap-1 min-w-14 max-md:grid-cols-1">
+          <div className="grid grid-cols-3 gap-1 min-h-14 max-md:grid-cols-1">
             {productOption == 'selling' && <Selling items={selling} />}
             {productOption == 'sellCompleted' && <SellCompleted items={sellCompleted} />}
           </div>
@@ -116,7 +133,7 @@ export default function MyPage() {
               </button>
             </ul>
           </nav>
-          <div className="grid grid-cols-5 gap-1 min-w-14 max-md:grid-cols-4 max-[560px]:grid-cols-2">
+          <div className="grid grid-cols-5 gap-1 min-h-14 max-md:grid-cols-4 max-[560px]:grid-cols-2">
             {postOption == 'mypost' && <MyPost posts={myPost} />}
             {postOption == 'likedpost' && <LikedPost posts={likedPost} />}
           </div>
