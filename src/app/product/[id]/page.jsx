@@ -4,6 +4,7 @@ import Link from 'next/link';
 import React from 'react';
 import ImageSlider from '@/app/_components/ImageSlider';
 import Image from 'next/image';
+import timeAgo from '@/app/utils/timeAgo';
 
 const item = {
   img: ['/img-1.jpeg', '/img-2.jpeg', '/키보드1.webp', '/키보드3.jpeg', '/키보드4.png'],
@@ -19,6 +20,7 @@ const item = {
   interest: 3,
   date: 1717564205998,
   condition: 2,
+  bookmarked: 10,
   category: ['keyboard', 'assembled'],
   user: {
     nickname: '우유먹은송아지',
@@ -80,30 +82,19 @@ const RenderInfo = React.memo(() => {
 
 RenderInfo.displayName = 'RenderInfo';
 
-function timeAgo(date) {
-  const now = new Date();
-  const secondsPast = (now.getTime() - date) / 1000;
-
-  if (secondsPast < 60) {
-    return `${Math.floor(secondsPast)}초 전`;
-  }
-  if (secondsPast < 3600) {
-    return `${Math.floor(secondsPast / 60)}분 전`;
-  }
-  if (secondsPast < 86400) {
-    return `${Math.floor(secondsPast / 3600)}시간 전`;
-  }
-  if (secondsPast < 2592000) {
-    return `${Math.floor(secondsPast / 86400)}일 전`;
-  }
-  if (secondsPast < 31536000) {
-    return `${Math.floor(secondsPast / 2592000)}개월 전`;
-  }
-  return `${Math.floor(secondsPast / 31536000)}년 전`;
-}
-
 const RenderTimeAgo = ({ date }) => {
   return <p>{timeAgo(date)}</p>;
+};
+
+const RenderBookMark = () => {
+  return (
+    <div className="flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 32 32">
+        <path fill="grey" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
+      </svg>
+      <p>{item.bookmarked}</p>
+    </div>
+  );
 };
 
 export default function Product() {
@@ -119,7 +110,10 @@ export default function Product() {
         </p>
         <div className="flex w-full justify-between text-sm text-slate-500 font-semibold">
           <RenderCondition />
-          <RenderTimeAgo date={item.date} />
+          <div className="flex space-x-2 font-normal">
+            <RenderTimeAgo date={item.date} />
+            <RenderBookMark />
+          </div>
         </div>
         <div className="border px-3 py-1 rounded min-h-24">
           <p className="whitespace-pre-wrap">{item.description}</p>
@@ -130,15 +124,28 @@ export default function Product() {
               <Image className="rounded-full" src={item.user.profile} alt="" fill />
             </div>
             <div className="flex w-full items-center justify-between pl-4 max-md:flex-col max-md:items-start max-md:space-y-1">
-              <div className="text-lg max-md:text-base">{item.user.nickname}</div>
+              <div className="text-lg max-md:text-base line-clamp-1">{item.user.nickname}</div>
               <button>
-                <div className="flex text-base px-3 py-1 border border-gray-300 rounded max-md:text-sm ">상점 가기</div>
+                <div className=" text-base px-3 py-1 border border-gray-300 rounded max-md:text-sm line-clamp-1">
+                  상점 가기
+                </div>
               </button>
             </div>
           </div>
           <div className="flex flex-0.2 justify-end space-x-2">
-            <div className="w-16 rounded bg-orange-300"></div>
-            <div className="w-16 rounded bg-purple-400"></div>
+            <div className="flex justify-center items-center w-16 rounded bg-orange-300">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 16 16">
+                <path
+                  fill="white"
+                  d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234c-.2.032-.352-.176-.273-.362c.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0a1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0a1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2a1 1 0 0 0 0 2"
+                />
+              </svg>
+            </div>
+            <div className="flex justify-center items-center w-16 rounded bg-purple-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 32 32">
+                <path fill="white" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>

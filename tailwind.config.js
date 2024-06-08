@@ -49,6 +49,7 @@ module.exports = {
         '85vw': '85vw',
         '90vw': '90vw',
         '100vw': '100vw',
+        'd-screen': '100dvw',
         450: '450px',
       },
       height: {
@@ -63,6 +64,7 @@ module.exports = {
         '85vh': '85vh',
         '90vh': '90vh',
         '100vh': '100vh',
+        'd-screen': '100dvh',
       },
       backgroundColor: {
         'gray-5': '#D9D9D9',

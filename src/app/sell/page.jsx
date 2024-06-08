@@ -3,6 +3,8 @@ import Image from 'next/image';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
+// 나중에 서버로 전송할때 title은 replace(/ +/g, ' ').trim()으로 공백 치환하고 보내기
+
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   if (mainCategory === 'keyboard') {
     return (
@@ -82,40 +84,6 @@ export default function Sell() {
   const [price, setPrice] = useState('');
   const fileInputRef = useRef(null); //file input ref
 
-  const handleImageUpload = useCallback(
-    e => {
-      if (!e.target.files) return;
-      if (uploadImages.imageUrls.length + e.target.files.length > 5)
-        return window.alert('사진은 최대 5장까지 가능합니다.');
-      const files = e.target.files;
-      const filesArray = Array.from(files);
-
-      const newArray = filesArray.map(file => URL.createObjectURL(file));
-      setUploadImages({
-        imageFiles: [...uploadImages.imageFiles, ...filesArray],
-        imageUrls: [...uploadImages.imageUrls, ...newArray],
-      });
-    },
-    [uploadImages],
-  );
-
-  const handleImageUploadClick = useCallback(() => {
-    if (uploadImages.imageUrls.length < 5) {
-      if (fileInputRef.current) {
-        fileInputRef.current.click();
-      }
-    } else {
-      window.alert('사진은 최대 5장까지 가능합니다.');
-    }
-  }, [uploadImages]);
-
-  const handlePrice = useCallback(e => {
-    const value = e.target.value.replace(/,/g, '');
-    if (!isNaN(value) && value.length <= 9) {
-      setPrice(value.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
-    }
-  }, []);
-
   const removeImage = useCallback(
     idx => {
       const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
@@ -154,6 +122,40 @@ export default function Sell() {
     [uploadImages],
   );
 
+  const handleImageUpload = useCallback(
+    e => {
+      if (!e.target.files) return;
+      if (uploadImages.imageUrls.length + e.target.files.length > 5)
+        return window.alert('사진은 최대 5장까지 가능합니다.');
+      const files = e.target.files;
+      const filesArray = Array.from(files);
+
+      const newArray = filesArray.map(file => URL.createObjectURL(file));
+      setUploadImages({
+        imageFiles: [...uploadImages.imageFiles, ...filesArray],
+        imageUrls: [...uploadImages.imageUrls, ...newArray],
+      });
+    },
+    [uploadImages],
+  );
+
+  const handleImageUploadClick = useCallback(() => {
+    if (uploadImages.imageUrls.length < 5) {
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+      }
+    } else {
+      window.alert('사진은 최대 5장까지 가능합니다.');
+    }
+  }, [uploadImages]);
+
+  const handlePrice = useCallback(e => {
+    const value = e.target.value.replace(/,/g, '');
+    if (!isNaN(value) && value.length <= 9) {
+      setPrice(value.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    }
+  }, []);
+
   const handleMainCategoryClick = useCallback(id => {
     setMainCategory(id);
     setSubCategory(null);
@@ -167,8 +169,22 @@ export default function Sell() {
     setCondition(id);
   }, []);
 
+  const handleDisabled = () => {
+    if (
+      !uploadImages.imageUrls.length ||
+      !title.trim().length ||
+      !mainCategory ||
+      !subCategory ||
+      !price.length ||
+      !condition ||
+      !description.trim().length
+    )
+      return true;
+    else return false;
+  };
+
   return (
-    <div className="max-w-screen-xl px-10 mx-auto">
+    <div className="max-w-screen-xl px-10 mx-auto max-md:px-2">
       <div className="flex w-full items-center py-3">
         <input
           type="file"
@@ -257,7 +273,7 @@ export default function Sell() {
       </div>
 
       <div className="flex flex-1 justify-between my-10 max-md:flex-col">
-        <div className="flex flex-col flex-0.4 h-full  min-w-72">
+        <div className="flex flex-col flex-0.4 h-full  min-w-60">
           <div className="flex font-medium text-xl my-3">카테고리</div>
           <div className="flex h-64 border ">
             <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
@@ -371,6 +387,14 @@ export default function Sell() {
           className="w-full outline-none no-underline text-xl"
         />
         <p className="text-lg">원</p>
+      </div>
+      <div className="w-full flex justify-end">
+        <button
+          className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
+          disabled={handleDisabled()}
+        >
+          <p>업로드</p>
+        </button>
       </div>
     </div>
   );

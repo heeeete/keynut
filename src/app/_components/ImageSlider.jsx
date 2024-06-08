@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import debounce from '../utils/debounce';
 
@@ -12,6 +13,7 @@ export default function ImageSlider({ images }) {
   const fullSizeImagesRef = useRef(null);
   const [imagesWidth, setImagesWidth] = useState([]);
   const [offset, setOffset] = useState(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const imagesWidthInit = () => {
@@ -85,7 +87,7 @@ export default function ImageSlider({ images }) {
   return (
     <div className="max-w-screen-xl mx-auto flex flex-col items-center justify-center">
       <div
-        className="flex relative w-full max-w-lg aspect-square items-center group"
+        className="flex relative w-full max-w-lg aspect-square items-center group bg-gray-50 rounded"
         onClick={_ => setModalStatus(true)}
       >
         {/* 왼쪽 넘기기 버튼 */}
@@ -112,7 +114,7 @@ export default function ImageSlider({ images }) {
             }`}
             placeholder="blur"
             blurDataURL="img"
-            style={{ objectFit: 'cover' }}
+            style={pathname.startsWith('/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
           />
         ))}
         {/* 오른쪽 넘기기 버튼 */}
@@ -143,7 +145,7 @@ export default function ImageSlider({ images }) {
       <div
         className={`${
           modalStatus ? 'visible' : 'invisible'
-        } fixed flex items-center left-0 top-0 w-screen h-screen bg-black bg-opacity-80 z-50 overflow-hidden`}
+        } fixed flex items-center left-0 top-0 w-d-screen h-d-screen bg-black bg-opacity-80 z-50 overflow-hidden`}
       >
         <button className="absolute h-full w-1/2 left-0 z-40" onClick={handlePrevFullSizeImage}></button>
         <button className="absolute h-full w-1/2 right-0 z-40" onClick={handleNextFullSizeImage}></button>
@@ -169,7 +171,7 @@ export default function ImageSlider({ images }) {
             {images.map((_, idx) => {
               return (
                 <button
-                  className={`w-2 h-2 rounded-full border z-50 ${
+                  className={`w-3 h-3 rounded-full  z-50 ${
                     fullSizeCurrentImageIndex === idx ? `bg-gray-400` : 'bg-white'
                   }`}
                   onClick={() => setFullSizeCurrentImageIndex(idx)}
