@@ -98,47 +98,96 @@ filters.forEach(filter => {
 
 export default function Shop() {
   const [selectedFilters, setSelectedFilters] = useState([]);
-  const [activeMainFilter, setActiveMainFilter] = useState([]);
   const [filterActive, setFilterActive] = useState(false);
   const [sortOption, setSortOption] = useState(true);
+  const [searchText, setSearchText] = useState('');
+  const [filtersState, setFiltersState] = useState({});
   const innerContainerRef = useRef(null);
   const filterRef = useRef(null);
-  const toggleFilter = id => {
-    setSelectedFilters(prev => (prev.includes(id) ? prev.filter(c => c != id) : [...prev, id]));
-  };
-  const handleMainFilter = filter => {
-    if (activeMainFilter.includes(filter.id)) {
-      filter.subfilters && setSelectedFilters(prev => prev.filter(id => !filter.subfilters.some(sub => sub.id === id)));
-      setActiveMainFilter(prev => prev.filter(a => a !== filter.id));
-    } else setActiveMainFilter(prev => [...prev, filter.id]);
-  };
 
-  const handleSelectedFilters = id => {
-    if (id === 11) {
-      setSelectedFilters(prev => prev.filter(id => !filters[0].subfilters[0].subfilters.some(sub => sub.id === id)));
-      setActiveMainFilter(prev => prev.filter(a => a !== id));
+  useEffect(() => {
+    const initializeFilters = (subfilters, state = {}) => {
+      subfilters.forEach(subfilter => {
+        if (subfilter.subfilters && subfilter.subfilters.length) {
+          state[subfilter.id] = { checked: false, subfilters: subfilter.subfilters };
+          initializeFilters(subfilter.subfilters, state);
+        } else {
+          state[subfilter.id] = { checked: false };
+        }
+      });
+      return state;
+    };
+
+    const initState = {};
+    filters.forEach(filter => {
+      if (filter.subfilters.length) {
+        initializeFilters(filter.subfilters, initState);
+      }
+    });
+    setFiltersState(initState);
+  }, []);
+
+  // console.log(filtersState);
+
+  const handleFilterChange = (id, checked) => {
+    const newState = { ...filtersState };
+    const updateSelectedFilters = checked ? [...selectedFilters, id] : selectedFilters.filter(fid => fid !== id);
+
+    const updateSubfilters = subfilters => {
+      subfilters.forEach(subfilter => {
+        newState[subfilter.id].checked = checked;
+        if (updateSelectedFilters.includes(subfilter.id)) {
+          const index = updateSelectedFilters.indexOf(subfilter.id);
+          if (index > -1) {
+            updateSelectedFilters.splice(index, 1);
+          }
+        }
+        if (subfilter.subfilters) {
+          updateSubfilters(subfilter.subfilters);
+        }
+      });
+    };
+
+    newState[id].checked = checked;
+    if (newState[id].subfilters && !checked) {
+      updateSubfilters(newState[id].subfilters);
     }
-    toggleFilter(id);
+    setFiltersState(newState);
+    setSelectedFilters(updateSelectedFilters);
   };
 
   return (
     <div className="flex items-start justify-start">
       <div className="flex px-10 flex-col w-full max-w-screen-xl mx-auto max-md:px-2">
         <div className="sticky top-20 flex flex-col z-20 bg-white border-b max-md:top-14">
-          <div className="flex w-full justify-center items-center min-h-40 max-md:min-h-16">
-            <input
-              type="text"
-              placeholder="상품검색"
-              className="border-b rounded-none border-gray-400 border-solid w-96 min-w-48 outline-none max-md:w-56"
-            ></input>
-            <button>
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-                <g fill="none" stroke="rgb(156,163,175)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21l-4.3-4.3" />
-                </g>
-              </svg>
-            </button>
+          <div className="flex w-full justify-center items-center min-h-24 max-md:min-h-12 max-md:h-12 max-md:pt-2">
+            <div className="flex rounded-none border-b-2 w-450 px-1 py-1 max-md:border-none max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full">
+              <input
+                type="text"
+                placeholder="상품검색"
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+                className="outline-none w-450 pr-2 max-md:w-full max-md:bg-transparent"
+              />
+              {searchText.length ? (
+                <button onClick={() => setSearchText('')}>
+                  <svg
+                    className=""
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="0.7em"
+                    height="0.7em"
+                    viewBox="0 0 2048 2048"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                ''
+              )}
+            </div>
           </div>
           <div className="flex justify-end items-center py-2 max-md:justify-between">
             <div className="flex items-center md:hidden">
@@ -178,19 +227,17 @@ export default function Shop() {
               </button>
             </div>
           </div>
-          <div className="flex flex-wrap items-center max-md:top-34">
+          <div className="flex flex-wrap items-center max-md:top-34 gap-3">
             {selectedFilters.length
               ? selectedFilters.map(id => (
-                  <div className="flex px-2 space-x-1 rounded-md items-center bg-slate-200 mr-1 mb-1" key={id}>
+                  <div className="flex space-x-1 rounded-md items-center mb-1" key={id}>
                     <div>{optionMap[id]}</div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="0.7em"
                       height="0.7em"
                       viewBox="0 0 2048 2048"
-                      onClick={() => {
-                        handleSelectedFilters(id);
-                      }}
+                      onClick={() => handleFilterChange(id, false)}
                     >
                       <path
                         fill="currentColor"
@@ -202,14 +249,15 @@ export default function Shop() {
               : ''}
           </div>
         </div>
-        <div className="flex items-start w-full">
+        <div className="flex items-start w-full max-md:overflow-auto">
           <div
             className={`${
               filterActive ? 'flex' : 'hidden'
-            } sticky w-44 space-y-5 z-30 top-80 flex-col mt-20 bg-white md:flex max-md:fixed max-md:top-0 max-md:pt-20 max-md:left-0 max-md:mt-14 max-md:h-full max-md:border-r max-md:pl-4`}
+            }  sticky w-44 space-y-5 z-30 top-64 flex-col mt-12 h-full overflow-y-auto bg-white md:flex max-md:fixed max-md:top-0 max-md:pt-20 max-md:left-0 max-md:mt-0  max-md:border-r max-md:pl-4 max-md:pb-28`}
+            // style={{ height: '100dvh' }}
             ref={filterRef}
           >
-            <div className="md:hidden absolute top-10 right-2 flex justify-end pr-3">
+            <div className="md:hidden fixed top-20 left-36 flex justify-end pr-3 z-30">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1em"
@@ -229,31 +277,40 @@ export default function Shop() {
               <div className="flex flex-col space-y-2" key={filter.id}>
                 <div className="font-semibold">{filter.option}</div>
                 {filter.subfilters.map(sub => (
-                  <div className="  flex-col" key={sub.id}>
-                    <button
-                      className={`flex items-center px-2 rounded-md ${
-                        selectedFilters.includes(sub.id) ? 'bg-slate-200' : 'bg-transparent'
-                      }`}
-                      onClick={() => {
-                        handleMainFilter(sub);
-                        toggleFilter(sub.id);
-                      }}
-                    >
-                      {sub.option}
-                    </button>
-                    <ul className=" flex-col">
-                      {activeMainFilter.includes(sub.id) &&
+                  <div className="flex-col ml-1" key={sub.id}>
+                    <label className="flex space-x-1 m-1  items-center">
+                      <input
+                        className="accent-black"
+                        type="checkbox"
+                        checked={filtersState[sub.id]?.checked || false}
+                        onChange={e => {
+                          handleFilterChange(sub.id, e.target.checked);
+                        }}
+                      />
+                      <div className="">{sub.option}</div>
+                    </label>
+                    <ul className="flex-col ml-2">
+                      {filtersState[sub.id]?.checked &&
                         sub.subfilters &&
                         sub.subfilters.map((sub, key) => (
-                          <button
-                            className={`flex mt-2 ml-3 px-2 rounded-md ${
-                              selectedFilters.includes(sub.id) ? 'bg-slate-200' : 'bg-transparent'
-                            } ${key === 4 ? 'mb-3' : ''}`}
+                          <label
+                            className={`flex space-x-1 m-1 p-1 items-center max-md:m-1 max-md:p-2 ${
+                              key === 4 ? 'mb-3' : ''
+                            }`}
                             key={sub.id}
-                            onClick={() => toggleFilter(sub.id)}
                           >
-                            <li className="flex text-sm">{sub.option}</li>
-                          </button>
+                            <input
+                              className="accent-black"
+                              type="checkbox"
+                              checked={filtersState[sub.id]?.checked}
+                              onChange={e => {
+                                handleFilterChange(sub.id, e.target.checked);
+                              }}
+                            />
+                            <div>
+                              <li className="flex text-sm">{sub.option}</li>
+                            </div>
+                          </label>
                         ))}
                     </ul>
                   </div>

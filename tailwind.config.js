@@ -50,6 +50,7 @@ module.exports = {
         '90vw': '90vw',
         '100vw': '100vw',
         'd-screen': '100dvw',
+        450: '450px',
       },
       height: {
         '10vh': '10vh',
