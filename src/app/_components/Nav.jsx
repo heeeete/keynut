@@ -1,29 +1,23 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import Search from './Search';
 import Add from './Add';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 export default function Nav() {
+  const pathname = usePathname();
+  const [searchText, setSearchText] = useState('');
   return (
     <header
-      className="w-full top-0 fixed  bg-white nav-1280  max-md:nav-768 z-50"
+      className="w-full top-0 fixed  bg-white   max-md:nav-768 z-50"
       style={{ boxShadow: '0 1px 5px -1px black' }}
     >
-      <nav className="flex w-full h-full max-w-screen-xl mx-auto  justify-between">
-        <div className="pl-10 w-40 flex items-center max-md:pl-2 max-md:w-28">
-          <Link href={'/'}>
-            <Image
-              className=""
-              style={{ width: 'auto', height: 'auto' }}
-              src={'/logo.png'}
-              alt="logo"
-              width={100}
-              height={0}
-            />
-          </Link>
-        </div>
-        <ul className=" flex flex-col justify-around pr-10 max-md:pr-2">
-          <div className="flex justify-end space-x-8 text-xs max-md:hidden">
+      <nav className="flex flex-col w-full h-full max-w-screen-xl mx-auto  justify-between">
+        <ul className=" flex justify-end pr-10 max-md:pr-2">
+          <div className="flex justify-end space-x-2 text-sm max-md:hidden">
             <li>
               <Link href="/search?c=keyboard">고객센터</Link>
             </li>
@@ -40,25 +34,7 @@ export default function Nav() {
               <Link href="/search?c=mouse">로그인</Link>
             </li>
           </div>
-          <div className="flex justify-end space-x-8  text-lg max-md:hidden">
-            <li>
-              <Link href={'/gallery'}>GALLERY</Link>
-            </li>
-            <li>
-              <Link href={'/shop'}>SHOP</Link>
-            </li>
-            <li>
-              <Search isMobile={false} />
-            </li>
-            <li>
-              <Link href={'/chat'}>CHAT</Link>
-            </li>
-            <li className="relative">
-              <Add />
-            </li>
-          </div>
-
-          <div className="hidden justify-center items-center space-x-4 text-lg      max-md:flex">
+          {/* <div className="hidden justify-center items-center space-x-4 text-lg      max-md:flex">
             <li>
               <Link href={'/sell'}>
                 <p className="p-2">
@@ -115,8 +91,63 @@ export default function Nav() {
             <li className="flex justify-center items-center">
               <Search isMobile={true} />
             </li>
-          </div>
+          </div> */}
         </ul>
+        <div className="py-1 flex  space-y-5 flex-col justify-center items-center">
+          <div className="font-bold text-lg -rotate-3">KEYNUT</div>
+          <ul className="">
+            <div className="flex justify-end space-x-8 text-base max-md:hidden">
+              <li>
+                <Link href={'/gallery'}>GALLERY</Link>
+              </li>
+              <li>
+                <Link href={'/shop'}>SHOP</Link>
+              </li>
+              <li>
+                <Search isMobile={false} />
+              </li>
+              <li>
+                <Link href={'/chat'}>CHAT</Link>
+              </li>
+              <li className="relative">
+                <Add />
+              </li>
+            </div>
+          </ul>
+        </div>
+        {pathname === '/shop' ? (
+          <div className="flex w-full justify-center items-center min-h-24 max-md:min-h-12 max-md:h-12 max-md:pt-2">
+            <div className="flex rounded-none border-b-2 w-450 px-1 py-1 max-md:border-none max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full">
+              <input
+                type="text"
+                placeholder="상품검색"
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+                className="outline-none w-450 pr-2 max-md:w-full max-md:bg-transparent"
+              />
+              {searchText.length ? (
+                <button onClick={() => setSearchText('')}>
+                  <svg
+                    className=""
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="0.7em"
+                    height="0.7em"
+                    viewBox="0 0 2048 2048"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                ''
+              )}
+            </div>
+          </div>
+        ) : (
+          ''
+        )}
       </nav>
     </header>
   );
