@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 * {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-y: scroll;
 }
 
 body {
