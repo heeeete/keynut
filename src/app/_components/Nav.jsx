@@ -15,8 +15,8 @@ export default function Nav() {
       // style={{ boxShadow: '0 1px 5px -1px black' }}
     >
       <nav className="flex flex-col w-full h-full space-y-3 max-w-screen-xl mx-auto ">
-        <ul className="flex justify-end pr-10 max-md:pr-2">
-          <div className="flex justify-end space-x-2 text-sm max-md:hidden">
+        <ul className="flex justify-end pr-10 pt-2 max-md:pr-2">
+          <div className="flex justify-end space-x-2 text-xs max-md:hidden">
             <li>
               <Link href="/search?c=keyboard">고객센터</Link>
             </li>
@@ -92,7 +92,7 @@ export default function Nav() {
             </li>
           </div> */}
         </ul>
-        <div className="flex flex-col justify-center items-center space-y-3 bg-white">
+        <div className="flex flex-col justify-center items-center space-y-5 bg-white">
           <div className="font-bold text-xl -rotate-3">KEYNUT</div>
           <ul className="">
             <div className="flex justify-end space-x-8 text-base max-md:hidden">
