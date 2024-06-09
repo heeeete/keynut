@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className + 'flex flex-col justify-center items-center max-md:mb-bottom-nav-heigth'}>
         <Nav />
-        <main className="relative main-1280 max-md:main-768">{children}</main>
+        <main className="relative main-1280 max-md:pt-0">{children}</main>
         <Footer />
         <BottomNav />
       </body>

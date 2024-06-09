@@ -40,7 +40,7 @@ export default function MyPage() {
   const [nickname, setNickname] = useState('우유먹은송아지');
   const [isEditing, setIsEditing] = useState(false);
   return (
-    <div className="flex flex-col h-full max-w-screen-xl mx-auto px-10 max-md:px-2">
+    <div className="flex flex-col h-full max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:main-768">
       <div className="flex h-24 border border-gray-300 rounded-md items-center my-5 px-4 max-md:px-2">
         <div className="rounded-full w-20 aspect-square relative max-md:w-16">
           <Image className="rounded-full" src="/키보드1.webp" alt="myprofile" fill />

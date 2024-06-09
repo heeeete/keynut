@@ -26,9 +26,9 @@ export default function Gallery() {
   const [searchText, setSearchText] = useState('');
   return (
     <div className="flex w-full flex-col">
-      <div className="sticky top-20 z-20 bg-white  border-b w-full max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:top-14">
-        <div className="flex w-full justify-center items-center min-h-24 max-md:min-h-12 max-md:h-12 max-md:pt-2">
-          <div className="flex rounded-none border-b-2 w-450 px-1 py-1 max-md:border-none max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full">
+      <div className="sticky top-0 flex flex-col z-20 border-b bg-white">
+        <div className="search-bar-container-md max-md:search-bar-container-maxmd">
+          <div className="search-bar-md max-md:search-bar-maxmd">
             <input
               type="text"
               placeholder="상품검색"
@@ -56,25 +56,26 @@ export default function Gallery() {
             )}
           </div>
         </div>
-        <div className="flex space-x-2 justify-end py-2">
-          <button
-            onClick={() => {
-              !sortOption && setSortOption(true);
-            }}
-            className={`${sortOption ? 'text-black' : 'text-gray-500'}`}
-          >
-            인기순
-          </button>
-          <button
-            onClick={() => {
-              sortOption && setSortOption(false);
-            }}
-            className={`${sortOption ? 'text-gray-500' : 'text-black'}`}
-          >
-            최신순
-          </button>
+        <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:p-2 max-md:pt-0">
+          <div className="flex space-x-2 items-center">
+            <button
+              onClick={() => {
+                !sortOption && setSortOption(true);
+              }}
+              className={`${sortOption ? 'text-black' : 'text-gray-500'}`}
+            >
+              인기순
+            </button>
+            <button
+              onClick={() => {
+                sortOption && setSortOption(false);
+              }}
+              className={`${sortOption ? 'text-gray-500' : 'text-black'}`}
+            >
+              최신순
+            </button>
+          </div>
         </div>
-        {/* <hr className="" /> */}
       </div>
       <div className="grid grid-cols-4 gap-2 py-2 w-full max-w-screen-xl mx-auto px-10 max-md:px-2  max-md:grid-cols-2">
         {picks.map((pick, idx) => (
