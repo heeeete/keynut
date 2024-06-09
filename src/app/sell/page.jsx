@@ -372,6 +372,7 @@ export default function Sell() {
           maxLength={1000}
           placeholder="상품 설명을 입력해주세요."
           className="flex-1 outline-none no-underline text-xl  border scrollbar-hide resize-none"
+          id="description"
           rows={8}
         />
       </div>
