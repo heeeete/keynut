@@ -2,6 +2,38 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  Carter_One,
+  Rock_Salt,
+  Macondo,
+  Monoton,
+  Reenie_Beanie,
+  Nothing_You_Could_Do,
+  Rubik_Moonrocks,
+  Protest_Revolution,
+  Honk,
+  Sixtyfour,
+  Wallpoet,
+  Skranji,
+  Goldman,
+  Red_Rose,
+  Nosifer,
+  Vujahday_Script,
+  Nabla,
+  Blaka_Ink,
+} from 'next/font/google';
+
+// const title = Carter_One({ subsets: ['latin'], weight: ['400'] });
+// const title = Rock_Salt({ subsets: ['latin'], weight: ['400'] });
+const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });
+// const title = Rubik_Moonrocks({ subsets: ['latin'], weight: ['400'] });
+// const title = Protest_Revolution({ subsets: ['latin'], weight: ['400'] });
+// const title = Honk({ subsets: ['latin'], weight: ['400'] });
+// const title = Sixtyfour({ subsets: ['latin'], weight: ['400'] });
+// const title = Wallpoet({ subsets: ['latin'], weight: ['400'] });
+// const title = Skranji({ subsets: ['latin'], weight: ['400'] });
+// const title = Goldman({ subsets: ['latin'], weight: ['400'] });
+// const title = Red_Rose({ subsets: ['latin'], weight: ['400'] });
 
 export default function Nav() {
   const pathname = usePathname();
@@ -36,9 +68,9 @@ export default function Nav() {
           </div>
         </ul>
         <div className="flex flex-col pb-2 items-center space-y-5 max-md:space-y-0 max-md:py-2">
-          <div className="font-bold text-xl">
+          <div className="font-bold text-3xl">
             <Link href={'/'}>
-              <p>KEYNUT</p>
+              <p className={`${title.className}`}>KEYNUT</p>
             </Link>
           </div>
           <ul className="">
