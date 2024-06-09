@@ -1,9 +1,6 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import Search from './Search';
-import Add from './Add';
 import { usePathname } from 'next/navigation';
 
 export default function Nav() {
