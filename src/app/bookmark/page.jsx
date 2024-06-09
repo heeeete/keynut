@@ -9,7 +9,7 @@ const bookmarked = [
 ];
 export default function Bookmark() {
   return (
-    <div className="grid grid-cols-2 gap-2 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:grid-cols-1">
+    <div className="grid grid-cols-2 gap-2 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:grid-cols-1 max-md:main-768">
       {bookmarked.map((item, index) => {
         return (
           <div className="flex p-2 items-center border border-gray-300 rounded-sm justify-between" key={index}>

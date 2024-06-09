@@ -120,10 +120,37 @@ module.exports = {
           paddingTop: '7rem',
         },
         '.main-768': {
-          paddingTop: '5rem',
+          paddingTop: '3rem',
+        },
+        '.search-bar-container-md': {
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '96px',
+        },
+        '.search-bar-container-maxmd': {
+          minHeight: '56px',
+          height: '56px',
+          padding: '8px',
+        },
+        '.search-bar-md': {
+          display: 'flex',
+          borderRadius: '0',
+          borderBottom: '2px solid black',
+          width: '450px',
+          padding: '4px',
+        },
+        '.search-bar-maxmd': {
+          borderRadius: '4px',
+          border: 'none',
+          width: '100%',
+          height: '100%',
+          padding: '0px 12px',
+          backgroundColor: 'rgb(243 244 246)',
         },
       };
-
+      //max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full
       addUtilities(newUtilities);
     },
     require('tailwind-scrollbar-hide'),

@@ -75,9 +75,9 @@ const filters = [
     option: '가격',
     subfilters: [
       { id: 21, option: '5만원 이하' },
-      { id: 22, option: '5 ~ 10만원' },
-      { id: 23, option: '10 ~ 30만원' },
-      { id: 24, option: '30 ~ 50만원' },
+      { id: 22, option: '5 - 10만원' },
+      { id: 23, option: '10 - 30만원' },
+      { id: 24, option: '30 - 50만원' },
       { id: 25, option: '50만원 이상' },
     ],
   },
@@ -159,12 +159,9 @@ export default function Shop() {
   return (
     <div className="flex items-start justify-start">
       <div className="flex flex-col w-full">
-        <div
-          className="sticky top-0 flex flex-col z-20 border-b bg-white max-md:top-14"
-          // style={{ boxShadow: '0 1px 5px -1px black' }}
-        >
-          <div className="flex w-full justify-center items-center min-h-24 max-md:min-h-12 max-md:h-12 max-md:pt-2">
-            <div className="flex rounded-none border-b-2 border-black w-450 px-1 py-1 max-md:border-none max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full">
+        <div className="sticky top-0 flex flex-col z-20 border-b bg-white">
+          <div className="search-bar-container-md  max-md:search-bar-container-maxmd">
+            <div className="search-bar-md max-md:search-bar-maxmd">
               <input
                 type="text"
                 placeholder="상품검색"
@@ -192,7 +189,7 @@ export default function Shop() {
               )}
             </div>
           </div>
-          <div className="flex justify-end items-center py-2 max-md:justify-between">
+          <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:justify-between max-md:p-2 max-md:pt-0">
             <div className="flex items-center md:hidden">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -211,7 +208,28 @@ export default function Shop() {
                 />
               </svg>
             </div>
-            <div className="flex justify-end space-x-2 w-full px-10 max-w-screen-xl mx-auto max-md:px-2">
+            <div className="flex flex-1 flex-wrap pr-2 items-center gap-1 max-md:hidden">
+              {selectedFilters.length
+                ? selectedFilters.map(id => (
+                    <div className="flex space-x-1 rounded-md items-center text-sm mr-2" key={id}>
+                      <div className="flex ">{optionMap[id]}</div>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="0.7em"
+                        height="0.7em"
+                        viewBox="0 0 2048 2048"
+                        onClick={() => handleFilterChange(id, false)}
+                      >
+                        <path
+                          fill="currentColor"
+                          d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                        />
+                      </svg>
+                    </div>
+                  ))
+                : ''}
+            </div>
+            <div className="flex space-x-2 items-center">
               <button>
                 <div
                   className={`${sortOption ? 'text-black' : 'text-gray-500'}`}
@@ -230,10 +248,10 @@ export default function Shop() {
               </button>
             </div>
           </div>
-          <div className="flex flex-wrap items-center max-md:top-34 gap-3">
+          <div className="flex flex-wrap items-center px-2 md:hidden">
             {selectedFilters.length
               ? selectedFilters.map(id => (
-                  <div className="flex space-x-1 rounded-md items-center mb-1" key={id}>
+                  <div className="flex space-x-1 rounded-md items-center mr-3 " key={id}>
                     <div>{optionMap[id]}</div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -256,11 +274,10 @@ export default function Shop() {
           <div
             className={`${
               filterActive ? 'flex' : 'hidden'
-            }  sticky w-44 space-y-5 z-30 top-64 flex-col mt-12 h-full overflow-y-auto bg-white md:flex max-md:fixed max-md:top-0 max-md:pt-20 max-md:left-0 max-md:mt-0  max-md:border-r max-md:pl-4 max-md:pb-28`}
-            // style={{ height: '100dvh' }}
+            }  sticky w-44 space-y-5 z-30 top-52 flex-col h-full overflow-y-auto bg-white md:flex max-md:fixed max-md:top-0 max-md:pt-20 max-md:left-0 max-md:mt-0  max-md:border-r max-md:pl-4 max-md:pb-28`}
             ref={filterRef}
           >
-            <div className="md:hidden fixed top-20 left-36 flex justify-end pr-3 z-30">
+            <div className="md:hidden fixed top-20 left-36 flex justify-end z-30">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1em"
@@ -321,7 +338,8 @@ export default function Shop() {
               </div>
             ))}
           </div>
-          <div className="flex justify-center w-full" ref={innerContainerRef}>
+          <div className="flex flex-col justify-center w-full " ref={innerContainerRef}>
+            {/* <div className="h-10 w-full bg-red-600"></div> */}
             <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
               {images.map((img, idx) => (
                 <div className="flex flex-col" key={idx}>
