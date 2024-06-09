@@ -8,7 +8,10 @@ import { usePathname } from 'next/navigation';
 
 export default function Nav() {
   const pathname = usePathname();
-  const border = !pathname.startsWith('/gallery') && !pathname.startsWith('/shop');
+  const border =
+    (!pathname.startsWith('/gallery') && !pathname.startsWith('/shop')) ||
+    pathname.startsWith('/shop/product') ||
+    pathname.startsWith('/gallery/post');
 
   return (
     <header className={`${border ? 'border-b' : ''} fixed w-full top-0 bg-white z-50`}>

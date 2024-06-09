@@ -114,7 +114,7 @@ export default function ImageSlider({ images }) {
             }`}
             placeholder="blur"
             blurDataURL="img"
-            style={pathname.startsWith('/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
+            style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
           />
         ))}
         {/* 오른쪽 넘기기 버튼 */}

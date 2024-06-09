@@ -120,7 +120,7 @@ module.exports = {
           paddingTop: '7rem',
         },
         '.main-768': {
-          paddingTop: '4rem',
+          paddingTop: '5rem',
         },
       };
 
