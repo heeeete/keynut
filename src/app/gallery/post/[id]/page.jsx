@@ -165,8 +165,8 @@ function CommentInput() {
 
 export default function Page() {
   return (
-    <div className="max-w-lg mx-auto">
-      <div className="flex items-center relative space-x-4 my-5">
+    <div className="max-w-lg mx-auto max-md:main-768">
+      <div className="flex items-center relative space-x-4 my-5 max-md:my-2">
         <Link href={'/shop/123'} className="flex relative justify-center items-center bg-white  rounded-full">
           <Image
             src={info.profile}
