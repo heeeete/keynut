@@ -117,10 +117,10 @@ module.exports = {
           height: '3.5rem',
         },
         '.main-1280': {
-          paddingTop: '6.5rem',
+          paddingTop: '8rem',
         },
         '.main-768': {
-          paddingTop: '3rem',
+          paddingTop: '3.5rem',
         },
         '.search-bar-container-md': {
           display: 'flex',
@@ -137,7 +137,7 @@ module.exports = {
         '.search-bar-md': {
           display: 'flex',
           borderRadius: '0',
-          borderBottom: '2px solid black',
+          borderBottom: '1px solid black',
           width: '450px',
           padding: '4px',
         },
