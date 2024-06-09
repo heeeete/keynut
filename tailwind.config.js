@@ -117,7 +117,7 @@ module.exports = {
           height: '3.5rem',
         },
         '.main-1280': {
-          paddingTop: '7rem',
+          paddingTop: '6.5rem',
         },
         '.main-768': {
           paddingTop: '3rem',
