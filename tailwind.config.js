@@ -111,13 +111,13 @@ module.exports = {
           opacity: 0.1,
         },
         '.nav-1280': {
-          height: '5rem',
+          height: '6rem',
         },
         '.nav-768': {
           height: '3.5rem',
         },
         '.main-1280': {
-          paddingTop: '6rem',
+          paddingTop: '7rem',
         },
         '.main-768': {
           paddingTop: '4rem',

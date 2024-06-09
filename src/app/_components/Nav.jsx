@@ -5,18 +5,17 @@ import Link from 'next/link';
 import Search from './Search';
 import Add from './Add';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 
 export default function Nav() {
   const pathname = usePathname();
-  const [searchText, setSearchText] = useState('');
+
   return (
     <header
-      className="w-full top-0 fixed  bg-white   max-md:nav-768 z-50"
-      style={{ boxShadow: '0 1px 5px -1px black' }}
+      className="w-full top-0 fixed nav-1280   max-md:nav-768 z-50"
+      // style={{ boxShadow: '0 1px 5px -1px black' }}
     >
-      <nav className="flex flex-col w-full h-full max-w-screen-xl mx-auto  justify-between">
-        <ul className=" flex justify-end pr-10 max-md:pr-2">
+      <nav className="flex flex-col w-full h-full space-y-3 max-w-screen-xl mx-auto ">
+        <ul className="flex justify-end pr-10 max-md:pr-2">
           <div className="flex justify-end space-x-2 text-sm max-md:hidden">
             <li>
               <Link href="/search?c=keyboard">고객센터</Link>
@@ -93,29 +92,38 @@ export default function Nav() {
             </li>
           </div> */}
         </ul>
-        <div className="py-1 flex  space-y-5 flex-col justify-center items-center">
-          <div className="font-bold text-lg -rotate-3">KEYNUT</div>
+        <div className="flex flex-col justify-center items-center space-y-3 bg-white">
+          <div className="font-bold text-xl -rotate-3">KEYNUT</div>
           <ul className="">
             <div className="flex justify-end space-x-8 text-base max-md:hidden">
               <li>
-                <Link href={'/gallery'}>GALLERY</Link>
+                <Link
+                  href={'/gallery'}
+                  className={`${
+                    pathname === '/gallery'
+                      ? 'after:block after:w-full after:h-px after:absolute after:-rotate-12 after:top-1/2 after:bg-slate-950'
+                      : ''
+                  } relative`}
+                >
+                  GALLERY
+                </Link>
               </li>
               <li>
                 <Link href={'/shop'}>SHOP</Link>
               </li>
               <li>
-                <Search isMobile={false} />
-              </li>
-              <li>
                 <Link href={'/chat'}>CHAT</Link>
               </li>
-              <li className="relative">
-                <Add />
+              <li>
+                <Link href={'/post'}>POST</Link>
+              </li>
+              <li>
+                <Link href={'/sell'}>SELL</Link>
               </li>
             </div>
           </ul>
         </div>
-        {pathname === '/shop' ? (
+        {/* {pathname === '/shop' ? (
           <div className="flex w-full justify-center items-center min-h-24 max-md:min-h-12 max-md:h-12 max-md:pt-2">
             <div className="flex rounded-none border-b-2 w-450 px-1 py-1 max-md:border-none max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full">
               <input
@@ -147,7 +155,7 @@ export default function Nav() {
           </div>
         ) : (
           ''
-        )}
+        )} */}
       </nav>
     </header>
   );
