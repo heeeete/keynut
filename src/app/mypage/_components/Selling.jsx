@@ -6,7 +6,7 @@ export default function Selling(props) {
       {props.items.map((item, index) => {
         return (
           <div
-            className="p-2 items-center border border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm max-md:border-gray-200"
+            className="p-2 items-center border border-gray-300 justify-between rounded-sm max-md:border-0 max-md:border-b max-md:border-gray-200"
             key={index}
           >
             <div className="flex">

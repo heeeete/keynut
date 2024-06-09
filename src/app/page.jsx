@@ -31,11 +31,11 @@ const picks = [
 
 export default function Home() {
   return (
-    <div className="flex max-w-screen-xl mx-auto px-10 flex-col space-y-5 max-md:px-2 max-md:main-768">
+    <div className="flex max-w-screen-xl mx-auto px-10 flex-col space-y-10 max-md:px-2 max-md:main-768">
       <section className="flex flex-col space-y-5">
         <div className="flex flex-col">
-          <div className="font-medium text-2xl">cateory</div>
-          <div className="text-gray-700 font-medium">카테고리</div>
+          <div className="font-medium text-xl">cateory</div>
+          <div className="text-gray-600 font-medium">카테고리</div>
         </div>
         <div className="flex space-x-3 overflow-auto scrollbar-hide">
           <li className="flex w-36 aspect-square min-h-16 min-w-16 bg-white  border rounded-full"></li>
@@ -47,8 +47,8 @@ export default function Home() {
       <section className="flex flex-col space-y-5">
         <div className="flex items-end">
           <div className="flex flex-1 flex-col">
-            <div className="font-medium text-2xl">just in</div>
-            <div className="text-gray-700 font-medium">신규 등록 상품</div>
+            <div className="font-medium text-xl">just in</div>
+            <div className="text-gray-600 font-medium">신규 등록 상품</div>
           </div>
           <div className="font-medium text-sm">더보기 +</div>
         </div>
@@ -57,8 +57,8 @@ export default function Home() {
       <section className="flex flex-col space-y-5">
         <div className="flex items-end">
           <div className="flex flex-1 flex-col">
-            <div className="font-medium text-2xl">hot</div>
-            <div className="text-gray-700 font-medium">인기 상품</div>
+            <div className="font-medium text-xl">hot</div>
+            <div className="text-gray-600 font-medium">인기 상품</div>
           </div>
           <div className="font-medium text-sm">더보기 +</div>
         </div>
@@ -67,8 +67,8 @@ export default function Home() {
       <section className="flex flex-col space-y-5">
         <div className="flex items-end">
           <div className="flex flex-1 flex-col">
-            <div className="font-medium text-2xl">top picks</div>
-            <div className="text-gray-700 font-medium">인기 사진</div>
+            <div className="font-medium text-xl">top picks</div>
+            <div className="text-gray-600 font-medium">인기 사진</div>
           </div>
           <Link href={'/gallery'}>
             <div className="font-medium text-sm">더보기 +</div>
