@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+
 import {
   Carter_One,
   Rock_Salt,
@@ -42,6 +44,7 @@ export default function Nav() {
     pathname.startsWith('/shop/product') ||
     pathname.startsWith('/gallery/post');
   const navRender = pathname === '/shop' || pathname === '/gallery';
+  const { data: session } = useSession();
 
   return (
     <header
@@ -63,7 +66,7 @@ export default function Nav() {
               <Link href="/bookmark">찜</Link>
             </li>
             <li>
-              <Link href="/login">로그인</Link>
+              <Link href="/login">{session ? '로그아웃' : '로그인'}</Link>
             </li>
           </div>
         </ul>

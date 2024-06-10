@@ -3,6 +3,7 @@ import './globals.css';
 import Nav from './_components/Nav';
 import BottomNav from './_components/BottomNav/BottomNav';
 import Footer from './_components/Footer';
+import AuthProvider from '@/lib/next-auth';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,10 +16,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className + 'flex flex-col justify-center items-center max-md:mb-bottom-nav-heigth'}>
-        <Nav />
-        <main className="relative main-1280 max-md:pt-0">{children}</main>
-        <Footer />
-        <BottomNav />
+        <AuthProvider>
+          <Nav />
+          <main className="relative main-1280 max-md:pt-0">{children}</main>
+          <Footer />
+          <BottomNav />
+        </AuthProvider>
       </body>
     </html>
   );
