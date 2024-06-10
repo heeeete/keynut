@@ -63,7 +63,7 @@ export default function Nav() {
               <Link href="/bookmark">찜</Link>
             </li>
             <li>
-              <Link href="/search?c=mouse">로그인</Link>
+              <Link href="/login">로그인</Link>
             </li>
           </div>
         </ul>
