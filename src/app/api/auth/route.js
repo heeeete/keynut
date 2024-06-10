@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import NextAuth from 'next-auth/next';
 
 export async function POST(req) {
   const { authCode } = await req.json();
