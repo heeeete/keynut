@@ -46,7 +46,7 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
           PCB
         </li>
         <li
-          onClick={() => handleSubCategoryClick('others')}
+          onClick={() => handleSubCategoryClick('keyboard-others')}
           className={`p-3 ${subCategory === 'keyboard-others' ? 'bg-slate-200' : ''}`}
         >
           기타
@@ -57,7 +57,7 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
     return (
       <>
         <li
-          onClick={() => handleSubCategoryClick('others')}
+          onClick={() => handleSubCategoryClick('mouse-others')}
           className={`p-3 ${subCategory === 'mouse-others' ? 'bg-slate-200' : ''}`}
         >
           기타
@@ -69,7 +69,281 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
   }
 });
 
+const RenderImageUploadButton = React.memo(
+  ({ handleImageUploadClick, handleImageUpload, fileInputRef, uploadImages }) => {
+    return (
+      <div className="flex w-full items-center py-3">
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleImageUpload}
+          id="images"
+          hidden
+        />
+        <button
+          onClick={handleImageUploadClick}
+          className="flex flex-col justify-center items-center aspect-square w-28  mr-1 border rounded "
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="40%" height="40%" viewBox="0 0 16 16">
+            <g fill="#878787">
+              <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0" />
+              <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1a.5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0a3.5 3.5 0 0 1 7 0" />
+            </g>
+          </svg>
+          <p className="text-gray-400">
+            {uploadImages.imageUrls.length ? `( ${uploadImages.imageUrls.length} / 5 )` : '사진 등록'}
+          </p>
+        </button>
+      </div>
+    );
+  },
+);
+
+const RenderDNDImages = React.memo(({ uploadImages, removeImage, onDragEnd }) => {
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="droppable" direction="horizontal">
+        {(provided, snapshot) => (
+          <div ref={provided.innerRef} className="flex  overflow-auto  scrollbar-hide" {...provided.droppableProps}>
+            {uploadImages.imageUrls.map((url, idx) => (
+              <Draggable key={idx} draggableId={`draggable-${idx}`} index={idx}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
+                  >
+                    <Image
+                      src={url}
+                      fill
+                      alt={`item-${idx}`}
+                      className="rounded border"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    {idx === 0 && (
+                      <div className="absolute bg-black left-1 top-1 p-1 rounded-xl bg-opacity-50 text-xxs text-white">
+                        대표이미지
+                      </div>
+                    )}
+                    <button onClick={() => removeImage(idx)} title="remove-image-btn">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="1.5rem"
+                        height="1.5rem"
+                        viewBox="0 0 24 24"
+                        className="absolute opacity-50 right-1 top-1"
+                      >
+                        <path
+                          fill="black"
+                          d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41L8.41 7L12 10.59L15.59 7L17 8.41L13.41 12z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
+  );
+});
+
+const RenderTitle = React.memo(({ title, setTitle }) => {
+  const onChangeTitle = useCallback(e => {
+    setTitle(e.target.value);
+  }, []);
+
+  return (
+    <>
+      <p className="mt-10 mb-3 font-medium text-xl">상품명</p>
+      <div className="flex no-underline max-w-lg border-b">
+        <input
+          type="text"
+          value={title}
+          onChange={onChangeTitle}
+          maxLength={40}
+          placeholder="상품명을 입력해주세요."
+          className="w-full outline-none no-underline text-xl"
+        />
+        <p className="flex text-xs text-gray-400 items-center">{`(${title.length}/40)`}</p>
+      </div>
+    </>
+  );
+});
+
+const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }) => {
+  const handleMainCategoryClick = useCallback(id => {
+    setMainCategory(id);
+    setSubCategory(null);
+  }, []);
+
+  const handleSubCategoryClick = useCallback(id => {
+    setSubCategory(id);
+  }, []);
+
+  return (
+    <>
+      <div className="flex flex-col flex-0.4 h-full  min-w-60">
+        <div className="flex font-medium text-xl my-3">카테고리</div>
+        <div className="flex h-64 border ">
+          <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
+            <li
+              className={`p-3 ${mainCategory === 'keyboard' ? 'bg-gray-200' : ''}`}
+              onClick={() => handleMainCategoryClick('keyboard')}
+            >
+              키보드
+            </li>
+            <li
+              className={`p-3 ${mainCategory === 'mouse' ? 'bg-gray-200' : ''}`}
+              onClick={() => handleMainCategoryClick('mouse')}
+            >
+              마우스
+            </li>
+            <li
+              className={`p-3 ${mainCategory === 'others' ? 'bg-gray-200' : ''}`}
+              onClick={() => handleMainCategoryClick('others')}
+            >
+              기타
+            </li>
+          </ul>
+          <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
+            <RenderSubcategories
+              mainCategory={mainCategory}
+              subCategory={subCategory}
+              handleSubCategoryClick={handleSubCategoryClick}
+            />
+          </ul>
+        </div>
+      </div>
+    </>
+  );
+});
+
+const RenderCondition = React.memo(({ condition, setCondition }) => {
+  const handleConditionClick = useCallback(id => {
+    setCondition(id);
+  }, []);
+
+  return (
+    <div className="flex-0.4 min-w-72 ">
+      <div className="flex font-medium text-xl my-3 ">상품상태</div>
+      <div className="flex flex-col h-64 justify-around text-lg">
+        <label className="flex items-center space-x-2">
+          <input
+            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            type="radio"
+            name="condition"
+            id="1"
+            onChange={() => handleConditionClick(1)}
+          />
+          <span>미사용</span>
+        </label>
+        <label className="flex items-center space-x-2">
+          <input
+            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            type="radio"
+            name="condition"
+            id="2"
+            onChange={() => handleConditionClick(2)}
+          />
+          <span>사용감 없음</span>
+        </label>
+        <label className="flex items-center space-x-2">
+          <input
+            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            type="radio"
+            name="condition"
+            id="3"
+            onChange={() => handleConditionClick(3)}
+          />
+          <span>사용감 적음</span>
+        </label>
+        <label className="flex items-center space-x-2">
+          <input
+            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            type="radio"
+            name="condition"
+            id="4"
+            onChange={() => handleConditionClick(4)}
+          />
+          <span>사용감 많음</span>
+        </label>
+        <label className="flex items-center space-x-2">
+          <input
+            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            type="radio"
+            name="condition"
+            id="5"
+            onChange={() => handleConditionClick(5)}
+          />
+          <span>파손 / 고장</span>
+        </label>
+      </div>
+    </div>
+  );
+});
+
+const RenderDescriptionInput = React.memo(({ description, setDescription }) => {
+  return (
+    <>
+      <p className="mt-10 mb-3 font-medium text-xl">상품 설명</p>
+      <div className="flex ">
+        <textarea
+          value={description}
+          onChange={e => {
+            setDescription(e.target.value);
+          }}
+          maxLength={1000}
+          placeholder="상품 설명을 입력해주세요."
+          className="flex-1 outline-none no-underline text-xl  border scrollbar-hide resize-none"
+          id="description"
+          rows={8}
+        />
+      </div>
+      <p className="text-xs text-gray-400 content-end ">{`(${description.length}/1000)`}</p>
+    </>
+  );
+});
+
+const RenderPriceInput = React.memo(({ price, setPrice }) => {
+  const handlePrice = useCallback(e => {
+    const value = e.target.value.replace(/,/g, '');
+    if (!isNaN(value) && value.length <= 9) {
+      setPrice(value.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    }
+  }, []);
+
+  return (
+    <>
+      <p className="mt-10 mb-3 font-medium text-xl">상품 가격</p>
+      <div className="flex no-underline max-w-36 border-b">
+        <input
+          type="text"
+          value={price}
+          onChange={handlePrice}
+          placeholder="0"
+          className="w-full outline-none no-underline text-xl"
+        />
+        <p className="text-lg">원</p>
+      </div>
+    </>
+  );
+});
+
 RenderSubcategories.displayName = 'RenderSubcategories';
+RenderImageUploadButton.displayName = 'RenderImageUploadButton';
+RenderDNDImages.displayName = 'RenderDNDImages';
+RenderTitle.displayName = 'RenderTitle';
+RenderCategory.displayName = 'RenderCategory';
+RenderCondition.displayName = 'RenderCondition';
+RenderDescriptionInput.displayName = 'RenderDescriptionInput';
+RenderPriceInput.displayName = 'RenderPriceInput';
 
 export default function Sell() {
   const [uploadImages, setUploadImages] = useState({
@@ -95,10 +369,6 @@ export default function Sell() {
     },
     [uploadImages],
   );
-
-  const onChangeTitle = useCallback(e => {
-    setTitle(e.target.value);
-  }, []);
 
   const onDragEnd = useCallback(
     result => {
@@ -149,26 +419,6 @@ export default function Sell() {
     }
   }, [uploadImages]);
 
-  const handlePrice = useCallback(e => {
-    const value = e.target.value.replace(/,/g, '');
-    if (!isNaN(value) && value.length <= 9) {
-      setPrice(value.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
-    }
-  }, []);
-
-  const handleMainCategoryClick = useCallback(id => {
-    setMainCategory(id);
-    setSubCategory(null);
-  }, []);
-
-  const handleSubCategoryClick = useCallback(id => {
-    setSubCategory(id);
-  }, []);
-
-  const handleConditionClick = useCallback(id => {
-    setCondition(id);
-  }, []);
-
   const handleDisabled = () => {
     if (
       !uploadImages.imageUrls.length ||
@@ -185,210 +435,26 @@ export default function Sell() {
 
   return (
     <div className="max-w-screen-xl px-10 mx-auto max-md:px-2">
-      <div className="flex w-full items-center py-3">
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleImageUpload}
-          id="images"
-          hidden
-        />
-        <button
-          onClick={handleImageUploadClick}
-          className="flex flex-col justify-center items-center aspect-square w-28  mr-1 border rounded "
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="40%" height="40%" viewBox="0 0 16 16">
-            <g fill="#878787">
-              <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0" />
-              <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1a.5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0a3.5 3.5 0 0 1 7 0" />
-            </g>
-          </svg>
-          <p className="text-gray-400">
-            {uploadImages.imageUrls.length ? `( ${uploadImages.imageUrls.length} / 5 )` : '사진 등록'}
-          </p>
-        </button>
-      </div>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable" direction="horizontal">
-          {(provided, snapshot) => (
-            <div ref={provided.innerRef} className="flex  overflow-auto  scrollbar-hide" {...provided.droppableProps}>
-              {uploadImages.imageUrls.map((url, idx) => (
-                <Draggable key={idx} draggableId={`draggable-${idx}`} index={idx}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
-                    >
-                      <Image
-                        src={url}
-                        fill
-                        alt={`item-${idx}`}
-                        className="rounded border"
-                        style={{ objectFit: 'cover' }}
-                      />
-                      {idx === 0 && (
-                        <div className="absolute bg-black left-1 top-1 p-1 rounded-xl bg-opacity-50 text-xxs text-white">
-                          대표이미지
-                        </div>
-                      )}
-                      <button onClick={() => removeImage(idx)} title="remove-image-btn">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="1.5rem"
-                          height="1.5rem"
-                          viewBox="0 0 24 24"
-                          className="absolute opacity-50 right-1 top-1"
-                        >
-                          <path
-                            fill="black"
-                            d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41L8.41 7L12 10.59L15.59 7L17 8.41L13.41 12z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-
-      <p className="mt-10 mb-3 font-medium text-xl">상품명</p>
-      <div className="flex no-underline max-w-lg border-b">
-        <input
-          type="text"
-          value={title}
-          onChange={onChangeTitle}
-          maxLength={40}
-          placeholder="상품명을 입력해주세요."
-          className="w-full outline-none no-underline text-xl"
-        />
-        <p className="flex text-xs text-gray-400 items-center">{`(${title.length}/40)`}</p>
-      </div>
-
+      <RenderImageUploadButton
+        handleImageUploadClick={handleImageUploadClick}
+        handleImageUpload={handleImageUpload}
+        fileInputRef={fileInputRef}
+        uploadImages={uploadImages}
+      />
+      <RenderDNDImages removeImage={removeImage} uploadImages={uploadImages} onDragEnd={onDragEnd} />
+      <RenderTitle title={title} setTitle={setTitle} />
       <div className="flex flex-1 justify-between my-10 max-md:flex-col">
-        <div className="flex flex-col flex-0.4 h-full  min-w-60">
-          <div className="flex font-medium text-xl my-3">카테고리</div>
-          <div className="flex h-64 border ">
-            <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
-              <li
-                className={`p-3 ${mainCategory === 'keyboard' ? 'bg-gray-200' : ''}`}
-                onClick={() => handleMainCategoryClick('keyboard')}
-              >
-                키보드
-              </li>
-              <li
-                className={`p-3 ${mainCategory === 'mouse' ? 'bg-gray-200' : ''}`}
-                onClick={() => handleMainCategoryClick('mouse')}
-              >
-                마우스
-              </li>
-              <li
-                className={`p-3 ${mainCategory === 'others' ? 'bg-gray-200' : ''}`}
-                onClick={() => handleMainCategoryClick('others')}
-              >
-                기타
-              </li>
-            </ul>
-            <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
-              <RenderSubcategories
-                mainCategory={mainCategory}
-                subCategory={subCategory}
-                handleSubCategoryClick={handleSubCategoryClick}
-              />
-            </ul>
-          </div>
-        </div>
-        <div className="flex-0.4 min-w-72 ">
-          <div className="flex font-medium text-xl my-3 ">상품상태</div>
-          <div className="flex flex-col h-64 justify-around text-lg">
-            <label className="flex items-center space-x-2">
-              <input
-                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
-                type="radio"
-                name="condition"
-                id="1"
-                onChange={() => handleConditionClick(1)}
-              />
-              <span>미사용</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input
-                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
-                type="radio"
-                name="condition"
-                id="2"
-                onChange={() => handleConditionClick(2)}
-              />
-              <span>사용감 없음</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input
-                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
-                type="radio"
-                name="condition"
-                id="3"
-                onChange={() => handleConditionClick(3)}
-              />
-              <span>사용감 적음</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input
-                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
-                type="radio"
-                name="condition"
-                id="4"
-                onChange={() => handleConditionClick(4)}
-              />
-              <span>사용감 많음</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input
-                className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
-                type="radio"
-                name="condition"
-                id="5"
-                onChange={() => handleConditionClick(5)}
-              />
-              <span>파손 / 고장</span>
-            </label>
-          </div>
-        </div>
+        <RenderCategory
+          mainCategory={mainCategory}
+          subCategory={subCategory}
+          setMainCategory={setMainCategory}
+          setSubCategory={setSubCategory}
+        />
+        <RenderCondition condition={condition} setCondition={setCondition} />
       </div>
 
-      <p className="mt-10 mb-3 font-medium text-xl">상품 설명</p>
-      <div className="flex ">
-        <textarea
-          value={description}
-          onChange={e => {
-            setDescription(e.target.value);
-          }}
-          maxLength={1000}
-          placeholder="상품 설명을 입력해주세요."
-          className="flex-1 outline-none no-underline text-xl  border scrollbar-hide resize-none"
-          id="description"
-          rows={8}
-        />
-      </div>
-      <p className="text-xs text-gray-400 content-end ">{`(${description.length}/1000)`}</p>
-
-      <p className="mt-10 mb-3 font-medium text-xl">상품 가격</p>
-      <div className="flex no-underline max-w-36 border-b">
-        <input
-          type="text"
-          value={price}
-          onChange={handlePrice}
-          placeholder="0"
-          className="w-full outline-none no-underline text-xl"
-        />
-        <p className="text-lg">원</p>
-      </div>
+      <RenderDescriptionInput description={description} setDescription={setDescription} />
+      <RenderPriceInput price={price} setPrice={setPrice} />
       <div className="w-full flex justify-end">
         <button
           className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
