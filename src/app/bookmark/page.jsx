@@ -14,8 +14,8 @@ export default function Bookmark() {
         return (
           <div className="flex p-2 items-center border border-gray-300 rounded-sm justify-between" key={index}>
             <div className="flex">
-              <div className="flex w-28 min-w-28 aspect-square relative mr-4">
-                <Image src={item.path} alt={index} fill className="rounded-sm" />
+              <div className="flex w-28 min-w-28 aspect-square mr-4">
+                <Image className="rounded object-cover" src={item.path} alt={index} width={112} height={112} />
               </div>
               <div className="flex flex-col justify-center pr-5">
                 <p className="break-all line-clamp-2">{item.name}</p>

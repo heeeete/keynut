@@ -78,6 +78,9 @@ module.exports = {
         205: '205px',
         250: '250px',
       },
+      backgroundColor: {
+        logoPink: 'rgb(245,205,225)',
+      },
     },
   },
 

@@ -27,7 +27,7 @@ export default function HomeProduct(props) {
               alt={img.name}
               sizes="(max-width: 690px) 128px, (max-width: 1280px) 20vw, 235px"
               fill
-              className="rounded-sm"
+              className="rounded"
             />
           </div>
           <div className="mt-2 w-full">
