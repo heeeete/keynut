@@ -28,10 +28,10 @@ const picks = [
   { profile: '/철수.webp', path: '/키보드3.jpeg', name: 'purple keyboard', heart: 5, comment: 10, title: '내 키보두' },
   { profile: '/맹구.webp', path: '/키보드1.webp', name: 'orange keyboard', heart: 5, comment: 10, title: '내 키보두' },
 ];
-
 export default function Home() {
   return (
     <div className="flex max-w-screen-xl mx-auto px-10 flex-col space-y-10 max-md:px-2 max-md:main-768">
+      {/* <div className="w-full bg-black h-28"></div> */}
       <section className="flex flex-col space-y-5">
         <div className="flex flex-col">
           <div className="font-medium text-xl">cateory</div>
@@ -80,14 +80,20 @@ export default function Home() {
               <div className="w-full aspect-4/5 relative min-h-32 min-w-32">
                 <div className="absolute rounded-full z-10 bg-white w-12 h-12 top-1 left-1 flex items-start justify-center border border-solid max-md:w-10 max-md:h-10">
                   <Image
-                    className="rounded-full"
+                    className="rounded-full object-cover"
                     src={pick.profile}
                     alt={pick.name}
                     fill
-                    style={{ objectFit: 'contain' }}
+                    sizes="(max-width:768px) 40px, 48px"
                   />
                 </div>
-                <Image className="rounded-sm" src={pick.path} alt={pick.name} fill />
+                <Image
+                  className="rounded object-cover"
+                  src={pick.path}
+                  alt={pick.name}
+                  fill
+                  sizes="(max-width:690px) 128px,(max-width:1280px) 20vw, 234px"
+                />
               </div>
             </div>
           ))}

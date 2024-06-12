@@ -359,7 +359,13 @@ export default function Shop() {
                         />
                       </svg>
                     </div>
-                    <Image src={img.path} alt={img.name} fill className="rounded-sm" />
+                    <Image
+                      className="rounded object-cover"
+                      src={img.path}
+                      alt={img.name}
+                      fill
+                      sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 256px"
+                    />
                   </div>
                   <div className="py-1">
                     <div className="text-lg break-all overflow-hidden line-clamp-2">{img.name}</div>
