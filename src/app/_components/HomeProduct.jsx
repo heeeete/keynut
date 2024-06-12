@@ -22,7 +22,7 @@ export default function HomeProduct(props) {
                 />
               </svg>
             </div>
-            <Image src={img.path} alt={img.name} fill className="rounded-sm" />
+            <Image src={img.path} alt={img.name} fill className="rounded" />
           </div>
           <div className="mt-2 w-full">
             <div className="text-lg break-all line-clamp-2">{img.name}</div>

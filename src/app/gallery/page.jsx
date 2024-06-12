@@ -77,20 +77,27 @@ export default function Gallery() {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-2 py-2 w-full max-w-screen-xl mx-auto px-10 max-md:px-2  max-md:grid-cols-2">
+      <div className="grid grid-cols-4 gap-5 py-2 w-full max-w-screen-xl mx-auto px-10 max-md:px-2  max-md:grid-cols-2 max-md:gap-3">
         {picks.map((pick, idx) => (
           <div className="flex flex-col w-full" key={idx}>
             <div className="w-full aspect-4/5 relative min-h-32 min-w-32">
               <div className="absolute rounded-full z-10 bg-white w-12 h-12 top-1 left-1 flex items-start justify-center border border-solid max-md:w-10 max-md:h-10">
                 <Image
-                  className="rounded-full"
+                  className="rounded-full object-cover"
                   src={pick.profile}
                   alt={pick.name}
                   fill
+                  sizes="(max-width:768px) 40px, 48px"
                   style={{ objectFit: 'contain' }}
                 />
               </div>
-              <Image className="rounded-sm" src={pick.path} alt={pick.name} fill />
+              <Image
+                className="rounded object-cover"
+                src={pick.path}
+                alt={pick.name}
+                fill
+                sizes="(max-width:768px) 50vw, (max-width:1280px) 25vw , 290px"
+              />
             </div>
             <div className="flex items-center space-x-2 w-full py-1">
               <div className="flex-1 break-all overflow-hidden line-clamp-1">{pick.title}</div>

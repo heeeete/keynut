@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession, signOut, signIn } from 'next-auth/react';
 
 import {
   Carter_One,
@@ -69,9 +69,7 @@ export default function Nav() {
               {session ? (
                 <button onClick={() => signOut()}>로그아웃</button>
               ) : (
-                <button>
-                  <Link href="/api/auth/signin">로그인</Link>
-                </button>
+                <button onClick={() => signIn()}>로그인</button>
               )}
               {/* <Link href="/login">{session ? '로그아웃' : '로그인'}</Link> */}
             </li>
