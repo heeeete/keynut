@@ -55,7 +55,6 @@ export default function MyPage() {
           </div>
           <div className="text-lg max-md:text-base">{nickname}</div>
         </div>
-        {/* <div className="flex w-full items-center justify-between pl-4 max-md:flex-col max-md:items-start max-md:space-y-1"> */}
         <button>
           <div className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm">
             <Link href={'/mypage/profile-edit'}>프로필 관리</Link>

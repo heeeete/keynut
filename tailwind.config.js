@@ -51,6 +51,7 @@ module.exports = {
         '100vw': '100vw',
         'd-screen': '100dvw',
         450: '450px',
+        350: '350px',
       },
       height: {
         '10vh': '10vh',
@@ -65,6 +66,7 @@ module.exports = {
         '90vh': '90vh',
         '100vh': '100vh',
         'd-screen': '100dvh',
+        52.5: '52.5px',
       },
       backgroundColor: {
         'gray-5': '#D9D9D9',
@@ -77,9 +79,6 @@ module.exports = {
         34: '136px',
         205: '205px',
         250: '250px',
-      },
-      backgroundColor: {
-        logoPink: 'rgb(245,205,225)',
       },
     },
   },

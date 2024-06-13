@@ -131,54 +131,9 @@ export default function Nav() {
                   POST
                 </Link>
               </li>
-              <li>
-                <Link
-                  href={'/chat'}
-                  className={`${
-                    pathname.startsWith('/chat')
-                      ? 'after:block after:w-full after:h-px after:absolute after:-rotate-12 after:top-1/2 after:bg-slate-950'
-                      : ''
-                  } relative`}
-                >
-                  CHAT
-                </Link>
-              </li>
             </div>
           </ul>
         </div>
-        {/* {pathname === '/shop' ? (
-          <div className="flex w-full justify-center items-center min-h-24 max-md:min-h-12 max-md:h-12 max-md:pt-2">
-            <div className="flex rounded-none border-b-2 w-450 px-1 py-1 max-md:border-none max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full">
-              <input
-                type="text"
-                placeholder="상품검색"
-                value={searchText}
-                onChange={e => setSearchText(e.target.value)}
-                className="outline-none w-450 pr-2 max-md:w-full max-md:bg-transparent"
-              />
-              {searchText.length ? (
-                <button onClick={() => setSearchText('')}>
-                  <svg
-                    className=""
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="0.7em"
-                    height="0.7em"
-                    viewBox="0 0 2048 2048"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
-                    />
-                  </svg>
-                </button>
-              ) : (
-                ''
-              )}
-            </div>
-          </div>
-        ) : (
-          ''
-        )} */}
       </nav>
     </header>
   );
