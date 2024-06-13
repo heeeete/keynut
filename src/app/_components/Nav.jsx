@@ -1,50 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut, signIn } from 'next-auth/react';
+import handleLogin from '../utils/handleLogin';
+import { Nothing_You_Could_Do } from 'next/font/google';
 
-import {
-  Carter_One,
-  Rock_Salt,
-  Macondo,
-  Monoton,
-  Reenie_Beanie,
-  Nothing_You_Could_Do,
-  Rubik_Moonrocks,
-  Protest_Revolution,
-  Honk,
-  Sixtyfour,
-  Wallpoet,
-  Skranji,
-  Goldman,
-  Red_Rose,
-  Nosifer,
-  Vujahday_Script,
-  Nabla,
-  Blaka_Ink,
-} from 'next/font/google';
-
-// const title = Carter_One({ subsets: ['latin'], weight: ['400'] });
-// const title = Rock_Salt({ subsets: ['latin'], weight: ['400'] });
 const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });
-// const title = Rubik_Moonrocks({ subsets: ['latin'], weight: ['400'] });
-// const title = Protest_Revolution({ subsets: ['latin'], weight: ['400'] });
-// const title = Honk({ subsets: ['latin'], weight: ['400'] });
-// const title = Sixtyfour({ subsets: ['latin'], weight: ['400'] });
-// const title = Wallpoet({ subsets: ['latin'], weight: ['400'] });
-// const title = Skranji({ subsets: ['latin'], weight: ['400'] });
-// const title = Goldman({ subsets: ['latin'], weight: ['400'] });
-// const title = Red_Rose({ subsets: ['latin'], weight: ['400'] });
 
 export default function Nav() {
+  const { data: session, status } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
   const border =
     (!pathname.startsWith('/gallery') && !pathname.startsWith('/shop')) ||
     pathname.startsWith('/shop/product') ||
     pathname.startsWith('/gallery/post');
   const navRender = pathname === '/shop' || pathname === '/gallery';
-  const { data: session } = useSession();
 
   return (
     <header
@@ -57,13 +29,17 @@ export default function Nav() {
               <Link href="/search?c=keyboard">고객센터</Link>
             </li>
             <li>
-              <Link href="/mypage">마이페이지</Link>
+              <Link href="/mypage" onClick={e => handleLogin(e, router, session, '/mypage')}>
+                마이페이지
+              </Link>
             </li>
             <li>
               <Link href="/search?c=mouse">알림</Link>
             </li>
             <li>
-              <Link href="/bookmark">찜</Link>
+              <Link href="/bookmark" onClick={e => handleLogin(e, router, session, '/bookmark')}>
+                찜
+              </Link>
             </li>
             <li>
               {session ? (
@@ -71,7 +47,6 @@ export default function Nav() {
               ) : (
                 <button onClick={() => signIn()}>로그인</button>
               )}
-              {/* <Link href="/login">{session ? '로그아웃' : '로그인'}</Link> */}
             </li>
           </div>
         </ul>
@@ -108,8 +83,9 @@ export default function Nav() {
                 </Link>
               </li>
               <li>
-                <Link
+                <a
                   href={'/sell'}
+                  onClick={e => handleLogin(e, router, session, '/sell')}
                   className={`${
                     pathname.startsWith('/sell')
                       ? 'after:block after:w-full after:h-px after:absolute after:-rotate-12 after:top-1/2 after:bg-slate-950'
@@ -117,11 +93,12 @@ export default function Nav() {
                   } relative`}
                 >
                   SELL
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
+                <a
                   href={'/post'}
+                  onClick={e => handleLogin(e, router, session, '/post')}
                   className={`${
                     pathname.startsWith('/post')
                       ? 'after:block after:w-full after:h-px after:absolute after:-rotate-12 after:top-1/2 after:bg-slate-950'
@@ -129,7 +106,7 @@ export default function Nav() {
                   } relative`}
                 >
                   POST
-                </Link>
+                </a>
               </li>
             </div>
           </ul>

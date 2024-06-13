@@ -69,39 +69,90 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
   }
 });
 
-const RenderImageUploadButton = React.memo(
-  ({ handleImageUploadClick, handleImageUpload, fileInputRef, uploadImages }) => {
-    return (
-      <div className="flex w-full items-center py-3">
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleImageUpload}
-          id="images"
-          hidden
-        />
-        <button
-          onClick={handleImageUploadClick}
-          className="flex flex-col justify-center items-center aspect-square w-28  mr-1 border rounded "
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="40%" height="40%" viewBox="0 0 16 16">
-            <g fill="#878787">
-              <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0" />
-              <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1a.5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0a3.5 3.5 0 0 1 7 0" />
-            </g>
-          </svg>
-          <p className="text-gray-400">
-            {uploadImages.imageUrls.length ? `( ${uploadImages.imageUrls.length} / 5 )` : '사진 등록'}
-          </p>
-        </button>
-      </div>
-    );
-  },
-);
+const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUploadImages }) => {
+  const handleImageUploadClick = useCallback(() => {
+    if (uploadImages.imageUrls.length < 5) {
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+      }
+    } else {
+      window.alert('사진은 최대 5장까지 가능합니다.');
+    }
+  }, [uploadImages]);
 
-const RenderDNDImages = React.memo(({ uploadImages, removeImage, onDragEnd }) => {
+  const handleImageUpload = useCallback(
+    e => {
+      if (!e.target.files) return;
+      if (uploadImages.imageUrls.length + e.target.files.length > 5)
+        return window.alert('사진은 최대 5장까지 가능합니다.');
+      const files = e.target.files;
+      const filesArray = Array.from(files);
+
+      const newArray = filesArray.map(file => URL.createObjectURL(file));
+      setUploadImages({
+        imageFiles: [...uploadImages.imageFiles, ...filesArray],
+        imageUrls: [...uploadImages.imageUrls, ...newArray],
+      });
+    },
+    [uploadImages],
+  );
+
+  return (
+    <div className="flex w-full items-center py-3">
+      <input type="file" multiple accept="image/*" ref={fileInputRef} onChange={handleImageUpload} id="images" hidden />
+      <button
+        onClick={handleImageUploadClick}
+        className="flex flex-col justify-center items-center aspect-square w-28  mr-1 border rounded "
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="40%" height="40%" viewBox="0 0 16 16">
+          <g fill="#878787">
+            <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0" />
+            <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1a.5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0a3.5 3.5 0 0 1 7 0" />
+          </g>
+        </svg>
+        <p className="text-gray-400">
+          {uploadImages.imageUrls.length ? `( ${uploadImages.imageUrls.length} / 5 )` : '사진 등록'}
+        </p>
+      </button>
+    </div>
+  );
+});
+
+const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }) => {
+  const removeImage = useCallback(
+    idx => {
+      const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
+      const newImageUrls = uploadImages.imageUrls.filter((_, index) => index !== idx);
+      setUploadImages({
+        imageFiles: newImageFiles,
+        imageUrls: newImageUrls,
+      });
+    },
+    [uploadImages],
+  );
+
+  const onDragEnd = useCallback(
+    result => {
+      if (!result.destination) {
+        return;
+      }
+      const newImageFiles = Array.from(uploadImages.imageFiles);
+      const newImageUrls = Array.from(uploadImages.imageUrls);
+
+      const [removedFile] = newImageFiles.splice(result.source.index, 1);
+      const [removedUrl] = newImageUrls.splice(result.source.index, 1);
+
+      newImageFiles.splice(result.destination.index, 0, removedFile);
+      newImageUrls.splice(result.destination.index, 0, removedUrl);
+
+      setUploadImages({
+        imageFiles: newImageFiles,
+        imageUrls: newImageUrls,
+      });
+    },
+    [uploadImages],
+  );
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable" direction="horizontal">
@@ -358,67 +409,6 @@ export default function Sell() {
   const [price, setPrice] = useState('');
   const fileInputRef = useRef(null); //file input ref
 
-  const removeImage = useCallback(
-    idx => {
-      const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
-      const newImageUrls = uploadImages.imageUrls.filter((_, index) => index !== idx);
-      setUploadImages({
-        imageFiles: newImageFiles,
-        imageUrls: newImageUrls,
-      });
-    },
-    [uploadImages],
-  );
-
-  const onDragEnd = useCallback(
-    result => {
-      if (!result.destination) {
-        return;
-      }
-      const newImageFiles = Array.from(uploadImages.imageFiles);
-      const newImageUrls = Array.from(uploadImages.imageUrls);
-
-      const [removedFile] = newImageFiles.splice(result.source.index, 1);
-      const [removedUrl] = newImageUrls.splice(result.source.index, 1);
-
-      newImageFiles.splice(result.destination.index, 0, removedFile);
-      newImageUrls.splice(result.destination.index, 0, removedUrl);
-
-      setUploadImages({
-        imageFiles: newImageFiles,
-        imageUrls: newImageUrls,
-      });
-    },
-    [uploadImages],
-  );
-
-  const handleImageUpload = useCallback(
-    e => {
-      if (!e.target.files) return;
-      if (uploadImages.imageUrls.length + e.target.files.length > 5)
-        return window.alert('사진은 최대 5장까지 가능합니다.');
-      const files = e.target.files;
-      const filesArray = Array.from(files);
-
-      const newArray = filesArray.map(file => URL.createObjectURL(file));
-      setUploadImages({
-        imageFiles: [...uploadImages.imageFiles, ...filesArray],
-        imageUrls: [...uploadImages.imageUrls, ...newArray],
-      });
-    },
-    [uploadImages],
-  );
-
-  const handleImageUploadClick = useCallback(() => {
-    if (uploadImages.imageUrls.length < 5) {
-      if (fileInputRef.current) {
-        fileInputRef.current.click();
-      }
-    } else {
-      window.alert('사진은 최대 5장까지 가능합니다.');
-    }
-  }, [uploadImages]);
-
   const handleDisabled = () => {
     if (
       !uploadImages.imageUrls.length ||
@@ -433,15 +423,37 @@ export default function Sell() {
     else return false;
   };
 
+  const handleUpload = async () => {
+    const formData = new FormData();
+    uploadImages.imageFiles.forEach(file => {
+      formData.append('files', file);
+    });
+    console.log(formData);
+    try {
+      const res = await fetch('/api/upload/images', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setImageUrls(data.urls);
+      } else {
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error('Error uploading files:', error);
+    }
+  };
+
   return (
     <div className="max-w-screen-xl px-10 mx-auto max-md:px-2">
       <RenderImageUploadButton
-        handleImageUploadClick={handleImageUploadClick}
-        handleImageUpload={handleImageUpload}
         fileInputRef={fileInputRef}
         uploadImages={uploadImages}
+        setUploadImages={setUploadImages}
       />
-      <RenderDNDImages removeImage={removeImage} uploadImages={uploadImages} onDragEnd={onDragEnd} />
+      <RenderDNDImages uploadImages={uploadImages} setUploadImages={setUploadImages} />
       <RenderTitle title={title} setTitle={setTitle} />
       <div className="flex flex-1 justify-between my-10 max-md:flex-col">
         <RenderCategory
@@ -455,10 +467,12 @@ export default function Sell() {
 
       <RenderDescriptionInput description={description} setDescription={setDescription} />
       <RenderPriceInput price={price} setPrice={setPrice} />
+
       <div className="w-full flex justify-end">
         <button
           className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
           disabled={handleDisabled()}
+          onClick={handleUpload}
         >
           <p>업로드</p>
         </button>
