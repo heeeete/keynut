@@ -19,6 +19,9 @@ export const authOption = {
   adapter: MongoDBAdapter(connectDB, {
     databaseName: 'keynut',
   }),
+  pages: {
+    signIn: '/signin',
+  },
 };
 
 const handler = NextAuth(authOption);
