@@ -1,10 +1,10 @@
-'use client';
-
 import Link from 'next/link';
 import React from 'react';
 import ImageSlider from '@/app/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/app/utils/timeAgo';
+import { connectDB } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 const item = {
   img: ['/img-1.jpeg', '/img-2.jpeg', '/키보드1.webp', '/키보드3.jpeg', '/키보드4.png'],
@@ -28,6 +28,8 @@ const item = {
   },
 };
 
+let product;
+
 const RenderCondition = () => {
   let condition = '';
 
@@ -48,7 +50,7 @@ const RenderCondition = () => {
   );
 };
 
-const RenderInfo = React.memo(() => {
+const RenderInfo = React.memo(({ mainCategory, subCategory }) => {
   const category = {
     keyboard: '키보드',
     assembled: '완제품',
@@ -65,7 +67,7 @@ const RenderInfo = React.memo(() => {
 
   return (
     <span className="flex items-center text-gray-400 text-sm px-10 max-md:px-2">
-      <Link href={'/shop?q=qweqwe'}>{category[item.category[0]]}</Link>
+      <Link href={'/shop?q=qweqwe'}>{category[mainCategory]}</Link>
       <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24">
         <g fill="none" fillRule="evenodd">
           <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
@@ -75,7 +77,7 @@ const RenderInfo = React.memo(() => {
           />
         </g>
       </svg>
-      <Link href={'/shop?q='}>{category[item.category[1]]}</Link>
+      <Link href={'/shop?q='}>{category[subCategory]}</Link>
     </span>
   );
 });
@@ -86,68 +88,117 @@ const RenderTimeAgo = ({ date }) => {
   return <p>{timeAgo(date)}</p>;
 };
 
-const RenderBookMark = () => {
+const RenderBookMark = ({ bookmarked }) => {
+  bookmarked = Number(bookmarked);
   return (
     <div className="flex items-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 32 32">
         <path fill="grey" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
-      <p>{item.bookmarked}</p>
+      <p>{bookmarked}</p>
     </div>
   );
 };
 
-export default function Product() {
+const RenderProfile = ({ user }) => {
+  return (
+    <div className="flex h-16 justify-between space-x-2 ">
+      <div className="flex flex-0.8 h-full border rounded items-center px-4 max-md:px-2">
+        <div className="rounded-full w-14 aspect-square relative flex justify-center items-center max-md:w-16">
+          {user.image ? (
+            <Image className="rounded-full" src={item.user.profile} alt="" fill />
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 32 32">
+              <path
+                fill="grey"
+                d="M16 16a7 7 0 1 0 0-14a7 7 0 0 0 0 14m-8.5 2A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5z"
+              />
+            </svg>
+          )}
+        </div>
+        <div className="flex w-full items-center justify-between pl-4 max-md:flex-col max-md:items-start max-md:space-y-1">
+          <div className="text-lg max-md:text-base line-clamp-1">{user.name}</div>
+          <button>
+            <div className=" text-base px-3 py-1 border border-gray-300 rounded max-md:text-sm line-clamp-1">
+              상점 가기
+            </div>
+          </button>
+        </div>
+      </div>
+      <div className="flex flex-0.2 justify-end space-x-2">
+        <div className="flex justify-center items-center w-16 rounded bg-orange-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 16 16">
+            <path
+              fill="white"
+              d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234c-.2.032-.352-.176-.273-.362c.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0a1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0a1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2a1 1 0 0 0 0 2"
+            />
+          </svg>
+        </div>
+        <div className="flex justify-center items-center w-16 rounded bg-purple-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 32 32">
+            <path fill="white" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+async function getProductWithUser(id) {
+  const client = await connectDB;
+  const db = client.db(process.env.MONGODB_NAME);
+
+  const productWithUser = await db
+    .collection('products')
+    .aggregate([
+      {
+        $match: { _id: new ObjectId(id) },
+      },
+      {
+        $lookup: {
+          from: 'users', // 조인할 컬렉션 이름
+          localField: 'userId', // products 컬렉션의 필드
+          foreignField: '_id', // users 컬렉션의 필드
+          as: 'user', // 조인 결과를 저장할 필드 이름
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true, // 사용자 정보가 없을 경우에도 결과를 반환하도록 설정
+        },
+      },
+    ])
+    .toArray();
+
+  return productWithUser[0] || null; // 결과가 없을 경우 null을 반환
+}
+
+export default async function Product({ params }) {
+  const { id } = params;
+  const { user, ...product } = await getProductWithUser(id);
+
   return (
     <div className="max-w-screen-xl mx-auto">
-      <RenderInfo />
-      <ImageSlider images={item.img} />
+      <RenderInfo mainCategory={product.mainCategory} subCategory={product.subCategory} />
+      <ImageSlider images={product.images} />
       <div className="px-10 space-y-6 max-md:px-2">
-        <p className="text-xl font-bold">{item.title}</p>
+        <p className="text-xl font-bold">{product.title}</p>
         <p className="space-x-2">
-          <span className="text-2xl font-bold">{item.price.toLocaleString()}</span>
+          <span className="text-2xl font-bold">{product.price.toLocaleString()}</span>
           <span className="text-xl">원</span>
         </p>
         <div className="flex w-full justify-between text-sm text-slate-500 font-semibold">
           <RenderCondition />
           <div className="flex space-x-2 font-normal">
-            <RenderTimeAgo date={item.date} />
-            <RenderBookMark />
+            <RenderTimeAgo date={product.createdAt} />
+            <RenderBookMark bookmarked={product.bookmarked} />
           </div>
         </div>
         <div className="border px-3 py-1 rounded min-h-24">
-          <p className="whitespace-pre-wrap">{item.description}</p>
+          <p className="whitespace-pre-wrap">{product.description}</p>
         </div>
-        <div className="flex h-16 justify-between space-x-2 ">
-          <div className="flex flex-0.8 h-full border rounded items-center px-4 max-md:px-2">
-            <div className="rounded-full w-14 aspect-square relative max-md:w-16">
-              <Image className="rounded-full" src={item.user.profile} alt="" fill />
-            </div>
-            <div className="flex w-full items-center justify-between pl-4 max-md:flex-col max-md:items-start max-md:space-y-1">
-              <div className="text-lg max-md:text-base line-clamp-1">{item.user.nickname}</div>
-              <button>
-                <div className=" text-base px-3 py-1 border border-gray-300 rounded max-md:text-sm line-clamp-1">
-                  상점 가기
-                </div>
-              </button>
-            </div>
-          </div>
-          <div className="flex flex-0.2 justify-end space-x-2">
-            <div className="flex justify-center items-center w-16 rounded bg-orange-300">
-              <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 16 16">
-                <path
-                  fill="white"
-                  d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234c-.2.032-.352-.176-.273-.362c.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0a1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0a1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2a1 1 0 0 0 0 2"
-                />
-              </svg>
-            </div>
-            <div className="flex justify-center items-center w-16 rounded bg-purple-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 32 32">
-                <path fill="white" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
-              </svg>
-            </div>
-          </div>
-        </div>
+        <RenderProfile user={user} />
       </div>
     </div>
   );

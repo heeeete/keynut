@@ -32,21 +32,6 @@ const picks = [
   { profile: '/맹구.webp', path: '/키보드1.webp', name: 'orange keyboard', heart: 5, comment: 10, title: '내 키보두' },
 ];
 export default function Home() {
-  useEffect(() => {
-    const getUser = async () => {
-      const res = await fetch('/api/GET/user', {
-        method: 'GET',
-      });
-      if (res.ok) {
-        const data = await res.json();
-        console.log('Data:', data);
-      } else {
-        console.error('Failed to fetch user');
-      }
-    };
-    getUser();
-  }, []);
-
   return (
     <div className="flex max-w-screen-xl mx-auto px-10 flex-col space-y-10 max-md:px-2 max-md:main-768">
       {/* <div className="w-full bg-black h-28"></div> */}
