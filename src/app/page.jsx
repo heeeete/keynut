@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import HomeProduct from './_components/HomeProduct';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 const images = [
   {
@@ -32,9 +32,37 @@ const picks = [
   { profile: '/맹구.webp', path: '/키보드1.webp', name: 'orange keyboard', heart: 5, comment: 10, title: '내 키보두' },
 ];
 export default function Home() {
+  const TopPicks = ({ picks }) => {
+    return (
+      <div className="grid grid-cols-5 gap-2 max-md:flex overflow-auto scrollbar-hide">
+        {picks.map((pick, idx) => (
+          <div className="flex flex-col w-full" key={idx}>
+            <div className="w-full aspect-4/5 relative min-h-32 min-w-32">
+              <div className="absolute rounded-full z-10 bg-white w-12 h-12 top-1 left-1 flex items-start justify-center border border-solid max-md:w-10 max-md:h-10">
+                <Image
+                  className="rounded-full object-cover"
+                  src={pick.profile}
+                  alt={pick.name}
+                  fill
+                  sizes="(max-width:768px) 40px, 48px"
+                />
+              </div>
+              <Image
+                className="rounded object-cover"
+                src={pick.path}
+                alt={pick.name}
+                fill
+                sizes="(max-width:690px) 128px,(max-width:1280px) 20vw, 234px"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="flex max-w-screen-xl mx-auto px-10 flex-col space-y-10 max-md:px-2 max-md:main-768">
-      {/* <div className="w-full bg-black h-28"></div> */}
+    <div className="flex max-w-screen-xl mx-auto px-10 flex-col space-y-12 max-md:px-2 max-md:main-768">
       <section className="flex flex-col space-y-5">
         <div className="flex flex-col">
           <div className="font-medium text-xl">cateory</div>
@@ -77,30 +105,7 @@ export default function Home() {
             <div className="font-medium text-sm">더보기 +</div>
           </Link>
         </div>
-        <div className="grid grid-cols-5 gap-2 max-md:flex overflow-auto scrollbar-hide">
-          {picks.map((pick, idx) => (
-            <div className="flex flex-col w-full" key={idx}>
-              <div className="w-full aspect-4/5 relative min-h-32 min-w-32">
-                <div className="absolute rounded-full z-10 bg-white w-12 h-12 top-1 left-1 flex items-start justify-center border border-solid max-md:w-10 max-md:h-10">
-                  <Image
-                    className="rounded-full object-cover"
-                    src={pick.profile}
-                    alt={pick.name}
-                    fill
-                    sizes="(max-width:768px) 40px, 48px"
-                  />
-                </div>
-                <Image
-                  className="rounded object-cover"
-                  src={pick.path}
-                  alt={pick.name}
-                  fill
-                  sizes="(max-width:690px) 128px,(max-width:1280px) 20vw, 234px"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+        <TopPicks picks={picks} />
       </section>
     </div>
   );

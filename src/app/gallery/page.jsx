@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 const picks = [
   { profile: '/키보드1.webp', path: '/키보드1.webp', name: 'orange keyboard', heart: 5, comment: 10, title: 'haha' },
   { profile: '/키보드3.jpeg', path: '/키보드4.png', name: 'yellow keyboard', heart: 5, comment: 10, title: 'hehe' },
@@ -21,9 +22,17 @@ const picks = [
   { profile: '/철수.webp', path: '/키보드3.jpeg', name: 'purple keyboard', heart: 5, comment: 10, title: '내 키보두' },
   { profile: '/맹구.webp', path: '/키보드1.webp', name: 'orange keyboard', heart: 5, comment: 10, title: '내 키보두' },
 ];
+
 export default function Gallery() {
   const [sortOption, setSortOption] = useState(true);
   const [searchText, setSearchText] = useState('');
+  // const queryClient = useQueryClient();
+  // const heart = useMutation({
+  //   mutationFn: () => {},
+  //   onMutate() {},
+  //   onError() {},
+  //   onSettled() {},
+  // });
   return (
     <div className="flex w-full flex-col">
       <div className="sticky top-0 flex flex-col z-20 border-b bg-white">
@@ -102,8 +111,18 @@ export default function Gallery() {
             <div className="flex items-center space-x-2 w-full py-1">
               <div className="flex-1 break-all overflow-hidden line-clamp-1">{pick.title}</div>
               <div className="flex-none flex items-center">
-                <Image src="/heart.svg" alt="Heart" width={20} height={20} />
-                <div className="font-light">{pick.heart}</div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 1024 1024">
+                  <path
+                    stroke="black"
+                    strokeWidth="50"
+                    className="hover:stroke-pink-500"
+                    fill="white"
+                    fill-opacity="0.5"
+                    d="M679.7 201c-73.1 0-136.5 40.8-167.7 100.4C480.8 241.8 417.4 201 344.3 201c-104 0-188.3 82.6-188.3 184.5c0 201.2 356 429.3 356 429.3s356-228.1 356-429.3C868 283.6 783.7 201 679.7 201"
+                  />
+                </svg>
+                {/* <Image src="/heart.svg" alt="Heart" width={20} height={20} /> */}
+                {/* <div className="font-light">{pick.heart}</div> */}
               </div>
             </div>
           </div>
