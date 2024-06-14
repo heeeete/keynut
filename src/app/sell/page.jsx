@@ -417,7 +417,7 @@ export default function Sell() {
       !uploadImages.imageUrls.length ||
       !title.trim().length ||
       !mainCategory ||
-      !subCategory ||
+      (mainCategory !== 'others' && !subCategory) ||
       !price.length ||
       !condition ||
       !description.trim().length
