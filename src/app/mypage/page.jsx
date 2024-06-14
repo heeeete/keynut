@@ -36,10 +36,13 @@ const likedPost = [
   { path: '/키보드4.png', title: 'yellow keyboard' },
 ];
 
+const HandleImageSelectBtn = () => {};
+
 export default function MyPage() {
   const [productOption, setProductOption] = useState('selling');
   const [postOption, setPostOption] = useState('mypost');
   const [nickname, setNickname] = useState('우유먹은송아지');
+
   return (
     <div className="flex flex-col h-full space-y-8 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:main-768">
       <div className="flex h-24 border border-gray-300 rounded-md items-center px-4 max-md:px-2">

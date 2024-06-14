@@ -80,6 +80,10 @@ module.exports = {
         205: '205px',
         250: '250px',
       },
+      filter: {
+        none: 'none',
+        'pink-blur': 'url(#fuzzy-pink)',
+      },
     },
   },
 
@@ -122,7 +126,7 @@ module.exports = {
           paddingTop: '8rem',
         },
         '.main-768': {
-          paddingTop: '3.5rem',
+          paddingTop: '4rem',
         },
         '.search-bar-container-md': {
           display: 'flex',
