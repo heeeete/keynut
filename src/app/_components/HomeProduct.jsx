@@ -1,10 +1,10 @@
 import Image from 'next/image';
+import React from 'react';
 
-export default function HomeProduct(props) {
+const HomeProduct = ({ images }) => {
   return (
     <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
-      {props.images.map((img, idx) => (
-        //이거 고쳐야해!ㅜㅡㅜ
+      {images.map((img, idx) => (
         <div className="flex flex-col max-md:max-w-40 max-md:w-40" key={idx}>
           <div className="w-full aspect-square relative min-h-32 min-w-32">
             <div className="absolute top-1 right-1 z-10">
@@ -38,4 +38,5 @@ export default function HomeProduct(props) {
       ))}
     </div>
   );
-}
+};
+export default HomeProduct;

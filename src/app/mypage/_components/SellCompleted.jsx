@@ -6,7 +6,9 @@ export default function SellCompleted(props) {
       {props.items.map((item, index) => {
         return (
           <div
-            className="p-2 items-center border border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm max-md:border-gray-200"
+            className="p-2 items-center border border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm relative max-md:border-gray-200
+            "
+            // after:block after:absolute after:top-0 after:left-0 after:bg-black after:w-full after:h-full after:opacity-30
             key={index}
           >
             <div className="flex">
