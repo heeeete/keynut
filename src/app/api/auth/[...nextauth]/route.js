@@ -4,7 +4,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import { connectDB } from '@/lib/mongodb';
 
-export const authOption = {
+export const authOptions = {
   providers: [
     KakaoProvider({
       clientId: process.env.KAKAO_CLIENT_ID,
@@ -19,11 +19,16 @@ export const authOption = {
   adapter: MongoDBAdapter(connectDB, {
     databaseName: 'keynut',
   }),
+  callbacks: {
+    async session(session, token) {
+      return session;
+    },
+  },
   pages: {
     signIn: '/signin',
   },
 };
 
-const handler = NextAuth(authOption);
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

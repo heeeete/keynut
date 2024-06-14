@@ -1,6 +1,8 @@
 export default function timeAgo(date) {
   const now = new Date();
-  const secondsPast = (now.getTime() - date) / 1000;
+  const createTime = new Date(date).getTime();
+
+  const secondsPast = (now.getTime() - createTime) / 1000;
 
   if (secondsPast < 60) {
     return `${Math.floor(secondsPast)}초 전`;

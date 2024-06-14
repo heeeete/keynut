@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useRouter } from 'next/navigation';
 
 // 나중에 서버로 전송할때 title은 replace(/ +/g, ' ').trim()으로 공백 치환하고 보내기
 
@@ -407,7 +408,9 @@ export default function Sell() {
   const [condition, setCondition] = useState(null);
   const [description, setDescription] = useState(''); // 설명 상태 변수 추가
   const [price, setPrice] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null); //file input ref
+  const router = new useRouter();
 
   const handleDisabled = () => {
     if (
@@ -424,20 +427,29 @@ export default function Sell() {
   };
 
   const handleUpload = async () => {
+    setIsLoading(true);
     const formData = new FormData();
     uploadImages.imageFiles.forEach(file => {
       formData.append('files', file);
     });
+    formData.append('title', title);
+    formData.append('mainCategory', mainCategory);
+    formData.append('subCategory', subCategory);
+    formData.append('condition', condition);
+    formData.append('description', description);
+    formData.append('price', price);
+
     console.log(formData);
     try {
-      const res = await fetch('/api/upload/images', {
+      const res = await fetch('/api/upload/product', {
         method: 'POST',
         body: formData,
       });
 
       const data = await res.json();
       if (res.ok) {
-        setImageUrls(data.urls);
+        console.log(data);
+        router.push(`/shop/product/${data.insertedId}`);
       } else {
         console.error(data.error);
       }
@@ -448,35 +460,41 @@ export default function Sell() {
 
   return (
     <div className="max-w-screen-xl px-10 mx-auto max-md:px-2">
-      <RenderImageUploadButton
-        fileInputRef={fileInputRef}
-        uploadImages={uploadImages}
-        setUploadImages={setUploadImages}
-      />
-      <RenderDNDImages uploadImages={uploadImages} setUploadImages={setUploadImages} />
-      <RenderTitle title={title} setTitle={setTitle} />
-      <div className="flex flex-1 justify-between my-10 max-md:flex-col">
-        <RenderCategory
-          mainCategory={mainCategory}
-          subCategory={subCategory}
-          setMainCategory={setMainCategory}
-          setSubCategory={setSubCategory}
-        />
-        <RenderCondition condition={condition} setCondition={setCondition} />
-      </div>
+      {isLoading ? (
+        <div>LOADING............</div>
+      ) : (
+        <>
+          <RenderImageUploadButton
+            fileInputRef={fileInputRef}
+            uploadImages={uploadImages}
+            setUploadImages={setUploadImages}
+          />
+          <RenderDNDImages uploadImages={uploadImages} setUploadImages={setUploadImages} />
+          <RenderTitle title={title} setTitle={setTitle} />
+          <div className="flex flex-1 justify-between my-10 max-md:flex-col">
+            <RenderCategory
+              mainCategory={mainCategory}
+              subCategory={subCategory}
+              setMainCategory={setMainCategory}
+              setSubCategory={setSubCategory}
+            />
+            <RenderCondition condition={condition} setCondition={setCondition} />
+          </div>
 
-      <RenderDescriptionInput description={description} setDescription={setDescription} />
-      <RenderPriceInput price={price} setPrice={setPrice} />
+          <RenderDescriptionInput description={description} setDescription={setDescription} />
+          <RenderPriceInput price={price} setPrice={setPrice} />
 
-      <div className="w-full flex justify-end">
-        <button
-          className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
-          disabled={handleDisabled()}
-          onClick={handleUpload}
-        >
-          <p>업로드</p>
-        </button>
-      </div>
+          <div className="w-full flex justify-end">
+            <button
+              className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
+              disabled={handleDisabled()}
+              onClick={handleUpload}
+            >
+              <p>업로드</p>
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
