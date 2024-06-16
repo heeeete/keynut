@@ -7,6 +7,7 @@ import { ObjectId } from 'mongodb';
 const client = await connectDB;
 const db = client.db(process.env.MONGODB_NAME);
 const collection = db.collection('products');
+const users = db.collection('users');
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
@@ -106,9 +107,11 @@ export async function POST(req) {
       price: formData.get('price'),
       images: uploadedUrls,
       bookmarked: 0,
+      openChatUrl: formData.get('openChatUrl'),
       createdAt: new Date(),
     };
 
+    await users.updateOne({ email: session.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
     const result = await collection.insertOne(product);
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
