@@ -3,8 +3,6 @@ import { useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
-// 나중에 서버로 전송할때 title은 replace(/ +/g, ' ').trim()으로 공백 치환하고 보내기
-
 export default function Post() {
   const [uploadImages, setUploadImages] = useState({
     imageFiles: [],

@@ -42,7 +42,9 @@ export default function Nav() {
               </Link>
             </li>
             <li>
-              {session ? (
+              {status === 'loading' ? (
+                '인증중'
+              ) : session ? (
                 <button onClick={() => signOut()}>로그아웃</button>
               ) : (
                 <button onClick={() => signIn()}>로그인</button>
@@ -83,7 +85,7 @@ export default function Nav() {
                 </Link>
               </li>
               <li>
-                <a
+                <Link
                   href={'/sell'}
                   className={`${
                     pathname.startsWith('/sell')
@@ -92,10 +94,10 @@ export default function Nav() {
                   } relative`}
                 >
                   SELL
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href={'/post'}
                   onClick={e => handleLogin(e, router, session, '/post')}
                   className={`${
@@ -105,7 +107,7 @@ export default function Nav() {
                   } relative`}
                 >
                   POST
-                </a>
+                </Link>
               </li>
             </div>
           </ul>

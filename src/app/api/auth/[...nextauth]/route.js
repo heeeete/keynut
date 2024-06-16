@@ -170,21 +170,22 @@ export const authOptions = {
   ],
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, //30일
   },
   callbacks: {
     async jwt({ token, user }) {
-      console.log('jwt ================');
-      console.log(user);
       if (user) {
         token = user;
       }
       return token;
     },
     async session({ session, token }) {
-      console.log('SESSION ==============================');
-      session = token;
-      console.log(session);
-      return session;
+      const newSession = {};
+      newSession.id = token.id;
+      newSession.nickname = token.nickname;
+      newSession.email = token.email;
+
+      return newSession;
     },
   },
 

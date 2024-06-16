@@ -7,12 +7,12 @@ import debounce from '../utils/debounce';
 
 export default function ImageSlider({ images }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [fullSizeCurrentImageIndex, setFullSizeCurrentImageIndex] = useState(currentImageIndex);
+  const [fullSizeCurrentImageIndex, setFullSizeCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [modalStatus, setModalStatus] = useState(false);
   const fullSizeImagesRef = useRef(null);
   const [imagesWidth, setImagesWidth] = useState([]);
-  const [offset, setOffset] = useState(null);
+  const [offset, setOffset] = useState(0);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -33,31 +33,29 @@ export default function ImageSlider({ images }) {
     return () => window.removeEventListener('resize', debounceImagesWidthInit);
   }, []);
 
-  //이미지 슬라이더의 IDX가 변경이 되면 이미지 크게보는 곳에서 IDX도 함께 변경 해주고 offset을 맞춤
+  // 이미지 슬라이더의 IDX가 변경이 되면 이미지 크게 보는 곳에서 IDX도 함께 변경 해주고 offset을 맞춤
   useEffect(() => {
-    let off = 0;
-    for (let i = 0; i <= currentImageIndex; i++) {
-      if (i === currentImageIndex) off += imagesWidth[i] / 2;
-      else off += imagesWidth[i] + 40;
+    if (modalStatus) {
+      let off = 0;
+      for (let i = 0; i <= fullSizeCurrentImageIndex; i++) {
+        if (i === fullSizeCurrentImageIndex) off += imagesWidth[i] / 2;
+        else off += imagesWidth[i] + 40;
+      }
+      setOffset(off);
     }
-    setOffset(off);
-    setFullSizeCurrentImageIndex(currentImageIndex);
-  }, [currentImageIndex, imagesWidth]);
+  }, [fullSizeCurrentImageIndex, imagesWidth, modalStatus]);
 
   useEffect(() => {
-    let off = 0;
-    for (let i = 0; i <= fullSizeCurrentImageIndex; i++) {
-      if (i === fullSizeCurrentImageIndex) off += imagesWidth[i] / 2;
-      else off += imagesWidth[i] + 40;
+    if (!modalStatus) {
+      setFullSizeCurrentImageIndex(currentImageIndex);
     }
-    setOffset(off);
-  }, [fullSizeCurrentImageIndex, imagesWidth]);
+  }, [currentImageIndex, modalStatus]);
 
-  const handleNextFullSizeImage = e => {
+  const handleNextFullSizeImage = () => {
     setFullSizeCurrentImageIndex(prevIndex => Math.min(prevIndex + 1, images.length - 1));
   };
 
-  const handlePrevFullSizeImage = e => {
+  const handlePrevFullSizeImage = () => {
     setFullSizeCurrentImageIndex(prevIndex => Math.max(prevIndex - 1, 0));
   };
 
@@ -79,16 +77,15 @@ export default function ImageSlider({ images }) {
     }
   };
 
-  const closeFullSizeModal = e => {
+  const closeFullSizeModal = () => {
     setModalStatus(false);
-    setFullSizeCurrentImageIndex(currentImageIndex);
   };
 
   return (
     <div className="max-w-screen-xl mx-auto flex flex-col items-center justify-center">
       <div
         className="flex relative w-full max-w-lg aspect-square items-center group bg-gray-50 rounded"
-        onClick={_ => setModalStatus(true)}
+        onClick={() => setModalStatus(true)}
       >
         {/* 왼쪽 넘기기 버튼 */}
         <button
@@ -141,7 +138,7 @@ export default function ImageSlider({ images }) {
           );
         })}
       </div>
-      {/* 전체 이미지 모달*/}
+      {/* 전체 이미지 모달 */}
       <div
         className={`${
           modalStatus ? 'visible' : 'invisible'
@@ -158,7 +155,7 @@ export default function ImageSlider({ images }) {
             />
           </svg>
         </button>
-        <div className=" w-full" style={{ height: '50vw' }}>
+        <div className="w-full" style={{ height: '50vw' }}>
           <div className="flex h-full w-full" style={{ translate: `calc(50% - ${offset}px)` }} ref={fullSizeImagesRef}>
             {images.map((img, idx) => (
               <div key={idx} className="relative min-w-fit h-full w-full mr-10">

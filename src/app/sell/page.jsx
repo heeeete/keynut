@@ -1,10 +1,8 @@
 'use client';
 import Image from 'next/image';
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useRouter } from 'next/navigation';
-
-// 나중에 서버로 전송할때 title은 replace(/ +/g, ' ').trim()으로 공백 치환하고 보내기
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   if (mainCategory === 'keyboard') {
@@ -423,6 +421,24 @@ export default function Sell() {
   const fileInputRef = useRef(null); //file input ref
   const router = new useRouter();
 
+  useEffect(() => {
+    async function getOpenChatUrl() {
+      try {
+        const res = await fetch('/api/open-chat-url');
+        const user = await res.json();
+        if (res.status === 200) {
+          if (user.openChatUrl && user.openChatUrl.length) setOpenChatUrl(user.openChatUrl);
+        } else {
+          console.log('not found');
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    }
+
+    getOpenChatUrl();
+  }, []);
+
   const handleDisabled = () => {
     if (
       !uploadImages.imageUrls.length ||
@@ -443,11 +459,12 @@ export default function Sell() {
     uploadImages.imageFiles.forEach(file => {
       formData.append('files', file);
     });
-    formData.append('title', title);
+    formData.append('title', title.replace(/ +/g, ' ').trim());
     formData.append('mainCategory', mainCategory);
     formData.append('subCategory', subCategory);
     formData.append('condition', condition);
     formData.append('description', description);
+    formData.append('openChatUrl', openChatUrl.trim());
     formData.append('price', price);
 
     console.log(formData);
@@ -460,7 +477,7 @@ export default function Sell() {
       const data = await res.json();
       if (res.ok) {
         console.log(data);
-        router.push(`/shop/product/${data.insertedId}`);
+        if (data) router.push(`/shop/product/${data.insertedId}`);
       } else {
         console.error(data.error);
       }
