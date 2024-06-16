@@ -1,13 +1,19 @@
-import { connectDB } from '@/lib/mongodb';
-
 const getProducts = async () => {
   try {
-    const client = await connectDB;
-    const db = client.db(process.env.MONGODB_NAME);
-    const products = await db.collection('products').find({}).toArray();
-    return products.reverse() || null;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const res = await fetch(`${baseUrl}/api/products`, {
+      // method: 'GET',
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      console.error('API 요청 실패:', res.status, res.statusText);
+      throw new Error('Failed to fetch products');
+    }
+    const data = await res.json();
+    return data;
   } catch (error) {
-    console.error('Failed to retrieve data:', error);
+    console.error('getProducts 함수 실행 중 에러 발생:', error);
+    throw error;
   }
 };
 

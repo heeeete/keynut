@@ -16,7 +16,28 @@ const s3Client = new S3Client({
   },
 });
 
-export async function GET(req) {}
+export async function GET(req) {
+  try {
+    const client = await connectDB;
+    const db = client.db(process.env.MONGODB_NAME);
+    const products = await db.collection('products').find({}).sort({ createdAt: -1 }).toArray();
+
+    if (products.length > 0) {
+      return NextResponse.json(products, { status: 200 });
+    } else {
+      return NextResponse.json({ message: 'No products found' }, { status: 404 });
+    }
+  } catch (error) {
+    console.error('Failed to retrieve data:', error);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+  }
+  // finally {
+  //   // Ensure the client is closed to prevent memory leaks
+  //   if (client) {
+  //     await client.close();
+  //   }
+  // }
+}
 
 export async function POST(req) {
   try {

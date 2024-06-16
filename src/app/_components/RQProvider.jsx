@@ -10,6 +10,7 @@ function RQProvider({ children }) {
       defaultOptions: {
         queries: {
           refetchOnWindowFocus: false,
+          refetchOnReconnect: false,
           retry: false,
         },
       },
