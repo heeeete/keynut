@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useRouter } from 'next/navigation';
 
@@ -82,7 +82,7 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
   }, [uploadImages]);
 
   const handleImageUpload = useCallback(
-    e => {
+    async e => {
       if (!e.target.files) return;
       if (uploadImages.imageUrls.length + e.target.files.length > 5)
         return window.alert('사진은 최대 5장까지 가능합니다.');
@@ -388,14 +388,24 @@ const RenderPriceInput = React.memo(({ price, setPrice }) => {
   );
 });
 
-RenderSubcategories.displayName = 'RenderSubcategories';
-RenderImageUploadButton.displayName = 'RenderImageUploadButton';
-RenderDNDImages.displayName = 'RenderDNDImages';
-RenderTitle.displayName = 'RenderTitle';
-RenderCategory.displayName = 'RenderCategory';
-RenderCondition.displayName = 'RenderCondition';
-RenderDescriptionInput.displayName = 'RenderDescriptionInput';
-RenderPriceInput.displayName = 'RenderPriceInput';
+const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl }) => {
+  return (
+    <div className="mt-10 w-2/4 border-b">
+      <div className="flex items-end my-3">
+        <div className="font-medium text-xl">오픈채팅방</div>
+        <div className="text-sm">(선택)</div>
+      </div>
+      <input
+        type="text"
+        value={openChatUrl}
+        maxLength={50}
+        onChange={e => setOpenChatUrl(e.target.value)}
+        className="w-full outline-none no-underline text-xl "
+        placeholder="카카오톡의 오픈채팅방을 개설하여 주소를 입력해주세요."
+      />
+    </div>
+  );
+});
 
 export default function Sell() {
   const [uploadImages, setUploadImages] = useState({
@@ -409,6 +419,7 @@ export default function Sell() {
   const [description, setDescription] = useState(''); // 설명 상태 변수 추가
   const [price, setPrice] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [openChatUrl, setOpenChatUrl] = useState('');
   const fileInputRef = useRef(null); //file input ref
   const router = new useRouter();
 
@@ -459,7 +470,7 @@ export default function Sell() {
   };
 
   return (
-    <div className="max-w-screen-xl px-10 mx-auto max-md:px-2">
+    <div className="max-w-screen-xl px-10 mx-auto max-md:px-2 max-md:main-768">
       {isLoading ? (
         <div>LOADING............</div>
       ) : (
@@ -482,6 +493,7 @@ export default function Sell() {
           </div>
 
           <RenderDescriptionInput description={description} setDescription={setDescription} />
+          <RenderOpenChatUrlInput openChatUrl={openChatUrl} setOpenChatUrl={setOpenChatUrl} />
           <RenderPriceInput price={price} setPrice={setPrice} />
 
           <div className="w-full flex justify-end">
