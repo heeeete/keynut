@@ -168,20 +168,35 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  session: {
+    strategy: 'jwt',
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session(session, token) {
+      return session;
+    },
+    authorized({ req, token }) {
+      if (token) return true; // If there is a token, the user is authenticated
+    },
+  },
+
   secret: process.env.NEXTAUTH_SECRET,
   adapter: MongoDBAdapter(connectDB, {
     databaseName: 'keynut',
   }),
-  callbacks: {
-    async session(session, token) {
-      return session;
-    },
-  },
+
   events: {
     async createUser(message) {
       await addUserNickname(message.user);
     },
   },
+
   pages: {
     signIn: '/signin',
   },
