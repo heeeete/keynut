@@ -441,7 +441,7 @@ export default function Sell() {
 
     console.log(formData);
     try {
-      const res = await fetch('/api/upload/product', {
+      const res = await fetch('/api/products', {
         method: 'POST',
         body: formData,
       });

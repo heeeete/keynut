@@ -117,7 +117,7 @@ export default function Gallery() {
                     strokeWidth="50"
                     className="hover:stroke-pink-500"
                     fill="white"
-                    fill-opacity="0.5"
+                    fillOpacity="0.5"
                     d="M679.7 201c-73.1 0-136.5 40.8-167.7 100.4C480.8 241.8 417.4 201 344.3 201c-104 0-188.3 82.6-188.3 184.5c0 201.2 356 429.3 356 429.3s356-228.1 356-429.3C868 283.6 783.7 201 679.7 201"
                   />
                 </svg>

@@ -4,6 +4,7 @@ import Nav from './_components/Nav';
 import BottomNav from './_components/BottomNav/BottomNav';
 import Footer from './_components/Footer';
 import AuthProvider from '@/lib/next-auth';
+import RQProvider from './_components/RQProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,10 +18,12 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className + 'flex flex-col justify-center items-center max-md:mb-bottom-nav-heigth'}>
         <AuthProvider>
-          <Nav />
-          <main className="relative main-1280 max-md:pt-0">{children}</main>
-          <Footer />
-          <BottomNav />
+          <RQProvider>
+            <Nav />
+            <main className="relative main-1280 max-md:pt-0">{children}</main>
+            <Footer />
+            <BottomNav />
+          </RQProvider>
         </AuthProvider>
       </body>
     </html>

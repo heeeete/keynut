@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/app/utils/getUserSession';
 import { ObjectId } from 'mongodb';
+import { getServerSession } from 'next-auth';
 
 const client = await connectDB;
 const db = client.db(process.env.MONGODB_NAME);
@@ -22,12 +23,10 @@ export const config = {
   },
 };
 
+export async function GET(req) {}
+
 export async function POST(req) {
   const session = await getUserSession();
-
-  console.log('유저 세션 받아옴 ======================= ', session);
-  console.log(session.user.id);
-
   const formData = await req.formData();
   const files = formData.getAll('files');
 
