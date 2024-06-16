@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-// import getProducts from './_lib/getProducts';
+import getProducts from './_lib/getProducts';
 
 const filters = [
   {
@@ -47,8 +47,6 @@ const filters = [
   },
 ];
 
-const bookmarked = ['666c0cdd7b280efad4c68811', '666c0216662961209d9c18a3'];
-
 const optionMap = {};
 
 filters.forEach(filter => {
@@ -76,8 +74,14 @@ export default function RenderShop() {
   const filterRef = useRef(null);
   const router = useRouter();
 
-  // const { data, error } = useQuery({ queryKey: ['products'], queryFn: getProducts });
-  // console.log(data);
+  //이미 서버측에서 가져온 데이터를 즉시 사용
+  //usequery -> 캐시에 저장된 데이터를 확인, 없다면 queryfn을 이용해 데이터를 가져옴.
+  const { data, error } = useQuery({
+    queryKey: ['products'],
+    queryFn: getProducts,
+    staleTime: 60 * 1000,
+  });
+
   useEffect(() => {
     const initializeFilters = (subfilters, state = {}) => {
       subfilters.forEach(subfilter => {
@@ -99,8 +103,6 @@ export default function RenderShop() {
     });
     setFiltersState(initState);
   }, []);
-
-  // console.log(filtersState);
 
   const handleFilterChange = (id, checked) => {
     const newState = { ...filtersState };
@@ -128,7 +130,7 @@ export default function RenderShop() {
     setFiltersState(newState);
     setSelectedFilters(updateSelectedFilters);
   };
-
+  // return <div></div>;
   return (
     <div className="flex items-start justify-start">
       <div className="flex flex-col w-full">
@@ -312,9 +314,8 @@ export default function RenderShop() {
             ))}
           </div>
           <div className="flex flex-col justify-center w-full " ref={innerContainerRef}>
-            {/* <div className="h-10 w-full bg-red-600"></div> */}
             <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
-              {products.map((product, idx) => (
+              {data?.map((product, idx) => (
                 <div
                   className="flex flex-col"
                   key={idx}
@@ -336,7 +337,8 @@ export default function RenderShop() {
                       >
                         <path
                           stroke="black"
-                          fill={bookmarked.includes(product._id) ? 'black' : 'white'}
+                          fill="white"
+                          // fill={bookmarked.includes(product._id) ? 'black' : 'white'}
                           d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
                         />
                       </svg>

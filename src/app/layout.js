@@ -17,14 +17,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className + 'flex flex-col justify-center items-center max-md:mb-bottom-nav-heigth'}>
-        <AuthProvider>
-          <RQProvider>
+        <RQProvider>
+          <AuthProvider>
             <Nav />
             <main className="relative main-1280 max-md:pt-0">{children}</main>
             <Footer />
             <BottomNav />
-          </RQProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </RQProvider>
       </body>
     </html>
   );
