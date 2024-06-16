@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/app/utils/getUserSession';
 import { ObjectId } from 'mongodb';
-import { getServerSession } from 'next-auth';
 
 const client = await connectDB;
 const db = client.db(process.env.MONGODB_NAME);
@@ -17,16 +16,12 @@ const s3Client = new S3Client({
   },
 });
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
 
 export async function GET(req) {}
 
 export async function POST(req) {
   const session = await getUserSession();
+  
   const formData = await req.formData();
   const files = formData.getAll('files');
 

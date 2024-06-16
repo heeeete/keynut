@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import HomeProduct from './_components/HomeProduct';
 import React, { useEffect } from 'react';
+import { useSession, signOut, signIn } from 'next-auth/react';
 
 const images = [
   {
@@ -63,6 +64,8 @@ export default function Home() {
 
   return (
     <div className="flex max-w-screen-xl mx-auto px-10 flex-col space-y-12 max-md:px-2 max-md:main-768">
+      <button onClick={() => signIn()}>로그인</button>
+      <Link href={'/sell'}>물건팔기</Link>
       <section className="flex flex-col space-y-5">
         <div className="flex flex-col">
           <div className="font-medium text-xl">cateory</div>
