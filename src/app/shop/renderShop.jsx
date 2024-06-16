@@ -3,7 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+// import getProducts from './_lib/getProducts';
 
 const filters = [
   {
@@ -65,7 +66,7 @@ const handleBookMarkClick = (e, id) => {
   e.stopPropagation();
 };
 
-export default function RenderShop({ products }) {
+export default function RenderShop() {
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [filterActive, setFilterActive] = useState(false);
   const [sortOption, setSortOption] = useState(true);
@@ -74,7 +75,9 @@ export default function RenderShop({ products }) {
   const innerContainerRef = useRef(null);
   const filterRef = useRef(null);
   const router = useRouter();
-  console.log(products);
+
+  // const { data, error } = useQuery({ queryKey: ['products'], queryFn: getProducts });
+  // console.log(data);
   useEffect(() => {
     const initializeFilters = (subfilters, state = {}) => {
       subfilters.forEach(subfilter => {

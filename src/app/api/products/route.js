@@ -16,12 +16,12 @@ const s3Client = new S3Client({
   },
 });
 
+
+export async function GET(req) {}
+
 export async function POST(req) {
   const session = await getUserSession();
-
-  console.log('유저 세션 받아옴 ======================= ', session);
-  console.log(session.user.id);
-
+  
   const formData = await req.formData();
   const files = formData.getAll('files');
 
