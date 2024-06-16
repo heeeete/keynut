@@ -173,16 +173,18 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
+      console.log('jwt ================');
+      console.log(user);
       if (user) {
-        token.id = user.id;
+        token = user;
       }
       return token;
     },
-    async session(session, token) {
+    async session({ session, token }) {
+      console.log('SESSION ==============================');
+      session = token;
+      console.log(session);
       return session;
-    },
-    authorized({ req, token }) {
-      if (token) return true; // If there is a token, the user is authenticated
     },
   },
 
@@ -193,6 +195,8 @@ export const authOptions = {
 
   events: {
     async createUser(message) {
+      console.log('CREATE ==================');
+      console.log(message);
       await addUserNickname(message.user);
     },
   },
