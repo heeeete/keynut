@@ -8,46 +8,25 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
   if (mainCategory === 'keyboard') {
     return (
       <>
-        <li
-          onClick={() => handleSubCategoryClick('housing')}
-          className={`p-3 ${subCategory === 'housing' ? 'bg-slate-200' : ''}`}
-        >
+        <li onClick={() => handleSubCategoryClick(10)} className={`p-3 ${subCategory === 10 ? 'bg-slate-200' : ''}`}>
           하우징
         </li>
-        <li
-          onClick={() => handleSubCategoryClick('switch')}
-          className={`p-3 ${subCategory === 'switch' ? 'bg-slate-200' : ''}`}
-        >
+        <li onClick={() => handleSubCategoryClick(11)} className={`p-3 ${subCategory === 11 ? 'bg-slate-200' : ''}`}>
           스위치
         </li>
-        <li
-          onClick={() => handleSubCategoryClick('plate')}
-          className={`p-3 ${subCategory === 'plate' ? 'bg-slate-200' : ''}`}
-        >
+        <li onClick={() => handleSubCategoryClick(12)} className={`p-3 ${subCategory === 12 ? 'bg-slate-200' : ''}`}>
           보강판
         </li>
-        <li
-          onClick={() => handleSubCategoryClick('artisan')}
-          className={`p-3 ${subCategory === 'artisan' ? 'bg-slate-200' : ''}`}
-        >
+        <li onClick={() => handleSubCategoryClick(13)} className={`p-3 ${subCategory === 13 ? 'bg-slate-200' : ''}`}>
           아티산
         </li>
-        <li
-          onClick={() => handleSubCategoryClick('keycap')}
-          className={`p-3 ${subCategory === 'keycap' ? 'bg-slate-200' : ''}`}
-        >
+        <li onClick={() => handleSubCategoryClick(14)} className={`p-3 ${subCategory === 14 ? 'bg-slate-200' : ''}`}>
           키캡
         </li>
-        <li
-          onClick={() => handleSubCategoryClick('pcb')}
-          className={`p-3 ${subCategory === 'pcb' ? 'bg-slate-200' : ''}`}
-        >
+        <li onClick={() => handleSubCategoryClick(15)} className={`p-3 ${subCategory === 15 ? 'bg-slate-200' : ''}`}>
           PCB
         </li>
-        <li
-          onClick={() => handleSubCategoryClick('keyboard-others')}
-          className={`p-3 ${subCategory === 'keyboard-others' ? 'bg-slate-200' : ''}`}
-        >
+        <li onClick={() => handleSubCategoryClick(19)} className={`p-3 ${subCategory === 19 ? 'bg-slate-200' : ''}`}>
           기타
         </li>
       </>
@@ -55,17 +34,12 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
   } else if (mainCategory === 'mouse') {
     return (
       <>
-        <li
-          onClick={() => handleSubCategoryClick('mouse-others')}
-          className={`p-3 ${subCategory === 'mouse-others' ? 'bg-slate-200' : ''}`}
-        >
+        <li onClick={() => handleSubCategoryClick(29)} className={`p-3 ${subCategory === 29 ? 'bg-slate-200' : ''}`}>
           기타
         </li>
       </>
     );
-  } else {
-    return <></>;
-  }
+  } else handleSubCategoryClick(99);
 });
 
 const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUploadImages }) => {
@@ -388,7 +362,7 @@ const RenderPriceInput = React.memo(({ price, setPrice }) => {
 
 const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl }) => {
   return (
-    <div className="mt-10 w-2/4 border-b">
+    <div className="mt-10 max-w-96 border-b">
       <div className="flex items-end my-3">
         <div className="font-medium text-xl">오픈채팅방</div>
         <div className="text-sm">(선택)</div>
@@ -460,12 +434,11 @@ export default function Sell() {
       formData.append('files', file);
     });
     formData.append('title', title.replace(/ +/g, ' ').trim());
-    formData.append('mainCategory', mainCategory);
     formData.append('subCategory', subCategory);
     formData.append('condition', condition);
     formData.append('description', description);
     formData.append('openChatUrl', openChatUrl.trim());
-    formData.append('price', price);
+    formData.append('price', price.replaceAll(',', ''));
 
     console.log(formData);
     try {
