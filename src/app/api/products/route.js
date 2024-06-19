@@ -100,10 +100,10 @@ export async function POST(req) {
     const product = {
       userId: new ObjectId(session.id), // 사용자 ID 추가
       title: formData.get('title'),
-      category: formData.get('subCategory'),
-      condition: formData.get('condition'),
+      category: Number(formData.get('subCategory')),
+      condition: Number(formData.get('condition')),
       description: formData.get('description'),
-      price: formData.get('price'),
+      price: Number(formData.get('price')),
       images: uploadedUrls,
       bookmarked: [],
       openChatUrl: formData.get('openChatUrl'),

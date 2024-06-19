@@ -179,7 +179,13 @@ export default function ImageSlider({ images }) {
                 key={idx}
                 className={`${images.length === 1 && 'flex justify-center'} relative min-w-fit h-full w-full mr-10`}
               >
-                <img src={img} alt="product image" className="h-full w-auto object-contain" draggable="false" />
+                <img
+                  src={img}
+                  alt="product image"
+                  className="h-full w-auto object-contain"
+                  draggable="false"
+                  onLoad={imagesWidthInit}
+                />
               </div>
             ))}
           </div>
