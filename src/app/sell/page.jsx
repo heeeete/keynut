@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   if (mainCategory === 'keyboard') {
@@ -394,24 +395,12 @@ export default function Sell() {
   const [openChatUrl, setOpenChatUrl] = useState('');
   const fileInputRef = useRef(null); //file input ref
   const router = new useRouter();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    async function getOpenChatUrl() {
-      try {
-        const res = await fetch('/api/open-chat-url');
-        const user = await res.json();
-        if (res.status === 200) {
-          if (user.openChatUrl && user.openChatUrl.length) setOpenChatUrl(user.openChatUrl);
-        } else {
-          console.log('not found');
-        }
-      } catch (error) {
-        console.error('Error fetching user:', error);
-      }
-    }
-
-    getOpenChatUrl();
-  }, []);
+    if (status !== 'loading' && !session) return router.push('/signin');
+    if (session) setOpenChatUrl(session.user.openChatUrl);
+  }, [session]);
 
   const handleDisabled = () => {
     if (
