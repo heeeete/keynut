@@ -91,7 +91,7 @@ export default function ImageSlider({ images }) {
         onClick={_ => setModalStatus(true)}
       >
         {/* 왼쪽 넘기기 버튼 */}
-        {images.length > 1 && (
+        {images && images && images.length > 1 && (
           <button
             className="absolute hidden group-hover:flex left-1 z-10 p-4 cursor-pointer max-md:flex max-md:p-2"
             onClick={handlePrevImage}
@@ -104,24 +104,25 @@ export default function ImageSlider({ images }) {
           </button>
         )}
 
-        {images.map((img, idx) => (
-          <Image
-            key={idx}
-            src={img}
-            alt="product-img"
-            fill
-            draggable={false}
-            sizes="(max-width: 24rem) 100vw, 24rem"
-            className={`absolute transition-opacity duration-200 ${
-              idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
-            }`}
-            placeholder="blur"
-            blurDataURL="img"
-            style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
-          />
-        ))}
+        {images &&
+          images.map((img, idx) => (
+            <Image
+              key={idx}
+              src={img}
+              alt="product-img"
+              fill
+              draggable={false}
+              sizes="(max-width: 24rem) 100vw, 24rem"
+              className={`absolute transition-opacity duration-200 ${
+                idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+              placeholder="blur"
+              blurDataURL="img"
+              style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
+            />
+          ))}
         {/* 오른쪽 넘기기 버튼 */}
-        {images.length > 1 && (
+        {images && images.length > 1 && (
           <button
             className="absolute hidden group-hover:flex right-1 z-10 p-4 cursor-pointer max-md:flex max-md:p-2"
             onClick={handleNextImage}
@@ -135,7 +136,7 @@ export default function ImageSlider({ images }) {
         )}
       </div>
       {/* 인디게이터 */}
-      {images.length > 1 && (
+      {images && images && images.length > 1 && (
         <div className="flex space-x-3 mt-3">
           {images.map((_, idx) => {
             return (
@@ -155,7 +156,7 @@ export default function ImageSlider({ images }) {
           modalStatus ? 'visible' : 'invisible'
         } fixed flex items-center left-0 top-0 w-d-screen h-d-screen bg-black bg-opacity-80 z-50 overflow-hidden`}
       >
-        {images.length > 1 ? (
+        {images && images.length > 1 ? (
           <>
             <button className="absolute h-full w-1/2 left-0 z-40" onClick={handlePrevFullSizeImage}></button>
             <button className="absolute h-full w-1/2 right-0 z-40" onClick={handleNextFullSizeImage}></button>
@@ -174,23 +175,26 @@ export default function ImageSlider({ images }) {
         </button>
         <div className=" w-full h-50vw max-md:h-100vw">
           <div className="flex h-full w-full " style={{ translate: `calc(50% - ${offset}px)` }} ref={fullSizeImagesRef}>
-            {images.map((img, idx) => (
-              <div
-                key={idx}
-                className={`${images.length === 1 && 'flex justify-center'} relative min-w-fit h-full w-full mr-10`}
-              >
-                <img
-                  src={img}
-                  alt="product image"
-                  className="h-full w-auto object-contain"
-                  draggable="false"
-                  onLoad={imagesWidthInit}
-                />
-              </div>
-            ))}
+            {images &&
+              images.map((img, idx) => (
+                <div
+                  key={idx}
+                  className={`${
+                    images && images.length === 1 && 'flex justify-center'
+                  } relative min-w-fit h-full w-full mr-10`}
+                >
+                  <img
+                    src={img}
+                    alt="product image"
+                    className="h-full w-auto object-contain"
+                    draggable="false"
+                    onLoad={imagesWidthInit}
+                  />
+                </div>
+              ))}
           </div>
           {/* 전체 이미지 인디게이터 */}
-          {images.length > 1 && (
+          {images && images.length > 1 && (
             <div className="flex justify-center space-x-3 mt-3 z-50 ">
               {images.map((_, idx) => {
                 return (

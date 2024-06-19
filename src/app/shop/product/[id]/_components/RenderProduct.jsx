@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ImageSlider from '@/app/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/app/utils/timeAgo';
 import OpenChatLink from './OpenChatLink';
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import getProductWithUser from '../_lib/getProductWithUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
@@ -84,80 +84,85 @@ const RenderBookMark = ({ bookmarked }) => {
 const RenderProfile = ({ user, product }) => {
   return (
     <>
-      <div className="flex flex-0.8 h-full border rounded items-center px-4 max-md:px-2">
-        <div className="rounded-full w-14 aspect-square relative flex justify-center items-center max-md:w-16">
-          {user.image ? (
-            <Image className="rounded-full" src={user.image} alt="" fill />
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 32 32">
-              <path
-                fill="grey"
-                d="M16 16a7 7 0 1 0 0-14a7 7 0 0 0 0 14m-8.5 2A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5z"
-              />
-            </svg>
-          )}
-        </div>
-        <div className="flex w-full items-center justify-between pl-4 max-md:flex-col max-md:items-start max-md:space-y-1">
+      <div className="flex max-w-md justify-between border rounded flex-wrap  max-md:px-2 ">
+        <div className="flex items-center">
+          <div className="flex rounded-full w-12 aspect-square justify-center items-center">
+            {user.image ? (
+              <Image className="rounded-full" src={user.image} alt="profile" fill />
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="70%" height="70%" viewBox="0 0 32 32">
+                <path
+                  fill="grey"
+                  d="M16 16a7 7 0 1 0 0-14a7 7 0 0 0 0 14m-8.5 2A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5z"
+                />
+              </svg>
+            )}
+          </div>
           <div className="text-lg max-md:text-base line-clamp-1">{user.nickname}</div>
-          <button>
-            <div className=" text-base px-3 py-1 border border-gray-300 rounded max-md:text-sm line-clamp-1">
-              상점 가기
-            </div>
-          </button>
         </div>
+        <button className="mr-2">
+          <div className=" text-base border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</div>
+        </button>
       </div>
     </>
   );
 };
 
-const RenderBookmarkButton = ({ productId }) => {
+const RenderBookmarkButton = ({ productId, bookmarked }) => {
+  const { data: session } = useSession();
   const queryClient = useQueryClient();
 
+  const isBookmarked = session && bookmarked.includes(session.user.id);
+  const color = isBookmarked ? 'black' : 'white';
+
   const mutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch(`/api/products/${productId}/bookmark`, {
+    mutationFn: async ({ productId }) => {
+      const res = await fetch(`/api/products/${productId}/bookmark?a=123`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isBookmarked }),
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message);
+        throw new Error(data.error || 'Network response was not ok');
       }
-      return res.json();
+      return data;
     },
-    onMutate: async () => {
+    onMutate: async ({ productId, isBookmarked }) => {
       await queryClient.cancelQueries(['product', productId]);
-      const previousProduct = queryClient.getQueriesData(['product', productId]);
+      const previousProduct = queryClient.getQueryData(['product', productId]);
       queryClient.setQueryData(['product', productId], old => ({
         ...old,
-        bookmarked: [...old.bookmarked, 'newBookmarkId'],
+        bookmarked: isBookmarked
+          ? old.bookmarked.filter(id => id !== session.user.id)
+          : [...old.bookmarked, session.user.id],
       }));
+      return { previousProduct };
     },
-    onSettled: () => {
-      queryClient.invalidateQueries(['product', productId]);
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(['product', variables.productId], context.previousProduct);
+    },
+    onSettled: (data, error, variables) => {
+      queryClient.invalidateQueries(['product', variables.productId]);
     },
   });
 
   const handleClick = () => {
-    mutation.mutate();
+    mutation.mutate({ productId, isBookmarked });
   };
 
   return (
-    <button onClick={handleClick} className="flex justify-center items-center w-16 rounded bg-purple-400">
-      <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 32 32">
-        <path
-          fill="rgb(192 132 252)"
-          stroke="white"
-          strokeWidth={3}
-          d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
-        />
+    <button onClick={handleClick} className="flex justify-end items-center w-10 rounded">
+      <svg xmlns="http://www.w3.org/2000/svg" width="60%" height="60%" viewBox="0 0 32 32">
+        <path fill={color} stroke="black" strokeWidth={3} d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
     </button>
   );
 };
 
 export default function RenderProduct({ id }) {
-  const session = useSession();
-  console.log(session);
   const { data: data, error } = useQuery({ queryKey: ['product', id], queryFn: () => getProductWithUser(id) });
 
   if (error) return <div>Error loading product</div>;
@@ -169,8 +174,14 @@ export default function RenderProduct({ id }) {
     <div className="max-w-screen-xl mx-auto max-md:main-768">
       <RenderInfo category={Number(product.category)} />
       <ImageSlider images={product.images} />
-      <div className="px-10 space-y-6 max-md:px-2">
-        <p className="text-xl font-bold">{product.title}</p>
+      <div className="p-10 space-y-6 max-md:px-2">
+        <div className="flex justify-between items-center">
+          <p className="text-xl font-bold">{product.title}</p>
+          <div className="flex">
+            <OpenChatLink url={product.openChatUrl} />
+            <RenderBookmarkButton productId={id} bookmarked={product.bookmarked} />
+          </div>
+        </div>
         <p className="space-x-2">
           <span className="text-2xl font-bold">{Number(product.price).toLocaleString()}</span>
           <span className="text-xl">원</span>
@@ -182,15 +193,9 @@ export default function RenderProduct({ id }) {
             <RenderBookMark bookmarked={product.bookmarked} />
           </div>
         </div>
+        <RenderProfile user={user} product={product} />
         <div className="border px-3 py-1 rounded min-h-24">
           <p className="whitespace-pre-wrap">{product.description}</p>
-        </div>
-        <div className="flex h-16 justify-between space-x-2 ">
-          <RenderProfile user={user} product={product} />
-          <div className="flex flex-0.2 justify-end space-x-2">
-            <OpenChatLink url={product.openChatUrl} />
-            <RenderBookmarkButton productId={id} />
-          </div>
         </div>
       </div>
     </div>

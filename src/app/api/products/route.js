@@ -42,8 +42,7 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
-    const session = await getUserSession();
-    console.log(session);
+    const { user: session } = await getUserSession();
 
     const formData = await req.formData();
     const files = formData.getAll('files');
