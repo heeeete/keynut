@@ -30,11 +30,6 @@ const RenderCondition = ({ condition }) => {
 };
 
 const RenderInfo = React.memo(({ category }) => {
-  console.log(category);
-  let mainCategory = '';
-  if (category >= 10 && category <= 19) mainCategory = '키보드';
-  else if (category >= 20 && category <= 29) mainCategory = '마우스';
-  else mainCategory = '기타';
   const obj = {
     10: '하우징',
     11: '스위치',
@@ -46,6 +41,11 @@ const RenderInfo = React.memo(({ category }) => {
     29: '기타',
     99: '기타',
   };
+  let mainCategory = '';
+
+  if (category >= 10 && category <= 19) mainCategory = '키보드';
+  else if (category >= 20 && category <= 29) mainCategory = '마우스';
+  else mainCategory = '기타';
 
   return (
     <span className="flex items-center text-gray-400 text-sm px-10 max-md:px-2">
@@ -127,9 +127,10 @@ const RenderBookmarkButton = ({ productId }) => {
     onMutate: async () => {
       await queryClient.cancelQueries(['product', productId]);
       const previousProduct = queryClient.getQueriesData(['product', productId]);
-      queryClient.setQueryData(['product', productId], old => {
-        old.bookmarked.push('asdjklasdjkl');
-      });
+      queryClient.setQueryData(['product', productId], old => ({
+        ...old,
+        bookmarked: [...old.bookmarked, 'newBookmarkId'],
+      }));
     },
     onSettled: () => {
       queryClient.invalidateQueries(['product', productId]);
@@ -143,7 +144,12 @@ const RenderBookmarkButton = ({ productId }) => {
   return (
     <button onClick={handleClick} className="flex justify-center items-center w-16 rounded bg-purple-400">
       <svg xmlns="http://www.w3.org/2000/svg" width="50%" height="50%" viewBox="0 0 32 32">
-        <path fill="white" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
+        <path
+          fill="rgb(192 132 252)"
+          stroke="white"
+          strokeWidth={3}
+          d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
+        />
       </svg>
     </button>
   );
@@ -160,7 +166,7 @@ export default function RenderProduct({ id }) {
   const { user, ...product } = data;
 
   return (
-    <div className="max-w-screen-xl mx-auto main-768">
+    <div className="max-w-screen-xl mx-auto max-md:main-768">
       <RenderInfo category={Number(product.category)} />
       <ImageSlider images={product.images} />
       <div className="px-10 space-y-6 max-md:px-2">
