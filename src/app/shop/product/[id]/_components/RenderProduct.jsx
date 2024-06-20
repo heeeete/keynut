@@ -109,9 +109,8 @@ const RenderProfile = ({ user, product }) => {
   );
 };
 
-const RenderBookmarkButton = ({ productId, bookmarked }) => {
+const RenderBookmarkButton = ({ productId, bookmarked, session }) => {
   const router = useRouter();
-  const { data: session } = useSession();
   const queryClient = useQueryClient();
 
   const isBookmarked = session && bookmarked.includes(session.user.id);
@@ -169,9 +168,9 @@ const RenderHashTag = ({ product }) => {
   return (
     <div className="space-y-0 flex text-gray-500 flex-wrap">
       {product.tags.map((e, idx) => (
-        <div key={idx} className="flex items-center mr-3">
-          <span>#{e}</span>
-        </div>
+        <Link href={`/shop?keyword=${encodeURIComponent(e)}`} key={idx} className="flex items-center mr-3">
+          <span>{e}</span>
+        </Link>
       ))}
     </div>
   );
@@ -186,12 +185,17 @@ const RenderDescriptor = ({ product }) => {
 };
 
 export default function RenderProduct({ id }) {
+  const { data: session, status } = useSession();
   const { data: data, error } = useQuery({ queryKey: ['product', id], queryFn: () => getProductWithUser(id) });
 
   if (error) return <div>Error loading product</div>;
   if (!data) return <div>Loading...</div>;
 
   const { user, ...product } = data;
+
+  const writer = status !== 'loading' && session.user.id === product.userId;
+
+  console.log(writer);
 
   return (
     <div className="max-w-screen-xl mx-auto max-md:main-768">
@@ -201,8 +205,14 @@ export default function RenderProduct({ id }) {
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold">{product.title}</p>
           <div className="flex">
-            <OpenChatLink url={product.openChatUrl} />
-            <RenderBookmarkButton productId={id} bookmarked={product.bookmarked} />
+            {writer ? (
+              <Link href={`/shop/product/${id}/edit`}>수정</Link>
+            ) : (
+              <>
+                <OpenChatLink url={product.openChatUrl} />
+                <RenderBookmarkButton productId={id} bookmarked={product.bookmarked} session={session} />
+              </>
+            )}
           </div>
         </div>
         <RenderHashTag product={product} />
