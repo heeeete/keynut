@@ -17,13 +17,44 @@ const s3Client = new S3Client({
   },
 });
 
+const priceRanges = [
+  { id: 1, min: 0, max: 50000 },
+  { id: 2, min: 50000, max: 100000 },
+  { id: 3, min: 100000, max: 300000 },
+  { id: 4, min: 300000, max: 500000 },
+  { id: 5, min: 500000, max: Infinity },
+];
+
 export async function GET(req) {
   try {
+    const { searchParams } = new URL(req.url, `${process.env.NEXT_PUBLIC_BASE_URL}`);
+    console.log(searchParams);
+    const keywordParam = searchParams.get('keyword');
+    const categoriesParam = searchParams.get('categories');
+    const pricesParam = searchParams.get('prices');
+
+    const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
+    const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
-    const products = await db.collection('products').find({}).sort({ createdAt: -1 }).toArray();
+    let query = {};
+    if (keywordParam) {
+      query.title = { $regex: keywordParam, $options: 'i' };
+    }
+    if (categories.length > 0) {
+      query.category = { $in: categories };
+    }
 
-    if (products.length > 0) {
+    if (prices.length > 0) {
+      const priceConditions = prices.map(priceId => {
+        const range = priceRanges.find(range => range.id === priceId);
+        return { price: { $gte: range.min, $lte: range.max } };
+      });
+      query.$or = priceConditions;
+    }
+
+    const products = await db.collection('products').find(query).sort({ createdAt: -1 }).toArray();
+    if (products) {
       return NextResponse.json(products, { status: 200 });
     } else {
       return NextResponse.json({ message: 'No products found' }, { status: 404 });

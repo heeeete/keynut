@@ -1,7 +1,9 @@
 export default function debounce(func, wait) {
   let id;
-  return function () {
+  return function (...args) {
     clearTimeout(id);
-    id = setTimeout(func, wait);
+    id = setTimeout(() => {
+      func(...args);
+    }, wait);
   };
 }
