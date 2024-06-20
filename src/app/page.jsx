@@ -2,21 +2,20 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import HomeProduct from './_components/HomeProduct';
 import React, { useEffect } from 'react';
-import { useSession, signOut, signIn } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 
 const images = [
   {
     path: '/키보드1.webp',
     name: 'pdpdpdpdpdpdppdpdpdpdpdpdpdpdpdpdpdpdpdpdpdpdpd',
-    price: '12,5000원',
+    price: '12,5000',
     bookMarked: false,
   },
-  { path: '/키보드4.png', name: 'yellow keyboard', price: '60,5000원', bookMarked: true },
-  { path: '/키보드3.jpeg', name: 'purple keyboard sjdhfkajshd', price: '20,5000원', bookMarked: true },
-  { path: '/키보드3.jpeg', name: 'purple keyboard', price: '15,5000원', bookMarked: false },
-  { path: '/키보드1.webp', name: 'orange keyboard', price: '35,5000원', bookMarked: false },
+  { path: '/키보드4.png', name: 'yellow keyboard', price: '60,5000', bookMarked: true },
+  { path: '/키보드3.jpeg', name: 'purple keyboard sjdhfkajshd', price: '20,5000', bookMarked: true },
+  { path: '/키보드3.jpeg', name: 'purple keyboard', price: '15,5000', bookMarked: false },
+  { path: '/키보드1.webp', name: 'orange keyboard', price: '35,5000', bookMarked: false },
 ];
 const picks = [
   { profile: '/키보드1.webp', path: '/키보드1.webp', name: 'orange keyboard', heart: 5, comment: 10, title: 'haha' },
@@ -86,17 +85,43 @@ export default function Home() {
           </div>
           <div className="font-medium text-sm">더보기 +</div>
         </div>
-        <HomeProduct images={images} />
-      </section>
-      <section className="flex flex-col space-y-5">
-        <div className="flex items-end">
-          <div className="flex flex-1 flex-col">
-            <div className="font-medium text-xl">hot</div>
-            <div className="text-gray-600 font-medium">인기 상품</div>
-          </div>
-          <div className="font-medium text-sm">더보기 +</div>
+        <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
+          {images.map((img, idx) => (
+            <div className="flex flex-col max-md:max-w-40 max-md:w-40" key={idx}>
+              <div className="w-full aspect-square relative min-h-32 min-w-32">
+                <div className="absolute top-1 right-1 z-10">
+                  <svg
+                    className="w-7 h-7  max-md:w-5 max-md:h-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="2em"
+                    height="2em"
+                    viewBox="0 0 32 32"
+                  >
+                    <path
+                      stroke="black"
+                      fill={img.bookMarked ? 'black' : 'white'}
+                      d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
+                    />
+                  </svg>
+                </div>
+                <Image
+                  src={img.path}
+                  alt={img.name}
+                  sizes="(max-width: 690px) 128px, (max-width: 1280px) 20vw, 235px"
+                  fill
+                  className="rounded"
+                />
+              </div>
+              <div className="mt-2 w-full">
+                <div className="text-lg break-all line-clamp-2">{img.name}</div>
+                <div className="space-x-1 font-semibold">
+                  <span>{img.price}</span>
+                  <span className="text-sm">원</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        <HomeProduct images={images} />
       </section>
       <section className="flex flex-col space-y-5">
         <div className="flex items-end">
