@@ -87,6 +87,7 @@ export default function Nav() {
               <li>
                 <Link
                   href={'/sell'}
+                  onClick={e => handleLogin(e, router, session, '/sell')}
                   className={`${
                     pathname.startsWith('/sell')
                       ? 'after:block after:w-full after:h-px after:absolute after:-rotate-12 after:top-1/2 after:bg-slate-950'

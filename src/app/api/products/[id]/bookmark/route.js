@@ -10,9 +10,6 @@ export async function POST(req, { params }) {
     const session = await getServerSession(authOptions);
     const { isBookmarked } = await req.json();
 
-    console.log('=====================================', req);
-    const queryParam = req.nextUrl.searchParams.get('a'); // 'a'에 해당하는 쿼리 파라미터 값 가져오기
-    console.log(queryParam);
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     await db
@@ -20,6 +17,12 @@ export async function POST(req, { params }) {
       .updateOne(
         { _id: new ObjectId(id) },
         isBookmarked ? { $pull: { bookmarked: session.user.id } } : { $addToSet: { bookmarked: session.user.id } },
+      );
+    await db
+      .collection('users')
+      .updateOne(
+        { _id: new ObjectId(session.user.id) },
+        isBookmarked ? { $pull: { bookmarked: id } } : { $addToSet: { bookmarked: id } },
       );
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

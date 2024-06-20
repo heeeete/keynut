@@ -6,10 +6,11 @@ import ImageSlider from '@/app/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/app/utils/timeAgo';
 import OpenChatLink from './OpenChatLink';
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import getProductWithUser from '../_lib/getProductWithUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const RenderCondition = ({ condition }) => {
   if (condition === 1) condition = '미사용';
@@ -109,6 +110,7 @@ const RenderProfile = ({ user, product }) => {
 };
 
 const RenderBookmarkButton = ({ productId, bookmarked }) => {
+  const router = useRouter();
   const { data: session } = useSession();
   const queryClient = useQueryClient();
 
@@ -150,6 +152,7 @@ const RenderBookmarkButton = ({ productId, bookmarked }) => {
   });
 
   const handleClick = () => {
+    if (!session) return signIn();
     mutation.mutate({ productId, isBookmarked });
   };
 
@@ -159,6 +162,26 @@ const RenderBookmarkButton = ({ productId, bookmarked }) => {
         <path fill={color} stroke="black" strokeWidth={3} d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
     </button>
+  );
+};
+
+const RenderHashTag = ({ product }) => {
+  return (
+    <div className="space-y-0 flex text-gray-500 flex-wrap">
+      {product.tags.map((e, idx) => (
+        <div key={idx} className="flex items-center mr-3">
+          <span>#{e}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const RenderDescriptor = ({ product }) => {
+  return (
+    <div className="border px-3 py-1 rounded min-h-24">
+      <p className="whitespace-pre-wrap">{product.description}</p>
+    </div>
   );
 };
 
@@ -182,6 +205,7 @@ export default function RenderProduct({ id }) {
             <RenderBookmarkButton productId={id} bookmarked={product.bookmarked} />
           </div>
         </div>
+        <RenderHashTag product={product} />
         <p className="space-x-2">
           <span className="text-2xl font-bold">{Number(product.price).toLocaleString()}</span>
           <span className="text-xl">원</span>
@@ -194,9 +218,7 @@ export default function RenderProduct({ id }) {
           </div>
         </div>
         <RenderProfile user={user} product={product} />
-        <div className="border px-3 py-1 rounded min-h-24">
-          <p className="whitespace-pre-wrap">{product.description}</p>
-        </div>
+        <RenderDescriptor product={product} />
       </div>
     </div>
   );
