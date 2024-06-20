@@ -137,8 +137,10 @@ export async function POST(req) {
       images: uploadedUrls,
       bookmarked: [],
       openChatUrl: formData.get('openChatUrl'),
+      tags: formData.get('tags'),
       createdAt: new Date(),
     };
+    product.tags = product.tags.split(',');
 
     await users.updateOne({ email: session.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
     const result = await collection.insertOne(product);

@@ -137,7 +137,6 @@ function getRandomKoreanWord() {
 }
 
 async function addUserNickname(user) {
-  console.log(user);
   const client = await connectDB;
   const db = client.db(process.env.MONGODB_NAME);
 
@@ -194,8 +193,6 @@ export const authOptions = {
 
   events: {
     async createUser(message) {
-      console.log('CREATE ==================');
-      console.log(message);
       await addUserNickname(message.user);
     },
   },
