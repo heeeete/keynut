@@ -5,7 +5,6 @@ import { NextResponse } from 'next/server';
 export async function GET(req, { params }) {
   try {
     const { id } = params;
-    console.log('==========================', id);
 
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);

@@ -1,12 +1,13 @@
 'use client';
+import getProductWithUser from '../_lib/getProductWithUser';
 import Image from 'next/image';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useParams, useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
-  if (mainCategory === 'keyboard') {
+  if (mainCategory === 1) {
     return (
       <>
         <li onClick={() => handleSubCategoryClick(10)} className={`p-3 ${subCategory === 10 ? 'bg-slate-200' : ''}`}>
@@ -32,7 +33,7 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
         </li>
       </>
     );
-  } else if (mainCategory === 'mouse') {
+  } else if (mainCategory === 2) {
     return (
       <>
         <li onClick={() => handleSubCategoryClick(29)} className={`p-3 ${subCategory === 29 ? 'bg-slate-200' : ''}`}>
@@ -219,19 +220,19 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
         <div className="flex h-64 border ">
           <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
             <li
-              className={`p-3 ${mainCategory === 'keyboard' ? 'bg-gray-200' : ''}`}
+              className={`p-3 ${mainCategory === 1 ? 'bg-gray-200' : ''}`}
               onClick={() => handleMainCategoryClick('keyboard')}
             >
               키보드
             </li>
             <li
-              className={`p-3 ${mainCategory === 'mouse' ? 'bg-gray-200' : ''}`}
+              className={`p-3 ${mainCategory === 2 ? 'bg-gray-200' : ''}`}
               onClick={() => handleMainCategoryClick('mouse')}
             >
               마우스
             </li>
             <li
-              className={`p-3 ${mainCategory === 'others' ? 'bg-gray-200' : ''}`}
+              className={`p-3 ${mainCategory === 3 ? 'bg-gray-200' : ''}`}
               onClick={() => handleMainCategoryClick('others')}
             >
               기타
@@ -439,28 +440,42 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
   );
 });
 
-export default function Sell() {
+export default function Edit() {
+  const { id } = useParams(); // Dynamic route parameter
   const [uploadImages, setUploadImages] = useState({
     imageFiles: [],
     imageUrls: [],
   });
   const [title, setTitle] = useState('');
-  const [mainCategory, setMainCategory] = useState('keyboard');
+  const [mainCategory, setMainCategory] = useState(1);
   const [subCategory, setSubCategory] = useState(null);
   const [condition, setCondition] = useState(null);
-  const [description, setDescription] = useState(''); // 설명 상태 변수 추가
+  const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
   const [openChatUrl, setOpenChatUrl] = useState('');
   const [tags, setTags] = useState([]);
   const fileInputRef = useRef(null);
-  const router = new useRouter();
-  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['products', id],
+    queryFn: () => getProductWithUser(id),
+  });
 
   useEffect(() => {
-    if (status !== 'loading' && !session) return router.push('/signin');
-    if (session) setOpenChatUrl(session.user.openChatUrl);
-  }, [session]);
+    if (data) {
+      console.log(data);
+      setTitle(data.title);
+      setMainCategory(~~(data.category / 10));
+      setSubCategory(data.category);
+      setCondition(data.condition);
+      setDescription(data.description);
+      setPrice(data.price);
+      setOpenChatUrl(data.openChatUrl);
+      setTags(data.tags);
+    }
+  }, [data]);
 
   const handleDisabled = () => {
     if (
@@ -477,7 +492,7 @@ export default function Sell() {
   };
 
   const handleUpload = async () => {
-    setIsLoading(true);
+    setUploadLoading(true);
     const formData = new FormData();
     uploadImages.imageFiles.forEach(file => {
       formData.append('files', file);
@@ -505,6 +520,8 @@ export default function Sell() {
       }
     } catch (error) {
       console.error('Error uploading files:', error);
+    } finally {
+      setUploadLoading(false);
     }
   };
 
