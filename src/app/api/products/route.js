@@ -144,8 +144,16 @@ export async function POST(req) {
     };
     product.tags = product.tags.length ? product.tags.split(',') : [];
 
-    await users.updateOne({ email: session.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
     const result = await products.insertOne(product);
+    await users.updateOne(
+      { email: session.email },
+      {
+        $set: { openChatUrl: formData.get('openChatUrl') },
+        $addToSet: {
+          products: result.insertedId,
+        },
+      },
+    );
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
     console.log(error);
