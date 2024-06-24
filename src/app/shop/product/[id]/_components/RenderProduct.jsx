@@ -10,7 +10,6 @@ import { useQuery } from '@tanstack/react-query';
 import getProductWithUser from '../_lib/getProductWithUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
 const RenderCondition = ({ condition }) => {
   if (condition === 1) condition = '미사용';
@@ -50,7 +49,7 @@ const RenderInfo = React.memo(({ category }) => {
 
   return (
     <span className="flex items-center text-gray-400 text-sm px-10 max-md:px-2">
-      <Link href={'/shop?q=qweqwe'}>{mainCategory}</Link>
+      <Link href={`/shop?categories=${~~(category / 10)}`}>{mainCategory}</Link>
       <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24">
         <g fill="none" fillRule="evenodd">
           <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
@@ -60,7 +59,7 @@ const RenderInfo = React.memo(({ category }) => {
           />
         </g>
       </svg>
-      <Link href={'/shop?q='}>{obj[category]}</Link>
+      <Link href={`/shop?categories=${category}`}>{obj[category]}</Link>
     </span>
   );
 });
@@ -110,7 +109,6 @@ const RenderProfile = ({ user, product }) => {
 };
 
 const RenderBookmarkButton = ({ productId, bookmarked, session }) => {
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const isBookmarked = session && bookmarked.includes(session.user.id);
@@ -118,7 +116,7 @@ const RenderBookmarkButton = ({ productId, bookmarked, session }) => {
 
   const mutation = useMutation({
     mutationFn: async ({ productId }) => {
-      const res = await fetch(`/api/products/${productId}/bookmark?a=123`, {
+      const res = await fetch(`/api/products/${productId}/bookmark`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -193,9 +191,7 @@ export default function RenderProduct({ id }) {
 
   const { user, ...product } = data;
 
-  const writer = status !== 'loading' && session.user.id === product.userId;
-
-  console.log(writer);
+  const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
 
   return (
     <div className="max-w-screen-xl mx-auto max-md:main-768">
@@ -206,7 +202,21 @@ export default function RenderProduct({ id }) {
           <p className="text-xl font-bold">{product.title}</p>
           <div className="flex">
             {writer ? (
-              <Link href={`/shop/product/${id}/edit`}>수정</Link>
+              <Link href={`/shop/product/${id}/edit`} className="flex items-center text-gray-500 font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path
+                    fill="grey"
+                    fillRule="evenodd"
+                    d="M3.25 22a.75.75 0 0 1 .75-.75h16a.75.75 0 0 1 0 1.5H4a.75.75 0 0 1-.75-.75"
+                    clipRule="evenodd"
+                  />
+                  <path
+                    fill="grey"
+                    d="m11.52 14.929l5.917-5.917a8.232 8.232 0 0 1-2.661-1.787a8.232 8.232 0 0 1-1.788-2.662L7.07 10.48c-.462.462-.693.692-.891.947a5.24 5.24 0 0 0-.599.969c-.139.291-.242.601-.449 1.22l-1.088 3.267a.848.848 0 0 0 1.073 1.073l3.266-1.088c.62-.207.93-.31 1.221-.45a5.19 5.19 0 0 0 .969-.598c.255-.199.485-.43.947-.891m7.56-7.559a3.146 3.146 0 0 0-4.45-4.449l-.71.71l.031.09c.26.749.751 1.732 1.674 2.655A7.003 7.003 0 0 0 18.37 8.08z"
+                  />
+                </svg>
+                수정
+              </Link>
             ) : (
               <>
                 <OpenChatLink url={product.openChatUrl} />

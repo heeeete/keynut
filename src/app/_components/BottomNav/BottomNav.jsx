@@ -14,12 +14,12 @@ export default function BottomNav() {
           <p className="text-xxs">HOME</p>
         </li>
         <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
-          <GalleryLink />
-          <p className="text-xxs">GALLERY</p>
-        </li>
-        <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
           <ShopLink />
           <p className="text-xxs">SHOP</p>
+        </li>
+        <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
+          <GalleryLink />
+          <p className="text-xxs">SELL</p>
         </li>
         <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
           <BookmarkLink />

@@ -5,6 +5,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   if (mainCategory === 1) {
@@ -41,7 +42,7 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
         </li>
       </>
     );
-  } else handleSubCategoryClick(99);
+  }
 });
 
 const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUploadImages }) => {
@@ -93,9 +94,12 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
   );
 });
 
-const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }) => {
+const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, deleteImages, setDeleteImages }) => {
   const removeImage = useCallback(
     idx => {
+      if (uploadImages.imageUrls[idx].startsWith('https://keynut-bucket.s3.ap-northeast-2.amazonaws.com'))
+        setDeleteImages(curr => [...curr, uploadImages.imageUrls[idx]]);
+
       const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
       const newImageUrls = uploadImages.imageUrls.filter((_, index) => index !== idx);
       setUploadImages({
@@ -148,6 +152,9 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }) => {
                       alt={`item-${idx}`}
                       className="rounded border"
                       style={{ objectFit: 'cover' }}
+                      sizes="(max-width: 768px) 256px, 384px"
+                      placeholder="blur"
+                      blurDataURL={url}
                     />
                     {idx === 0 && (
                       <div className="absolute bg-black left-1 top-1 p-1 rounded-xl bg-opacity-50 text-xxs text-white">
@@ -206,7 +213,8 @@ const RenderTitle = React.memo(({ title, setTitle }) => {
 const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }) => {
   const handleMainCategoryClick = useCallback(id => {
     setMainCategory(id);
-    setSubCategory(null);
+    if (id !== 9) setSubCategory(id * 10);
+    else setSubCategory(99);
   }, []);
 
   const handleSubCategoryClick = useCallback(id => {
@@ -219,22 +227,13 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
         <div className="flex font-medium text-xl my-3">카테고리</div>
         <div className="flex h-64 border ">
           <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
-            <li
-              className={`p-3 ${mainCategory === 1 ? 'bg-gray-200' : ''}`}
-              onClick={() => handleMainCategoryClick('keyboard')}
-            >
+            <li className={`p-3 ${mainCategory === 1 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(1)}>
               키보드
             </li>
-            <li
-              className={`p-3 ${mainCategory === 2 ? 'bg-gray-200' : ''}`}
-              onClick={() => handleMainCategoryClick('mouse')}
-            >
+            <li className={`p-3 ${mainCategory === 2 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(2)}>
               마우스
             </li>
-            <li
-              className={`p-3 ${mainCategory === 3 ? 'bg-gray-200' : ''}`}
-              onClick={() => handleMainCategoryClick('others')}
-            >
+            <li className={`p-3 ${mainCategory === 9 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(9)}>
               기타
             </li>
           </ul>
@@ -266,6 +265,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="1"
+            checked={condition === 1}
             onChange={() => handleConditionClick(1)}
           />
           <span>미사용</span>
@@ -276,6 +276,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="2"
+            checked={condition === 2}
             onChange={() => handleConditionClick(2)}
           />
           <span>사용감 없음</span>
@@ -286,6 +287,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="3"
+            checked={condition === 3}
             onChange={() => handleConditionClick(3)}
           />
           <span>사용감 적음</span>
@@ -296,6 +298,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="4"
+            checked={condition === 4}
             onChange={() => handleConditionClick(4)}
           />
           <span>사용감 많음</span>
@@ -306,6 +309,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="5"
+            checked={condition === 5}
             onChange={() => handleConditionClick(5)}
           />
           <span>파손 / 고장</span>
@@ -338,6 +342,7 @@ const RenderDescriptionInput = React.memo(({ description, setDescription }) => {
 });
 
 const RenderPriceInput = React.memo(({ price, setPrice }) => {
+  console.log(price);
   const handlePrice = useCallback(e => {
     const value = e.target.value.replace(/,/g, '');
     if (!isNaN(value) && value.length <= 9) {
@@ -441,11 +446,12 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
 });
 
 export default function Edit() {
-  const { id } = useParams(); // Dynamic route parameter
+  const { id } = useParams();
   const [uploadImages, setUploadImages] = useState({
     imageFiles: [],
     imageUrls: [],
   });
+  const [deleteImages, setDeleteImages] = useState([]);
   const [title, setTitle] = useState('');
   const [mainCategory, setMainCategory] = useState(1);
   const [subCategory, setSubCategory] = useState(null);
@@ -457,24 +463,35 @@ export default function Edit() {
   const [tags, setTags] = useState([]);
   const fileInputRef = useRef(null);
   const router = useRouter();
+  const { data: session, update } = useSession();
+
+  console.log(session);
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ['products', id],
+    queryKey: ['product', id],
     queryFn: () => getProductWithUser(id),
   });
 
   useEffect(() => {
-    if (data) {
+    const originalDataInit = () => {
       console.log(data);
       setTitle(data.title);
+      const originalUploadImages = { ...uploadImages };
+      data.images.map(img => {
+        originalUploadImages.imageFiles.push(img);
+        originalUploadImages.imageUrls.push(img);
+      });
+      setUploadImages(originalUploadImages);
       setMainCategory(~~(data.category / 10));
       setSubCategory(data.category);
       setCondition(data.condition);
       setDescription(data.description);
-      setPrice(data.price);
+      setPrice(data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
       setOpenChatUrl(data.openChatUrl);
       setTags(data.tags);
-    }
+    };
+
+    if (data) originalDataInit();
   }, [data]);
 
   const handleDisabled = () => {
@@ -495,7 +512,10 @@ export default function Edit() {
     setUploadLoading(true);
     const formData = new FormData();
     uploadImages.imageFiles.forEach(file => {
-      formData.append('files', file);
+      formData.append('uploadFiles', file);
+    });
+    deleteImages.forEach(file => {
+      formData.append('deleteFiles', file);
     });
     formData.append('title', title.replace(/ +/g, ' ').trim());
     formData.append('subCategory', subCategory);
@@ -504,26 +524,29 @@ export default function Edit() {
     formData.append('openChatUrl', openChatUrl.trim());
     formData.append('price', price.replaceAll(',', ''));
     formData.append('tags', tags);
+    formData.append('id', id);
 
     try {
       const res = await fetch('/api/products', {
-        method: 'POST',
+        method: 'PUT',
         body: formData,
       });
 
       const data = await res.json();
       if (res.ok) {
-        console.log(data);
-        if (data) router.push(`/shop/product/${data.insertedId}`);
+        update({ openChatUrl: openChatUrl });
+        if (data) router.push(`/shop/product/${id}`);
       } else {
         console.error(data.error);
       }
     } catch (error) {
-      console.error('Error uploading files:', error);
+      console.error('Error edit files:', error);
     } finally {
       setUploadLoading(false);
     }
   };
+
+  console.log(deleteImages);
 
   return (
     <div className="max-w-screen-xl px-10 mx-auto max-md:px-2 max-md:main-768">
@@ -536,7 +559,12 @@ export default function Edit() {
             uploadImages={uploadImages}
             setUploadImages={setUploadImages}
           />
-          <RenderDNDImages uploadImages={uploadImages} setUploadImages={setUploadImages} />
+          <RenderDNDImages
+            uploadImages={uploadImages}
+            setUploadImages={setUploadImages}
+            deleteImages={deleteImages}
+            setDeleteImages={setDeleteImages}
+          />
           <RenderTitle title={title} setTitle={setTitle} />
           <RenderHashTagInputWithTag tags={tags} setTags={setTags} />
           <div className="flex flex-1 justify-between my-3 max-md:flex-col">
@@ -559,7 +587,7 @@ export default function Edit() {
               disabled={handleDisabled()}
               onClick={handleUpload}
             >
-              <p>업로드</p>
+              <p>수정</p>
             </button>
           </div>
         </>

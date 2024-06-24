@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --hostname 10.18.240.104",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -16,8 +16,10 @@
     "mongodb": "^5.9.2",
     "next": "14.2.3",
     "next-auth": "^4.24.7",
+    "plaiceholder": "^3.0.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "sharp": "^0.33.4"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.45.0",

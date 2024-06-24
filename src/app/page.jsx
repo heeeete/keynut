@@ -63,18 +63,16 @@ export default function Home() {
 
   return (
     <div className="flex max-w-screen-xl mx-auto px-10 flex-col space-y-12 max-md:px-2 max-md:main-768">
-      <button onClick={() => signIn()}>로그인</button>
-      <Link href={'/sell'}>물건팔기</Link>
       <section className="flex flex-col space-y-5">
         <div className="flex flex-col">
           <div className="font-medium text-xl">cateory</div>
           <div className="text-gray-600 font-medium">카테고리</div>
         </div>
         <div className="flex space-x-3 overflow-auto scrollbar-hide">
-          <li className="flex w-36 aspect-square min-h-16 min-w-16 bg-white  border rounded-full"></li>
-          <li className="flex w-36 aspect-square min-h-16 min-w-16 bg-white border rounded-full"></li>
-          <li className="flex w-36 aspect-square min-h-16 min-w-16 bg-white border rounded-full"></li>
-          <li className="flex w-36 aspect-square min-h-16 min-w-16 bg-white  border rounded-full"></li>
+          <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white  border rounded">키보드</li>
+          <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white border rounded">마우스</li>
+          <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white border rounded">기타</li>
+          <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white  border rounded">갤러리</li>
         </div>
       </section>
       <section className="flex flex-col space-y-5">
@@ -89,21 +87,6 @@ export default function Home() {
           {images.map((img, idx) => (
             <div className="flex flex-col max-md:max-w-40 max-md:w-40" key={idx}>
               <div className="w-full aspect-square relative min-h-32 min-w-32">
-                <div className="absolute top-1 right-1 z-10">
-                  <svg
-                    className="w-7 h-7  max-md:w-5 max-md:h-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="2em"
-                    height="2em"
-                    viewBox="0 0 32 32"
-                  >
-                    <path
-                      stroke="black"
-                      fill={img.bookMarked ? 'black' : 'white'}
-                      d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
-                    />
-                  </svg>
-                </div>
                 <Image
                   src={img.path}
                   alt={img.name}
