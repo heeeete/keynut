@@ -156,6 +156,7 @@ const RenderProducts = React.memo(({ params }) => {
     });
   };
   const { data, error, isLoading } = useProducts(initialQueryString());
+  // console.log(data);
   return (
     <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
       {data?.length ? (
@@ -168,7 +169,7 @@ const RenderProducts = React.memo(({ params }) => {
             }}
           >
             <div className="w-full aspect-square relative min-h-32 min-w-32">
-              <div className="absolute top-1 right-1 z-10">
+              {/* <div className="absolute top-1 right-1 z-10">
                 <svg
                   className="w-7 h-7  max-md:w-5 max-md:h-5"
                   xmlns="http://www.w3.org/2000/svg"
@@ -186,7 +187,7 @@ const RenderProducts = React.memo(({ params }) => {
                     d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
                   />
                 </svg>
-              </div>
+              </div> */}
               <Image
                 className="rounded object-cover"
                 src={product.images[0]}
@@ -239,36 +240,30 @@ export default function RenderShop() {
     5: { option: '50만원 이상', checked: false },
   });
   const searchFlag = useRef(true);
-  console.log('리렌더링!!!!!');
+  // console.log('리렌더링!!!!!');
 
   const initialQueryString = () => {
     let query = '';
-    if (params.get('keyword')) {
-      query += 'keyword=' + params.get('keyword');
+    if (paramsKeyword.length) {
+      query += 'keyword=' + encodeURIComponent(paramsKeyword);
     }
-    if (params.get('categories')) {
+    if (paramsCategories.length) {
       if (query.length > 0) query += '&';
-      query += 'categories=' + params.get('categories');
+      query += 'categories=' + paramsCategories;
     }
-    if (params.get('prices')) {
+    if (paramsPrices.length) {
       if (query.length > 0) query += '&';
-      query += 'prices=' + params.get('prices');
+      query += 'prices=' + paramsPrices;
     }
     return query;
   };
 
-  const [queryString, setQueryString] = useState(encodeURIComponent(initialQueryString()));
+  const [queryString, setQueryString] = useState(initialQueryString());
   const innerContainerRef = useRef(null);
   const filterRef = useRef(null);
   const router = useRouter();
 
   useEffect(() => {
-    console.log('처음', window.location.search.substring(1));
-    setQueryString(window.location.search.substring(1));
-  }, []);
-
-  useEffect(() => {
-    console.log('params', encodeURIComponent(paramsKeyword));
     const updateStateFromParams = () => {
       const newCategoriesState = { ...categoriesState };
       const newPricesState = { ...pricesState };
@@ -306,19 +301,16 @@ export default function RenderShop() {
       .join(',');
 
     const queryParams = [];
-    console.log('search', searchText);
     if (searchText.length) queryParams.push(`keyword=${encodeURIComponent(searchText)}`);
     if (categoryQuery) queryParams.push(`categories=${categoryQuery}`);
     if (priceQuery) queryParams.push(`prices=${priceQuery}`);
 
-    console.log('createQueryString', queryParams);
     return queryParams.join('&');
   }, [categoriesState, pricesState, searchText]);
 
   const debounceSetQueryString = useCallback(debounce(setQueryString, 1000), []);
 
   useEffect(() => {
-    console.log('debounce = ', createQueryString());
     if (searchFlag.current) debounceSetQueryString(createQueryString());
     else setQueryString(createQueryString());
   }, [debounceSetQueryString, createQueryString]);
