@@ -4,7 +4,6 @@ const getProducts = async queryString => {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const url = queryString ? `${baseUrl}/api/products?${queryString}` : `${baseUrl}/api/products`;
     const res = await fetch(url, {
-      // method: 'GET',
       cache: 'no-store',
     });
     if (!res.ok) {

@@ -38,10 +38,18 @@ export async function GET(req) {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     let query = {};
+
     if (keywordParam) {
-      query.title = { $regex: keywordParam, $options: 'i' };
+      //해시태그일 경우 해시태그에서 검색
+      if (keywordParam[0] == '#') {
+        const hashTag = keywordParam.split(' ')[0];
+        query.tags = { $elemMatch: { $eq: hashTag } };
+      } else query.title = { $regex: keywordParam, $options: 'i' };
     }
     if (categories.length > 0) {
+      if (categories.includes(1)) {
+        categories.push(10, 11, 12, 13, 14, 15, 19);
+      }
       query.category = { $in: categories };
     }
 

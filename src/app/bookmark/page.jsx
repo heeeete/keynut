@@ -1,4 +1,7 @@
+'use client';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const bookmarked = [
   { path: '/키보드1.webp', name: 'orange keyboard', price: '12,5000원' },
@@ -7,7 +10,18 @@ const bookmarked = [
   { path: '/키보드3.jpeg', name: 'purple keyboard', price: '15,5000원' },
   { path: '/키보드1.webp', name: 'orange keyboard', price: '35,5000원' },
 ];
+
+const useBookmarkedProducts = bookmarkedIds => {
+  return useQuery(['bookmarkedProducts', bookmarkedIds], () => fetchBookmarkedProducts(bookmarkedIds), {
+    enabled: bookmarkedIds.length > 0,
+  });
+};
+
 export default function Bookmark() {
+  const { data: session, status } = useSession();
+
+  const bookmarkIds = session && session.user.bookmarked ? session.user.bookmarked : [];
+
   return (
     <div className="grid grid-cols-2 gap-2 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:grid-cols-1 max-md:main-768">
       {bookmarked.map((item, index) => {
