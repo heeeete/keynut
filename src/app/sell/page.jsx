@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
-  if (mainCategory === 'keyboard') {
+  if (mainCategory === 1) {
     return (
       <>
         <li onClick={() => handleSubCategoryClick(10)} className={`p-3 ${subCategory === 10 ? 'bg-slate-200' : ''}`}>
@@ -32,7 +32,7 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
         </li>
       </>
     );
-  } else if (mainCategory === 'mouse') {
+  } else if (mainCategory === 2) {
     return (
       <>
         <li onClick={() => handleSubCategoryClick(29)} className={`p-3 ${subCategory === 29 ? 'bg-slate-200' : ''}`}>
@@ -40,7 +40,7 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
         </li>
       </>
     );
-  } else handleSubCategoryClick(99);
+  }
 });
 
 const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUploadImages }) => {
@@ -205,7 +205,8 @@ const RenderTitle = React.memo(({ title, setTitle }) => {
 const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }) => {
   const handleMainCategoryClick = useCallback(id => {
     setMainCategory(id);
-    setSubCategory(null);
+    if (id !== 9) setSubCategory(id * 10);
+    else setSubCategory(99);
   }, []);
 
   const handleSubCategoryClick = useCallback(id => {
@@ -218,22 +219,13 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
         <div className="flex font-medium text-xl my-3">카테고리</div>
         <div className="flex h-64 border ">
           <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
-            <li
-              className={`p-3 ${mainCategory === 'keyboard' ? 'bg-gray-200' : ''}`}
-              onClick={() => handleMainCategoryClick('keyboard')}
-            >
+            <li className={`p-3 ${mainCategory === 1 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(1)}>
               키보드
             </li>
-            <li
-              className={`p-3 ${mainCategory === 'mouse' ? 'bg-gray-200' : ''}`}
-              onClick={() => handleMainCategoryClick('mouse')}
-            >
+            <li className={`p-3 ${mainCategory === 2 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(2)}>
               마우스
             </li>
-            <li
-              className={`p-3 ${mainCategory === 'others' ? 'bg-gray-200' : ''}`}
-              onClick={() => handleMainCategoryClick('others')}
-            >
+            <li className={`p-3 ${mainCategory === 9 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(9)}>
               기타
             </li>
           </ul>
@@ -455,7 +447,7 @@ export default function Sell() {
   const [tags, setTags] = useState([]);
   const fileInputRef = useRef(null);
   const router = new useRouter();
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
 
   useEffect(() => {
     if (status !== 'loading' && !session) return router.push('/signin');
@@ -498,7 +490,7 @@ export default function Sell() {
 
       const data = await res.json();
       if (res.ok) {
-        console.log(data);
+        update({ openChatUrl: openChatUrl });
         if (data) router.push(`/shop/product/${data.insertedId}`);
       } else {
         console.error(data.error);

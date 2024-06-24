@@ -117,7 +117,7 @@ export default function ImageSlider({ images }) {
                 idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
               }`}
               placeholder="blur"
-              blurDataURL="img"
+              blurDataURL={img}
               style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
             />
           ))}

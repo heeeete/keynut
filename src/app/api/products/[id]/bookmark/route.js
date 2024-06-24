@@ -1,13 +1,12 @@
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import getUserSession from '@/lib/getUserSession';
 import { connectDB } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
-import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
 export async function POST(req, { params }) {
   try {
     const { id } = params;
-    const session = await getServerSession(authOptions);
+    const session = await getUserSession();
     const { isBookmarked } = await req.json();
 
     const client = await connectDB;

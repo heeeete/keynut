@@ -172,10 +172,15 @@ export const authOptions = {
     maxAge: 30 * 24 * 60 * 60, //30일
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.user = user;
       }
+      if (trigger === 'update' && user !== null) {
+        const { openChatUrl } = session;
+        token.user.openChatUrl = openChatUrl;
+      }
+
       return token;
     },
     async session({ session, token }) {

@@ -1,21 +1,14 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import s3Client from '@/lib/s3Client';
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import getUserSession from '@/app/utils/getUserSession';
+import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 
 const client = await connectDB;
 const db = client.db(process.env.MONGODB_NAME);
-const collection = db.collection('products');
+const products = db.collection('products');
 const users = db.collection('users');
-
-const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
 
 const priceRanges = [
   { id: 1, min: 0, max: 50000 },
@@ -146,15 +139,82 @@ export async function POST(req) {
       bookmarked: [],
       openChatUrl: formData.get('openChatUrl'),
       tags: formData.get('tags'),
+      state: 1,
       createdAt: new Date(),
     };
-    product.tags = product.tags.split(',');
+    product.tags = product.tags.length ? product.tags.split(',') : [];
 
     await users.updateOne({ email: session.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
-    const result = await collection.insertOne(product);
+    const result = await products.insertOne(product);
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
     console.log(error);
-    return NextResponse.json({ error: '상품 DB로 업로드중 문제 발생' }, { status: 500 });
+    return NextResponse.json({ error: error }, { status: 500 });
+  }
+}
+
+export async function PUT(req) {
+  try {
+    const { user: session } = await getUserSession();
+    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
+    const formData = await req.formData();
+    const deleteFiles = formData.getAll('deleteFiles');
+    const uploadFiles = formData.getAll('uploadFiles');
+    const uploadedUrls = [];
+
+    const extractionS3ImageKey = url => {
+      return url.substr(process.env.AWS_S3_BASE_URL.length + 1);
+    };
+    const deletePromises = deleteFiles.map(file => {
+      const params = {
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: extractionS3ImageKey(file),
+      };
+      return s3Client.send(new DeleteObjectCommand(params)); // Promise 반환
+    });
+
+    const uploadPromises = uploadFiles.map(async file => {
+      if (typeof file === 'object') {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const uploadParams = {
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: `${Date.now()}_${file.name}`,
+          Body: buffer,
+          ContentType: file.type,
+        };
+        const command = new PutObjectCommand(uploadParams);
+
+        await s3Client.send(command);
+        const url = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+        uploadedUrls.push(url);
+      } else {
+        uploadedUrls.push(file); // 이미 업로드된 파일의 URL
+      }
+    });
+
+    await Promise.all([...deletePromises, ...uploadPromises]);
+    await users.updateOne({ email: session.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
+    const result = await products.updateOne(
+      { _id: new ObjectId(formData.get('id')) },
+      {
+        $set: {
+          title: formData.get('title'),
+          category: Number(formData.get('subCategory')),
+          condition: Number(formData.get('condition')),
+          description: formData.get('description'),
+          price: Number(formData.get('price')),
+          images: uploadedUrls,
+          openChatUrl: formData.get('openChatUrl'),
+          tags: formData.get('tags').split(','),
+          updatedAt: new Date(),
+        },
+      },
+    );
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ error: error }, { status: 500 });
   }
 }
