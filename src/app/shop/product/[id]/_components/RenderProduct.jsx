@@ -182,6 +182,85 @@ const RenderDescriptor = ({ product }) => {
   );
 };
 
+const IsWriter = ({ id, state, session }) => {
+  const queryClient = useQueryClient();
+  console.log(state);
+
+  const mutation = useMutation({
+    mutationFn: async ({ productId }) => {
+      const res = await fetch(`/api/products/${productId}/state`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ state }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Network response was not ok');
+      console.log(data);
+      return data;
+    },
+    onMutate: async ({ productId }) => {
+      await queryClient.cancelQueries(['product', productId]);
+      const previousProduct = queryClient.getQueryData(['product', productId]);
+      queryClient.setQueryData(['product', productId], old => ({
+        ...old,
+        state: state === 1 ? 0 : 1,
+      }));
+      return previousProduct;
+    },
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(['product', variables.productId], context.previousProduct);
+    },
+    onSettled: (data, error, variables) => {
+      queryClient.invalidateQueries(['product', variables.productId]);
+    },
+  });
+
+  const onClickSelling = () => {
+    if (!session) return signIn();
+    else if (state === 1) return;
+    mutation.mutate({ productId: id });
+  };
+
+  const onClickSellCompleted = () => {
+    if (!session) return signIn();
+    else if (state === 0) return;
+    mutation.mutate({ productId: id });
+  };
+
+  return (
+    <div className="flex space-x-4">
+      <Link href={`/shop/product/${id}/edit`} className="flex items-center text-gray-500 font-semibold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+          <path
+            fill="grey"
+            fillRule="evenodd"
+            d="M3.25 22a.75.75 0 0 1 .75-.75h16a.75.75 0 0 1 0 1.5H4a.75.75 0 0 1-.75-.75"
+            clipRule="evenodd"
+          />
+          <path
+            fill="grey"
+            d="m11.52 14.929l5.917-5.917a8.232 8.232 0 0 1-2.661-1.787a8.232 8.232 0 0 1-1.788-2.662L7.07 10.48c-.462.462-.693.692-.891.947a5.24 5.24 0 0 0-.599.969c-.139.291-.242.601-.449 1.22l-1.088 3.267a.848.848 0 0 0 1.073 1.073l3.266-1.088c.62-.207.93-.31 1.221-.45a5.19 5.19 0 0 0 .969-.598c.255-.199.485-.43.947-.891m7.56-7.559a3.146 3.146 0 0 0-4.45-4.449l-.71.71l.031.09c.26.749.751 1.732 1.674 2.655A7.003 7.003 0 0 0 18.37 8.08z"
+          />
+        </svg>
+        수정
+      </Link>
+      <div className="space-x-1 bg-slate-200 p-1 rounded-sm">
+        <button onClick={onClickSelling} className={`${state === 1 ? 'bg-white' : 'opacity-30'} p-1 rounded-s-sm`}>
+          판매중
+        </button>
+        <button
+          onClick={onClickSellCompleted}
+          className={`${state === 0 ? 'bg-white' : 'opacity-30'} p-1 rounded-e-sm`}
+        >
+          판매완료
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default function RenderProduct({ id }) {
   const { data: session, status } = useSession();
   const { data: data, error } = useQuery({ queryKey: ['product', id], queryFn: () => getProductWithUser(id) });
@@ -196,27 +275,13 @@ export default function RenderProduct({ id }) {
   return (
     <div className="max-w-screen-xl mx-auto max-md:main-768">
       <RenderInfo category={Number(product.category)} />
-      <ImageSlider images={product.images} />
+      <ImageSlider images={product.images} state={product.state} />
       <div className="p-10 space-y-6 max-md:px-2">
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold">{product.title}</p>
           <div className="flex">
             {writer ? (
-              <Link href={`/shop/product/${id}/edit`} className="flex items-center text-gray-500 font-semibold">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                  <path
-                    fill="grey"
-                    fillRule="evenodd"
-                    d="M3.25 22a.75.75 0 0 1 .75-.75h16a.75.75 0 0 1 0 1.5H4a.75.75 0 0 1-.75-.75"
-                    clipRule="evenodd"
-                  />
-                  <path
-                    fill="grey"
-                    d="m11.52 14.929l5.917-5.917a8.232 8.232 0 0 1-2.661-1.787a8.232 8.232 0 0 1-1.788-2.662L7.07 10.48c-.462.462-.693.692-.891.947a5.24 5.24 0 0 0-.599.969c-.139.291-.242.601-.449 1.22l-1.088 3.267a.848.848 0 0 0 1.073 1.073l3.266-1.088c.62-.207.93-.31 1.221-.45a5.19 5.19 0 0 0 .969-.598c.255-.199.485-.43.947-.891m7.56-7.559a3.146 3.146 0 0 0-4.45-4.449l-.71.71l.031.09c.26.749.751 1.732 1.674 2.655A7.003 7.003 0 0 0 18.37 8.08z"
-                  />
-                </svg>
-                수정
-              </Link>
+              <IsWriter id={id} state={product.state} session={session} />
             ) : (
               <>
                 <OpenChatLink url={product.openChatUrl} />
