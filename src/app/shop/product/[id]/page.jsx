@@ -3,7 +3,14 @@ import React from 'react';
 import getProductWithUser from './_lib/getProductWithUser';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
-export default async function Product({ params }) {
+const isMob = () => {
+  const headers = new Headers();
+  const userAgent = headers.get('user-agent') || '';
+  if (/Mobi|Android/i.test(userAgent)) return true;
+  return false;
+};
+
+export default async function Product({ context, params }) {
   const { id } = params;
   const queryClient = new QueryClient();
 
@@ -15,8 +22,7 @@ export default async function Product({ params }) {
   }
 
   const dehydratedstate = dehydrate(queryClient);
-
-  // const { user, ...product } = await getProductWithUser(id);
+  console.log(context);
 
   return (
     <HydrationBoundary state={dehydratedstate}>
