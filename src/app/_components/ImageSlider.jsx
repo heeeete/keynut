@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import debounce from '../utils/debounce';
 
-export default function ImageSlider({ images }) {
+export default function ImageSlider({ images, state }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fullSizeCurrentImageIndex, setFullSizeCurrentImageIndex] = useState(currentImageIndex);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -27,13 +27,8 @@ export default function ImageSlider({ images }) {
 
   useEffect(() => {
     imagesWidthInit();
-
-    // const debounceImagesWidthInit = debounce(imagesWidthInit, 100);
-    // window.addEventListener('resize', debounceImagesWidthInit);
-    // return () => window.removeEventListener('resize', debounceImagesWidthInit);
   }, [modalStatus]);
 
-  //이미지 슬라이더의 IDX가 변경이 되면 이미지 크게보는 곳에서 IDX도 함께 변경 해주고 offset을 맞춤
   useEffect(() => {
     let off = 0;
     for (let i = 0; i <= currentImageIndex; i++) {
@@ -90,6 +85,11 @@ export default function ImageSlider({ images }) {
         className="flex relative w-full max-w-lg aspect-square items-center group bg-gray-50 rounded"
         onClick={_ => setModalStatus(true)}
       >
+        {state === 0 && (
+          <div className="absolute flex items-center justify-center z-50 top-0 left-0 w-full h-full bg-black opacity-70">
+            <p className="text-white font-semibold text-3xl">판매완료</p>
+          </div>
+        )}
         {/* 왼쪽 넘기기 버튼 */}
         {images && images && images.length > 1 && (
           <button
@@ -103,7 +103,6 @@ export default function ImageSlider({ images }) {
             </div>
           </button>
         )}
-
         {images &&
           images.map((img, idx) => (
             <Image
