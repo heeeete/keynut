@@ -5,7 +5,6 @@ const s = process.env.NEXTAUTH_SECRET;
 
 export async function middleware(req) {
   const session = await getToken({ req, s });
-  console.log(session);
   if (!session) return NextResponse.redirect(new URL('/signin', req.url));
   else return NextResponse.next();
 }

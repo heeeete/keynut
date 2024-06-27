@@ -86,7 +86,7 @@ export default function ImageSlider({ images, state }) {
         onClick={_ => setModalStatus(true)}
       >
         {state === 0 && (
-          <div className="absolute flex items-center justify-center z-50 top-0 left-0 w-full h-full bg-black opacity-70">
+          <div className="absolute flex items-center justify-center z-40 top-0 left-0 w-full h-full bg-black opacity-70">
             <p className="text-white font-semibold text-3xl">판매완료</p>
           </div>
         )}
@@ -111,7 +111,7 @@ export default function ImageSlider({ images, state }) {
               alt="product-img"
               fill
               draggable={false}
-              sizes="(max-width: 24rem) 100vw, 24rem"
+              sizes="(max-width: 24rem) 100vw, 50rem"
               className={`absolute transition-opacity duration-200 ${
                 idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
               }`}
@@ -178,9 +178,9 @@ export default function ImageSlider({ images, state }) {
               images.map((img, idx) => (
                 <div
                   key={idx}
-                  className={`${
+                  className={`flex ${
                     images && images.length === 1 && 'flex justify-center'
-                  } relative min-w-fit h-full w-full mr-10`}
+                  } relative justify-center min-w-fit h-full w-full mr-10`}
                 >
                   <img
                     src={img}

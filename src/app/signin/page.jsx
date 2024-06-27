@@ -1,13 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getProviders, signIn } from 'next-auth/react';
+import { getProviders, signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Nothing_You_Could_Do } from 'next/font/google';
 
 const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });
 
 export default function SignIn() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [providers, setProviders] = useState({});
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -19,6 +21,10 @@ export default function SignIn() {
     };
     loadProviders();
   }, []);
+
+  useEffect(() => {
+    if (session) return router.push('/');
+  }, [session]);
 
   return (
     <div className="fixed top-0 left-0 z-50 bg-white w-100vw h-100vh flex flex-col space-y-14">

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ImageSlider from '@/app/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/app/utils/timeAgo';
@@ -10,6 +10,8 @@ import { useQuery } from '@tanstack/react-query';
 import getProductWithUser from '../_lib/getProductWithUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signIn, useSession } from 'next-auth/react';
+import Modal from '@/app/_components/Modal';
+import { useRouter } from 'next/navigation';
 
 const RenderCondition = ({ condition }) => {
   if (condition === 1) condition = '미사용';
@@ -74,14 +76,29 @@ const RenderBookMark = ({ bookmarked }) => {
   return (
     <div className="flex items-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 32 32">
-        <path fill="grey" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
+        <path fill="currentColor" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
       <p>{bookmarked.length}</p>
     </div>
   );
 };
 
+const RenderViews = ({ views }) => {
+  return (
+    <div className="flex items-center justify-center space-x-1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.3rem" height="1.3rem" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"
+        />
+      </svg>
+      <p>{views}</p>
+    </div>
+  );
+};
+
 const RenderProfile = ({ user, product }) => {
+  if (!user) return;
   return (
     <>
       <div className="flex max-w-md justify-between border rounded flex-wrap  max-md:px-2 ">
@@ -182,9 +199,8 @@ const RenderDescriptor = ({ product }) => {
   );
 };
 
-const IsWriter = ({ id, state, session }) => {
+const IsWriter = ({ id, state, session, setDeleteState }) => {
   const queryClient = useQueryClient();
-  console.log(state);
 
   const mutation = useMutation({
     mutationFn: async ({ productId }) => {
@@ -230,22 +246,22 @@ const IsWriter = ({ id, state, session }) => {
   };
 
   return (
-    <div className="flex space-x-4">
+    <div className="flex space-x-4 max-md:space-x-2">
       <Link href={`/shop/product/${id}/edit`} className="flex items-center text-gray-500 font-semibold">
         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-          <path
-            fill="grey"
-            fillRule="evenodd"
-            d="M3.25 22a.75.75 0 0 1 .75-.75h16a.75.75 0 0 1 0 1.5H4a.75.75 0 0 1-.75-.75"
-            clipRule="evenodd"
-          />
-          <path
-            fill="grey"
-            d="m11.52 14.929l5.917-5.917a8.232 8.232 0 0 1-2.661-1.787a8.232 8.232 0 0 1-1.788-2.662L7.07 10.48c-.462.462-.693.692-.891.947a5.24 5.24 0 0 0-.599.969c-.139.291-.242.601-.449 1.22l-1.088 3.267a.848.848 0 0 0 1.073 1.073l3.266-1.088c.62-.207.93-.31 1.221-.45a5.19 5.19 0 0 0 .969-.598c.255-.199.485-.43.947-.891m7.56-7.559a3.146 3.146 0 0 0-4.45-4.449l-.71.71l.031.09c.26.749.751 1.732 1.674 2.655A7.003 7.003 0 0 0 18.37 8.08z"
-          />
+          <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+            <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1" />
+            <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3zM16 5l3 3" />
+          </g>
         </svg>
         수정
       </Link>
+      <button className="flex items-center text-gray-500 font-semibold" onClick={() => setDeleteState(true)}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
+          <path fill="grey" d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z" />
+        </svg>
+        삭제
+      </button>
       <div className="space-x-1 bg-slate-200 p-1 rounded-sm">
         <button onClick={onClickSelling} className={`${state === 1 ? 'bg-white' : 'opacity-30'} p-1 rounded-s-sm`}>
           판매중
@@ -261,17 +277,48 @@ const IsWriter = ({ id, state, session }) => {
   );
 };
 
-export default function RenderProduct({ id }) {
-  const { data: session, status } = useSession();
-  const { data: data, error } = useQuery({ queryKey: ['product', id], queryFn: () => getProductWithUser(id) });
+const incrementViewCount = async productId => {
+  const res = await fetch(`/api/products/${productId}`, {
+    method: 'PUT',
+  });
+  return res.json();
+};
 
-  if (error) return <div>Error loading product</div>;
-  if (!data) return <div>Loading...</div>;
+export default function RenderProduct({ id }) {
+  const queryClient = useQueryClient();
+  const [deleteState, setDeleteState] = useState(false);
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const {
+    data: data,
+    error,
+    isLoading,
+  } = useQuery({ queryKey: ['product', id], queryFn: () => getProductWithUser(id) });
+
+  useEffect(() => {
+    const fetchUpdatedProduct = async () => {
+      const data = await incrementViewCount(id);
+      if (data) queryClient.setQueryData(['product', id], data);
+    };
+    fetchUpdatedProduct();
+  }, [queryClient]);
 
   const { user, ...product } = data;
 
   const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
 
+  const deleteProduct = async () => {
+    try {
+      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      if (res.ok) router.back();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (!data && isLoading === false) return (window.location.href = '/');
+  if (error) return <div>Error loading product</div>;
+  if (!data) return <div>데이터를 가져오고 있습니다...</div>;
   return (
     <div className="max-w-screen-xl mx-auto max-md:main-768">
       <RenderInfo category={Number(product.category)} />
@@ -281,7 +328,7 @@ export default function RenderProduct({ id }) {
           <p className="text-xl font-bold">{product.title}</p>
           <div className="flex">
             {writer ? (
-              <IsWriter id={id} state={product.state} session={session} />
+              <IsWriter id={id} state={product.state} session={session} setDeleteState={setDeleteState} />
             ) : (
               <>
                 <OpenChatLink url={product.openChatUrl} />
@@ -297,14 +344,18 @@ export default function RenderProduct({ id }) {
         </p>
         <div className="flex w-full justify-between text-sm text-slate-500 font-semibold">
           <RenderCondition condition={Number(product.condition)} />
-          <div className="flex space-x-2 font-normal">
+          <div className="flex space-x-2 font-normal text-gray-400">
             <RenderTimeAgo date={product.createdAt} />
             <RenderBookMark bookmarked={product.bookmarked} />
+            <RenderViews views={product.views} />
           </div>
         </div>
         <RenderProfile user={user} product={product} />
         <RenderDescriptor product={product} />
       </div>
+      {deleteState === true && (
+        <Modal message={'삭제하시겠습니까?'} yesCallback={deleteProduct} modalSet={setDeleteState} />
+      )}
     </div>
   );
 }
