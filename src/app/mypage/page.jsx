@@ -8,7 +8,6 @@ import LikedPost from './_components/LikedPost';
 import { useSession } from 'next-auth/react';
 
 import Link from 'next/link';
-import DefaultProfile from '../_components/defaultProfile';
 
 const selling = [
   { path: '/키보드1.webp', name: 'orangekeyboards;dlcja;ljdcklasd', price: '12,5000원' },
