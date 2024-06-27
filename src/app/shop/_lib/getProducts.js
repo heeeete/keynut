@@ -1,5 +1,4 @@
 const getProducts = async queryString => {
-  // console.log(queryString);
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const url = queryString ? `${baseUrl}/api/products?${queryString}` : `${baseUrl}/api/products`;

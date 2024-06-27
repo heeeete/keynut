@@ -77,7 +77,7 @@ export default function Home() {
       </section>
       <section className="flex flex-col space-y-5">
         <div className="flex items-end">
-          <div className="flex flex-1 flex-col">
+          <div className="flex flex-1 flex-col bg-re">
             <div className="font-medium text-xl">just in</div>
             <div className="text-gray-600 font-medium">신규 등록 상품</div>
           </div>
