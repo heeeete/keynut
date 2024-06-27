@@ -177,10 +177,12 @@ export const authOptions = {
         token.user = user;
       }
       if (trigger === 'update' && user !== null) {
-        const { openChatUrl } = session;
-        token.user.openChatUrl = openChatUrl;
+        const { openChatUrl, image, nickname } = session;
+        console.log('----------------', image);
+        if (openChatUrl) token.user.openChatUrl = openChatUrl;
+        if (image !== undefined) token.user.image = image;
+        if (nickname) token.user.nickname = nickname;
       }
-
       return token;
     },
     async session({ session, token }) {

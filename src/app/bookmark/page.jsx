@@ -32,10 +32,10 @@ const HandleBookMark = ({ productId }) => {
         },
         body: JSON.stringify({ isBookmarked: true }),
       });
-      const data = await res.json();
-      if (res.ok) {
+      if (!res.ok) {
         throw new Error(data.error || 'Network response was not ok');
       }
+      const data = await res.json();
       return data;
     },
     onMutate: async ({ productId }) => {
@@ -93,17 +93,6 @@ export default function Bookmark() {
                 </div>
               </div>
               <HandleBookMark productId={item._id} />
-              {/* <button onClick={handleBookmarkClick(item._id)}>
-                <svg
-                  className="min-w-7"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="28px"
-                  height="28px"
-                  viewBox="0 0 32 32"
-                >
-                  <path stroke="black" fill="black" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
-                </svg>
-              </button> */}
             </div>
           ))}
         </div>

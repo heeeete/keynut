@@ -52,6 +52,7 @@ module.exports = {
         'd-screen': '100dvw',
         450: '450px',
         350: '350px',
+        130: '130px',
       },
       height: {
         '10vh': '10vh',
@@ -78,6 +79,7 @@ module.exports = {
         '100vw': '100vw',
         'd-screen': '100dvh',
         52.5: '52.5px',
+        130: '130px',
       },
       backgroundColor: {
         'gray-5': '#D9D9D9',
@@ -165,6 +167,15 @@ module.exports = {
           height: '100%',
           padding: '0px 12px',
           backgroundColor: 'rgb(243 244 246)',
+        },
+        '.defualt-profile': {
+          display: 'flex',
+          border: '2px solid rgb(243,244,246)',
+          borderRadius: '50%',
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+          overflow: 'hidden',
+          // flex border-2 border-gray-100 rounded-full items-end justify-center overflow-hidden
         },
       };
       //max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full
