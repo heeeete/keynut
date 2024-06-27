@@ -97,15 +97,17 @@ const RenderViews = ({ views }) => {
   );
 };
 
-const RenderProfile = ({ user, product }) => {
+const RenderProfile = ({ user }) => {
   if (!user) return;
   return (
     <>
       <div className="flex max-w-md justify-between border rounded flex-wrap  max-md:px-2 ">
         <div className="flex items-center">
-          <div className="flex rounded-full w-12 aspect-square justify-center items-center">
+          <div className="flex relative rounded-full w-12 h-12 aspect-square justify-center items-center">
             {user.image ? (
-              <Image className="rounded-full" src={user.image} alt="profile" fill />
+              <div className="relative w-10 h-10">
+                <Image className="rounded-full" src={user.image} alt="profile" fill />
+              </div>
             ) : (
               <svg xmlns="http://www.w3.org/2000/svg" width="70%" height="70%" viewBox="0 0 32 32">
                 <path
@@ -125,9 +127,7 @@ const RenderProfile = ({ user, product }) => {
   );
 };
 
-const RenderBookmarkButton = ({ productId, bookmarked, session }) => {
-  const queryClient = useQueryClient();
-
+const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) => {
   const isBookmarked = session && bookmarked.includes(session.user.id);
   const color = isBookmarked ? 'black' : 'white';
 
@@ -199,9 +199,7 @@ const RenderDescriptor = ({ product }) => {
   );
 };
 
-const IsWriter = ({ id, state, session, setDeleteState }) => {
-  const queryClient = useQueryClient();
-
+const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
   const mutation = useMutation({
     mutationFn: async ({ productId }) => {
       const res = await fetch(`/api/products/${productId}/state`, {
@@ -213,7 +211,6 @@ const IsWriter = ({ id, state, session, setDeleteState }) => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Network response was not ok');
-      console.log(data);
       return data;
     },
     onMutate: async ({ productId }) => {
@@ -289,21 +286,19 @@ export default function RenderProduct({ id }) {
   const [deleteState, setDeleteState] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
-  const {
-    data: data,
-    error,
-    isLoading,
-  } = useQuery({ queryKey: ['product', id], queryFn: () => getProductWithUser(id) });
+  const { data, error, isLoading } = useQuery({ queryKey: ['product', id], queryFn: () => getProductWithUser(id) });
+  const { user, ...product } = data;
 
   useEffect(() => {
     const fetchUpdatedProduct = async () => {
       const data = await incrementViewCount(id);
-      if (data) queryClient.setQueryData(['product', id], data);
+      queryClient.setQueryData(['product', id], oldData => ({
+        ...oldData,
+        views: data.views,
+      }));
     };
     fetchUpdatedProduct();
-  }, [queryClient]);
-
-  const { user, ...product } = data;
+  }, []);
 
   const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
 
@@ -328,11 +323,22 @@ export default function RenderProduct({ id }) {
           <p className="text-xl font-bold">{product.title}</p>
           <div className="flex">
             {writer ? (
-              <IsWriter id={id} state={product.state} session={session} setDeleteState={setDeleteState} />
+              <IsWriter
+                id={id}
+                state={product.state}
+                session={session}
+                setDeleteState={setDeleteState}
+                queryClient={queryClient}
+              />
             ) : (
               <>
                 <OpenChatLink url={product.openChatUrl} />
-                <RenderBookmarkButton productId={id} bookmarked={product.bookmarked} session={session} />
+                <RenderBookmarkButton
+                  productId={id}
+                  bookmarked={product.bookmarked}
+                  session={session}
+                  queryClient={queryClient}
+                />
               </>
             )}
           </div>
@@ -350,7 +356,7 @@ export default function RenderProduct({ id }) {
             <RenderViews views={product.views} />
           </div>
         </div>
-        <RenderProfile user={user} product={product} />
+        <RenderProfile user={user} />
         <RenderDescriptor product={product} />
       </div>
       {deleteState === true && (
