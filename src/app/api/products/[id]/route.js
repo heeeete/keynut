@@ -48,7 +48,7 @@ export async function PUT(req, { params }) {
   try {
     const { id } = params;
     const session = await getUserSession();
-    const THROTTLE_TIME = 3 * 60 * 1000;
+    const THROTTLE_TIME = 180 * 60 * 1000; // 3시간
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const cookieStore = cookies();
