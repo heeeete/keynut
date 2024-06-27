@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
+import extractionS3ImageKey from '@/app/utils/extractionS3ImageKey';
 
 const client = await connectDB;
 const db = client.db(process.env.MONGODB_NAME);
@@ -150,7 +151,7 @@ export async function POST(req) {
       {
         $set: { openChatUrl: formData.get('openChatUrl') },
         $addToSet: {
-          products: result.insertedId,
+          products: result.insertedId.toString(),
         },
       },
     );
@@ -170,9 +171,6 @@ export async function PUT(req) {
     const uploadFiles = formData.getAll('uploadFiles');
     const uploadedUrls = [];
 
-    const extractionS3ImageKey = url => {
-      return url.substr(process.env.AWS_S3_BASE_URL.length + 1);
-    };
     const deletePromises = deleteFiles.map(file => {
       const params = {
         Bucket: process.env.S3_BUCKET_NAME,
