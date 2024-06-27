@@ -342,7 +342,6 @@ const RenderDescriptionInput = React.memo(({ description, setDescription }) => {
 });
 
 const RenderPriceInput = React.memo(({ price, setPrice }) => {
-  console.log(price);
   const handlePrice = useCallback(e => {
     const value = e.target.value.replace(/,/g, '');
     if (!isNaN(value) && value.length <= 9) {
@@ -465,8 +464,6 @@ export default function Edit() {
   const router = useRouter();
   const { data: session, update } = useSession();
 
-  console.log(session);
-
   const { data, error, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: () => getProductWithUser(id),
@@ -474,7 +471,6 @@ export default function Edit() {
 
   useEffect(() => {
     const originalDataInit = () => {
-      console.log(data);
       setTitle(data.title);
       const originalUploadImages = { ...uploadImages };
       data.images.map(img => {
@@ -545,8 +541,6 @@ export default function Edit() {
       setUploadLoading(false);
     }
   };
-
-  console.log(deleteImages);
 
   return (
     <div className="max-w-screen-xl px-10 mx-auto max-md:px-2 max-md:main-768">

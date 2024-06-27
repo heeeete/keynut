@@ -156,7 +156,6 @@ const RenderProducts = React.memo(({ params }) => {
     });
   };
   const { data, error, isLoading } = useProducts(initialQueryString());
-  // console.log(data);
   return (
     <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
       {data?.length ? (
@@ -240,7 +239,6 @@ export default function RenderShop() {
     5: { option: '50만원 이상', checked: false },
   });
   const searchFlag = useRef(true);
-  // console.log('리렌더링!!!!!');
 
   const initialQueryString = () => {
     let query = '';

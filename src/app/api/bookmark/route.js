@@ -12,13 +12,10 @@ export async function GET(req) {
   try {
     const session = await getUserSession();
     const { bookmarked } = await users.findOne({ _id: new ObjectId(session.user.id) });
-    console.log('--------------', bookmarked.length);
     if (!bookmarked || bookmarked.length === 0) {
       return NextResponse.json([], { status: 200 });
     }
-    const bookmarkedProducts = await collection
-      .find({ _id: { $in: bookmarked.map(id => new ObjectId(id)) } })
-      .toArray();
+    const bookmarkedProducts = await collection.find({ _id: { $in: bookmarked } }).toArray();
     return NextResponse.json(bookmarkedProducts, { status: 200 });
   } catch (error) {
     console.error('Failed to retrieve bookmarked products:', error);

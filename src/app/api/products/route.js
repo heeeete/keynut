@@ -22,7 +22,6 @@ const priceRanges = [
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url, `${process.env.NEXT_PUBLIC_BASE_URL}`);
-    console.log(searchParams);
     const keywordParam = searchParams.get('keyword');
     const categoriesParam = searchParams.get('categories');
     const pricesParam = searchParams.get('prices');
@@ -140,6 +139,7 @@ export async function POST(req) {
       bookmarked: [],
       openChatUrl: formData.get('openChatUrl'),
       tags: formData.get('tags'),
+      views: 0, // 초기 조회수는 0
       state: 1,
       createdAt: new Date(),
     };
@@ -151,7 +151,7 @@ export async function POST(req) {
       {
         $set: { openChatUrl: formData.get('openChatUrl') },
         $addToSet: {
-          products: result.insertedId.toString(),
+          products: result.insertedId,
         },
       },
     );

@@ -15,13 +15,15 @@ export async function POST(req, { params }) {
       .collection('products')
       .updateOne(
         { _id: new ObjectId(id) },
-        isBookmarked ? { $pull: { bookmarked: session.user.id } } : { $addToSet: { bookmarked: session.user.id } },
+        isBookmarked
+          ? { $pull: { bookmarked: new ObjectId(session.user.id) } }
+          : { $addToSet: { bookmarked: new ObjectId(session.user.id) } },
       );
     await db
       .collection('users')
       .updateOne(
         { _id: new ObjectId(session.user.id) },
-        isBookmarked ? { $pull: { bookmarked: id } } : { $addToSet: { bookmarked: id } },
+        isBookmarked ? { $pull: { bookmarked: new ObjectId(id) } } : { $addToSet: { bookmarked: new ObjectId(id) } },
       );
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

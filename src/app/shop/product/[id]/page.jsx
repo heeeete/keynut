@@ -22,7 +22,6 @@ export default async function Product({ context, params }) {
   }
 
   const dehydratedstate = dehydrate(queryClient);
-  console.log(context);
 
   return (
     <HydrationBoundary state={dehydratedstate}>
