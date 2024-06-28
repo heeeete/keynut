@@ -243,34 +243,37 @@ const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
   };
 
   return (
-    <div className="flex space-x-4 max-md:space-x-2">
-      <Link href={`/shop/product/${id}/edit`} className="flex items-center text-gray-500 font-semibold">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-          <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-            <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1" />
-            <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3zM16 5l3 3" />
-          </g>
-        </svg>
-        수정
-      </Link>
-      <button className="flex items-center text-gray-500 font-semibold" onClick={() => setDeleteState(true)}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-          <path fill="grey" d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z" />
-        </svg>
-        삭제
-      </button>
-      <div className="space-x-1 bg-slate-200 p-1 rounded-sm">
-        <button onClick={onClickSelling} className={`${state === 1 ? 'bg-white' : 'opacity-30'} p-1 rounded-s-sm`}>
-          판매중
+    <>
+      <div className="flex space-x-4 max-md:space-x-2 max-[480px]:hidden">
+        <Link href={`/shop/product/${id}/edit`} className="flex items-center text-gray-500 font-semibold">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+              <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1" />
+              <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3zM16 5l3 3" />
+            </g>
+          </svg>
+          수정
+        </Link>
+        <button className="flex items-center text-gray-500 font-semibold" onClick={() => setDeleteState(true)}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
+            <path fill="grey" d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z" />
+          </svg>
+          삭제
         </button>
-        <button
-          onClick={onClickSellCompleted}
-          className={`${state === 0 ? 'bg-white' : 'opacity-30'} p-1 rounded-e-sm`}
-        >
-          판매완료
-        </button>
+        <div className="space-x-1 bg-slate-200 p-1 rounded-sm">
+          <button onClick={onClickSelling} className={`${state === 1 ? 'bg-white' : 'opacity-30'} p-1 rounded-s-sm`}>
+            판매중
+          </button>
+          <button
+            onClick={onClickSellCompleted}
+            className={`${state === 0 ? 'bg-white' : 'opacity-30'} p-1 rounded-e-sm`}
+          >
+            판매완료
+          </button>
+        </div>
       </div>
-    </div>
+      <p className="hidden align-text-top max-md:flex">...</p>
+    </>
   );
 };
 

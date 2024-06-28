@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 
@@ -29,7 +29,7 @@ export default function MobileImageSlider({ images, state }) {
     if (!imageShowElement) return;
 
     const end = () => {
-      setIsTransitioning(true);
+      setIsTransitioning(false);
       cancelAnimationFrame(animationFrame);
       if (Math.abs(travelRatio) > 0.2) {
         const newIdx =
@@ -56,7 +56,7 @@ export default function MobileImageSlider({ images, state }) {
 
     const startTouch = e => {
       e.preventDefault();
-      setIsTransitioning(false);
+      setIsTransitioning(true);
       travelRatio = 0;
       initDragPos = e.touches[0].clientX;
       originOffset = offset;
@@ -72,16 +72,25 @@ export default function MobileImageSlider({ images, state }) {
     };
   }, [clientWidth, totalChildren, offset]);
 
+  const handleImageClick = useCallback(() => {
+    window.open(images[currentImageIndex], '_blank');
+  }, [currentImageIndex]);
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-center w-full">
-        <div className="flex overflow-hidden max-w-lg w-full">
+        <div className="flex relative overflow-hidden max-w-lg w-full">
+          {state === 0 && (
+            <div className="absolute flex items-center justify-center z-40 top-0 left-0 w-full h-full bg-black opacity-70">
+              <p className="text-white font-semibold text-3xl">판매완료</p>
+            </div>
+          )}
           <div
             className="flex"
             ref={imageShowRef}
             style={{
               transform: `translateX(${offset}px)`,
-              transition: isTransitioning ? 'transform 0.3s ' : 'none',
+              transition: isTransitioning ? 'none' : 'transform 0.3s ',
             }}
           >
             {images &&
@@ -91,12 +100,25 @@ export default function MobileImageSlider({ images, state }) {
                     src={img}
                     alt="product-img"
                     fill
-                    sizes="100dvw"
                     style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
                   />
                 </div>
               ))}
           </div>
+          <button
+            className={`absolute flex  items-center bg-black bg-opacity-50 text-white py-1 px-2 rounded-2xl bottom-1 right-1 transition-opacity cursor-pointer ${
+              isTransitioning ? ' opacity-0 pointer-events-none' : ' opacity-100'
+            }`}
+            onClick={handleImageClick}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512">
+              <path
+                fill="currentColor"
+                d="M456.69 421.39L362.6 327.3a173.8 173.8 0 0 0 34.84-104.58C397.44 126.38 319.06 48 222.72 48S48 126.38 48 222.72s78.38 174.72 174.72 174.72A173.8 173.8 0 0 0 327.3 362.6l94.09 94.09a25 25 0 0 0 35.3-35.3M97.92 222.72a124.8 124.8 0 1 1 124.8 124.8a124.95 124.95 0 0 1-124.8-124.8"
+              />
+            </svg>
+            확대
+          </button>
         </div>
       </div>
       {images && images.length > 1 && (
