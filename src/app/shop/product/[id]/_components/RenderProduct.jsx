@@ -98,6 +98,7 @@ const RenderViews = ({ views }) => {
 };
 
 const RenderProfile = ({ user }) => {
+  const router = useRouter();
   if (!user) return;
   return (
     <>
@@ -119,7 +120,12 @@ const RenderProfile = ({ user }) => {
           </div>
           <div className="text-lg max-md:text-base line-clamp-1">{user.nickname}</div>
         </div>
-        <button className="mr-2">
+        <button
+          className="mr-2"
+          onClick={() => {
+            router.push(`/shop/${user._id}`);
+          }}
+        >
           <div className=" text-base border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</div>
         </button>
       </div>

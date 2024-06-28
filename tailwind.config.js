@@ -97,6 +97,9 @@ module.exports = {
         none: 'none',
         'pink-blur': 'url(#fuzzy-pink)',
       },
+      minWidth: {
+        600: '600px',
+      },
     },
   },
 

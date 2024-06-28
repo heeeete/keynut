@@ -1,10 +1,8 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import MyPost from './_components/MyPost';
-import LikedPost from './_components/LikedPost';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 
@@ -19,27 +17,37 @@ const getProducts = async (id, setProducts) => {
   setProducts(data);
 };
 
-export default function MyPage() {
-  const { data: session, status } = useSession();
+const getUserProfile = async (id, setUserProfile) => {
+  const res = await fetch(`/api/user/${id}/profile`, {
+    method: 'GET',
+  });
+  if (!res.ok) {
+    throw new Error(data.error || 'Network response was not ok');
+  }
+  const data = await res.json();
+  setUserProfile(data);
+};
+
+export default function Profile() {
   const [products, setProducts] = useState([]);
   const [productOption, setProductOption] = useState(1);
-  // const [postOption, setPostOption] = useState('');
+  const [userProfile, setUserProfile] = useState(null);
   const router = useRouter();
+  const { id } = useParams();
   useEffect(() => {
-    if (session) {
-      const res = getProducts(session.user.id, setProducts);
-    }
-  }, [session]);
+    getProducts(id, setProducts);
+    getUserProfile(id, setUserProfile);
+  }, []);
 
   return (
     <div className="flex flex-col h-full space-y-8 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:main-768">
       <div className="flex h-24 border border-gray-300 rounded-md items-center px-4 max-md:px-2">
         <div className="flex flex-1 items-center space-x-5">
-          {session && session.user.image ? (
+          {userProfile && userProfile.image ? (
             <div className="flex rounded-full w-20 aspect-square relative justify-center items-center border max-md:w-16 ">
               <Image
                 className="rounded-full object-cover"
-                src={session.user.image}
+                src={userProfile.image}
                 alt="myprofile"
                 fill
                 sizes="(max-width:768px) 80px,100px"
@@ -55,13 +63,10 @@ export default function MyPage() {
               </svg>
             </div>
           )}
-          <div className="text-lg max-md:text-base">{session ? session.user.nickname : ''}</div>
-        </div>
-        <button>
-          <div className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm">
-            <Link href={'/mypage/profile-edit'}>프로필 관리</Link>
+          <div className="text-lg max-md:text-base">
+            {userProfile && userProfile.nickname ? userProfile.nickname : ''}
           </div>
-        </button>
+        </div>
       </div>
       <div className="flex flex-col h-full space-y-8">
         <section className="space-y-3">
@@ -101,7 +106,7 @@ export default function MyPage() {
                   .map((product, index) => {
                     return (
                       <div
-                        className="p-2 items-center border border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm relative max-md:border-gray-200"
+                        className="p-2 items-center border border-gray-300 justify-between rounded-sm max-md:border-0 max-md:border-b max-md:border-gray-200"
                         onClick={() => {
                           router.push(`/shop/product/${product._id}`);
                         }}
@@ -113,7 +118,7 @@ export default function MyPage() {
                           </div>
                         )}
                         <div className="flex">
-                          <div className="w-48 aspect-square relative mr-4">
+                          <div className="w-48 aspect-square relative mr-4 max-md:w-34 max-md:min-w-34">
                             <Image
                               className="rounded object-cover"
                               src={product.images[0]}
@@ -136,37 +141,6 @@ export default function MyPage() {
               : ''}
           </div>
         </section>
-        {/* <section className="">
-          <h2 className="text-xl mb-3 max-md:text-lg">게시물 관리</h2>
-          <nav className="mb-2">
-            <ul className="grid grid-cols-2 bg-gray-100 border-gray-100 border-t border-r border-l">
-              <button>
-                <li
-                  className={`flex justify-center py-2 text-lg ${
-                    postOption == 'mypost' ? ' bg-white' : ''
-                  } max-md:text-base`}
-                  onClick={() => postOption !== 'mypost' && setPostOption('mypost')}
-                >
-                  내 게시물
-                </li>
-              </button>
-              <button>
-                <li
-                  className={`flex justify-center py-2 text-lg ${
-                    postOption == 'likedpost' ? ' bg-white' : ''
-                  } max-md:text-base`}
-                  onClick={() => postOption !== 'likedpost' && setPostOption('likedpost')}
-                >
-                  좋아요
-                </li>
-              </button>
-            </ul>
-          </nav>
-          <div className="grid grid-cols-5 gap-1 min-h-14 max-md:grid-cols-4 max-[560px]:grid-cols-2">
-            {postOption == 'mypost' && <MyPost posts={myPost} />}
-            {postOption == 'likedpost' && <LikedPost posts={likedPost} />}
-          </div>
-        </section> */}
       </div>
     </div>
   );

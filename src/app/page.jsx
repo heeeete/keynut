@@ -106,7 +106,7 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <section className="flex flex-col space-y-5">
+      {/* <section className="flex flex-col space-y-5">
         <div className="flex items-end">
           <div className="flex flex-1 flex-col">
             <div className="font-medium text-xl">top picks</div>
@@ -117,7 +117,7 @@ export default function Home() {
           </Link>
         </div>
         <TopPicks picks={picks} />
-      </section>
+      </section> */}
     </div>
   );
 }
