@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ImageSlider from '@/app/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/app/utils/timeAgo';
@@ -106,7 +106,7 @@ const RenderProfile = ({ user }) => {
           <div className="flex relative rounded-full w-12 h-12 aspect-square justify-center items-center">
             {user.image ? (
               <div className="relative w-10 h-10">
-                <Image className="rounded-full" src={user.image} alt="profile" fill />
+                <Image className="rounded-full" src={user.image} sizes="80px" alt="profile" fill />
               </div>
             ) : (
               <svg xmlns="http://www.w3.org/2000/svg" width="70%" height="70%" viewBox="0 0 32 32">
