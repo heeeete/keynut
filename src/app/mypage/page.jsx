@@ -1,11 +1,10 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import Selling from './_components/Selling';
-import SellCompleted from './_components/SellCompleted';
 import MyPost from './_components/MyPost';
 import LikedPost from './_components/LikedPost';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 
@@ -37,24 +36,26 @@ const likedPost = [
   { path: '/키보드4.png', title: 'yellow keyboard' },
 ];
 
-const getProducts = async (id, state) => {
-  const res = await fetch(`/api/user/${id}/products?state=${state}`, {
+const getProducts = async (id, setProducts) => {
+  const res = await fetch(`/api/user/${id}/products`, {
     method: 'GET',
   });
   if (!res.ok) {
     throw new Error(data.error || 'Network response was not ok');
   }
   const data = await res.json();
+  setProducts(data);
 };
 
 export default function MyPage() {
   const { data: session, status } = useSession();
-  const [productOption, setProductOption] = useState('selling');
-  const [postOption, setPostOption] = useState('');
-
+  const [products, setProducts] = useState([]);
+  const [productOption, setProductOption] = useState(1);
+  // const [postOption, setPostOption] = useState('');
+  const router = useRouter();
   useEffect(() => {
     if (session) {
-      getProducts(session.user.id, 1);
+      const res = getProducts(session.user.id, setProducts);
     }
   }, [session]);
 
@@ -98,10 +99,10 @@ export default function MyPage() {
               <button>
                 <li
                   className={`flex justify-center py-2 text-lg max-md:text-base ${
-                    productOption == 'selling' ? 'bg-white' : ''
+                    productOption == 1 ? 'bg-white' : ''
                   }`}
                   onClick={() => {
-                    productOption !== 'selling' && setProductOption('selling');
+                    productOption !== 1 && setProductOption(1);
                   }}
                 >
                   판매 중
@@ -110,10 +111,10 @@ export default function MyPage() {
               <button>
                 <li
                   className={`flex justify-center py-2 text-lg  max-md:text-base ${
-                    productOption == 'sellCompleted' ? 'bg-white' : ''
+                    productOption == 0 ? 'bg-white' : ''
                   }`}
                   onClick={() => {
-                    productOption !== 'sellCompleted' && setProductOption('sellCompleted');
+                    productOption !== 0 && setProductOption(0);
                   }}
                 >
                   판매 완료
@@ -122,8 +123,45 @@ export default function MyPage() {
             </ul>
           </nav>
           <div className="grid grid-cols-3 gap-1 min-h-14 max-md:grid-cols-1">
-            {productOption == 'selling' && <Selling items={selling} />}
-            {productOption == 'sellCompleted' && <SellCompleted items={sellCompleted} />}
+            {products.length
+              ? products
+                  .filter(a => a.state === productOption)
+                  .map((product, index) => {
+                    return (
+                      <div
+                        className="p-2 items-center border border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm relative max-md:border-gray-200"
+                        onClick={() => {
+                          router.push(`/shop/product/${product._id}`);
+                        }}
+                        key={index}
+                      >
+                        {!productOption && (
+                          <div className="absolute top-0 left-0 z-10 w-full h-full rounded-sm bg-black opacity-70 flex items-center justify-center">
+                            <p className="font-semibold text-white text-lg">판매 완료</p>
+                          </div>
+                        )}
+                        <div className="flex">
+                          <div className="w-48 aspect-square relative mr-4">
+                            <Image
+                              className="rounded object-cover"
+                              src={product.images[0]}
+                              alt={index}
+                              fill
+                              sizes="(max-width:768px) 136px,(max-width:1280px) 13vw, (max-width: 1500px) 20vw, 123px"
+                            ></Image>
+                          </div>
+                          <div className="flex flex-col justify-center w-full">
+                            <div className="break-all line-clamp-2">{product.title}</div>
+                            <div className="flex space-x-1 font-semibold items-center">
+                              <div>{product.price.toLocaleString()}</div>
+                              <span className="text-sm">원</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+              : ''}
           </div>
         </section>
         {/* <section className="">

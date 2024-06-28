@@ -17,10 +17,7 @@ export async function PUT(req) {
     const oldImage = JSON.parse(formData.get('oldImage'));
     const newImage = formData.get('newImage');
     const nickname = JSON.parse(formData.get('nickname'));
-    console.log('newImage', newImage);
-    console.log('nickname', nickname);
 
-    console.log('oldImage', oldImage);
     const deleteImage = async () => {
       const params = {
         Bucket: process.env.S3_BUCKET_NAME,
@@ -59,15 +56,22 @@ export async function PUT(req) {
       return NextResponse.json(resUrl, { status: 200 });
     }
     if (nickname) {
+      const now = new Date();
+      const lastChanged = session.nicknameChangedAt ? new Date(session.nicknameChangedAt) : null;
+      if (lastChanged) {
+        const period = Math.floor((now - lastChanged) / (1000 * 60 * 60 * 24));
+        if (period < 30) return NextResponse.json({ state: 0 }, { status: 203 });
+      }
       const res = await users.updateOne(
         { _id: new ObjectId(session.id) },
         {
           $set: {
             nickname: nickname ? nickname : session.nickname,
+            nicknameChangedAt: now,
           },
         },
       );
-      return NextResponse.json(res, { status: 200 });
+      return NextResponse.json({ time: now }, { status: 200 });
     }
   } catch (error) {
     console.log(error);

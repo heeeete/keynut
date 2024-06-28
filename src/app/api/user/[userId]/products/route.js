@@ -10,8 +10,6 @@ const products = db.collection('products');
 
 export async function GET(req, { params }) {
   const { userId } = params;
-  const url = new URL(req.url);
-  const state = url.searchParams.get('state');
   try {
     if (!ObjectId.isValid(userId)) {
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
@@ -26,7 +24,6 @@ export async function GET(req, { params }) {
     const userProducts = await products
       .find({
         _id: { $in: user.products },
-        state: parseInt(state),
       })
       .toArray();
     return NextResponse.json(userProducts, { status: 200 });

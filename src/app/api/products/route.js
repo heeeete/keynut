@@ -43,6 +43,9 @@ export async function GET(req) {
       if (categories.includes(1)) {
         categories.push(10, 11, 12, 13, 14, 15, 19);
       }
+      if (categories.includes(2)) {
+        categories.push(29);
+      }
       query.category = { $in: categories };
     }
 
