@@ -8,7 +8,6 @@ const ProfileName = ({ session, update }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempNickname, setTempNickname] = useState('');
   const [nickname, setNickname] = useState('');
-  // const [proflileImg, setProfileImg] = useState('');
 
   useEffect(() => {
     if (session) {
@@ -27,10 +26,12 @@ const ProfileName = ({ session, update }) => {
     if (!res.ok) {
       console.error('API 요청 실패:', res.status, res.statusText);
     } else {
-      const data = await res.json();
-      console.log(data);
-      setNickname(tempNickname);
-      update({ nickname: tempNickname });
+      if (res.status === 203) alert('닉네임은 변경 후 30일이 지나야 다시 변경할 수 있습니다.');
+      else {
+        const data = await res.json();
+        setNickname(tempNickname);
+        update({ nickname: tempNickname, nicknameChangedAt: data.time });
+      }
     }
   };
 
