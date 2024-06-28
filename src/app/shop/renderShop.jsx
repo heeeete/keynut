@@ -207,6 +207,57 @@ const RenderProducts = React.memo(({ params }) => {
   );
 });
 
+const RenderPopularProducts = React.memo(({ data, category, router }) => {
+  let categoryTitle =
+    category === 0 ? '전체' : category === 1 ? '키보드' : category === 2 ? '마우스' : category === 3 ? '기타' : '';
+  return (
+    <div className="border-x-2 border-b-2 bg-gray-100 px-2 max-md:px-0 max-md:border-0 max-md:border-b">
+      <p className="z-30 p-1 font-semibold">{categoryTitle} 인기 매물</p>
+      <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
+        {data?.length ? (
+          data.map((product, idx) => (
+            <div
+              className="flex flex-col  cursor-pointer max-md:min-w-28 max-md:w-36"
+              key={idx}
+              onClick={() => {
+                router.push(`/shop/product/${product._id}`);
+              }}
+            >
+              <div className="w-full aspect-square relative min-h-20 min-w-20">
+                <Image
+                  className="rounded object-cover"
+                  src={product.images[0]}
+                  alt={product.title}
+                  fill
+                  sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 256px"
+                />
+              </div>
+              <div className="py-1">
+                <div className="text-lg break-all overflow-hidden line-clamp-1">{product.title}</div>
+                <div className="space-x-1 font-semibold break-all line-clamp-1">
+                  <span>{product.price.toLocaleString()}</span>
+                  <span className="text-sm">원</span>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className=""></div>
+        )}
+      </div>
+    </div>
+  );
+});
+
+const fetchHotProducts = async category => {
+  const url = category ? `api/products/hot?category=${category}` : 'api/products/hot';
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return res.json();
+};
+
 export default function RenderShop() {
   const params = useSearchParams();
   const paramsCategories = params.get('categories') ? params.get('categories').split(',').map(Number) : [];
@@ -234,7 +285,9 @@ export default function RenderShop() {
     4: { option: '30 - 50만원', checked: false },
     5: { option: '50만원 이상', checked: false },
   });
+  const hotProductFlag = useRef(0);
   const searchFlag = useRef(true);
+  const obj = {};
 
   const initialQueryString = () => {
     let query = '';
@@ -310,7 +363,7 @@ export default function RenderShop() {
   }, [debounceSetQueryString, createQueryString]);
 
   useEffect(() => {
-    console.log('router push', queryString);
+    // console.log('router push', queryString);
     if (queryString.length) router.push(`/shop?${queryString}`);
     else router.push('/shop');
   }, [queryString]);
@@ -341,6 +394,38 @@ export default function RenderShop() {
     newState[id].checked = checked;
     setPricesState(newState);
   };
+
+  const categoriesCheck = () => {
+    paramsCategories.map(c => {
+      if (c >= 10) {
+        obj[~~(c / 10)] = true;
+      } else {
+        obj[c] = true;
+      }
+    });
+  };
+
+  useEffect(() => {
+    categoriesCheck();
+  }, [paramsCategories]);
+
+  useEffect(() => {
+    if (Object.keys(obj).length > 1) hotProductFlag.current = -1;
+    else if (Object.keys(obj).length === 1) hotProductFlag.current = Number(Object.keys(obj)[0]);
+    else hotProductFlag.current = 0;
+  }, [obj]);
+
+  const useHotProducts = category => {
+    return useQuery({
+      queryKey: ['topProducts', category],
+      queryFn: () => fetchHotProducts(category),
+      staleTime: 60 * 60 * 1000, // 1시간
+      cacheTime: 70 * 60 * 1000,
+      enabled: !paramsKeyword && (category === 1 || category === 2 || category === 3 || category === 0),
+    });
+  };
+
+  const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
 
   return (
     <div className="flex items-start justify-start">
@@ -465,6 +550,9 @@ export default function RenderShop() {
             </div>
           </div>
           <div className="flex flex-col justify-center w-full " ref={innerContainerRef}>
+            {!paramsKeyword && hotProductFlag.current !== -1 && (
+              <RenderPopularProducts data={top} category={hotProductFlag.current} router={router} />
+            )}
             <RenderProducts params={params} />
           </div>
         </div>
