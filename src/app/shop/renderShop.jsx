@@ -219,7 +219,7 @@ export default function RenderShop() {
   const [filterActive, setFilterActive] = useState(false);
   const [searchText, setSearchText] = useState(paramsKeyword);
   const [categoriesState, setCategoriesState] = useState({
-    1: { option: '키보드', checked: false },
+    1: { option: '키보드', checked: false, childId: [10, 11, 12, 13, 14, 15, 19] },
     10: { option: '하우징', checked: false, parentId: 1 },
     11: { option: '스위치', checked: false, parentId: 1 },
     12: { option: '보강판', checked: false, parentId: 1 },
@@ -227,7 +227,7 @@ export default function RenderShop() {
     14: { option: '키캡', checked: false, parentId: 1 },
     15: { option: 'PCB', checked: false, parentId: 1 },
     19: { option: '기타', checked: false, parentId: 1 },
-    2: { option: '마우스', checked: false },
+    2: { option: '마우스', checked: false, childId: [29] },
     29: { option: '기타', checked: false, parentId: 2 },
     3: { option: '기타', checked: false },
   });
@@ -324,8 +324,12 @@ export default function RenderShop() {
     const newState = { ...categoriesState };
     const updateParentCategory = cId => {
       const pId = categoriesState[cId].parentId;
+      const childId = categoriesState[cId].childId;
       if (pId && categoriesState[pId].checked) {
         newState[pId].checked = false;
+      }
+      if (childId) {
+        for (let i of childId) newState[i].checked = false;
       }
     };
     newState[id].checked = checked;
