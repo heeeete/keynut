@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "huipark": "next dev --hostname 10.18.240.104",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
