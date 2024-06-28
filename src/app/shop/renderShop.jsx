@@ -167,26 +167,7 @@ const RenderProducts = React.memo(({ params }) => {
               router.push(`/shop/product/${product._id}`);
             }}
           >
-            <div className="w-full aspect-square relative min-h-32 min-w-32">
-              {/* <div className="absolute top-1 right-1 z-10">
-                <svg
-                  className="w-7 h-7  max-md:w-5 max-md:h-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="2em"
-                  height="2em"
-                  viewBox="0 0 32 32"
-                  onClick={e => {
-                    handleBookMarkClick(e, product._id);
-                  }}
-                >
-                  <path
-                    stroke="black"
-                    fill="white"
-                    // fill={bookmarked.includes(product._id) ? 'black' : 'white'}
-                    d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
-                  />
-                </svg>
-              </div> */}
+            <div className="w-full relative aspect-square min-h-32 min-w-32">
               <Image
                 className="rounded object-cover"
                 src={product.images[0]}
@@ -194,6 +175,21 @@ const RenderProducts = React.memo(({ params }) => {
                 fill
                 sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 256px"
               />
+              {product.images.length !== 1 && (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="2em"
+                  height="2em"
+                  viewBox="0 0 20 20"
+                  className="absolute right-1 top-1 opacity-90"
+                >
+                  <path
+                    fill="white"
+                    d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
+                  />
+                </svg>
+              )}
+              asdjasdjasdjaj
             </div>
             <div className="py-1">
               <div className="text-lg break-all overflow-hidden line-clamp-2">{product.title}</div>
