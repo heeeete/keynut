@@ -104,7 +104,12 @@ const RenderProfile = ({ user }) => {
     <>
       <div className="flex max-w-md justify-between border rounded flex-wrap  max-md:px-2 ">
         <div className="flex items-center">
-          <div className="flex relative rounded-full w-12 h-12 aspect-square justify-center items-center">
+          <div
+            className="flex relative rounded-full w-12 h-12 aspect-square justify-center items-center cursor-pointer"
+            onClick={() => {
+              router.push(`/shop/${user._id}`);
+            }}
+          >
             {user.image ? (
               <div className="relative w-10 h-10">
                 <Image className="rounded-full" src={user.image} sizes="80px" alt="profile" fill />

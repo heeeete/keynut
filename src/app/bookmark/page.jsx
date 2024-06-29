@@ -3,21 +3,7 @@ import Image from 'next/image';
 import { signIn, useSession } from 'next-auth/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getBookmarkedProducts from './_lib/getBookmarkedProducts';
-
-const bookmarked = [
-  { path: '/키보드1.webp', name: 'orange keyboard', price: '12,5000원' },
-  { path: '/키보드4.png', name: 'yellow keyboard', price: '60,5000원' },
-  { path: '/키보드3.jpeg', name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', price: '20,5000원' },
-  { path: '/키보드3.jpeg', name: 'purple keyboard', price: '15,5000원' },
-  { path: '/키보드1.webp', name: 'orange keyboard', price: '35,5000원' },
-];
-
-const useBookmarkedProducts = () => {
-  return useQuery({
-    queryKey: ['bookmarkedProducts'],
-    queryFn: () => getBookmarkedProducts(),
-  });
-};
+import { useRouter } from 'next/navigation';
 
 const HandleBookMark = ({ productId }) => {
   const { data: session, status } = useSession();
@@ -68,7 +54,11 @@ const HandleBookMark = ({ productId }) => {
 };
 
 export default function Bookmark() {
-  const { data, error, isLoading } = useBookmarkedProducts();
+  const router = useRouter();
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['bookmarkedProducts'],
+    queryFn: () => getBookmarkedProducts(),
+  });
   if (!data) {
     return (
       <div className="flex max-w-screen-xl mx-auto px-10 max-md:px-2 justify-center text-gray-500 ">
@@ -82,14 +72,23 @@ export default function Bookmark() {
       {data && data.length ? (
         <div className="grid grid-cols-2 gap-2 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:grid-cols-1 max-md:main-768">
           {data.map((item, index) => (
-            <div className="flex p-2 items-center border border-gray-300 rounded-sm justify-between" key={index}>
+            <div
+              className="flex p-2 items-center cursor-pointer border border-gray-300 rounded-sm justify-between"
+              key={index}
+              onClick={() => {
+                router.push(`/shop/product/${item._id}`);
+              }}
+            >
               <div className="flex">
                 <div className="flex w-28 min-w-28 aspect-square mr-4 relative">
                   <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="112px" />
                 </div>
                 <div className="flex flex-col justify-center pr-5">
-                  <p className="break-all line-clamp-2">{item.title}</p>
-                  <p>{item.price}</p>
+                  <p className="break-all line-clamp-1">{item.title}</p>
+                  <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
+                    <span>{item.price.toLocaleString()}</span>
+                    <span className="text-sm">원</span>
+                  </div>
                 </div>
               </div>
               <HandleBookMark productId={item._id} />

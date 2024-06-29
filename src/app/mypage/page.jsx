@@ -101,7 +101,7 @@ export default function MyPage() {
                   .map((product, index) => {
                     return (
                       <div
-                        className="p-2 items-center border border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm relative max-md:border-gray-200"
+                        className="p-2 items-center border cursor-pointer border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm relative max-md:border-gray-200"
                         onClick={() => {
                           router.push(`/shop/product/${product._id}`);
                         }}
@@ -119,7 +119,7 @@ export default function MyPage() {
                               src={product.images[0]}
                               alt={index}
                               fill
-                              sizes="(max-width:768px) 136px,(max-width:1280px) 13vw, (max-width: 1500px) 20vw, 123px"
+                              sizes="(max-width:768px) 200px,(max-width:1280px) 20vw, (max-width: 1500px) 20vw, 250px"
                             ></Image>
                           </div>
                           <div className="flex flex-col justify-center w-full">

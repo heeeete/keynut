@@ -45,7 +45,13 @@ export default function SignIn() {
                 style={{ boxShadow: '0px 1px 2px grey', borderRadius: '3px' }}
                 onClick={() => signIn(provider.id, { callbackUrl })}
               >
-                <Image src={`/${provider.id}Login.svg`} width={350} height={0} alt={`${provider.name}Login`} />
+                <Image
+                  className="min-w-300"
+                  src={`/${provider.id}Login.svg`}
+                  width={350}
+                  height={0}
+                  alt={`${provider.name}Login`}
+                />
               </button>
             ))}
         </div>
