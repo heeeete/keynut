@@ -156,6 +156,7 @@ const RenderProducts = React.memo(({ params }) => {
     });
   };
   const { data, error, isLoading } = useProducts(initialQueryString());
+  console.log(data);
   return (
     <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
       {data?.length ? (
@@ -167,13 +168,13 @@ const RenderProducts = React.memo(({ params }) => {
               router.push(`/shop/product/${product._id}`);
             }}
           >
-            <div className="w-full relative aspect-square min-h-32 min-w-32">
+            <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-100">
               <Image
                 className="rounded object-cover"
                 src={product.images[0]}
                 alt={product.title}
                 fill
-                sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 256px"
+                sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
               />
               {product.images.length !== 1 && (
                 <svg
@@ -189,12 +190,11 @@ const RenderProducts = React.memo(({ params }) => {
                   />
                 </svg>
               )}
-              asdjasdjasdjaj
             </div>
             <div className="py-1">
-              <div className="text-lg break-all overflow-hidden line-clamp-2">{product.title}</div>
-              <div className="space-x-1 font-semibold">
-                <span>{product.price.toLocaleString()}</span>
+              <div className="text-lg break-all overflow-hidden line-clamp-1">{product.title}</div>
+              <div className="space-x-1 font-semibold break-all line-clamp-1">
+                <span className="">{product.price.toLocaleString()}</span>
                 <span className="text-sm">원</span>
               </div>
             </div>
@@ -212,7 +212,7 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
     category === 0 ? '전체' : category === 1 ? '키보드' : category === 2 ? '마우스' : category === 3 ? '기타' : '';
   return (
     <div className="border-x-2 border-b-2 bg-gray-100 px-2 max-md:px-0 max-md:border-0 max-md:border-b">
-      <p className="z-30 p-1 font-semibold">{categoryTitle} 인기 매물</p>
+      <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
       <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
         {data?.length ? (
           data.map((product, idx) => (
@@ -229,14 +229,14 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
                   src={product.images[0]}
                   alt={product.title}
                   fill
-                  sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 256px"
+                  sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"
                 />
               </div>
               <div className="py-1">
                 <div className="text-lg break-all overflow-hidden line-clamp-1">{product.title}</div>
                 <div className="space-x-1 font-semibold break-all line-clamp-1">
-                  <span>{product.price.toLocaleString()}</span>
-                  <span className="text-sm">원</span>
+                  <span className="">{product.price.toLocaleString()}</span>
+                  <span className="text-xs">원</span>
                 </div>
               </div>
             </div>
@@ -363,7 +363,6 @@ export default function RenderShop() {
   }, [debounceSetQueryString, createQueryString]);
 
   useEffect(() => {
-    // console.log('router push', queryString);
     if (queryString.length) router.push(`/shop?${queryString}`);
     else router.push('/shop');
   }, [queryString]);
@@ -550,8 +549,10 @@ export default function RenderShop() {
             </div>
           </div>
           <div className="flex flex-col justify-center w-full " ref={innerContainerRef}>
-            {!paramsKeyword && hotProductFlag.current !== -1 && (
+            {!paramsKeyword && top && top.length ? (
               <RenderPopularProducts data={top} category={hotProductFlag.current} router={router} />
+            ) : (
+              ''
             )}
             <RenderProducts params={params} />
           </div>

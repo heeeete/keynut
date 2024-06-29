@@ -1,6 +1,5 @@
 import { connectDB } from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
 
 const client = await connectDB;
 const db = client.db(process.env.MONGODB_NAME);
@@ -23,7 +22,6 @@ export async function GET(req) {
     }
     query.category = { $in: categories };
   }
-  console.log('categories', categories);
   try {
     const topProducts = await products.find(query).sort({ views: -1 }).limit(6).toArray();
     return NextResponse.json(topProducts, { status: 200 });

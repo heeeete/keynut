@@ -99,6 +99,7 @@ module.exports = {
       },
       minWidth: {
         600: '600px',
+        300: '300px',
       },
     },
   },

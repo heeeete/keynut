@@ -178,7 +178,6 @@ export const authOptions = {
       }
       if (trigger === 'update' && user !== null) {
         const { openChatUrl, image, nickname, nicknameChangedAt } = session;
-        console.log('----------------', image);
         if (openChatUrl) token.user.openChatUrl = openChatUrl;
         if (image !== undefined) token.user.image = image;
         if (nickname) token.user.nickname = nickname;
