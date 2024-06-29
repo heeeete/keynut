@@ -4,6 +4,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Loading from '../_components/Loading';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   if (mainCategory === 1) {
@@ -437,8 +438,8 @@ export default function Sell() {
     imageUrls: [],
   });
   const [title, setTitle] = useState('');
-  const [mainCategory, setMainCategory] = useState('keyboard');
-  const [subCategory, setSubCategory] = useState(null);
+  const [mainCategory, setMainCategory] = useState(1);
+  const [subCategory, setSubCategory] = useState(10);
   const [condition, setCondition] = useState(null);
   const [description, setDescription] = useState(''); // 설명 상태 변수 추가
   const [price, setPrice] = useState('');
@@ -502,43 +503,38 @@ export default function Sell() {
 
   return (
     <div className="max-w-screen-xl px-10 mx-auto max-md:px-2 max-md:main-768">
-      {isLoading ? (
-        <div>LOADING............</div>
-      ) : (
-        <>
-          <RenderImageUploadButton
-            fileInputRef={fileInputRef}
-            uploadImages={uploadImages}
-            setUploadImages={setUploadImages}
-          />
-          <RenderDNDImages uploadImages={uploadImages} setUploadImages={setUploadImages} />
-          <RenderTitle title={title} setTitle={setTitle} />
-          <RenderHashTagInputWithTag tags={tags} setTags={setTags} />
-          <div className="flex flex-1 justify-between my-3 max-md:flex-col">
-            <RenderCategory
-              mainCategory={mainCategory}
-              subCategory={subCategory}
-              setMainCategory={setMainCategory}
-              setSubCategory={setSubCategory}
-            />
-            <RenderCondition condition={condition} setCondition={setCondition} />
-          </div>
+      {isLoading && <Loading />}
+      <RenderImageUploadButton
+        fileInputRef={fileInputRef}
+        uploadImages={uploadImages}
+        setUploadImages={setUploadImages}
+      />
+      <RenderDNDImages uploadImages={uploadImages} setUploadImages={setUploadImages} />
+      <RenderTitle title={title} setTitle={setTitle} />
+      <RenderHashTagInputWithTag tags={tags} setTags={setTags} />
+      <div className="flex flex-1 justify-between my-3 max-md:flex-col">
+        <RenderCategory
+          mainCategory={mainCategory}
+          subCategory={subCategory}
+          setMainCategory={setMainCategory}
+          setSubCategory={setSubCategory}
+        />
+        <RenderCondition condition={condition} setCondition={setCondition} />
+      </div>
 
-          <RenderDescriptionInput description={description} setDescription={setDescription} />
-          <RenderOpenChatUrlInput openChatUrl={openChatUrl} setOpenChatUrl={setOpenChatUrl} />
-          <RenderPriceInput price={price} setPrice={setPrice} />
+      <RenderDescriptionInput description={description} setDescription={setDescription} />
+      <RenderOpenChatUrlInput openChatUrl={openChatUrl} setOpenChatUrl={setOpenChatUrl} />
+      <RenderPriceInput price={price} setPrice={setPrice} />
 
-          <div className="w-full flex justify-end">
-            <button
-              className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
-              disabled={handleDisabled()}
-              onClick={handleUpload}
-            >
-              <p>업로드</p>
-            </button>
-          </div>
-        </>
-      )}
+      <div className="w-full flex justify-end">
+        <button
+          className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
+          disabled={handleDisabled()}
+          onClick={handleUpload}
+        >
+          <p>업로드</p>
+        </button>
+      </div>
     </div>
   );
 }

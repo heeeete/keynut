@@ -290,7 +290,7 @@ const incrementViewCount = async productId => {
   return res.json();
 };
 
-export default function RenderProduct({ id }) {
+export default function RenderProduct({ id, base64Image }) {
   const queryClient = useQueryClient();
   const [deleteState, setDeleteState] = useState(false);
   const router = useRouter();
@@ -326,7 +326,7 @@ export default function RenderProduct({ id }) {
   return (
     <div className="max-w-screen-xl mx-auto max-md:main-768">
       <RenderInfo category={Number(product.category)} />
-      <ImageSlider images={product.images} state={product.state} />
+      <ImageSlider images={product.images} state={product.state} base64Image={base64Image} />
       <div className="p-10 space-y-6 max-md:px-2">
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold">{product.title}</p>

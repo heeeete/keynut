@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 
-export default function MobileImageSlider({ images, state }) {
+export default function MobileImageSlider({ images, state, base64Image }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [offset, setOffset] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -101,6 +101,8 @@ export default function MobileImageSlider({ images, state }) {
                     alt="product-img"
                     fill
                     style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
+                    placeholder="blur"
+                    blurDataURL={base64Image}
                   />
                 </div>
               ))}

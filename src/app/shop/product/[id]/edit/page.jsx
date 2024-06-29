@@ -471,20 +471,25 @@ export default function Edit() {
 
   useEffect(() => {
     const originalDataInit = () => {
-      setTitle(data.title);
-      const originalUploadImages = { ...uploadImages };
-      data.images.map(img => {
-        originalUploadImages.imageFiles.push(img);
-        originalUploadImages.imageUrls.push(img);
-      });
-      setUploadImages(originalUploadImages);
-      setMainCategory(~~(data.category / 10));
-      setSubCategory(data.category);
-      setCondition(data.condition);
-      setDescription(data.description);
-      setPrice(data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
-      setOpenChatUrl(data.openChatUrl);
-      setTags(data.tags);
+      if (data.userId !== session.user.id) {
+        alert('비정상적인 접근입니다.');
+        return router.push('/');
+      } else {
+        setTitle(data.title);
+        const originalUploadImages = { ...uploadImages };
+        data.images.map(img => {
+          originalUploadImages.imageFiles.push(img);
+          originalUploadImages.imageUrls.push(img);
+        });
+        setUploadImages(originalUploadImages);
+        setMainCategory(~~(data.category / 10));
+        setSubCategory(data.category);
+        setCondition(data.condition);
+        setDescription(data.description);
+        setPrice(data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+        setOpenChatUrl(data.openChatUrl);
+        setTags(data.tags);
+      }
     };
 
     if (data) originalDataInit();
@@ -544,48 +549,44 @@ export default function Edit() {
 
   return (
     <div className="max-w-screen-xl px-10 mx-auto max-md:px-2 max-md:main-768">
-      {isLoading ? (
-        <div>LOADING............</div>
-      ) : (
-        <>
-          <RenderImageUploadButton
-            fileInputRef={fileInputRef}
-            uploadImages={uploadImages}
-            setUploadImages={setUploadImages}
+      <>
+        <RenderImageUploadButton
+          fileInputRef={fileInputRef}
+          uploadImages={uploadImages}
+          setUploadImages={setUploadImages}
+        />
+        <RenderDNDImages
+          uploadImages={uploadImages}
+          setUploadImages={setUploadImages}
+          deleteImages={deleteImages}
+          setDeleteImages={setDeleteImages}
+        />
+        <RenderTitle title={title} setTitle={setTitle} />
+        <RenderHashTagInputWithTag tags={tags} setTags={setTags} />
+        <div className="flex flex-1 justify-between my-3 max-md:flex-col">
+          <RenderCategory
+            mainCategory={mainCategory}
+            subCategory={subCategory}
+            setMainCategory={setMainCategory}
+            setSubCategory={setSubCategory}
           />
-          <RenderDNDImages
-            uploadImages={uploadImages}
-            setUploadImages={setUploadImages}
-            deleteImages={deleteImages}
-            setDeleteImages={setDeleteImages}
-          />
-          <RenderTitle title={title} setTitle={setTitle} />
-          <RenderHashTagInputWithTag tags={tags} setTags={setTags} />
-          <div className="flex flex-1 justify-between my-3 max-md:flex-col">
-            <RenderCategory
-              mainCategory={mainCategory}
-              subCategory={subCategory}
-              setMainCategory={setMainCategory}
-              setSubCategory={setSubCategory}
-            />
-            <RenderCondition condition={condition} setCondition={setCondition} />
-          </div>
+          <RenderCondition condition={condition} setCondition={setCondition} />
+        </div>
 
-          <RenderDescriptionInput description={description} setDescription={setDescription} />
-          <RenderOpenChatUrlInput openChatUrl={openChatUrl} setOpenChatUrl={setOpenChatUrl} />
-          <RenderPriceInput price={price} setPrice={setPrice} />
+        <RenderDescriptionInput description={description} setDescription={setDescription} />
+        <RenderOpenChatUrlInput openChatUrl={openChatUrl} setOpenChatUrl={setOpenChatUrl} />
+        <RenderPriceInput price={price} setPrice={setPrice} />
 
-          <div className="w-full flex justify-end">
-            <button
-              className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
-              disabled={handleDisabled()}
-              onClick={handleUpload}
-            >
-              <p>수정</p>
-            </button>
-          </div>
-        </>
-      )}
+        <div className="w-full flex justify-end">
+          <button
+            className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
+            disabled={handleDisabled()}
+            onClick={handleUpload}
+          >
+            <p>수정</p>
+          </button>
+        </div>
+      </>
     </div>
   );
 }
