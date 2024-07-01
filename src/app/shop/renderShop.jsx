@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, Fragment } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getProducts from './_lib/getProducts';
 import debounce from '../utils/debounce';
+import { useInView } from 'react-intersection-observer';
 
 const categories = [
   {
@@ -41,9 +42,9 @@ const prices = [
   { id: 5, option: '50만원 이상' },
 ];
 
-const handleBookMarkClick = (e, id) => {
-  e.stopPropagation();
-};
+// const handleBookMarkClick = (e, id) => {
+//   e.stopPropagation();
+// };
 
 const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
   const [tempSearchText, setTempSearchText] = useState(paramsKeyword);
@@ -149,61 +150,75 @@ const RenderProducts = React.memo(({ params }) => {
   };
   const router = useRouter();
   const useProducts = queryString => {
-    return useQuery({
+    return useInfiniteQuery({
       queryKey: ['products', queryString],
-      queryFn: () => getProducts(queryString), //함수 참조를 전달해야함
+      queryFn: ({ pageParam }) => getProducts(queryString, pageParam), //함수 참조를 전달해야함
+      initialPageParam: 0, //[1,2,3,4,5] [6,7,8,9,10] [11,12,13,14,15] -> 데이터를 페이지별로 관리 , 이차원 배열
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length === 0) return undefined;
+        return lastPage[lastPage.length - 1]._id; // `_id` 기준으로 페이징
+      },
       // staleTime: 1000 * 60,
     });
   };
-  const { data, error, isLoading } = useProducts(initialQueryString());
-  console.log(data);
+  const { ref, inView } = useInView({ threshold: 0.8, delay: 0 });
+  const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(initialQueryString());
+  console.log(data, fetchNextPage, hasNextPage);
+  useEffect(() => {
+    if (inView && !isFetching && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage, hasNextPage, isFetching]);
   return (
-    <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
-      {data?.length ? (
-        data.map((product, idx) => (
-          <div
-            className="flex flex-col hover:bg-gray-100 cursor-pointer"
-            key={idx}
-            onClick={() => {
-              router.push(`/shop/product/${product._id}`);
-            }}
-          >
-            <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-100">
-              <Image
-                className="rounded object-cover"
-                src={product.images[0]}
-                alt={product.title}
-                fill
-                sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
-              />
-              {product.images.length !== 1 && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="2em"
-                  height="2em"
-                  viewBox="0 0 20 20"
-                  className="absolute right-1 top-1 opacity-90"
-                >
-                  <path
-                    fill="white"
-                    d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
+    <>
+      <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
+        {data?.pages.map((page, i) => (
+          <Fragment key={i}>
+            {page.map((product, idx) => (
+              <div
+                className="flex flex-col hover:bg-gray-100 cursor-pointer"
+                key={product._id} // Ensure unique key for each product
+                onClick={() => {
+                  router.push(`/shop/product/${product._id}`);
+                }}
+              >
+                <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-100">
+                  <Image
+                    className="rounded object-cover"
+                    src={product.images.length ? product.images[0] : ''}
+                    alt={product.title}
+                    fill
+                    sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
                   />
-                </svg>
-              )}
-            </div>
-            <div className="py-1">
-              <div className="text-lg break-all overflow-hidden line-clamp-1">{product.title}</div>
-              <div className="space-x-1 font-semibold break-all line-clamp-1">
-                <span className="">{product.price.toLocaleString()}</span>
-                <span className="text-sm">원</span>
+                  {product.images.length !== 1 && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="2em"
+                      height="2em"
+                      viewBox="0 0 20 20"
+                      className="absolute right-1 top-1 opacity-90"
+                    >
+                      <path
+                        fill="white"
+                        d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
+                      />
+                    </svg>
+                  )}
+                </div>
+                <div className="py-1">
+                  <div className="text-lg break-all overflow-hidden line-clamp-1">{product.title}</div>
+                  <div className="space-x-1 font-semibold break-all line-clamp-1">
+                    <span className="">{product.price.toLocaleString()}</span>
+                    <span className="text-sm">원</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        ))
-      ) : (
-        <div className=""></div>
-      )}
-    </div>
+            ))}
+          </Fragment>
+        ))}
+      </div>
+      <div className="h-12 bg-red-700" ref={ref}></div>
+    </>
   );
 });
 
@@ -223,7 +238,7 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
                 router.push(`/shop/product/${product._id}`);
               }}
             >
-              <div className="w-full aspect-square relative min-h-20 min-w-20">
+              <div className="w-full aspect-square relative min-h-20 min-w-20 bg-gray-100">
                 <Image
                   className="rounded object-cover"
                   src={product.images[0]}
@@ -233,9 +248,9 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
                 />
               </div>
               <div className="py-1">
-                <div className="text-lg break-all overflow-hidden line-clamp-1">{product.title}</div>
+                <div className="text-lg break-all overflow-hidden line-clamp-1 max-md:text-base">{product.title}</div>
                 <div className="space-x-1 font-semibold break-all line-clamp-1">
-                  <span className="">{product.price.toLocaleString()}</span>
+                  <span className="max-md:text-sm">{product.price.toLocaleString()}</span>
                   <span className="text-xs">원</span>
                 </div>
               </div>

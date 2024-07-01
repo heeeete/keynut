@@ -1,8 +1,8 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import MyPost from './_components/MyPost';
-import LikedPost from './_components/LikedPost';
+// import MyPost from './_components/MyPost';
+// import LikedPost from './_components/LikedPost';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
@@ -31,6 +31,7 @@ export default function MyPage() {
     }
   }, [session]);
 
+  console.log('haha');
   return (
     <div className="flex flex-col h-full space-y-8 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:main-768">
       <div className="flex h-24 border border-gray-300 rounded-md items-center px-4 max-md:px-2">
@@ -113,7 +114,7 @@ export default function MyPage() {
                           </div>
                         )}
                         <div className="flex">
-                          <div className="w-48 aspect-square relative mr-4">
+                          <div className="w-48 aspect-square relative mr-4 bg-gray-100">
                             <Image
                               className="rounded object-cover"
                               src={product.images[0]}

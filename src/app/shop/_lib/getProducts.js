@@ -1,7 +1,15 @@
-const getProducts = async queryString => {
+const getProducts = async (queryString, pageParam) => {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const url = queryString ? `${baseUrl}/api/products?${queryString}` : `${baseUrl}/api/products`;
+    let url = `${baseUrl}/api/products`;
+
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+
+    if (pageParam) {
+      url += `${queryString ? '&' : '?'}lastId=${pageParam}`;
+    }
     const res = await fetch(url);
     if (!res.ok) {
       console.error('API 요청 실패:', res.status, res.statusText);

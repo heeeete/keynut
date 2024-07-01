@@ -39,13 +39,14 @@ const HandleBookMark = ({ productId }) => {
       queryClient.invalidateQueries(['bookmarkedProducts']);
     },
   });
-  const handleBookmarkClick = () => {
+  const handleBookmarkClick = e => {
+    e.stopPropagation();
     if (!session) return signIn();
     mutation.mutate({ productId });
   };
 
   return (
-    <button onClick={handleBookmarkClick}>
+    <button onClick={e => handleBookmarkClick(e)}>
       <svg className="min-w-7" xmlns="http://www.w3.org/2000/svg" width="28px" height="28px" viewBox="0 0 32 32">
         <path stroke="black" fill="black" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
@@ -75,12 +76,12 @@ export default function Bookmark() {
             <div
               className="flex p-2 items-center cursor-pointer border border-gray-300 rounded-sm justify-between"
               key={index}
-              onClick={() => {
+              onClick={e => {
                 router.push(`/shop/product/${item._id}`);
               }}
             >
               <div className="flex">
-                <div className="flex w-28 min-w-28 aspect-square mr-4 relative">
+                <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100">
                   <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="112px" />
                 </div>
                 <div className="flex flex-col justify-center pr-5">

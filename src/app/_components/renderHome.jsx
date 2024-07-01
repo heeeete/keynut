@@ -77,12 +77,12 @@ export default function RenderHome() {
   return (
     <div className="flex flex-col w-full max-md:main-768 -translate-y-6">
       <div
-        className={`${title.className} flex flex-col text-center bg-gray-100 h-48 text-2xl items-center justify-center text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
+        className={`${title.className} flex flex-col text-center bg-purple-50 h-48 text-2xl items-center justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
       >
-        <div className="flex space-x-1">
-          {/* <Image className="md:hidden" src="/keyboard.svg" width={60} height={60} /> */}
-          {/* <Image className="md:hidden" src="/mouse.svg" width={30} height={30} /> */}
-        </div>
+        {/* <div className="flex space-x-1"> */}
+        {/* <Image className="md:hidden" src="/keyboard.svg" width={60} height={60} /> */}
+        {/* <Image className="md:hidden" src="/mouse.svg" width={30} height={30} /> */}
+        {/* </div> */}
         <div className="">키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요!</div>
       </div>
       <div className="w-full max-w-screen-xl mx-auto px-10  space-y-12 my-10 max-md:px-2 ">
@@ -92,15 +92,56 @@ export default function RenderHome() {
             <div className="text-gray-600 font-medium">카테고리</div>
           </div>
           <ul className="flex space-x-3 overflow-auto scrollbar-hide">
-            <Link href={'/shop?categories=1'}>
-              <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white  border rounded">키보드</li>
-            </Link>
-            <Link href={'/shop?categories=2'}>
-              <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white border rounded">마우스</li>
-            </Link>
-            <Link href={'/shop?categories=3'}>
-              <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white border rounded">기타</li>
-            </Link>
+            <li className="flex flex-col items-center space-y-1">
+              <Link href={'/shop?categories=1'}>
+                <div
+                  className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center"
+                  // style={{ backgroundColor: '#FAFBE6' }}
+                >
+                  <Image
+                    // className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                    src="/keyboard.svg"
+                    width={95}
+                    height={95}
+                    alt="keyboard"
+                  />
+                </div>
+              </Link>
+              <p className="text-gray-600">키보드</p>
+            </li>
+            <li className="flex flex-col items-center space-y-1">
+              <Link href={'/shop?categories=2'}>
+                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center">
+                  <Image
+                    // className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                    src="/mouse.svg"
+                    width={50}
+                    height={50}
+                    alt="mouse"
+                  />
+                </div>
+              </Link>
+              <p className="text-gray-600">마우스</p>
+            </li>
+            <li className="flex flex-col items-center space-y-1">
+              <Link href={'/shop?categories=3'}>
+                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center">
+                  <svg
+                    // className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="grey"
+                      d="M7.673 21.02L11.712 14L4 13.096L15.25 2.981h1.116l-4.135 7.038l7.769.885L8.75 21.019z"
+                    />
+                  </svg>
+                </div>
+              </Link>
+              <p className="text-gray-600">기타</p>
+            </li>
             {/* <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white  border rounded">갤러리</li> */}
           </ul>
         </section>
@@ -135,7 +176,7 @@ export default function RenderHome() {
                   router.push(`/shop/product/${product._id}`);
                 }}
               >
-                <div className="w-full aspect-square relative min-h-32 min-w-32">
+                <div className="w-full aspect-square relative min-h-32 min-w-32 bg-gray-100">
                   <Image
                     src={product.images[0]}
                     alt={product._id}
