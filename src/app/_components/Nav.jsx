@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut, signIn } from 'next-auth/react';
-import handleLogin from '../utils/handleLogin';
+import handleLogin from '../../utils/handleLogin';
 import { Nothing_You_Could_Do } from 'next/font/google';
 
 const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });

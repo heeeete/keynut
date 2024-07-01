@@ -1,7 +1,7 @@
 'use client';
 
 import ImageSlider from '@/app/_components/ImageSlider';
-import timeAgo from '@/app/utils/timeAgo';
+import timeAgo from '@/utils/timeAgo';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';

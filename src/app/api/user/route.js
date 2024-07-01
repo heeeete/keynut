@@ -4,7 +4,7 @@ import getUserSession from '@/lib/getUserSession';
 import s3Client from '@/lib/s3Client';
 import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId } from 'mongodb';
-import extractionS3ImageKey from '@/app/utils/extractionS3ImageKey';
+import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 const client = await connectDB;
 const db = client.db(process.env.MONGODB_NAME);
 const users = db.collection('users');

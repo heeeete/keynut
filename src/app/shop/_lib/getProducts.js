@@ -1,6 +1,7 @@
 const getProducts = async (queryString, pageParam) => {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
     let url = `${baseUrl}/api/products`;
 
     if (queryString) {
@@ -10,7 +11,8 @@ const getProducts = async (queryString, pageParam) => {
     if (pageParam) {
       url += `${queryString ? '&' : '?'}lastId=${pageParam}`;
     }
-    const res = await fetch(url);
+    const res = await fetch(url, { cache:'no-cache'});
+
     if (!res.ok) {
       console.error('API 요청 실패:', res.status, res.statusText);
       throw new Error('Failed to fetch products');
