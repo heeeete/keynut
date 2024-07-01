@@ -25,6 +25,7 @@ export async function GET(req) {
     const keywordParam = searchParams.get('keyword');
     const categoriesParam = searchParams.get('categories');
     const pricesParam = searchParams.get('prices');
+    const lastProductId = searchParams.get('lastId');
 
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
@@ -57,7 +58,12 @@ export async function GET(req) {
       query.$or = priceConditions;
     }
 
-    const products = await db.collection('products').find(query).sort({ createdAt: -1 }).toArray();
+    console.log('===============================', lastProductId);
+    if (lastProductId) {
+      query._id = { $lt: new ObjectId(lastProductId) };
+    }
+
+    const products = await db.collection('products').find(query).sort({ createdAt: -1 }).limit(12).toArray();
     if (products) {
       return NextResponse.json(products, { status: 200 });
     } else {

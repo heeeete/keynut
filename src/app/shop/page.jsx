@@ -8,7 +8,7 @@ export default async function Shop({ props }) {
   //queryclient를 사용하여 getProducts 사전실행 -> 서버측에서 미리 데이터를 가져옴, ['products'] 라는 키로 캐시됨
   try {
     // 서버에서 데이터를 미리 가져옴
-    await queryClient.prefetchQuery({ queryKey: ['products', ''], queryFn: getProducts });
+    await queryClient.prefetchInfiniteQuery({ queryKey: ['products', ''], queryFn: getProducts, initialPageParam: 0 });
     console.log('prefetchQuery 실행됨');
   } catch (error) {
     console.error('prefetchQuery 실행 중 에러 발생:', error);

@@ -173,15 +173,17 @@ export default function ProfileEdit() {
         </section>
         <section className="flex flex-col space-y-5">
           <div className="text-lg w-full border-b rounded-none">계정</div>
-          <button
-            className="flex"
-            onClick={() => {
-              signOut({ callbackUrl: '/' });
-            }}
-          >
-            •로그아웃
-          </button>
-          <button className="flex">•회원 탈퇴</button>
+          <div className="space-y-4">
+            <button
+              className="flex"
+              onClick={() => {
+                signOut({ callbackUrl: '/' });
+              }}
+            >
+              •로그아웃
+            </button>
+            <button className="flex">•회원 탈퇴</button>
+          </div>
         </section>
       </div>
     </div>
