@@ -25,3 +25,13 @@ export default async function Shop({ props }) {
     </HydrationBoundary>
   );
 }
+
+// 나중에 정적 페이지 생성 해야함 처음에 먼저 보여줄 데이터를 가져와 정적 페이지를 생성해서 빠르게 보여주고
+// 나머지 인피니티 스크롤해서 나오는 상품들은 클라이언트 사이드에서 바로바로 가져옴
+// export async function generateStaticParams() {
+//   const posts = await getProductWithUser();
+
+//   return posts.map(post => ({
+//     slug: post.slug,
+//   }));
+// }

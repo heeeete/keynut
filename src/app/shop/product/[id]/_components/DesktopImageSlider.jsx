@@ -5,7 +5,7 @@ import { isMobile } from '@/lib/isMobile';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 
-export default function DesktopImageSlider({ images, state, base64Image }) {
+export default function DesktopImageSlider({ images, state }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fullSizeCurrentImageIndex, setFullSizeCurrentImageIndex] = useState(currentImageIndex);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -121,8 +121,6 @@ export default function DesktopImageSlider({ images, state, base64Image }) {
                 className={`absolute transition-opacity duration-200 ${
                   idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
-                placeholder={'blur'}
-                blurDataURL={base64Image}
                 style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
               />
             ))}

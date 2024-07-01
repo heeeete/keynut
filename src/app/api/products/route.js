@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
-import extractionS3ImageKey from '@/app/utils/extractionS3ImageKey';
+import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 
 const client = await connectDB;
 const db = client.db(process.env.MONGODB_NAME);

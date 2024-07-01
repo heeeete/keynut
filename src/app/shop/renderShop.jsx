@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getProducts from './_lib/getProducts';
-import debounce from '../utils/debounce';
+import debounce from '../../utils/debounce';
 
 const categories = [
   {

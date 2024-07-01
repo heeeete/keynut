@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import s3Client from '@/lib/s3Client';
-import extractionS3ImageKey from '@/app/utils/extractionS3ImageKey';
+import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 import { cookies } from 'next/headers';
 import getUserSession from '@/lib/getUserSession';
 

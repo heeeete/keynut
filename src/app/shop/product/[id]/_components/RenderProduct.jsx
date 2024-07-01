@@ -4,7 +4,7 @@ import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import ImageSlider from '@/app/_components/ImageSlider';
 import Image from 'next/image';
-import timeAgo from '@/app/utils/timeAgo';
+import timeAgo from '@/utils/timeAgo';
 import OpenChatLink from './OpenChatLink';
 import { useQuery } from '@tanstack/react-query';
 import getProductWithUser from '../_lib/getProductWithUser';
@@ -98,41 +98,38 @@ const RenderViews = ({ views }) => {
 };
 
 const RenderProfile = ({ user }) => {
-  const router = useRouter();
   if (!user) return;
+
   return (
     <>
-      <div className="flex max-w-md justify-between border rounded flex-wrap  max-md:px-2 ">
-        <div className="flex items-center">
-          <div
-            className="flex relative rounded-full w-12 h-12 aspect-square justify-center items-center cursor-pointer"
-            onClick={() => {
-              router.push(`/shop/${user._id}`);
-            }}
+      <div className="flex max-w-md justify-between border rounded flex-wrap p-2">
+        <div className="flex items-center ml-2 space-x-2">
+          <Link
+            href={`/shop/${user._id}`}
+            className="flex relative rounded-full  aspect-square justify-center items-center cursor-pointer"
           >
             {user.image ? (
               <div className="relative w-10 h-10">
                 <Image className="rounded-full" src={user.image} sizes="80px" alt="profile" fill />
               </div>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="70%" height="70%" viewBox="0 0 32 32">
-                <path
-                  fill="grey"
-                  d="M16 16a7 7 0 1 0 0-14a7 7 0 0 0 0 14m-8.5 2A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5z"
-                />
-              </svg>
+              <div className="w-10 h-10 defualt-profile">
+                <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
+                  <path
+                    fill="rgb(229, 231, 235)"
+                    d="M224 256a128 128 0 1 0 0-256a128 128 0 1 0 0 256m-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512h388.6c16.4 0 29.7-13.3 29.7-29.7c0-98.5-79.8-178.3-178.3-178.3z"
+                  />
+                </svg>
+              </div>
             )}
-          </div>
-          <div className="text-lg max-md:text-base line-clamp-1">{user.nickname}</div>
+          </Link>
+          <Link href={`/shop/${user._id}`} className="text-lg max-md:text-base line-clamp-1">
+            {user.nickname}
+          </Link>
         </div>
-        <button
-          className="mr-2"
-          onClick={() => {
-            router.push(`/shop/${user._id}`);
-          }}
-        >
-          <div className=" text-base border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</div>
-        </button>
+        <Link className="flex items-center" href={`/shop/${user._id}`}>
+          <p className=" text-base px-2 border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</p>
+        </Link>
       </div>
     </>
   );
@@ -211,6 +208,8 @@ const RenderDescriptor = ({ product }) => {
 };
 
 const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
+  const [settingModal, setSettingModal] = useState(null);
+
   const mutation = useMutation({
     mutationFn: async ({ productId }) => {
       const res = await fetch(`/api/products/${productId}/state`, {
@@ -283,7 +282,46 @@ const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
           </button>
         </div>
       </div>
-      <p className="hidden align-text-top max-md:flex">...</p>
+      <button className="hidden align-text-top items-center p-2 max-[480px]:flex" onClick={() => setSettingModal(true)}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 1024 1024">
+          <path
+            fill="rgb(216 180 254)"
+            d="M176 416a112 112 0 1 1 0 224a112 112 0 0 1 0-224m336 0a112 112 0 1 1 0 224a112 112 0 0 1 0-224m336 0a112 112 0 1 1 0 224a112 112 0 0 1 0-224"
+          />
+        </svg>
+      </button>
+      {settingModal && (
+        <div
+          className="fixed w-d-screen h-d-screen top-0 left-0 z-50 flex flex-col justify-center items-center"
+          onClick={e => {
+            if (e.currentTarget === e.target) setSettingModal(false);
+          }}
+        >
+          <div className="flex flex-col justify-center items-center rounded-sm border-2 space-y-1 bg-white w-72">
+            <button className="w-full py-4 font-semibold ">
+              <Link href={`/shop/product/${id}/edit`}>수정</Link>
+            </button>
+            <button
+              className="w-full py-4 font-semibold"
+              onClick={() => {
+                setSettingModal(false);
+                setDeleteState(true);
+              }}
+            >
+              삭제
+            </button>
+            <button className={`${state === 1 ? 'bg-main' : ''} w-full py-4 font-semibold`} onClick={onClickSelling}>
+              판매중
+            </button>
+            <button
+              className={`${state === 0 ? 'bg-main' : ''} w-full py-4 font-semibold`}
+              onClick={onClickSellCompleted}
+            >
+              판매완료
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -295,7 +333,7 @@ const incrementViewCount = async productId => {
   return res.json();
 };
 
-export default function RenderProduct({ id, base64Image }) {
+export default function RenderProduct({ id }) {
   const queryClient = useQueryClient();
   const [deleteState, setDeleteState] = useState(false);
   const router = useRouter();
@@ -304,14 +342,14 @@ export default function RenderProduct({ id, base64Image }) {
   const { user, ...product } = data;
 
   useEffect(() => {
-    const fetchUpdatedProduct = async () => {
+    const fetchUpdateViews = async () => {
       const data = await incrementViewCount(id);
       queryClient.setQueryData(['product', id], oldData => ({
         ...oldData,
         views: data.views,
       }));
     };
-    fetchUpdatedProduct();
+    fetchUpdateViews();
   }, []);
 
   const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
@@ -331,7 +369,7 @@ export default function RenderProduct({ id, base64Image }) {
   return (
     <div className="max-w-screen-xl mx-auto max-md:main-768">
       <RenderInfo category={Number(product.category)} />
-      <ImageSlider images={product.images} state={product.state} base64Image={base64Image} />
+      <ImageSlider images={product.images} state={product.state} />
       <div className="p-10 space-y-6 max-md:px-2">
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold">{product.title}</p>
@@ -370,7 +408,7 @@ export default function RenderProduct({ id, base64Image }) {
             <RenderViews views={product.views} />
           </div>
         </div>
-        <RenderProfile user={user} />
+        {!writer && <RenderProfile user={user} />}
         <RenderDescriptor product={product} />
       </div>
       {deleteState === true && (
