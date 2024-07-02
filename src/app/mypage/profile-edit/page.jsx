@@ -4,6 +4,9 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
 import getUserProfile from '@/app/_lib/getUserProfile';
+import Loading from '@/app/_components/Loading';
+import { useRouter } from 'next/navigation';
+
 
 const ProfileName = ({ session, update }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -173,6 +176,55 @@ const ProfileImage = ({ session, update }) => {
 
 export default function ProfileEdit() {
   const { data: session, status, update } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Kakao SDK 초기화
+    const initializeKakao = () => {
+      if (window.Kakao) {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY);
+        }
+        console.log('after Init: ', window.Kakao.isInitialized());
+      }
+    };
+    initializeKakao();
+  }, [window.Kakao]);
+
+  const onClickWithdrawal = async () => {
+    setIsLoading(true);
+    if (session && session.access_token) {
+      window.Kakao.Auth.setAccessToken(session.access_token);
+    } else {
+      setIsLoading(false);
+      alert('사용자 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요');
+      console.error('No access token available');
+      return;
+    }
+
+    Kakao.API.request({
+      url: '/v1/user/unlink',
+    })
+      .then(async function (response) {
+        console.log('Kakao unlink response:', response);
+        const res = await fetch('/api/user', { method: 'DELETE' });
+
+        if (res.ok) {
+          signOut();
+        } else {
+          setIsLoading(false);
+          const data = await res.json();
+          alert('회원 탈퇴 중 문제가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+          console.error('Error deleting user:', data.message);
+        }
+      })
+      .catch(function (error) {
+        setIsLoading(false);
+        alert('회원 탈퇴 중 문제가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+        console.error('Kakao unlink error:', error);
+      });
+  };
   return (
     <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:h-d-screen max-md:justify-center ">
       <div className="flex flex-col space-y-10 py-10 max-md:py-0">
@@ -194,10 +246,13 @@ export default function ProfileEdit() {
             >
               •로그아웃
             </button>
-            <button className="flex">•회원 탈퇴</button>
+            <button className="flex" onClick={onClickWithdrawal}>
+              •회원 탈퇴
+            </button>
           </div>
         </section>
       </div>
+      {isLoading && <Loading />}
     </div>
   );
 }

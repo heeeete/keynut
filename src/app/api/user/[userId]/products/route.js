@@ -3,14 +3,13 @@ import getUserSession from '@/lib/getUserSession';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 
-const client = await connectDB;
-const db = client.db(process.env.MONGODB_NAME);
-const users = db.collection('users');
-const products = db.collection('products');
-
 export async function GET(req, { params }) {
   const { userId } = params;
   try {
+    const client = await connectDB;
+    const db = client.db(process.env.MONGODB_NAME);
+    const users = db.collection('users');
+    const products = db.collection('products');
     if (!ObjectId.isValid(userId)) {
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
     }

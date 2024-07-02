@@ -6,11 +6,6 @@ import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 
-const client = await connectDB;
-const db = client.db(process.env.MONGODB_NAME);
-const products = db.collection('products');
-const users = db.collection('users');
-
 const priceRanges = [
   { id: 1, min: 0, max: 50000 },
   { id: 2, min: 50000, max: 100000 },
@@ -21,6 +16,9 @@ const priceRanges = [
 
 export async function GET(req) {
   try {
+    const client = await connectDB;
+    const db = client.db(process.env.MONGODB_NAME);
+
     const { searchParams } = new URL(req.url, `${process.env.NEXT_PUBLIC_BASE_URL}`);
     const keywordParam = searchParams.get('keyword');
     const categoriesParam = searchParams.get('categories');
@@ -29,8 +27,6 @@ export async function GET(req) {
 
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
-    const client = await connectDB;
-    const db = client.db(process.env.MONGODB_NAME);
     let query = {};
 
     if (keywordParam) {
@@ -58,7 +54,6 @@ export async function GET(req) {
       query.$or = priceConditions;
     }
 
-    console.log('===============================', lastProductId);
     if (lastProductId) {
       query._id = { $lt: new ObjectId(lastProductId) };
     }
@@ -84,6 +79,10 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const { user: session } = await getUserSession();
+    const client = await connectDB;
+    const db = client.db(process.env.MONGODB_NAME);
+    const products = db.collection('products');
+    const users = db.collection('users');
 
     const formData = await req.formData();
     const files = formData.getAll('files');
@@ -103,7 +102,7 @@ export async function POST(req) {
         Bucket: process.env.S3_BUCKET_NAME,
         // 업로드할 S3 버킷의 이름입니다. 환경 변수로 설정된 값을 사용합니다.
 
-        Key: `${Date.now()}_${file.name}`,
+        Key: `product_${Date.now()}_${file.name}`,
         // S3에 저장될 객체의 키(파일 이름)입니다. 여기서는 파일 이름 앞에 현재 타임스탬프를 붙여서 고유한 파일 이름을 생성합니다.
 
         Body: buffer,
@@ -119,7 +118,7 @@ export async function POST(req) {
       const uploadPromise = s3Client
         .send(command)
         .then(() => {
-          const url = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+          const url = `${process.env.AWS_S3_BASE_URL}/${uploadParams.Key}`;
           // 파일이 성공적으로 업로드된 후 해당 파일의 URL을 생성합니다.
           // S3 버킷의 URL 형식을 사용합니다. 'https://{버킷 이름}.s3.{리전}.amazonaws.com/{파일 키}'
 
@@ -173,6 +172,11 @@ export async function POST(req) {
 
 export async function PUT(req) {
   try {
+    const client = await connectDB;
+    const db = client.db(process.env.MONGODB_NAME);
+    const products = db.collection('products');
+    const users = db.collection('users');
+
     const { user: session } = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const formData = await req.formData();
@@ -194,14 +198,14 @@ export async function PUT(req) {
         const buffer = Buffer.from(arrayBuffer);
         const uploadParams = {
           Bucket: process.env.S3_BUCKET_NAME,
-          Key: `${Date.now()}_${file.name}`,
+          Key: `product_${Date.now()}_${file.name}`,
           Body: buffer,
           ContentType: file.type,
         };
         const command = new PutObjectCommand(uploadParams);
 
         await s3Client.send(command);
-        const url = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+        const url = `${process.env.AWS_S3_BASE_URL}/${uploadParams.Key}`;
         uploadedUrls.push(url);
       } else {
         uploadedUrls.push(file); // 이미 업로드된 파일의 URL
