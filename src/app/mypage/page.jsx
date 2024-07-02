@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 // import LikedPost from './_components/LikedPost';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Script from 'next/script';
 
 import Link from 'next/link';
 
@@ -21,6 +22,7 @@ const getProducts = async (id, setProducts) => {
 
 export default function MyPage() {
   const { data: session, status } = useSession();
+  console.log(session);
   const [products, setProducts] = useState([]);
   const [productOption, setProductOption] = useState(1);
   // const [postOption, setPostOption] = useState('');
@@ -31,9 +33,10 @@ export default function MyPage() {
     }
   }, [session]);
 
-  console.log('haha');
   return (
     <div className="flex flex-col h-full space-y-8 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:main-768">
+      {/* 카카오 API */}
+
       <div className="flex h-24 border border-gray-300 rounded-md items-center px-4 max-md:px-2">
         <div className="flex flex-1 items-center space-x-5">
           {session && session.user.image ? (

@@ -56,7 +56,6 @@ function getRandomKoreanWord() {
     '큰',
     '작은',
     '깨끗한',
-    '더러운',
     '높은',
     '낮은',
     '따뜻한',
@@ -139,16 +138,28 @@ function getRandomKoreanWord() {
 async function addUserNickname(user) {
   const client = await connectDB;
   const db = client.db(process.env.MONGODB_NAME);
+  let isDuplicate = true;
+  let nickname;
+
+  // 닉네임 중복 체크 루프
+  while (isDuplicate) {
+    nickname = getRandomKoreanWord() + ~~(Math.random() * 10000);
+    const existingUser = await db.collection('users').findOne({ nickname: nickname });
+    if (!existingUser) {
+      isDuplicate = false;
+    }
+  }
 
   // 사용자 데이터를 업데이트합니다. 여기서 닉네임을 추가합니다.
   await db.collection('users').updateOne(
     { _id: new ObjectId(user.id) },
     {
       $set: {
-        nickname: getRandomKoreanWord(),
+        nickname: nickname,
       },
     },
   );
+  return { ...user, nickname };
 }
 
 export const authOptions = {
@@ -165,18 +176,26 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: 'email', // 'profile' 범위를 제거하고 'email' 범위만 사용
+        },
+      },
     }),
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, //30일
+    maxAge: 30 * 24 * 60 * 60, // 30일
   },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.user = user;
+    async jwt({ token, user, account, trigger, session }) {
+      if (user) token.user = user;
+      if (account) {
+        token.access_token = account.access_token;
+        token.provider = account.provider;
       }
-      if (trigger === 'update' && user !== null) {
+
+      if (trigger === 'update' && session !== null) {
         const { openChatUrl, image, nickname, nicknameChangedAt } = session;
         if (openChatUrl) token.user.openChatUrl = openChatUrl;
         if (image !== undefined) token.user.image = image;
@@ -187,23 +206,25 @@ export const authOptions = {
     },
     async session({ session, token }) {
       if (token?.user) {
-        session.user = token.user;
+        session.user = { ...token.user };
       }
+      if (token?.access_token) {
+        session.access_token = token.access_token;
+        session.provider = token.provider;
+      }
+
       return session;
     },
   },
-
   secret: process.env.NEXTAUTH_SECRET,
   adapter: MongoDBAdapter(connectDB, {
     databaseName: 'keynut',
   }),
-
   events: {
     async createUser(message) {
       await addUserNickname(message.user);
     },
   },
-
   pages: {
     signIn: '/signin',
   },
