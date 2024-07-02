@@ -77,7 +77,7 @@ export default function RenderHome() {
   return (
     <div className="flex flex-col w-full max-md:main-768 -translate-y-6">
       <div
-        className={`${title.className} flex flex-col text-center bg-purple-50 h-48 text-2xl items-center justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
+        className={`${title.className} flex flex-col text-center bg-gray-100 h-48 text-2xl items-center justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
       >
         {/* <div className="flex space-x-1"> */}
         {/* <Image className="md:hidden" src="/keyboard.svg" width={60} height={60} /> */}
@@ -94,40 +94,25 @@ export default function RenderHome() {
           <ul className="flex space-x-3 overflow-auto scrollbar-hide">
             <li className="flex flex-col items-center space-y-1">
               <Link href={'/shop?categories=1'}>
-                <div
-                  className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center"
-                  // style={{ backgroundColor: '#FAFBE6' }}
-                >
-                  <Image
-                    // className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                    src="/keyboard.svg"
-                    width={95}
-                    height={95}
-                    alt="keyboard"
-                  />
+                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
+                  <Image className="max-md:w-20" src="/keyboard.svg" width={95} height={95} alt="keyboard" />
                 </div>
               </Link>
               <p className="text-gray-600">키보드</p>
             </li>
             <li className="flex flex-col items-center space-y-1">
               <Link href={'/shop?categories=2'}>
-                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center">
-                  <Image
-                    // className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                    src="/mouse.svg"
-                    width={50}
-                    height={50}
-                    alt="mouse"
-                  />
+                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
+                  <Image className="max-md:w-12" src="/mouse.svg" width={50} height={50} alt="mouse" />
                 </div>
               </Link>
               <p className="text-gray-600">마우스</p>
             </li>
             <li className="flex flex-col items-center space-y-1">
               <Link href={'/shop?categories=3'}>
-                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center">
+                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
                   <svg
-                    // className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                    className="max-md:w-20"
                     xmlns="http://www.w3.org/2000/svg"
                     width="50px"
                     height="50px"

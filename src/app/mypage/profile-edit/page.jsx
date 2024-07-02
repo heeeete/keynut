@@ -3,16 +3,26 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
+import getUserProfile from '@/app/_lib/getUserProfile';
 
 const ProfileName = ({ session, update }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempNickname, setTempNickname] = useState('');
   const [nickname, setNickname] = useState('');
 
+  const fetchNickname = async () => {
+    const profile = await getUserProfile(session.user.id);
+    setNickname(profile.nickname);
+    setTempNickname(profile.nickname);
+  };
+
   useEffect(() => {
     if (session) {
-      setNickname(session.user.nickname);
-      setTempNickname(session.user.nickname);
+      if (!session.user.nickname) fetchNickname();
+      else {
+        setNickname(session.user.nickname);
+        setTempNickname(session.user.nickname);
+      }
     }
   }, [session]);
 
@@ -26,8 +36,10 @@ const ProfileName = ({ session, update }) => {
     if (!res.ok) {
       console.error('API 요청 실패:', res.status, res.statusText);
     } else {
-      if (res.status === 203) alert('닉네임은 변경 후 30일이 지나야 다시 변경할 수 있습니다.');
-      else {
+      if (res.status === 203) {
+        setTempNickname(nickname);
+        alert('닉네임은 변경 후 30일이 지나야 다시 변경할 수 있습니다.');
+      } else {
         const data = await res.json();
         setNickname(tempNickname);
         update({ nickname: tempNickname, nicknameChangedAt: data.time });
