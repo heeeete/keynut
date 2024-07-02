@@ -356,7 +356,7 @@ const RenderPriceInput = React.memo(({ price, setPrice }) => {
 
 const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl }) => {
   return (
-    <div className="mt-10 max-w-96 border-b">
+    <div className="mt-10 max-w-lg border-b">
       <div className="flex items-end my-3">
         <div className="font-medium text-xl">오픈채팅방</div>
         <div className="text-sm">(선택)</div>
@@ -440,7 +440,7 @@ export default function Sell() {
   const [title, setTitle] = useState('');
   const [mainCategory, setMainCategory] = useState(1);
   const [subCategory, setSubCategory] = useState(10);
-  const [condition, setCondition] = useState(null);
+  const [condition, setCondition] = useState(1);
   const [description, setDescription] = useState(''); // 설명 상태 변수 추가
   const [price, setPrice] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -452,7 +452,7 @@ export default function Sell() {
 
   useEffect(() => {
     if (status !== 'loading' && !session) return router.push('/signin');
-    if (session) setOpenChatUrl(session.user.openChatUrl);
+    if (session) setOpenChatUrl(session.user.openChatUrl || '');
   }, [session]);
 
   const handleDisabled = () => {
