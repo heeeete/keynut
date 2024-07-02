@@ -7,7 +7,8 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import getProducts from './_lib/getProducts';
 import { useInView } from 'react-intersection-observer';
 import debounce from '../../utils/debounce';
-
+import ScrollRestoration from './_lib/scrollResotration';
+import useScrollResotration from './_lib/scrollResotration';
 
 const categories = [
   {
@@ -153,23 +154,24 @@ const RenderProducts = React.memo(({ params }) => {
   const useProducts = queryString => {
     return useInfiniteQuery({
       queryKey: ['products', queryString],
-      queryFn: ({ pageParam }) => getProducts(queryString, pageParam), //함수 참조를 전달해야함
+      queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
       initialPageParam: 0, //[1,2,3,4,5] [6,7,8,9,10] [11,12,13,14,15] -> 데이터를 페이지별로 관리 , 이차원 배열
       getNextPageParam: (lastPage, allPages) => {
         if (lastPage.length === 0) return undefined;
         return lastPage[lastPage.length - 1]._id; // `_id` 기준으로 페이징
       },
-      // staleTime: 1000 * 60,
     });
   };
-  const { ref, inView } = useInView({ threshold: 0.8, delay: 0 });
+
+  const { ref, inView } = useInView({ threshold: 0, delay: 0 });
   const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(initialQueryString());
-  console.log(data, fetchNextPage, hasNextPage);
+
   useEffect(() => {
     if (inView && !isFetching && hasNextPage) {
       fetchNextPage();
     }
-  }, [inView, fetchNextPage, hasNextPage, isFetching]);
+  }, [inView, fetchNextPage]);
+
   return (
     <>
       <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
@@ -177,8 +179,8 @@ const RenderProducts = React.memo(({ params }) => {
           <Fragment key={i}>
             {page.map((product, idx) => (
               <div
-                className="flex flex-col hover:bg-gray-100 cursor-pointer"
-                key={product._id} // Ensure unique key for each product
+                className="flex flex-col cursor-pointer"
+                key={product._id}
                 onClick={() => {
                   router.push(`/shop/product/${product._id}`);
                 }}
@@ -218,7 +220,7 @@ const RenderProducts = React.memo(({ params }) => {
           </Fragment>
         ))}
       </div>
-      <div className="h-12 bg-red-700" ref={ref}></div>
+      <div className="h-12 bg-red-700 -translate-y-96" ref={ref}></div>
     </>
   );
 });
@@ -242,7 +244,7 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
               <div className="w-full aspect-square relative min-h-20 min-w-20 bg-gray-100">
                 <Image
                   className="rounded object-cover"
-                  src={product.images[0]}
+                  src={product.images.length ? product.images[0] : ''}
                   alt={product.title}
                   fill
                   sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"

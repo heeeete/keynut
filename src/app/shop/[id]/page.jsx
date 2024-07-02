@@ -1,32 +1,10 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useParams, useRouter } from 'next/navigation';
 
-import Link from 'next/link';
-
-const getProducts = async (id, setProducts) => {
-  const res = await fetch(`/api/user/${id}/products`, {
-    method: 'GET',
-  });
-  if (!res.ok) {
-    throw new Error(data.error || 'Network response was not ok');
-  }
-  const data = await res.json();
-  setProducts(data);
-};
-
-const getUserProfile = async (id, setUserProfile) => {
-  const res = await fetch(`/api/user/${id}/profile`, {
-    method: 'GET',
-  });
-  if (!res.ok) {
-    throw new Error(data.error || 'Network response was not ok');
-  }
-  const data = await res.json();
-  setUserProfile(data);
-};
+import getUserProducts from '@/app/_lib/getUserProducts';
+import getUserProfile from '@/app/_lib/getUserProfile';
 
 export default function Profile() {
   const [products, setProducts] = useState([]);
@@ -35,8 +13,13 @@ export default function Profile() {
   const router = useRouter();
   const { id } = useParams();
   useEffect(() => {
-    getProducts(id, setProducts);
-    getUserProfile(id, setUserProfile);
+    const fetchUserInfo = async () => {
+      const product = await getUserProducts(id);
+      const profile = await getUserProfile(id);
+      setProducts(product);
+      setUserProfile(profile);
+    };
+    fetchUserInfo();
   }, []);
 
   return (

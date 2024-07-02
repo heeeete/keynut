@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+
 // import MyPost from './_components/MyPost';
 // import LikedPost from './_components/LikedPost';
 import { useSession } from 'next-auth/react';
@@ -8,28 +9,44 @@ import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 
 import Link from 'next/link';
+import getUserProducts from '../_lib/getUserProducts';
+import getUserProfile from '../_lib/getUserProfile';
 
-const getProducts = async (id, setProducts) => {
-  const res = await fetch(`/api/user/${id}/products`, {
-    method: 'GET',
-  });
-  if (!res.ok) {
-    throw new Error(data.error || 'Network response was not ok');
-  }
-  const data = await res.json();
-  setProducts(data);
-};
+// const getProducts = async (id, setProducts) => {
+//   const res = await fetch(`/api/user/${id}/products`, {
+//     method: 'GET',
+//   });
+//   if (!res.ok) {
+//     throw new Error(data.error || 'Network response was not ok');
+//   }
+//   const data = await res.json();
+//   setProducts(data);
+// };
 
 export default function MyPage() {
   const { data: session, status } = useSession();
   console.log(session);
   const [products, setProducts] = useState([]);
   const [productOption, setProductOption] = useState(1);
+  const [nickname, setNickname] = useState('');
   // const [postOption, setPostOption] = useState('');
   const router = useRouter();
+  const fetchProducts = async () => {
+    const product = await getUserProducts(session.user.id);
+    setProducts(product);
+  };
+
+  const fetchNickname = async () => {
+    const profile = await getUserProfile(session.user.id);
+    setNickname(profile.nickname);
+  };
+
   useEffect(() => {
     if (session) {
-      const res = getProducts(session.user.id, setProducts);
+      fetchProducts();
+      if (!session.user.nickname) {
+        fetchNickname();
+      } else setNickname(session.user.nickname);
     }
   }, [session]);
 
@@ -59,7 +76,7 @@ export default function MyPage() {
               </svg>
             </div>
           )}
-          <div className="text-lg max-md:text-base">{session ? session.user.nickname : ''}</div>
+          <div className="text-lg max-md:text-base">{nickname}</div>
         </div>
         <button>
           <div className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm">
