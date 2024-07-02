@@ -63,7 +63,7 @@ export async function GET(req) {
       query._id = { $lt: new ObjectId(lastProductId) };
     }
 
-    const products = await db.collection('products').find(query).sort({ createdAt: -1 }).limit(12).toArray();
+    const products = await db.collection('products').find(query).sort({ createdAt: -1 }).limit(32).toArray();
     if (products) {
       return NextResponse.json(products, { status: 200 });
     } else {
