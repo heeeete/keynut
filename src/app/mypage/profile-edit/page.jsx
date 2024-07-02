@@ -7,7 +7,6 @@ import getUserProfile from '@/app/_lib/getUserProfile';
 import Loading from '@/app/_components/Loading';
 import { useRouter } from 'next/navigation';
 
-
 const ProfileName = ({ session, update }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempNickname, setTempNickname] = useState('');
@@ -37,16 +36,20 @@ const ProfileName = ({ session, update }) => {
       body: formData,
     });
     if (!res.ok) {
-      console.error('API 요청 실패:', res.status, res.statusText);
-    } else {
-      if (res.status === 203) {
+      if (res.status === 403) {
         setTempNickname(nickname);
         alert('닉네임은 변경 후 30일이 지나야 다시 변경할 수 있습니다.');
-      } else {
-        const data = await res.json();
-        setNickname(tempNickname);
-        update({ nickname: tempNickname, nicknameChangedAt: data.time });
-      }
+      } else if (res.status === 409) {
+        setTempNickname(nickname);
+        alert('이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해 주세요.');
+      } else if (res.status === 400) {
+        setTempNickname(nickname);
+        alert('닉네임은 띄어쓰기 없이 한글, 영어, 숫자로만 구성되어야 합니다.');
+      } else console.error('API 요청 실패:', res.status, res.statusText);
+    } else {
+      const data = await res.json();
+      setNickname(tempNickname);
+      update({ nickname: tempNickname, nicknameChangedAt: data.time });
     }
   };
 
@@ -74,7 +77,14 @@ const ProfileName = ({ session, update }) => {
           {isEditing ? '완료' : '수정'}
         </button>
       </div>
-      {isEditing ? <div className="text-xs text-gray-400">변경 후 30일 내에는 변경이 불가합니다</div> : ''}
+      {isEditing ? (
+        <div className="flex flex-col text-xs text-gray-400 h-12 max-md:h-14">
+          <p>한글, 영어, 숫자로만 구성되어야 하며, 띄어쓰기를 포함할 수 없습니다.</p>
+          <p>&#40;변경 후 30일 내에는 변경이 불가합니다&#41;</p>
+        </div>
+      ) : (
+        <div className="h-10 py-1"></div>
+      )}
     </div>
   );
 };
@@ -227,7 +237,7 @@ export default function ProfileEdit() {
   };
   return (
     <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:h-d-screen max-md:justify-center ">
-      <div className="flex flex-col space-y-10 py-10 max-md:py-0">
+      <div className="flex flex-col w-350 py-10 max-md:py-0 max-md:w-64">
         <section className="flex flex-col rounded-none space-y-10 ">
           <ProfileImage session={session} update={update} />
           <div className="flex space-y-5 flex-col">
