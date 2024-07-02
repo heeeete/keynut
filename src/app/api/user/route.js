@@ -60,7 +60,16 @@ export async function PUT(req) {
       const lastChanged = session.nicknameChangedAt ? new Date(session.nicknameChangedAt) : null;
       if (lastChanged) {
         const period = Math.floor((now - lastChanged) / (1000 * 60 * 60 * 24));
-        if (period < 30) return NextResponse.json({ state: 0 }, { status: 203 });
+        if (period < 30) return NextResponse.json({ state: 0 }, { status: 403 });
+      }
+      const exisitingUser = await users.findOne({ nickname: nickname });
+      if (exisitingUser) {
+        return NextResponse.json('dup', { status: 409 });
+      }
+
+      const regex = /^[가-힣a-zA-Z0-9]+$/;
+      if (!regex.test(nickname)) {
+        return NextResponse.json('invalid', { status: 400 });
       }
       const res = await users.updateOne(
         { _id: new ObjectId(session.id) },

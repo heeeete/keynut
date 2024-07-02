@@ -77,13 +77,13 @@ export default function RenderHome() {
   return (
     <div className="flex flex-col w-full max-md:main-768 -translate-y-6">
       <div
-        className={`${title.className} flex flex-col text-center bg-gray-100 h-48 text-2xl items-center justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
+        className={`${title.className} flex flex-col text-center bg-gray-100 h-48 text-2xl items-center relative justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
       >
-        {/* <div className="flex space-x-1"> */}
-        {/* <Image className="md:hidden" src="/keyboard.svg" width={60} height={60} /> */}
-        {/* <Image className="md:hidden" src="/mouse.svg" width={30} height={30} /> */}
-        {/* </div> */}
-        <div className="">키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요!</div>
+        <Image className="absolute top-5 left-10 -rotate-12 " src="/keyboard2.svg" width={100} height={100} />
+        <Image className="absolute bottom-0 left-1/3 rotate-12 " src="/keyboard2.svg" width={70} height={70} />
+        {/* <Image className="absolute top-5 left-10 -rotate-12 " src="/keyboard2.svg" width={100} height={100} /> */}
+        {/* <Image className="absolute top-5 left-10 -rotate-12 " src="/keyboard2.svg" width={100} height={100} /> */}
+        <div className="flex items-center justify-center">키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요</div>
       </div>
       <div className="w-full max-w-screen-xl mx-auto px-10  space-y-12 my-10 max-md:px-2 ">
         <section className="flex flex-col space-y-5">
@@ -154,12 +154,10 @@ export default function RenderHome() {
           </div>
           <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
             {data?.map((product, idx) => (
-              <div
+              <Link
+                href={`/shop/product/${product._id}`}
                 className="flex flex-col cursor-pointer max-md:max-w-40 max-md:w-40 "
                 key={idx}
-                onClick={() => {
-                  router.push(`/shop/product/${product._id}`);
-                }}
               >
                 <div className="w-full aspect-square relative min-h-32 min-w-32 bg-gray-100">
                   <Image
@@ -177,7 +175,7 @@ export default function RenderHome() {
                     <span className="text-sm">원</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>

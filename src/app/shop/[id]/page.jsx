@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 import getUserProducts from '@/app/_lib/getUserProducts';
 import getUserProfile from '@/app/_lib/getUserProfile';
@@ -88,11 +89,9 @@ export default function Profile() {
                   .filter(a => a.state === productOption)
                   .map((product, index) => {
                     return (
-                      <div
+                      <Link
+                        href={`/shop/product/${product._id}`}
                         className="p-2 items-center border border-gray-300 justify-between rounded-sm max-md:border-0 max-md:border-b max-md:border-gray-200"
-                        onClick={() => {
-                          router.push(`/shop/product/${product._id}`);
-                        }}
                         key={index}
                       >
                         {!productOption && (
@@ -118,7 +117,7 @@ export default function Profile() {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })
               : ''}

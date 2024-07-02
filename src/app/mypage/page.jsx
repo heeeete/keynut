@@ -121,11 +121,9 @@ export default function MyPage() {
                   .filter(a => a.state === productOption)
                   .map((product, index) => {
                     return (
-                      <div
+                      <Link
+                        href={`/shop/product/${product._id}`}
                         className="p-2 items-center border cursor-pointer border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm relative max-md:border-gray-200"
-                        onClick={() => {
-                          router.push(`/shop/product/${product._id}`);
-                        }}
                         key={index}
                       >
                         {!productOption && (
@@ -151,7 +149,7 @@ export default function MyPage() {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })
               : ''}
