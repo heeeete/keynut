@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import getUserProducts from '@/app/_lib/getUserProducts';
-import getUserProfile from '@/app/_lib/getUserProfile';
+import getUserProducts from '@/lib/getUserProducts';
+import getUserProfile from '@/lib/getUserProfile';
 
 export default function Profile() {
   const [products, setProducts] = useState([]);
