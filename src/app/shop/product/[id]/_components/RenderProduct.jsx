@@ -285,7 +285,7 @@ const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
       <button className="hidden align-text-top items-center p-2 max-[480px]:flex" onClick={() => setSettingModal(true)}>
         <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 1024 1024">
           <path
-            fill="rgb(216 180 254)"
+            fill="gray"
             d="M176 416a112 112 0 1 1 0 224a112 112 0 0 1 0-224m336 0a112 112 0 1 1 0 224a112 112 0 0 1 0-224m336 0a112 112 0 1 1 0 224a112 112 0 0 1 0-224"
           />
         </svg>
