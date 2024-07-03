@@ -110,6 +110,13 @@ export default function Nav() {
                   POST
                 </Link>
               </li>
+              {session?.admin && (
+                <>
+                  <li>
+                    <Link href={'/admin'}>ADMIN</Link>
+                  </li>
+                </>
+              )}
             </div>
           </ul>
         </div>

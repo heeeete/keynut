@@ -7,7 +7,6 @@ import { ObjectId } from 'mongodb';
 
 function getRandomKoreanWord() {
   const firstWords = [
-    '발톱먹은',
     '이쁜',
     '잠오는',
     '졸린',
@@ -37,7 +36,6 @@ function getRandomKoreanWord() {
     '예의바른',
     '부지런한',
     '재미있는',
-    '사랑스러운',
     '행복한',
     '가난한',
     '부유한',
@@ -91,7 +89,6 @@ function getRandomKoreanWord() {
     '기린',
     '코뿔소',
     '하마',
-    '바다코끼리',
     '돌고래',
     '고래',
     '상어',
@@ -132,7 +129,7 @@ function getRandomKoreanWord() {
   const firstWord = firstWords[Math.floor(Math.random() * firstWords.length)];
   const secondWord = secondWords[Math.floor(Math.random() * secondWords.length)];
 
-  return `${firstWord} ${secondWord}`;
+  return `${firstWord}${secondWord}`;
 }
 
 async function addUserNickname(user) {
@@ -143,7 +140,7 @@ async function addUserNickname(user) {
 
   // 닉네임 중복 체크 루프
   while (isDuplicate) {
-    nickname = getRandomKoreanWord() + ~~(Math.random() * 10000);
+    nickname = getRandomKoreanWord() + ~~(Math.random() * 1000);
     const existingUser = await db.collection('users').findOne({ nickname: nickname });
     if (!existingUser) {
       isDuplicate = false;
@@ -189,12 +186,14 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
-      if (user) token.user = user;
+      if (user) {
+        token.user = user;
+        if (user.email === process.env.ADMIN_EMAIL) token.admin = true;
+      }
       if (account) {
         token.access_token = account.access_token;
         token.provider = account.provider;
       }
-
       if (trigger === 'update' && session !== null) {
         const { openChatUrl, image, nickname, nicknameChangedAt } = session;
         if (openChatUrl) token.user.openChatUrl = openChatUrl;
@@ -205,9 +204,8 @@ export const authOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (token?.user) {
-        session.user = { ...token.user };
-      }
+      if (token?.user) session.user = token.user;
+      if (token?.admin) session.admin = true;
       if (token?.access_token) {
         session.access_token = token.access_token;
         session.provider = token.provider;

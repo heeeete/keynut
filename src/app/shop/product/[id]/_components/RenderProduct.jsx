@@ -339,7 +339,7 @@ export default function RenderProduct({ id }) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { data, error, isLoading } = useQuery({ queryKey: ['product', id], queryFn: () => getProductWithUser(id) });
-  const { user, ...product } = data;
+  const { user = null, ...product } = data || {};
 
   useEffect(() => {
     const fetchUpdateViews = async () => {
@@ -363,7 +363,7 @@ export default function RenderProduct({ id }) {
     }
   };
 
-  if (!data && isLoading === false) return (window.location.href = '/');
+  if (!data && isLoading === false) return router.replace('/');
   if (error) return <div>Error loading product</div>;
   if (!data) return <div>데이터를 가져오고 있습니다...</div>;
   return (
@@ -374,7 +374,7 @@ export default function RenderProduct({ id }) {
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold">{product.title}</p>
           <div className="flex">
-            {writer ? (
+            {writer || session?.admin ? (
               <IsWriter
                 id={id}
                 state={product.state}

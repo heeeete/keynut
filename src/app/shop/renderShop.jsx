@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback, Fragment } from 'react';
+import React, { useState, useRef, useEffect, useCallback, Fragment, useLayoutEffect } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -9,7 +9,7 @@ import { useInView } from 'react-intersection-observer';
 import debounce from '../../utils/debounce';
 import ScrollRestoration from './_lib/scrollResotration';
 import useScrollResotration from './_lib/scrollResotration';
-import Loading from '../_components/Loading';
+import Link from 'next/link';
 
 const categories = [
   {
@@ -172,10 +172,24 @@ const RenderProducts = React.memo(({ params }) => {
   const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(initialQueryString());
 
   useEffect(() => {
+    const scrollPos = Number(sessionStorage.getItem('scrollPos'));
+    sessionStorage.removeItem('scrollPos');
+    setTimeout(() => {
+      window.scrollTo(0, scrollPos);
+    }, 100);
+  }, []);
+
+  useEffect(() => {
     if (inView && !isFetching && hasNextPage) {
       fetchNextPage();
     }
   }, [inView, fetchNextPage]);
+
+  const onClickProduct = (e, id) => {
+    e.preventDefault();
+    sessionStorage.setItem('scrollPos', window.scrollY);
+    router.push(`/shop/product/${id}`);
+  };
 
   return (
     <>
@@ -183,12 +197,11 @@ const RenderProducts = React.memo(({ params }) => {
         {data?.pages.map((page, i) => (
           <Fragment key={i}>
             {page.map((product, idx) => (
-              <div
+              <Link
+                href={``}
+                onClick={e => onClickProduct(e, product._id)}
                 className="flex flex-col cursor-pointer"
                 key={product._id}
-                onClick={() => {
-                  router.push(`/shop/product/${product._id}`);
-                }}
               >
                 <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
                   <Image
@@ -223,7 +236,7 @@ const RenderProducts = React.memo(({ params }) => {
                     <span className="text-sm">원</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </Fragment>
         ))}
@@ -311,6 +324,7 @@ const fetchHotProducts = async category => {
 };
 
 export default function RenderShop() {
+  const router = useRouter();
   const params = useSearchParams();
   const paramsCategories = params.get('categories') ? params.get('categories').split(',').map(Number) : [];
   const paramsPrices = params.get('prices') ? params.get('prices').split(',').map(Number) : [];
@@ -360,7 +374,6 @@ export default function RenderShop() {
   const [queryString, setQueryString] = useState(initialQueryString());
   const innerContainerRef = useRef(null);
   const filterRef = useRef(null);
-  const router = useRouter();
 
   useEffect(() => {
     const updateStateFromParams = () => {
@@ -479,7 +492,7 @@ export default function RenderShop() {
   const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
 
   return (
-    <div className="flex items-start justify-start">
+    <div className="flex items-start justify-start ">
       <div className="flex flex-col w-full">
         <div className="sticky top-0 flex flex-col z-20 border-b bg-white">
           <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
