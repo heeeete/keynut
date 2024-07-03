@@ -2,7 +2,6 @@ import RenderHome from './_components/renderHome';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import getRecentProducts from './_lib/getRecentProducts';
-import ScrollRestoration from './shop/_lib/scrollResotration';
 
 export default async function Home() {
   const queryClient = new QueryClient();

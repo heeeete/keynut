@@ -6,6 +6,27 @@ import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId } from 'mongodb';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 
+export async function GET(req) {
+  try {
+    const session = await getUserSession();
+    if (!session.admin) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
+
+    const { searchParams } = new URL(req.url, process.env.NEXTAUTH_URL);
+    const offset = searchParams.get('offset');
+    const limit = searchParams.get('limit');
+    const client = await connectDB;
+    const db = client.db(process.env.MONGODB_NAME);
+
+    const users = await db.collection('users').find().skip(parseInt(offset)).limit(parseInt(limit)).toArray();
+
+    const total = await db.collection('users').countDocuments();
+
+    return NextResponse.json({ users, total }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(error, { status: 500 });
+  }
+}
+
 export async function PUT(req) {
   try {
     const client = await connectDB;
