@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
-import getUserProfile from '@/app/_lib/getUserProfile';
+import getUserProfile from '@/lib/getUserProfile';
 import Loading from '@/app/_components/Loading';
 import { useRouter } from 'next/navigation';
 
@@ -11,7 +11,7 @@ const ProfileName = ({ session, update }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempNickname, setTempNickname] = useState('');
   const [nickname, setNickname] = useState('');
-
+  const [forbidden, setForbidden] = useState(false);
   const fetchNickname = async () => {
     const profile = await getUserProfile(session.user.id);
     setNickname(profile.nickname);
@@ -42,9 +42,12 @@ const ProfileName = ({ session, update }) => {
       } else if (res.status === 409) {
         setTempNickname(nickname);
         alert('이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해 주세요.');
+      } else if (res.status === 402) {
+        setTempNickname(nickname);
+        alert('사용하신 닉네임에는 허용되지 않는 단어가 포함되어 있습니다. 다시 입력해주세요');
       } else if (res.status === 400) {
         setTempNickname(nickname);
-        alert('닉네임은 띄어쓰기 없이 한글, 영어, 숫자로만 구성되어야 합니다.');
+        alert('닉네임은 띄어쓰기 없이 2글자 이상 10글자 이내의 한글, 영어, 숫자로만 구성되어야 합니다.');
       } else console.error('API 요청 실패:', res.status, res.statusText);
     } else {
       const data = await res.json();
@@ -79,8 +82,8 @@ const ProfileName = ({ session, update }) => {
       </div>
       {isEditing ? (
         <div className="flex flex-col text-xs text-gray-400 h-12 max-md:h-14">
-          <p>한글, 영어, 숫자로만 구성되어야 하며, 띄어쓰기를 포함할 수 없습니다.</p>
-          <p>&#40;변경 후 30일 내에는 변경이 불가합니다&#41;</p>
+          <p>띄어쓰기 없이 2~10자의 한글, 영어, 숫자 조합으로 입력해주세요</p>
+          <p>(변경 후 30일 내에는 변경이 불가합니다)</p>
         </div>
       ) : (
         <div className="h-10 py-1"></div>

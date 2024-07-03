@@ -7,6 +7,8 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import getProducts from './_lib/getProducts';
 import { useInView } from 'react-intersection-observer';
 import debounce from '../../utils/debounce';
+import ScrollRestoration from './_lib/scrollResotration';
+import useScrollResotration from './_lib/scrollResotration';
 import Link from 'next/link';
 
 const categories = [
@@ -43,9 +45,13 @@ const prices = [
   { id: 5, option: '50만원 이상' },
 ];
 
-// const handleBookMarkClick = (e, id) => {
-//   e.stopPropagation();
-// };
+const conditions = {
+  1: { option: '미사용' },
+  2: { option: '사용감 없음' },
+  3: { option: '사용감 적음' },
+  4: { option: '사용감 많음' },
+  5: { option: '고장 / 파손' },
+};
 
 const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
   const [tempSearchText, setTempSearchText] = useState(paramsKeyword);
@@ -197,7 +203,7 @@ const RenderProducts = React.memo(({ params }) => {
                 className="flex flex-col cursor-pointer"
                 key={product._id}
               >
-                <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-100">
+                <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
                   <Image
                     className="rounded object-cover"
                     src={product.images.length ? product.images[0] : '/키보드1.webp'}
@@ -205,6 +211,9 @@ const RenderProducts = React.memo(({ params }) => {
                     fill
                     sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
                   />
+                  <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white">
+                    {conditions[product.condition].option}
+                  </div>
                   {product.images.length !== 1 && (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -221,7 +230,7 @@ const RenderProducts = React.memo(({ params }) => {
                   )}
                 </div>
                 <div className="py-1">
-                  <div className="text-lg break-all overflow-hidden line-clamp-1">{product.title}</div>
+                  <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>
                   <div className="space-x-1 font-semibold break-all line-clamp-1">
                     <span className="">{product.price.toLocaleString()}</span>
                     <span className="text-sm">원</span>
@@ -233,6 +242,29 @@ const RenderProducts = React.memo(({ params }) => {
         ))}
       </div>
       <div className="h-12 bg-red-700 -translate-y-96" ref={ref}></div>
+      {isFetching ? (
+        <div className="flex w-full items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 24 24">
+            <path
+              fill="#a599ff"
+              d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8A8 8 0 0 1 12 20Z"
+              opacity="0.5"
+            />
+            <path fill="#a599ff" d="M20 12h2A10 10 0 0 0 12 2V4A8 8 0 0 1 20 12Z">
+              <animateTransform
+                attributeName="transform"
+                dur="1.5s"
+                from="0 12 12"
+                repeatCount="indefinite"
+                to="360 12 12"
+                type="rotate"
+              />
+            </path>
+          </svg>
+        </div>
+      ) : (
+        ''
+      )}
     </>
   );
 });
@@ -261,9 +293,12 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
                   fill
                   sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"
                 />
+                <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white">
+                  {conditions[product.condition].option}
+                </div>
               </div>
               <div className="py-1">
-                <div className="text-lg break-all overflow-hidden line-clamp-1 max-md:text-base">{product.title}</div>
+                <div className="break-all overflow-hidden line-clamp-1 max-md:text-base">{product.title}</div>
                 <div className="space-x-1 font-semibold break-all line-clamp-1">
                   <span className="max-md:text-sm">{product.price.toLocaleString()}</span>
                   <span className="text-xs">원</span>

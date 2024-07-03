@@ -6,6 +6,24 @@ import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId } from 'mongodb';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 
+const forbiddenList = [
+  '씨발',
+  '시발',
+  '니미',
+  '미친',
+  '장애인',
+  '병신',
+  '븅신',
+  '쉬발',
+  '애미',
+  '좆',
+  '썅년',
+  '자지',
+  '보지',
+  '섹스',
+  '개새끼',
+];
+
 export async function GET(req) {
   try {
     const session = await getUserSession();
@@ -26,6 +44,7 @@ export async function GET(req) {
     return NextResponse.json(error, { status: 500 });
   }
 }
+
 
 export async function PUT(req) {
   try {
@@ -87,9 +106,12 @@ export async function PUT(req) {
       if (exisitingUser) {
         return NextResponse.json('dup', { status: 409 });
       }
+      if (forbiddenList.some(a => nickname.match(a))) {
+        return NextResponse.json('forbidden', { status: 402 });
+      }
 
       const regex = /^[가-힣a-zA-Z0-9]+$/;
-      if (!regex.test(nickname)) {
+      if (!regex.test(nickname) || nickname.length < 2 || nickname.length > 10) {
         return NextResponse.json('invalid', { status: 400 });
       }
       const res = await users.updateOne(

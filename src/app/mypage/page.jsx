@@ -9,8 +9,8 @@ import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 
 import Link from 'next/link';
-import getUserProducts from '../_lib/getUserProducts';
-import getUserProfile from '../_lib/getUserProfile';
+import getUserProducts from '@/lib/getUserProducts';
+import getUserProfile from '@/lib/getUserProfile';
 
 // const getProducts = async (id, setProducts) => {
 //   const res = await fetch(`/api/user/${id}/products`, {

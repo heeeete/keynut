@@ -77,13 +77,16 @@ export default function RenderHome() {
   return (
     <div className="flex flex-col w-full max-md:main-768 -translate-y-6">
       <div
-        className={`${title.className} flex flex-col text-center bg-gray-100 h-48 text-2xl items-center relative justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
+        className={`${title.className} flex flex-col text-center bg-black overflow-hidden h-48 text-2xl items-center relative justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
       >
-        <Image className="absolute top-5 left-10 -rotate-12 " src="/keyboard2.svg" width={100} height={100} />
-        <Image className="absolute bottom-0 left-1/3 rotate-12 " src="/keyboard2.svg" width={70} height={70} />
-        {/* <Image className="absolute top-5 left-10 -rotate-12 " src="/keyboard2.svg" width={100} height={100} /> */}
-        {/* <Image className="absolute top-5 left-10 -rotate-12 " src="/keyboard2.svg" width={100} height={100} /> */}
-        <div className="flex items-center justify-center">키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요</div>
+        {/* <Image className="absolute top-5 left-10 -rotate-12 " src="/keyboard.svg" width={100} height={100} /> */}
+        {/* <Image className="absolute bottom-0 left-1/3 rotate-12 " src="/keyboard.svg" width={70} height={70} /> */}
+        {/* <Image className="absolute left-72 bottom-7" src="/headphone.svg" width={50} height={50} /> */}
+        {/* <Image className="absolute left-1/2 rotate-12" src="/headphone.svg" width={60} height={60} /> */}
+
+        <div className="flex items-center justify-center font-semibold text-gray-100 z-20">
+          키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요!
+        </div>
       </div>
       <div className="w-full max-w-screen-xl mx-auto px-10  space-y-12 my-10 max-md:px-2 ">
         <section className="flex flex-col space-y-5">
@@ -169,9 +172,9 @@ export default function RenderHome() {
                   />
                 </div>
                 <div className="mt-2 w-full">
-                  <div className="text-lg break-all line-clamp-1">{product.title}</div>
+                  <div className="break-all line-clamp-1">{product.title}</div>
                   <div className="space-x-1 font-semibold break-before-all line-clamp-1">
-                    <span>{product.price}</span>
+                    <span>{product.price.toLocaleString()}</span>
                     <span className="text-sm">원</span>
                   </div>
                 </div>
