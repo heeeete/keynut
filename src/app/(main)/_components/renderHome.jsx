@@ -117,7 +117,7 @@ export default function RenderHome() {
                   <svg
                     className="max-md:w-10"
                     xmlns="http://www.w3.org/2000/svg"
-                    width="45x"
+                    width="45px"
                     height="45px"
                     viewBox="0 0 24 24"
                   >

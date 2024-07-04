@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getProducts from './_lib/getProducts';
 import { useInView } from 'react-intersection-observer';
-import debounce from '../../utils/debounce';
+import debounce from '../../../utils/debounce';
 import Link from 'next/link';
 
 const categories = [

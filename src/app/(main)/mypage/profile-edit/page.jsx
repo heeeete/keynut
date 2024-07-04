@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
 import getUserProfile from '@/lib/getUserProfile';
-import Loading from '@/app/_components/Loading';
+import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
 
 const ProfileName = ({ session, update }) => {
