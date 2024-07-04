@@ -17,8 +17,8 @@ export async function GET(req) {
       categories.push(10, 11, 12, 13, 14, 15, 19);
     } else if (categoryNum === 2) {
       categories.push(29);
-    } else if (categoryNum === 3) {
-      categories.push(3);
+    } else if (categoryNum === 9) {
+      categories.push(9);
     }
     query.category = { $in: categories };
   }
