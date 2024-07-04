@@ -6,6 +6,7 @@ import { signOut, useSession } from 'next-auth/react';
 import getUserProfile from '@/lib/getUserProfile';
 import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
+import Script from 'next/script';
 
 const ProfileName = ({ session, update }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -202,8 +203,19 @@ export default function ProfileEdit() {
         console.log('after Init: ', window.Kakao.isInitialized());
       }
     };
-    initializeKakao();
-  }, [window.Kakao]);
+
+    // Script가 로드된 후 Kakao SDK 초기화
+    const script = document.createElement('script');
+    script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js';
+    script.integrity = 'sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4';
+    script.crossOrigin = 'anonymous';
+    script.onload = initializeKakao;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const onClickWithdrawal = async () => {
     setIsLoading(true);

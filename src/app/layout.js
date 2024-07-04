@@ -21,13 +21,10 @@ export default function RootLayout({ children }) {
         <meta name="format-detection" content="telephone=no" />
       </head>
       <body className={inter.className + 'flex flex-col justify-center items-center max-md:mb-bottom-nav-heigth'}>
-        <Script
-          src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
-          integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
-          crossorigin="anonymous"
-        ></Script>
         <RQProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <main>{children}</main>
+          </AuthProvider>
         </RQProvider>
       </body>
     </html>
