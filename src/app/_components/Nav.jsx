@@ -53,7 +53,7 @@ export default function Nav() {
           </div>
         </ul>
         <div className="flex flex-col pb-2 items-center space-y-5 max-md:space-y-0 max-md:py-2">
-          <div className="font-bold text-2xl">
+          <div className="font-bold text-3xl max-md:text-2xl">
             <Link href={'/'}>
               <p className={`${title.className}`}>KEYNUT</p>
             </Link>
