@@ -98,7 +98,7 @@ export default function RenderHome() {
             <li className="flex flex-col items-center space-y-1">
               <Link href={'/shop?categories=1'}>
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
-                  <Image className="max-md:w-20" src="/keyboard.svg" width={95} height={95} alt="keyboard" />
+                  <Image className="max-md:w-16" src="/keyboard.svg" width={80} height={80} alt="keyboard" />
                 </div>
               </Link>
               <p className="text-gray-600">키보드</p>
@@ -106,7 +106,7 @@ export default function RenderHome() {
             <li className="flex flex-col items-center space-y-1">
               <Link href={'/shop?categories=2'}>
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
-                  <Image className="max-md:w-12" src="/mouse.svg" width={50} height={50} alt="mouse" />
+                  <Image className="max-md:w-9" src="/mouse.svg" width={45} height={45} alt="mouse" />
                 </div>
               </Link>
               <p className="text-gray-600">마우스</p>
@@ -115,10 +115,10 @@ export default function RenderHome() {
               <Link href={'/shop?categories=3'}>
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
                   <svg
-                    className="max-md:w-20"
+                    className="max-md:w-10"
                     xmlns="http://www.w3.org/2000/svg"
-                    width="50px"
-                    height="50px"
+                    width="45x"
+                    height="45px"
                     viewBox="0 0 24 24"
                   >
                     <path

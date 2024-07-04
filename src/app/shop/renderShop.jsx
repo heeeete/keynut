@@ -7,8 +7,6 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import getProducts from './_lib/getProducts';
 import { useInView } from 'react-intersection-observer';
 import debounce from '../../utils/debounce';
-import ScrollRestoration from './_lib/scrollResotration';
-import useScrollResotration from './_lib/scrollResotration';
 import Link from 'next/link';
 
 const categories = [
@@ -193,7 +191,7 @@ const RenderProducts = React.memo(({ params }) => {
 
   return (
     <>
-      <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2`}>
+      <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-2`}>
         {data?.pages.map((page, i) => (
           <Fragment key={i}>
             {page.map((product, idx) => (
@@ -273,17 +271,15 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
   let categoryTitle =
     category === 0 ? '전체' : category === 1 ? '키보드' : category === 2 ? '마우스' : category === 3 ? '기타' : '';
   return (
-    <div className="border-x-2 border-b-2 bg-gray-100 px-2 max-md:px-0 max-md:border-0 max-md:border-b">
+    <div className="border-x-2 border-b-2 bg-gray-100 px-2 max-md:border-0 max-md:border-b">
       <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
       <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
         {data?.length ? (
           data.map((product, idx) => (
-            <div
+            <Link
+              href={`/shop/product/${product._id}`}
               className="flex flex-col  cursor-pointer max-md:min-w-28 max-md:w-36"
               key={idx}
-              onClick={() => {
-                router.push(`/shop/product/${product._id}`);
-              }}
             >
               <div className="w-full aspect-square relative min-h-20 min-w-20 bg-gray-100">
                 <Image
@@ -304,7 +300,7 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
                   <span className="text-xs">원</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))
         ) : (
           <div className=""></div>
@@ -533,7 +529,7 @@ export default function RenderShop() {
             />
           </div>
         </div>
-        <div className="flex items-start w-full px-10 max-w-screen-xl mx-auto max-md:overflow-auto max-md:px-2">
+        <div className="flex items-start w-full px-10 max-w-screen-xl mx-auto max-md:overflow-auto max-md:px-0">
           <div
             className={`${
               filterActive ? 'flex' : 'hidden'
