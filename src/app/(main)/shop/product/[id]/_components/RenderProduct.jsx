@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
-import ImageSlider from '@/app/_components/ImageSlider';
+import ImageSlider from '@/app/(main)/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/utils/timeAgo';
 import OpenChatLink from './OpenChatLink';
@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import getProductWithUser from '../_lib/getProductWithUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signIn, useSession } from 'next-auth/react';
-import Modal from '@/app/_components/Modal';
+import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
 
 const RenderCondition = ({ condition }) => {

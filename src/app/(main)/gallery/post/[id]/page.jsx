@@ -1,6 +1,6 @@
 'use client';
 
-import ImageSlider from '@/app/_components/ImageSlider';
+import ImageSlider from '@/app/(main)/_components/ImageSlider';
 import timeAgo from '@/utils/timeAgo';
 import Image from 'next/image';
 import Link from 'next/link';

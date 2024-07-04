@@ -1,10 +1,10 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Nav from './_components/Nav';
-import BottomNav from './_components/BottomNav/BottomNav';
-import Footer from './_components/Footer';
+import Nav from './(main)/_components/Nav';
+import BottomNav from './(main)/_components/BottomNav/BottomNav';
+import Footer from './(main)/_components/Footer';
 import AuthProvider from '@/lib/next-auth';
-import RQProvider from './_components/RQProvider';
+import RQProvider from './(main)/_components/RQProvider';
 import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -27,12 +27,7 @@ export default function RootLayout({ children }) {
           crossorigin="anonymous"
         ></Script>
         <RQProvider>
-          <AuthProvider>
-            <Nav />
-            <main className="relative main-1280 max-md:pt-0">{children}</main>
-            <Footer />
-            <BottomNav />
-          </AuthProvider>
+          <AuthProvider>{children}</AuthProvider>
         </RQProvider>
       </body>
     </html>
