@@ -2,7 +2,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-export default function GalleryLink() {
+export default function SellLink() {
   const pathName = usePathname();
   return (
     <>

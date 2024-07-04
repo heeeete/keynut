@@ -181,7 +181,6 @@ module.exports = {
           justifyContent: 'center',
           alignItems: 'flex-end',
           overflow: 'hidden',
-          // flex border-2 border-gray-100 rounded-full items-end justify-center overflow-hidden
         },
       };
       //max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full

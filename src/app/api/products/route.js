@@ -25,6 +25,7 @@ export async function GET(req) {
     const pricesParam = searchParams.get('prices');
     const lastProductId = searchParams.get('lastId');
 
+    // console.log('categoriesParam', categoriesParam);
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
     let query = {};
@@ -58,7 +59,7 @@ export async function GET(req) {
       query._id = { $lt: new ObjectId(lastProductId) };
     }
 
-    const products = await db.collection('products').find(query).sort({ createdAt: -1 }).limit(32).toArray();
+    const products = await db.collection('products').find(query).sort({ createdAt: -1 }).limit(48).toArray();
     if (products) {
       return NextResponse.json(products, { status: 200 });
     } else {

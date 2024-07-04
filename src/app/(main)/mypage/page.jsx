@@ -25,7 +25,7 @@ import getUserProfile from '@/lib/getUserProfile';
 
 export default function MyPage() {
   const { data: session, status } = useSession();
-  console.log(session);
+  // console.log(session);
   const [products, setProducts] = useState([]);
   const [productOption, setProductOption] = useState(1);
   const [nickname, setNickname] = useState('');
@@ -67,7 +67,7 @@ export default function MyPage() {
               />
             </div>
           ) : (
-            <div className="w-20 h-20 defualt-profile max-md:w-16">
+            <div className="w-20 h-20 defualt-profile max-md:w-16 max-md:h-16">
               <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
                 <path
                   fill="rgb(229, 231, 235)"

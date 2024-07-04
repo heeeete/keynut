@@ -105,15 +105,15 @@ export default function RenderHome() {
             </li>
             <li className="flex flex-col items-center space-y-1">
               <Link href={'/shop?categories=2'}>
-                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
+                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-slate-100 justify-center items-center max-md:w-24">
                   <Image className="max-md:w-9" src="/mouse.svg" width={45} height={45} alt="mouse" />
                 </div>
               </Link>
               <p className="text-gray-600">마우스</p>
             </li>
             <li className="flex flex-col items-center space-y-1">
-              <Link href={'/shop?categories=3'}>
-                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
+              <Link href={'/shop?categories=9'}>
+                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-black bg-opacity-10 justify-center items-center max-md:w-24">
                   <svg
                     className="max-md:w-10"
                     xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +122,7 @@ export default function RenderHome() {
                     viewBox="0 0 24 24"
                   >
                     <path
-                      fill="grey"
+                      fill="white"
                       d="M7.673 21.02L11.712 14L4 13.096L15.25 2.981h1.116l-4.135 7.038l7.769.885L8.75 21.019z"
                     />
                   </svg>
@@ -159,7 +159,7 @@ export default function RenderHome() {
             {data?.map((product, idx) => (
               <Link
                 href={`/shop/product/${product._id}`}
-                className="flex flex-col cursor-pointer max-md:max-w-40 max-md:w-40 "
+                className="flex flex-col cursor-pointer max-md:max-w-40 max-md:w-40 max-md:text-sm"
                 key={idx}
               >
                 <div className="w-full aspect-square relative min-h-32 min-w-32 bg-gray-100">
@@ -180,6 +180,17 @@ export default function RenderHome() {
                 </div>
               </Link>
             ))}
+            <Link className="flex justify-center md:hidden" href={'/shop'}>
+              <div className="flex flex-col w-20 justify-center items-center relative space-y-1 h-32">
+                <svg className="" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 16 16">
+                  <g fill="gray">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                  </g>
+                </svg>
+                <p className="text-xs absolute bottom-6 text-gray-600">더보기</p>
+              </div>
+            </Link>
           </div>
         </section>
       </div>

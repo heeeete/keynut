@@ -29,7 +29,7 @@ const categories = [
     subCategories: [{ id: 29, option: '기타' }],
   },
   {
-    id: 3,
+    id: 9,
     option: '기타',
     subCategories: [],
   },
@@ -98,8 +98,8 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
       {Object.keys(categoriesState)
         .filter(key => categoriesState[key].checked)
         .map(key => (
-          <div className="flex space-x-1 items-center text-sm p-1" key={key}>
-            <div className="flex text-gray-700">{categoriesState[key]?.option}</div>
+          <div className="flex space-x-1 items-center text-sm p-1 bg-blue-50 rounded max-md:text-xs" key={key}>
+            <div className="flex text-gray-500">{categoriesState[key]?.option}</div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="1em"
@@ -108,7 +108,7 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
               onClick={() => handleCategoryChange(key, false)}
             >
               <path
-                fill="currentColor"
+                fill="gray"
                 d="M208.49 191.51a12 12 0 0 1-17 17L128 145l-63.51 63.49a12 12 0 0 1-17-17L111 128L47.51 64.49a12 12 0 0 1 17-17L128 111l63.51-63.52a12 12 0 0 1 17 17L145 128Z"
               />
             </svg>
@@ -117,8 +117,8 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
       {Object.keys(pricesState)
         .filter(key => pricesState[key].checked)
         .map(key => (
-          <div className="flex space-x-1 items-center text-sm p-1" key={key}>
-            <div className="flex text-gray-700">{pricesState[key].option}</div>
+          <div className="flex space-x-1 items-center text-sm p-1  bg-blue-50 rounded  max-md:text-xs" key={key}>
+            <div className="flex text-gray-500">{pricesState[key].option}</div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="1em"
@@ -127,7 +127,7 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
               onClick={() => handlePriceChange(key, false)}
             >
               <path
-                fill="currentColor"
+                fill="gray"
                 d="M208.49 191.51a12 12 0 0 1-17 17L128 145l-63.51 63.49a12 12 0 0 1-17-17L111 128L47.51 64.49a12 12 0 0 1 17-17L128 111l63.51-63.52a12 12 0 0 1 17 17L145 128Z"
               />
             </svg>
@@ -185,6 +185,11 @@ const RenderProducts = React.memo(({ params }) => {
 
   const onClickProduct = (e, id) => {
     e.preventDefault();
+    // const target = e.currentTarget;
+    // target.style.backgroundColor = 'lightgray';
+    // setTimeout(e => {
+    //   target.style.backgroundColor = 'white';
+    // }, 100);
     sessionStorage.setItem('scrollPos', window.scrollY);
     router.push(`/shop/product/${id}`);
   };
@@ -198,7 +203,7 @@ const RenderProducts = React.memo(({ params }) => {
               <Link
                 href={``}
                 onClick={e => onClickProduct(e, product._id)}
-                className="flex flex-col cursor-pointer"
+                className="flex flex-col cursor-pointer relative rounded"
                 key={product._id}
               >
                 <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
@@ -209,16 +214,16 @@ const RenderProducts = React.memo(({ params }) => {
                     fill
                     sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
                   />
-                  <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white">
+                  <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
                     {conditions[product.condition].option}
                   </div>
                   {product.images.length !== 1 && (
                     <svg
+                      className="absolute right-1 top-1 opacity-90 max-md:w-7"
                       xmlns="http://www.w3.org/2000/svg"
                       width="2em"
                       height="2em"
                       viewBox="0 0 20 20"
-                      className="absolute right-1 top-1 opacity-90"
                     >
                       <path
                         fill="white"
@@ -227,7 +232,7 @@ const RenderProducts = React.memo(({ params }) => {
                     </svg>
                   )}
                 </div>
-                <div className="py-1">
+                <div className=" flex flex-col py-1 max-md:text-sm justify-center h-14">
                   <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>
                   <div className="space-x-1 font-semibold break-all line-clamp-1">
                     <span className="">{product.price.toLocaleString()}</span>
@@ -239,7 +244,7 @@ const RenderProducts = React.memo(({ params }) => {
           </Fragment>
         ))}
       </div>
-      <div className="h-12 bg-red-700 -translate-y-96" ref={ref}></div>
+      <div className="h-12 -translate-y-96" ref={ref}></div>
       {isFetching ? (
         <div className="flex w-full items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 24 24">
@@ -269,7 +274,7 @@ const RenderProducts = React.memo(({ params }) => {
 
 const RenderPopularProducts = React.memo(({ data, category, router }) => {
   let categoryTitle =
-    category === 0 ? '전체' : category === 1 ? '키보드' : category === 2 ? '마우스' : category === 3 ? '기타' : '';
+    category === 0 ? '전체' : category === 1 ? '키보드' : category === 2 ? '마우스' : category === 9 ? '기타' : '';
   return (
     <div className="border-x-2 border-b-2 bg-gray-100 px-2 max-md:border-0 max-md:border-b">
       <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
@@ -289,15 +294,15 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
                   fill
                   sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"
                 />
-                <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white">
+                <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
                   {conditions[product.condition].option}
                 </div>
               </div>
-              <div className="py-1">
-                <div className="break-all overflow-hidden line-clamp-1 max-md:text-base">{product.title}</div>
+              <div className=" flex flex-col py-1 max-md:text-sm justify-center h-14">
+                <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>
                 <div className="space-x-1 font-semibold break-all line-clamp-1">
-                  <span className="max-md:text-sm">{product.price.toLocaleString()}</span>
-                  <span className="text-xs">원</span>
+                  <span className="">{product.price.toLocaleString()}</span>
+                  <span className="text-sm">원</span>
                 </div>
               </div>
             </Link>
@@ -338,7 +343,7 @@ export default function RenderShop() {
     19: { option: '기타', checked: false, parentId: 1 },
     2: { option: '마우스', checked: false, childId: [29] },
     29: { option: '기타', checked: false, parentId: 2 },
-    3: { option: '기타', checked: false },
+    9: { option: '기타', checked: false },
   });
   const [pricesState, setPricesState] = useState({
     1: { option: '5만원 이하', checked: false },
@@ -350,6 +355,9 @@ export default function RenderShop() {
   const hotProductFlag = useRef(0);
   const searchFlag = useRef(true);
   const obj = {};
+  // const b = new URLSearchParams(params.toString());
+  // b.set('category', 3);
+  // router.push(`/shop?${b.toString()}`);
 
   const initialQueryString = () => {
     let query = '';
@@ -476,12 +484,13 @@ export default function RenderShop() {
   }, [obj]);
 
   const useHotProducts = category => {
+    // console.log(category);
     return useQuery({
       queryKey: ['topProducts', category],
       queryFn: () => fetchHotProducts(category),
       staleTime: 60 * 60 * 1000, // 1시간
       cacheTime: 70 * 60 * 1000,
-      enabled: !paramsKeyword && (category === 1 || category === 2 || category === 3 || category === 0),
+      enabled: !paramsKeyword && (category === 1 || category === 2 || category === 9 || category === 0),
     });
   };
 
@@ -492,7 +501,7 @@ export default function RenderShop() {
       <div className="flex flex-col w-full">
         <div className="sticky top-0 flex flex-col z-20 border-b bg-white">
           <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
-          <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:justify-between max-md:p-2 max-md:pt-0">
+          <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:justify-between max-md:px-2 max-md:pt-0">
             <div className="flex items-center md:hidden">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -511,7 +520,7 @@ export default function RenderShop() {
                 />
               </svg>
             </div>
-            <div className="flex flex-1 flex-wrap pr-2 items-center gap-x-1 max-md:hidden">
+            <div className="flex flex-1 flex-wrap pr-2 items-center gap-2 max-md:hidden">
               <SelectedFilters
                 categoriesState={categoriesState}
                 pricesState={pricesState}
@@ -520,7 +529,7 @@ export default function RenderShop() {
               />
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-x-1 px-2 md:hidden">
+          <div className="flex flex-wrap items-center gap-2 px-2 pb-2 md:hidden">
             <SelectedFilters
               categoriesState={categoriesState}
               pricesState={pricesState}
@@ -533,11 +542,13 @@ export default function RenderShop() {
           <div
             className={`${
               filterActive ? 'flex' : 'hidden'
-            }  sticky w-44 space-y-5 z-30 top-52 flex-col h-full overflow-y-auto bg-white md:flex max-md:fixed max-md:top-0 max-md:pt-20 max-md:left-0 max-md:mt-0  max-md:border-r max-md:pl-4 max-md:pb-28`}
+            }  sticky w-44 space-y-5 z-30 top-52 flex-col h-full overflow-y-auto bg-white md:flex max-md:fixed max-md:top-0 max-md:pt-20 max-md:left-0 max-md:mt-0  max-md:border-r max-md:pb-28`}
             ref={filterRef}
           >
-            <div className="md:hidden fixed top-20 left-36 flex justify-end z-30">
+            <div className="md:hidden fixed top-16 left-36 flex justify-end z-30">
               <svg
+                stroke="gray"
+                strokeWidth={30}
                 xmlns="http://www.w3.org/2000/svg"
                 width="1em"
                 height="1em"
@@ -547,12 +558,12 @@ export default function RenderShop() {
                 }}
               >
                 <path
-                  fill="currentColor"
+                  fill="gray"
                   d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
                 />
               </svg>
             </div>
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 max-md:pl-2">
               <div className="">
                 <div className="mb-1">카테고리</div>
                 {categories.map(category => (
