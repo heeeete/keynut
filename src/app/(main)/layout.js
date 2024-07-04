@@ -6,7 +6,7 @@ export default function MainLayout({ children }) {
   return (
     <>
       <Nav />
-      <main className="relative main-1280 max-md:pt-0">{children}</main>
+      <div className="relative main-1280 max-md:pt-0">{children}</div>
       <Footer />
       <BottomNav />
     </>

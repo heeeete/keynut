@@ -207,7 +207,7 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
   const handleMainCategoryClick = useCallback(id => {
     setMainCategory(id);
     if (id !== 9) setSubCategory(id * 10);
-    else setSubCategory(99);
+    else setSubCategory(9);
   }, []);
 
   const handleSubCategoryClick = useCallback(id => {
