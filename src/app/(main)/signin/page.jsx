@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getProviders, signIn, useSession } from 'next-auth/react';
+import { getProviders, signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Nothing_You_Could_Do } from 'next/font/google';
@@ -31,7 +31,9 @@ export default function SignIn() {
   }, []);
 
   useEffect(() => {
-    if (session) return router.push('/');
+    if (session) {
+      signOut();
+    }
   }, [session]);
 
   return (
