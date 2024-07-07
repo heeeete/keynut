@@ -97,8 +97,16 @@ export default function Bookmark() {
           ))}
         </div>
       ) : (
-        <div className="flex max-w-screen-xl mx-auto px-10 justify-center text-gray-500 max-md:px-2 ">
-          찜한 상품이 없습니다. 상품을 둘러보고 찜해보세요!
+        <div className="flex max-w-screen-xl h-70dvh items-center  mx-auto px-10 justify-center text-gray-500 max-md:px-2 ">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20%" viewBox="0 0 24 24">
+              <path
+                fill="lightgray"
+                d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m-5 8.5a1.5 1.5 0 1 1 3.001.001A1.5 1.5 0 0 1 7 10.5m1.124 6.492l-.248-1.984l8-1l.248 1.984zm7.369-5.006a1.494 1.494 0 1 1 .001-2.987a1.494 1.494 0 0 1-.001 2.987"
+              />
+            </svg>
+            <p>찜한 상품이 없습니다. 상품을 둘러보고 찜해보세요!</p>
+          </div>
         </div>
       )}
     </>
