@@ -33,9 +33,9 @@ export default function Nav() {
                 마이페이지
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/search?c=mouse">알림</Link>
-            </li>
+            </li> */}
             <li>
               <Link href="/bookmark" onClick={e => handleLogin(e, router, session, '/bookmark')}>
                 찜
