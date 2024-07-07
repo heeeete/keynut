@@ -51,8 +51,80 @@ const conditions = {
   5: { option: '고장 / 파손' },
 };
 
+const RecentSearch = React.memo(
+  ({ recentSearches, setSearchText, setRecentSearches, inputRef, searchFlag, setIsFocused }) => {
+    const handleRecentSearch = search => {
+      searchFlag.current = false;
+      const newRecentSearches = [search, ...recentSearches.filter(item => item !== search)].slice(0, 5);
+      setRecentSearches(newRecentSearches);
+      localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
+      setSearchText(search);
+      setIsFocused(false);
+      inputRef.current.blur();
+    };
+
+    const deleteRecentSearch = search => {
+      const newRecentSearches = [...recentSearches.filter(item => item !== search)].slice(0, 5);
+      setRecentSearches(newRecentSearches);
+      localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
+    };
+    return (
+      <ul className="md:grid md:grid-cols-5 md:gap-x-3 w-full max-md:flex-1">
+        {recentSearches.length ? (
+          recentSearches.map((search, index) => (
+            <li
+              key={index}
+              className="flex justify-between items-center cursor-pointer max-md:py-2 md:space-x-1"
+              onClick={() => {
+                handleRecentSearch(search);
+              }}
+            >
+              <p className="break-all line-clamp-1 max-md:pr-3">{search}</p>
+              <svg
+                onClick={e => {
+                  e.stopPropagation();
+                  deleteRecentSearch(search);
+                }}
+                className=""
+                xmlns="http://www.w3.org/2000/svg"
+                width="0.7em"
+                height="0.7em"
+                viewBox="0 0 2048 2048"
+              >
+                <path
+                  fill="currentColor"
+                  d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                />
+              </svg>
+            </li>
+          ))
+        ) : (
+          <p className="text-gray-400 md:hidden">최근 검색어가 없습니다</p>
+        )}
+      </ul>
+    );
+  },
+);
+
 const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
   const [tempSearchText, setTempSearchText] = useState(paramsKeyword);
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef(null);
+  const recentRef = useRef(null);
+  useEffect(() => {
+    const storedSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+    setRecentSearches(storedSearches);
+    const handleClickOutside = event => {
+      if (inputRef.current && !recentRef.current.contains(event.target)) {
+        setIsFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     setTempSearchText(paramsKeyword);
@@ -61,29 +133,96 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
   const handleSearch = e => {
     e.preventDefault();
     searchFlag.current = false;
-    setSearchText(tempSearchText);
+    if (tempSearchText.trim() !== '') {
+      const newRecentSearches = [tempSearchText, ...recentSearches.filter(item => item !== tempSearchText)].slice(0, 5);
+      setRecentSearches(newRecentSearches);
+      localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
+    }
+    setSearchText(tempSearchText.trim());
+    setIsFocused(false);
+    inputRef.current.blur();
+  };
+  const deleteAllRecentSearch = () => {
+    setRecentSearches([]);
+    localStorage.setItem('recentSearches', JSON.stringify([]));
   };
   return (
-    <div className="search-bar-container-md  max-md:search-bar-container-maxmd">
-      <div className="search-bar-md max-md:search-bar-maxmd">
-        <form className="flex w-450 items-center" onSubmit={handleSearch}>
-          <input
-            type="text"
-            placeholder="상품검색"
-            value={tempSearchText}
-            onChange={e => setTempSearchText(e.target.value)}
-            className="outline-none w-full pr-2 max-md:w-full max-md:bg-transparent"
+    <div className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col" ref={recentRef}>
+      <div className="max-md:search-bar-maxmd max-md:px-2">
+        <div className="search-bar-md max-md:search-bar-maxmd">
+          <form className="flex w-450 max-md:w-full items-center" onSubmit={handleSearch}>
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="상품검색"
+              value={tempSearchText}
+              onFocus={() => {
+                setIsFocused(true);
+              }}
+              onChange={e => setTempSearchText(e.target.value)}
+              className="outline-none w-full  pr-2  max-md:bg-transparent"
+            />
+          </form>
+          {tempSearchText.length ? (
+            <button
+              onClick={() => {
+                setTempSearchText('');
+                inputRef.current.focus();
+              }}
+            >
+              <svg className="" xmlns="http://www.w3.org/2000/svg" width="0.7em" height="0.7em" viewBox="0 0 2048 2048">
+                <path
+                  fill="currentColor"
+                  d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                />
+              </svg>
+            </button>
+          ) : (
+            ''
+          )}
+        </div>
+        <div className="flex h-5 text-sm max-md:hidden ">
+          <RecentSearch
+            recentSearches={recentSearches}
+            setTempSearchText={setTempSearchText}
+            setSearchText={setSearchText}
+            setRecentSearches={setRecentSearches}
+            inputRef={inputRef}
+            searchFlag={searchFlag}
+            setIsFocused={setIsFocused}
           />
-        </form>
-        {tempSearchText.length ? (
-          <button onClick={() => setTempSearchText('')}>
-            <svg className="" xmlns="http://www.w3.org/2000/svg" width="0.7em" height="0.7em" viewBox="0 0 2048 2048">
-              <path
-                fill="currentColor"
-                d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
-              />
-            </svg>
-          </button>
+        </div>
+        {isFocused && tempSearchText === '' ? (
+          <div className="flex flex-col absolute min-h-32 bg-white p-2 rounded-sm top-14 left-0 w-full border-b md:hidden">
+            <p className="border-b">최근 검색어</p>
+            <RecentSearch
+              recentSearches={recentSearches}
+              setTempSearchText={setTempSearchText}
+              setSearchText={setSearchText}
+              setRecentSearches={setRecentSearches}
+              inputRef={inputRef}
+              searchFlag={searchFlag}
+              setIsFocused={setIsFocused}
+            />
+            <div className="flex  space-x-2 justify-end text-gray-400 text-sm">
+              <button
+                className="p-1"
+                onClick={() => {
+                  deleteAllRecentSearch();
+                }}
+              >
+                전체 삭제
+              </button>
+              <button
+                className="p-1"
+                onClick={() => {
+                  setIsFocused(false);
+                }}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
         ) : (
           ''
         )}

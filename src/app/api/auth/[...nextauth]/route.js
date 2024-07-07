@@ -195,11 +195,12 @@ export const authOptions = {
         token.provider = account.provider;
       }
       if (trigger === 'update' && session !== null) {
-        const { openChatUrl, image, nickname, nicknameChangedAt } = session;
+        const { openChatUrl, image, nickname, nicknameChangedAt, recentSearches } = session;
         if (openChatUrl) token.user.openChatUrl = openChatUrl;
         if (image !== undefined) token.user.image = image;
         if (nickname) token.user.nickname = nickname;
         if (nicknameChangedAt) token.user.nicknameChangedAt = nicknameChangedAt;
+        if (recentSearches) token.user.recentSearches = recentSearches;
       }
       return token;
     },

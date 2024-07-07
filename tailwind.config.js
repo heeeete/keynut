@@ -165,13 +165,14 @@ module.exports = {
           borderBottom: '1px solid black',
           width: '450px',
           padding: '4px',
+          // backgroundColor: 'blue',
         },
         '.search-bar-maxmd': {
           borderRadius: '4px',
           border: 'none',
           width: '100%',
           height: '100%',
-          padding: '0px 12px',
+          // padding: '0px 12px',
           backgroundColor: 'rgb(243 244 246)',
         },
         '.defualt-profile': {
