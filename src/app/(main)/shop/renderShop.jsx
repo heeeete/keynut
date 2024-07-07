@@ -74,7 +74,7 @@ const RecentSearch = React.memo(
           recentSearches.map((search, index) => (
             <li
               key={index}
-              className="flex justify-between items-center cursor-pointer max-md:py-2 md:space-x-1"
+              className="flex items-center cursor-pointer max-md:justify-between max-md:py-2 md:space-x-1"
               onClick={() => {
                 handleRecentSearch(search);
               }}
@@ -147,8 +147,8 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
     localStorage.setItem('recentSearches', JSON.stringify([]));
   };
   return (
-    <div className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col" ref={recentRef}>
-      <div className="max-md:search-bar-maxmd max-md:px-2">
+    <div className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col bg-red-600" ref={recentRef}>
+      <div className="max-md:search-bar-maxmd max-md:px-2 bg-blue-800">
         <div className="search-bar-md max-md:search-bar-maxmd">
           <form className="flex w-450 max-md:w-full items-center" onSubmit={handleSearch}>
             <input
@@ -181,7 +181,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
             ''
           )}
         </div>
-        <div className="flex h-5 text-sm max-md:hidden ">
+        <div className="flex h-5 text-sm w-450 bg-green-600 max-md:hidden ">
           <RecentSearch
             recentSearches={recentSearches}
             setTempSearchText={setTempSearchText}
