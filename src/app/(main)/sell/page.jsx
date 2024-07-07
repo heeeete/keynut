@@ -73,7 +73,7 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
   );
 
   return (
-    <div className="flex w-full items-center py-3">
+    <div className="flex w-full items-center py-3 ">
       <input type="file" multiple accept="image/*" ref={fileInputRef} onChange={handleImageUpload} id="images" hidden />
       <button
         onClick={handleImageUploadClick}
@@ -85,7 +85,7 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
             <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1a.5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0a3.5 3.5 0 0 1 7 0" />
           </g>
         </svg>
-        <p className="text-gray-400">
+        <p className="text-gray-400 max-[480px]:text-base">
           {uploadImages.imageUrls.length ? `( ${uploadImages.imageUrls.length} / 5 )` : '사진 등록'}
         </p>
       </button>
@@ -187,7 +187,7 @@ const RenderTitle = React.memo(({ title, setTitle }) => {
 
   return (
     <>
-      <p className="mt-10 mb-3 font-medium text-xl">상품명</p>
+      <p className="mt-10 mb-3 font-medium text-xl max-[480px]:text-base">상품명</p>
       <div className="flex no-underline max-w-lg border-b">
         <input
           type="text"
@@ -195,7 +195,7 @@ const RenderTitle = React.memo(({ title, setTitle }) => {
           onChange={onChangeTitle}
           maxLength={40}
           placeholder="상품명을 입력해주세요."
-          className="w-full outline-none no-underline text-xl"
+          className="w-full outline-none no-underline text-xl max-[480px]:text-base"
         />
         <p className="flex text-xs text-gray-400 items-center">{`(${title.length}/40)`}</p>
       </div>
@@ -217,9 +217,9 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
   return (
     <>
       <div className="flex flex-col flex-0.4 h-full  min-w-60">
-        <div className="flex font-medium text-xl my-3">카테고리</div>
+        <div className="flex font-medium text-xl my-3 max-[480px]:text-base">카테고리</div>
         <div className="flex h-64 border ">
-          <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
+          <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base">
             <li className={`p-3 ${mainCategory === 1 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(1)}>
               키보드
             </li>
@@ -230,7 +230,7 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
               기타
             </li>
           </ul>
-          <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center">
+          <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base">
             <RenderSubcategories
               mainCategory={mainCategory}
               subCategory={subCategory}
@@ -250,9 +250,9 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
 
   return (
     <div className="flex-0.4 min-w-72 ">
-      <div className="flex font-medium text-xl my-3 ">상품상태</div>
-      <div className="flex flex-col h-64 justify-around text-lg">
-        <label className="flex items-center space-x-2">
+      <div className="flex font-medium text-xl my-3 max-[480px]:text-base">상품상태</div>
+      <div className="flex flex-col h-64 justify-around text-lg max-[480px]:text-base">
+        <label className="flex items-center space-x-2 ">
           <input
             className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
             type="radio"
@@ -310,7 +310,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
 const RenderDescriptionInput = React.memo(({ description, setDescription }) => {
   return (
     <>
-      <p className="mt-10 mb-3 font-medium text-xl">상품 설명</p>
+      <p className="mt-10 mb-3 font-medium text-xl max-[480px]:text-base">상품 설명</p>
       <div className="flex ">
         <textarea
           value={description}
@@ -319,7 +319,7 @@ const RenderDescriptionInput = React.memo(({ description, setDescription }) => {
           }}
           maxLength={1000}
           placeholder="상품 설명을 입력해주세요."
-          className="flex-1 outline-none no-underline text-xl  border scrollbar-hide resize-none"
+          className="flex-1 outline-none no-underline text-xl  border scrollbar-hide resize-none max-[480px]:text-base"
           id="description"
           rows={8}
         />
@@ -339,14 +339,14 @@ const RenderPriceInput = React.memo(({ price, setPrice }) => {
 
   return (
     <>
-      <p className="mt-10 mb-3 font-medium text-xl">상품 가격</p>
+      <p className="mt-10 mb-3 font-medium text-xl max-[480px]:text-base">상품 가격</p>
       <div className="flex no-underline max-w-36 border-b">
         <input
           type="text"
           value={price}
           onChange={handlePrice}
           placeholder="0"
-          className="w-full outline-none no-underline text-xl"
+          className="w-full outline-none no-underline text-xl max-[480px]:text-base"
         />
         <p className="text-lg">원</p>
       </div>
@@ -358,7 +358,7 @@ const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl }) => {
   return (
     <div className="mt-10 max-w-lg border-b">
       <div className="flex items-end my-3">
-        <div className="font-medium text-xl">오픈채팅방</div>
+        <div className="font-medium text-xl max-[480px]:text-base">오픈채팅방</div>
         <div className="text-sm">(선택)</div>
       </div>
       <input
@@ -366,7 +366,7 @@ const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl }) => {
         value={openChatUrl}
         maxLength={50}
         onChange={e => setOpenChatUrl(e.target.value)}
-        className="w-full outline-none no-underline text-xl "
+        className="w-full outline-none no-underline text-xl max-[480px]:text-base"
         placeholder="카카오톡의 오픈채팅방을 개설하여 주소를 입력해주세요."
       />
     </div>

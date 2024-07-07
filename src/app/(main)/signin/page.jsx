@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getProviders, signIn, useSession } from 'next-auth/react';
+import { getProviders, signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Nothing_You_Could_Do } from 'next/font/google';
@@ -31,8 +31,12 @@ export default function SignIn() {
   }, []);
 
   useEffect(() => {
-    if (session) return router.push('/');
+    if (session) {
+      signOut();
+    }
   }, [session]);
+
+  const isProvidersLoaded = Object.keys(providers).length > 0;
 
   return (
     <div className="fixed top-0 left-0 z-50 bg-white w-100vw h-100vh flex flex-col space-y-14 items-center justify-center">
@@ -44,18 +48,22 @@ export default function SignIn() {
             KEYNUT
           </span>
         </Link>
-        {providers &&
-          Object.values(providers).map(provider => (
-            <button key={provider.name} onClick={() => signIn(provider.id, { callbackUrl })}>
-              <Image
-                className="min-w-250"
-                src={`/${provider.id}Login.svg`}
-                width={350}
-                height={0}
-                alt={`${provider.name}Login`}
-              />
-            </button>
-          ))}
+        {['kakao', 'google'].map(providerId => (
+          <button
+            key={providerId}
+            onClick={isProvidersLoaded ? () => signIn(providerId, { callbackUrl }) : null}
+            disabled={!isProvidersLoaded}
+            className="disabled:cursor-wait disabled:opacity-50"
+          >
+            <Image
+              className="min-w-250"
+              src={`/${providerId}Login.svg`}
+              width={350}
+              height={0}
+              alt={`${providerId}Login`}
+            />
+          </button>
+        ))}
       </div>
     </div>
   );

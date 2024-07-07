@@ -23,28 +23,56 @@ const forbiddenList = [
   '섹스',
   '개새끼',
 ];
-
 export async function GET(req) {
   try {
     const session = await getUserSession();
     if (!session.admin) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
     const { searchParams } = new URL(req.url, process.env.NEXTAUTH_URL);
-    const offset = searchParams.get('offset');
-    const limit = searchParams.get('limit');
+    const offset = parseInt(searchParams.get('offset')) || 0;
+    const limit = parseInt(searchParams.get('limit')) || 10;
+    const keyword = searchParams.get('keyword');
+
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
 
-    const users = await db.collection('users').find().skip(parseInt(offset)).limit(parseInt(limit)).toArray();
+    const searchQuery = keyword
+      ? { $or: [{ nickname: { $regex: keyword, $options: 'i' } }, { email: { $regex: keyword, $options: 'i' } }] }
+      : {};
 
-    const total = await db.collection('users').countDocuments();
+    const pipeline = [
+      { $match: searchQuery },
+      { $skip: offset },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: 'accounts',
+          localField: '_id',
+          foreignField: 'userId',
+          as: 'accountInfo',
+        },
+      },
+      {
+        $addFields: {
+          provider: { $arrayElemAt: ['$accountInfo.provider', 0] },
+          access_token: { $arrayElemAt: ['$accountInfo.access_token', 0] },
+        },
+      },
+      {
+        $project: {
+          accountInfo: 0,
+        },
+      },
+    ];
+
+    const users = await db.collection('users').aggregate(pipeline).toArray();
+    const total = await db.collection('users').countDocuments(searchQuery);
 
     return NextResponse.json({ users, total }, { status: 200 });
   } catch (error) {
     return NextResponse.json(error, { status: 500 });
   }
 }
-
 
 export async function PUT(req) {
   try {
@@ -128,63 +156,5 @@ export async function PUT(req) {
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error: error }, { status: 500 });
-  }
-}
-
-export async function DELETE() {
-  try {
-    const { user: session } = await getUserSession();
-    if (!session) {
-      return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
-    }
-    const client = await connectDB;
-    const db = client.db(process.env.MONGODB_NAME);
-    const userCollection = db.collection('users');
-    const userId = new ObjectId(session.id);
-
-    const user = await userCollection.findOne({ _id: userId });
-    if (!user) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
-    }
-
-    const { bookmarked = [], products = [] } = user;
-
-    // 사용자가 북마크한 상품의 북마크 목록에서 해당 유저 제거
-    const updateBookmarkedPromises = bookmarked.map(productId =>
-      db.collection('products').updateOne({ _id: productId }, { $pull: { bookmarked: userId } }),
-    );
-
-    // 다른 사용자들이 북마크한 상품에서 해당 유저 제거, 상품 이미지, 조회 기록 제거
-    const updateProductsPromises = products.map(async productId => {
-      const product = await db.collection('products').findOne({ _id: productId });
-
-      const updateProductBookmarksPromises = product.bookmarked.map(uId =>
-        userCollection.updateOne({ _id: uId }, { $pull: { bookmarked: productId } }),
-      );
-      const deleteS3ImagesPromise = product.images.map(img => {
-        const params = {
-          Bucket: process.env.S3_BUCKET_NAME,
-          Key: extractionS3ImageKey(img),
-        };
-        return s3Client.send(new DeleteObjectCommand(params));
-      });
-      const deleteViewHistoryPromise = db.collection('viewHistory').deleteMany({ productId: productId });
-      return Promise.all([...updateProductBookmarksPromises, ...deleteS3ImagesPromise, deleteViewHistoryPromise]);
-    });
-
-    const deleteUserPromises = [
-      userCollection.deleteOne({ _id: userId }),
-      db.collection('accounts').deleteMany({ userId: userId }),
-      db.collection('sessions').deleteMany({ userId: userId }),
-      db.collection('products').deleteMany({ userId: userId }),
-      db.collection('viewHistory').deleteMany({ userId: userId }),
-    ];
-
-    await Promise.all([...updateBookmarkedPromises, ...updateProductsPromises, ...deleteUserPromises]);
-
-    return NextResponse.json({ message: 'User deleted successfully' }, { status: 200 });
-  } catch (error) {
-    console.error('Error deleting user:', error);
-    return NextResponse.json({ message: 'Internal Server Error', error }, { status: 500 });
   }
 }

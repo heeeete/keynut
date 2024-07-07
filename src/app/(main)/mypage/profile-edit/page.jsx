@@ -7,6 +7,7 @@ import getUserProfile from '@/lib/getUserProfile';
 import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
+import Modal from '../../_components/Modal';
 
 const ProfileName = ({ session, update }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -189,9 +190,11 @@ const ProfileImage = ({ session, update }) => {
 };
 
 export default function ProfileEdit() {
+  const router = useRouter();
   const { data: session, status, update } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
+  const scriptRef = useRef(false);
 
   useEffect(() => {
     // Kakao SDK 초기화
@@ -200,7 +203,7 @@ export default function ProfileEdit() {
         if (!window.Kakao.isInitialized()) {
           window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY);
         }
-        console.log('after Init: ', window.Kakao.isInitialized());
+        scriptRef.current = window.Kakao.isInitialized();
       }
     };
 
@@ -210,46 +213,70 @@ export default function ProfileEdit() {
     script.integrity = 'sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4';
     script.crossOrigin = 'anonymous';
     script.onload = initializeKakao;
-    document.body.appendChild(script);
+
+    if (session?.provider === 'kakao') document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
-  }, []);
+  }, [session]);
 
   const onClickWithdrawal = async () => {
+    if (session.provider === 'kakao' && !scriptRef.current) return alert('잠시후 다시 시도해주세요.');
+
+    setWithdrawalModalStatus(false);
     setIsLoading(true);
-    if (session && session.access_token) {
-      window.Kakao.Auth.setAccessToken(session.access_token);
-    } else {
-      setIsLoading(false);
-      alert('사용자 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요');
-      console.error('No access token available');
-      return;
-    }
 
-    Kakao.API.request({
-      url: '/v1/user/unlink',
-    })
-      .then(async function (response) {
-        console.log('Kakao unlink response:', response);
-        const res = await fetch('/api/user', { method: 'DELETE' });
+    if (session.provider === 'kakao') {
+      if (session && session.access_token) {
+        window.Kakao.Auth.setAccessToken(session.access_token);
+      } else {
+        setIsLoading(false);
+        alert('사용자 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요');
+        console.error('No access token available');
+        return;
+      }
 
+      Kakao.API.request({
+        url: '/v1/user/unlink',
+      })
+        .then(async function (response) {
+          const res = await fetch(`/api/user/${session.user.id}`, { method: 'DELETE' });
+
+          if (res.ok) {
+            signOut();
+          } else {
+            setIsLoading(false);
+            const data = await res.json();
+            alert('회원 탈퇴 중 문제가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+            console.error('Error deleting user:', data.message);
+          }
+        })
+        .catch(function (error) {
+          setIsLoading(false);
+          alert('회원 탈퇴 중 문제가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+          console.error('Kakao unlink error:', error);
+        });
+    } else if (session.provider === 'google') {
+      try {
+        const res1 = await fetch(`/api/user/${session.user.id}`, { method: 'DELETE' });
+        if (!res1.ok) {
+          setIsLoading(false);
+          return alert('사용자 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요');
+        }
+        const res = await fetch(`https://accounts.google.com/o/oauth2/revoke?token=${session.access_token}`);
         if (res.ok) {
           signOut();
-        } else {
-          setIsLoading(false);
-          const data = await res.json();
-          alert('회원 탈퇴 중 문제가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
-          console.error('Error deleting user:', data.message);
-        }
-      })
-      .catch(function (error) {
-        setIsLoading(false);
-        alert('회원 탈퇴 중 문제가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
-        console.error('Kakao unlink error:', error);
-      });
+        } else if (!res.ok) alert('잠시후 다시 시도해주세요.');
+      } catch (error) {
+        console.error(error);
+      }
+      setIsLoading(false);
+    }
   };
+
   return (
     <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:h-d-screen max-md:justify-center ">
       <div className="flex flex-col w-350 py-10 max-md:py-0 max-md:w-64">
@@ -271,13 +298,16 @@ export default function ProfileEdit() {
             >
               •로그아웃
             </button>
-            <button className="flex" onClick={onClickWithdrawal}>
+            <button className="flex" onClick={() => setWithdrawalModalStatus(true)}>
               •회원 탈퇴
             </button>
           </div>
         </section>
       </div>
       {isLoading && <Loading />}
+      {withdrawalModalStatus && (
+        <Modal message={'회원탈퇴 하시겠습니까?'} yesCallback={onClickWithdrawal} modalSet={setWithdrawalModalStatus} />
+      )}
     </div>
   );
 }
