@@ -24,6 +24,7 @@ export async function GET(req, { params }) {
       .find({
         _id: { $in: user.products },
       })
+      .sort({ createdAt: -1 })
       .toArray();
     return NextResponse.json(userProducts, { status: 200 });
   } catch (error) {
