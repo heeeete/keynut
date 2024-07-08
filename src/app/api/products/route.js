@@ -28,7 +28,7 @@ export async function GET(req) {
     // console.log('categoriesParam', categoriesParam);
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
-    let query = {};
+    let query = { state: 1 };
 
     if (keywordParam) {
       //해시태그일 경우 해시태그에서 검색

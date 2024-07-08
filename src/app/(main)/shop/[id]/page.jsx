@@ -91,7 +91,7 @@ export default function Profile() {
                     return (
                       <Link
                         href={`/shop/product/${product._id}`}
-                        className="p-2 items-center border border-gray-300 justify-between rounded-sm max-md:border-0 max-md:border-b max-md:border-gray-200"
+                        className="p-2 items-center border relative border-gray-300 justify-between rounded-sm max-md:border-0 max-md:border-b max-md:border-gray-200"
                         key={index}
                       >
                         {!productOption && (

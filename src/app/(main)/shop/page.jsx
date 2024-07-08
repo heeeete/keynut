@@ -2,6 +2,7 @@ import RenderShop from './renderShop';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import getProducts from './_lib/getProducts';
 import { Suspense } from 'react';
+import fetchHotProducts from './_lib/fetchHotProducts';
 
 export default async function Shop({ props }) {
   const queryClient = new QueryClient();
@@ -9,8 +10,10 @@ export default async function Shop({ props }) {
   try {
     // 서버에서 데이터를 미리 가져옴
     await queryClient.prefetchInfiniteQuery({ queryKey: ['products', ''], queryFn: getProducts, initialPageParam: 0 });
-    console.log('prefetchQuery 실행됨');
-    console.log(queryClient.getQueryData(['products', '']));
+    await queryClient.prefetchQuery({
+      queryKey: ['topProducts', 0],
+      queryFn: () => fetchHotProducts(0),
+    });
   } catch (error) {
     console.error('prefetchQuery 실행 중 에러 발생:', error);
   }

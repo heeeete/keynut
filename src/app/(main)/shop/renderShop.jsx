@@ -2,12 +2,13 @@
 
 import React, { useState, useRef, useEffect, useCallback, Fragment, useLayoutEffect } from 'react';
 import Image from 'next/image';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import getProducts from './_lib/getProducts';
 import { useInView } from 'react-intersection-observer';
 import debounce from '../../../utils/debounce';
 import Link from 'next/link';
+import fetchHotProducts from './_lib/fetchHotProducts';
 
 const categories = [
   {
@@ -69,12 +70,12 @@ const RecentSearch = React.memo(
       localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
     };
     return (
-      <ul className="md:grid md:grid-cols-5 md:gap-x-3 w-full max-md:flex-1">
+      <ul className=" w-full md:space-x-3 md:flex md:flex-grow max-md:flex-1">
         {recentSearches.length ? (
           recentSearches.map((search, index) => (
             <li
               key={index}
-              className="flex items-center cursor-pointer max-md:justify-between max-md:py-2 md:space-x-1"
+              className="flex items-center cursor-pointer md:space-x-1 max-md:justify-between max-md:py-2 max-md:min-w-9"
               onClick={() => {
                 handleRecentSearch(search);
               }}
@@ -85,10 +86,10 @@ const RecentSearch = React.memo(
                   e.stopPropagation();
                   deleteRecentSearch(search);
                 }}
-                className=""
+                className="min-w-10"
                 xmlns="http://www.w3.org/2000/svg"
-                width="0.7em"
-                height="0.7em"
+                width="10"
+                height="10"
                 viewBox="0 0 2048 2048"
               >
                 <path
@@ -147,8 +148,8 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
     localStorage.setItem('recentSearches', JSON.stringify([]));
   };
   return (
-    <div className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col bg-red-600" ref={recentRef}>
-      <div className="max-md:search-bar-maxmd max-md:px-2 bg-blue-800">
+    <div className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col" ref={recentRef}>
+      <div className="max-md:search-bar-maxmd max-md:px">
         <div className="search-bar-md max-md:search-bar-maxmd">
           <form className="flex w-450 max-md:w-full items-center" onSubmit={handleSearch}>
             <input
@@ -170,7 +171,13 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
                 inputRef.current.focus();
               }}
             >
-              <svg className="" xmlns="http://www.w3.org/2000/svg" width="0.7em" height="0.7em" viewBox="0 0 2048 2048">
+              <svg
+                className="max-md:mr-1"
+                xmlns="http://www.w3.org/2000/svg"
+                width="0.7em"
+                height="0.7em"
+                viewBox="0 0 2048 2048"
+              >
                 <path
                   fill="currentColor"
                   d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
@@ -181,7 +188,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
             ''
           )}
         </div>
-        <div className="flex h-5 text-sm w-450 bg-green-600 max-md:hidden ">
+        <div className="flex h-5 text-sm w-450 max-md:hidden ">
           <RecentSearch
             recentSearches={recentSearches}
             setTempSearchText={setTempSearchText}
@@ -454,15 +461,6 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
   );
 });
 
-const fetchHotProducts = async category => {
-  const url = category ? `api/products/hot?category=${category}` : 'api/products/hot';
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return res.json();
-};
-
 export default function RenderShop() {
   const router = useRouter();
   const params = useSearchParams();
@@ -623,16 +621,14 @@ export default function RenderShop() {
   }, [obj]);
 
   const useHotProducts = category => {
-    // console.log(category);
     return useQuery({
       queryKey: ['topProducts', category],
       queryFn: () => fetchHotProducts(category),
-      staleTime: 60 * 60 * 1000, // 1시간
-      cacheTime: 70 * 60 * 1000,
       enabled: !paramsKeyword && (category === 1 || category === 2 || category === 9 || category === 0),
     });
   };
 
+  console.log(hotProductFlag.current);
   const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
 
   return (

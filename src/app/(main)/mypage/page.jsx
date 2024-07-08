@@ -6,30 +6,16 @@ import { useEffect, useState } from 'react';
 // import LikedPost from './_components/LikedPost';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Script from 'next/script';
 
 import Link from 'next/link';
 import getUserProducts from '@/lib/getUserProducts';
 import getUserProfile from '@/lib/getUserProfile';
 
-// const getProducts = async (id, setProducts) => {
-//   const res = await fetch(`/api/user/${id}/products`, {
-//     method: 'GET',
-//   });
-//   if (!res.ok) {
-//     throw new Error(data.error || 'Network response was not ok');
-//   }
-//   const data = await res.json();
-//   setProducts(data);
-// };
-
 export default function MyPage() {
   const { data: session, status } = useSession();
-  // console.log(session);
   const [products, setProducts] = useState([]);
   const [productOption, setProductOption] = useState(1);
   const [nickname, setNickname] = useState('');
-  // const [postOption, setPostOption] = useState('');
   const router = useRouter();
   const fetchProducts = async () => {
     const product = await getUserProducts(session.user.id);
@@ -53,7 +39,6 @@ export default function MyPage() {
   return (
     <div className="flex flex-col h-full space-y-8 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:main-768">
       {/* 카카오 API */}
-
       <div className="flex h-24 border border-gray-300 rounded-md items-center px-4 max-md:px-2">
         <div className="flex flex-1 items-center space-x-5">
           {session && session.user.image ? (
