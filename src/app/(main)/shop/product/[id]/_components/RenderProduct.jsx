@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signIn, useSession } from 'next-auth/react';
 import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
+import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
 
 const RenderCondition = ({ condition }) => {
   if (condition === 1) condition = '미사용';
@@ -127,7 +128,7 @@ const RenderProfile = ({ user }) => {
             {user.nickname}
           </Link>
         </div>
-        <Link className="flex items-center" href={`/shop/${user._id}`}>
+        <Link className="flex items-center rounded" href={`/shop/${user._id}`} onClick={e => onClickProduct(e)}>
           <p className=" text-base px-2 border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</p>
         </Link>
       </div>
@@ -282,7 +283,13 @@ const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
           </button>
         </div>
       </div>
-      <button className="hidden align-text-top items-center p-2 max-[480px]:flex" onClick={() => setSettingModal(true)}>
+      <button
+        className="hidden align-text-top items-center p-2 rounded max-[480px]:flex"
+        onClick={e => {
+          onClickProduct(e);
+          setSettingModal(true);
+        }}
+      >
         <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 1024 1024">
           <path
             fill="gray"

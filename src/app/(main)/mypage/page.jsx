@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import getUserProducts from '@/lib/getUserProducts';
 import getUserProfile from '@/lib/getUserProfile';
+import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
 
 export default function MyPage() {
   const { data: session, status } = useSession();
@@ -64,9 +65,13 @@ export default function MyPage() {
           <div className="text-lg max-md:text-base">{nickname}</div>
         </div>
         <button>
-          <div className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm">
-            <Link href={'/mypage/profile-edit'}>프로필 관리</Link>
-          </div>
+          <Link
+            className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm"
+            href={'/mypage/profile-edit'}
+            onClick={e => onClickProduct(e)}
+          >
+            프로필 관리
+          </Link>
         </button>
       </div>
       <div className="flex flex-col h-full space-y-8">
@@ -106,15 +111,17 @@ export default function MyPage() {
                   .filter(a => a.state === productOption)
                   .map((product, index) => {
                     return (
-                      <Link
-                        href={`/shop/product/${product._id}`}
+                      <div
                         className="p-2 items-center border cursor-pointer border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm relative max-md:border-gray-200"
                         key={index}
                       >
                         {!productOption && (
-                          <div className="absolute top-0 left-0 z-10 w-full h-full rounded-sm bg-black opacity-70 flex items-center justify-center">
+                          <Link
+                            href={`/shop/product/${product._id}`}
+                            className="absolute top-0 left-0 z-10 w-full h-full rounded-sm bg-black opacity-70 flex items-center justify-center"
+                          >
                             <p className="font-semibold text-white text-lg">판매 완료</p>
-                          </div>
+                          </Link>
                         )}
                         <div className="flex">
                           <div className="w-48 aspect-square relative mr-4 bg-gray-100">
@@ -134,7 +141,12 @@ export default function MyPage() {
                             </div>
                           </div>
                         </div>
-                      </Link>
+                        <Link
+                          href={`/shop/product/${product._id}`}
+                          className="absolute top-0 left-0 w-full h-full rounded"
+                          onClick={e => onClickProduct(e)}
+                        ></Link>
+                      </div>
                     );
                   })
               : ''}

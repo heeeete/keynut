@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 
 import { Do_Hyeon, Stylish, Gowun_Dodum } from 'next/font/google';
+import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
 
 const title = Gowun_Dodum({ subsets: ['latin'], weight: ['400'] });
 
@@ -45,34 +46,6 @@ export default function RenderHome() {
     queryFn: getRecentProducts,
     // staleTime: 60 * 60 * 1000,
   });
-  const TopPicks = ({ picks }) => {
-    return (
-      <div className="grid grid-cols-5 gap-2 max-md:flex overflow-auto scrollbar-hide">
-        {picks.map((pick, idx) => (
-          <div className="flex flex-col w-full" key={idx}>
-            <div className="w-full aspect-4/5 relative min-h-32 min-w-32">
-              <div className="absolute rounded-full z-10 bg-white w-12 h-12 top-1 left-1 flex items-start justify-center border border-solid max-md:w-10 max-md:h-10">
-                <Image
-                  className="rounded-full object-cover"
-                  src={pick.profile}
-                  alt={pick.name}
-                  fill
-                  sizes="(max-width:768px) 40px, 48px"
-                />
-              </div>
-              <Image
-                className="rounded object-cover"
-                src={pick.path}
-                alt={pick.name}
-                fill
-                sizes="(max-width:690px) 128px,(max-width:1280px) 20vw, 234px"
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   return (
     <div className="flex flex-col w-full max-md:main-768 -translate-y-6">
@@ -92,27 +65,37 @@ export default function RenderHome() {
         <section className="flex flex-col space-y-5">
           <div className="flex flex-col">
             <div className="font-medium text-xl">cateory</div>
-            <div className="text-gray-600 font-medium">카테고리</div>
+            <div className="text-gray-500 font-medium">카테고리</div>
           </div>
           <ul className="flex space-x-3 overflow-auto scrollbar-hide">
             <li className="flex flex-col items-center space-y-1">
-              <Link href={'/shop?categories=1'}>
+              <div className="relative">
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
                   <Image className="max-md:w-16" src="/keyboard.svg" width={80} height={80} alt="keyboard" />
                 </div>
-              </Link>
+                <Link
+                  href={'/shop?categories=1'}
+                  className="absolute top-0 left-0 w-full h-full"
+                  onClick={e => onClickProduct(e)}
+                ></Link>
+              </div>
               <p className="text-gray-600">키보드</p>
             </li>
             <li className="flex flex-col items-center space-y-1">
-              <Link href={'/shop?categories=2'}>
+              <div className="relative">
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-slate-100 justify-center items-center max-md:w-24">
                   <Image className="max-md:w-9" src="/mouse.svg" width={45} height={45} alt="mouse" />
                 </div>
-              </Link>
+                <Link
+                  href={'/shop?categories=2'}
+                  className="absolute top-0 left-0 w-full h-full"
+                  onClick={e => onClickProduct(e)}
+                ></Link>
+              </div>
               <p className="text-gray-600">마우스</p>
             </li>
             <li className="flex flex-col items-center space-y-1">
-              <Link href={'/shop?categories=9'}>
+              <div className="relative">
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-black bg-opacity-10 justify-center items-center max-md:w-24">
                   <svg
                     className="max-md:w-10"
@@ -127,7 +110,12 @@ export default function RenderHome() {
                     />
                   </svg>
                 </div>
-              </Link>
+                <Link
+                  href={'/shop?categories=9'}
+                  className="absolute top-0 left-0 w-full h-full"
+                  onClick={e => onClickProduct(e)}
+                ></Link>
+              </div>
               <p className="text-gray-600">기타</p>
             </li>
             {/* <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white  border rounded">갤러리</li> */}
@@ -137,29 +125,16 @@ export default function RenderHome() {
           <div className="flex items-end">
             <div className="flex flex-1 flex-col bg-re">
               <div className="font-medium text-xl">just in</div>
-              <div className="text-gray-600 font-medium">신규 등록 상품</div>
+              <div className="text-gray-500 font-medium">신규 등록 상품</div>
             </div>
-            <Link href={'/shop'}>
-              <div className="flex items-center font-medium text-sm">
-                더보기
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                  <path
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 5v14m-7-7h14"
-                  />
-                </svg>
-              </div>
+            <Link href={'/shop'} className="rounded" onClick={e => onClickProduct(e)}>
+              <div className="flex items-center font-medium text-sm text-gray-500 px-0.5">더보기</div>
             </Link>
           </div>
           <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
             {data?.map((product, idx) => (
-              <Link
-                href={`/shop/product/${product._id}`}
-                className="flex flex-col cursor-pointer max-md:max-w-40 max-md:w-40 max-md:text-sm"
+              <div
+                className="flex flex-col cursor-pointer relative max-md:max-w-40 max-md:w-40 max-md:text-sm"
                 key={idx}
               >
                 <div className="w-full aspect-square relative min-h-32 min-w-32 bg-gray-100">
@@ -178,19 +153,31 @@ export default function RenderHome() {
                     <span className="text-sm">원</span>
                   </div>
                 </div>
-              </Link>
-            ))}
-            <Link className="flex justify-center md:hidden" href={'/shop'}>
-              <div className="flex flex-col w-20 justify-center items-center relative space-y-1 h-32">
-                <svg className="" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 16 16">
-                  <g fill="gray">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                  </g>
-                </svg>
-                <p className="text-xs absolute bottom-6 text-gray-600">더보기</p>
+                <Link
+                  href={`/shop/product/${product._id}`}
+                  className="absolute top-0 left-0 w-full h-full rounded"
+                  onClick={e => onClickProduct(e)}
+                ></Link>
               </div>
-            </Link>
+            ))}
+            <div className="flex justify-center md:hidden">
+              <div className="flex flex-col w-20 justify-center items-center relative space-y-1 h-32">
+                <div className="relative">
+                  <svg className="" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 16 16">
+                    <g fill="gray">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                    </g>
+                  </svg>
+                </div>
+                <p className="text-xs absolute bottom-6 text-gray-600">더보기</p>
+                <Link
+                  href={'/shop'}
+                  className="absolute top-0 left-0 w-full h-full"
+                  onClick={e => onClickProduct(e)}
+                ></Link>
+              </div>
+            </div>
           </div>
         </section>
       </div>

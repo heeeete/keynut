@@ -9,6 +9,7 @@ import { useInView } from 'react-intersection-observer';
 import debounce from '../../../utils/debounce';
 import Link from 'next/link';
 import fetchHotProducts from './_lib/fetchHotProducts';
+import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
 
 const categories = [
   {
@@ -70,17 +71,17 @@ const RecentSearch = React.memo(
       localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
     };
     return (
-      <ul className=" w-full md:space-x-3 md:flex md:flex-grow max-md:flex-1">
+      <ul className=" w-full flex-1">
         {recentSearches.length ? (
           recentSearches.map((search, index) => (
             <li
               key={index}
-              className="flex items-center cursor-pointer md:space-x-1 max-md:justify-between max-md:py-2 max-md:min-w-9"
+              className="flex items-center cursor-pointer justify-between py-2 min-w-9"
               onClick={() => {
                 handleRecentSearch(search);
               }}
             >
-              <p className="break-all line-clamp-1 max-md:pr-3">{search}</p>
+              <p className="break-all line-clamp-1 pr-3">{search}</p>
               <svg
                 onClick={e => {
                   e.stopPropagation();
@@ -100,7 +101,7 @@ const RecentSearch = React.memo(
             </li>
           ))
         ) : (
-          <p className="text-gray-400 md:hidden">최근 검색어가 없습니다</p>
+          <p className="text-gray-400">최근 검색어가 없습니다</p>
         )}
       </ul>
     );
@@ -113,6 +114,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef(null);
   const recentRef = useRef(null);
+
   useEffect(() => {
     const storedSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
     setRecentSearches(storedSearches);
@@ -122,8 +124,30 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.boundingClientRect.top <= 5) {
+          setIsFocused(false);
+          if (inputRef.current) inputRef.current.blur();
+        }
+      },
+      {
+        //실제로 요소의 상단이 뷰포트 상단보다 100픽셀 더 아래에 있을 때 교차로 인식
+        rootMargin: '-100px',
+        threshold: 0, // 요소의 0%가 보일 때 콜백이 호출됨
+      },
+    );
+
+    if (recentRef.current) {
+      observer.observe(recentRef.current);
+    }
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      if (recentRef.current) {
+        observer.unobserve(recentRef.current);
+      }
     };
   }, []);
 
@@ -188,19 +212,8 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
             ''
           )}
         </div>
-        <div className="flex h-5 text-sm w-450 max-md:hidden ">
-          <RecentSearch
-            recentSearches={recentSearches}
-            setTempSearchText={setTempSearchText}
-            setSearchText={setSearchText}
-            setRecentSearches={setRecentSearches}
-            inputRef={inputRef}
-            searchFlag={searchFlag}
-            setIsFocused={setIsFocused}
-          />
-        </div>
         {isFocused && tempSearchText === '' ? (
-          <div className="flex flex-col absolute min-h-32 bg-white p-2 rounded-sm top-14 left-0 w-full border-b md:hidden">
+          <div className="flex flex-col absolute min-h-32 bg-white w-450 top-20 left-1/2 -translate-x-1/2 p-2 rounded-sm border max-md:w-full max-md:border-0 max-md:border-b max-md:translate-x-0  max-md:top-14 max-md:left-0">
             <p className="border-b">최근 검색어</p>
             <RecentSearch
               recentSearches={recentSearches}
@@ -244,7 +257,10 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
       {Object.keys(categoriesState)
         .filter(key => categoriesState[key].checked)
         .map(key => (
-          <div className="flex space-x-1 items-center text-sm p-1 bg-blue-50 rounded max-md:text-xs" key={key}>
+          <div
+            className="flex space-x-1 items-center text-sm p-1 bg-blue-50 rounded max-md:text-xs max-md:flex-nowrap max-md:whitespace-nowrap"
+            key={key}
+          >
             <div className="flex text-gray-500">{categoriesState[key]?.option}</div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -263,7 +279,10 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
       {Object.keys(pricesState)
         .filter(key => pricesState[key].checked)
         .map(key => (
-          <div className="flex space-x-1 items-center text-sm p-1  bg-blue-50 rounded  max-md:text-xs" key={key}>
+          <div
+            className="flex space-x-1 items-center text-sm p-1  bg-blue-50 rounded  max-md:text-xs max-md:flex-nowrap max-md:whitespace-nowrap"
+            key={key}
+          >
             <div className="flex text-gray-500">{pricesState[key].option}</div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -281,6 +300,11 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
         ))}
     </>
   );
+};
+
+const onClickAllProduct = e => {
+  onClickProduct(e);
+  sessionStorage.setItem('scrollPos', window.scrollY);
 };
 
 const RenderProducts = React.memo(({ params }) => {
@@ -329,29 +353,13 @@ const RenderProducts = React.memo(({ params }) => {
     }
   }, [inView, fetchNextPage]);
 
-  const onClickProduct = (e, id) => {
-    e.preventDefault();
-    // const target = e.currentTarget;
-    // target.style.backgroundColor = 'lightgray';
-    // setTimeout(e => {
-    //   target.style.backgroundColor = 'white';
-    // }, 100);
-    sessionStorage.setItem('scrollPos', window.scrollY);
-    router.push(`/shop/product/${id}`);
-  };
-
   return (
     <>
       <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-2`}>
         {data?.pages.map((page, i) => (
           <Fragment key={i}>
             {page.map((product, idx) => (
-              <Link
-                href={``}
-                onClick={e => onClickProduct(e, product._id)}
-                className="flex flex-col cursor-pointer relative rounded"
-                key={product._id}
-              >
+              <div className="flex flex-col cursor-pointer relative rounded" key={product._id}>
                 <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
                   <Image
                     className="rounded object-cover"
@@ -385,7 +393,12 @@ const RenderProducts = React.memo(({ params }) => {
                     <span className="text-sm">원</span>
                   </div>
                 </div>
-              </Link>
+                <Link
+                  href={`/shop/product/${product._id}`}
+                  className="absolute top-0 left-0 w-full h-full rounded"
+                  onClick={e => onClickAllProduct(e)}
+                ></Link>
+              </div>
             ))}
           </Fragment>
         ))}
@@ -427,11 +440,7 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
       <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
         {data?.length ? (
           data.map((product, idx) => (
-            <Link
-              href={`/shop/product/${product._id}`}
-              className="flex flex-col  cursor-pointer max-md:min-w-28 max-md:w-36"
-              key={idx}
-            >
+            <div className="flex flex-col  cursor-pointer relative max-md:min-w-28 max-md:w-36" key={idx}>
               <div className="w-full aspect-square relative min-h-20 min-w-20 bg-gray-100">
                 <Image
                   className="rounded object-cover"
@@ -451,7 +460,12 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
                   <span className="text-sm">원</span>
                 </div>
               </div>
-            </Link>
+              <Link
+                href={`/shop/product/${product._id}`}
+                onClick={e => onClickProduct(e)}
+                className="absolute left-0 right-0 w-full h-full rounded"
+              ></Link>
+            </div>
           ))
         ) : (
           <div className=""></div>
@@ -636,7 +650,7 @@ export default function RenderShop() {
       <div className="flex flex-col w-full">
         <div className="sticky top-0 flex flex-col z-20 border-b bg-white">
           <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
-          <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:justify-between max-md:px-2 max-md:pt-0">
+          <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:justify-between max-md:px-2 max-md:p-0">
             <div className="flex items-center md:hidden">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -664,7 +678,7 @@ export default function RenderShop() {
               />
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2 px-2 pb-2 md:hidden">
+          <div className="flex items-center gap-2 mx-2 pb-2 pt-1 overflow-auto scrollbar-hide md:hidden">
             <SelectedFilters
               categoriesState={categoriesState}
               pricesState={pricesState}
