@@ -47,7 +47,7 @@ export default function Nav() {
           <li>
             <Link
               href={'/admin/suspended-users'}
-              className={`${pathname === '/suspended-users' ? 'font-semibold' : 'text-gray-600'}`}
+              className={`${pathname === '/admin/suspended-users' ? 'font-semibold' : 'text-gray-600'}`}
             >
               정지 유저
             </Link>
@@ -56,7 +56,7 @@ export default function Nav() {
           <li>
             <Link
               href={'/admin/products'}
-              className={`${pathname === '/products' ? 'font-semibold' : 'text-gray-600'}`}
+              className={`${pathname === '/admin/products' ? 'font-semibold' : 'text-gray-600'}`}
             >
               전체 게시물
             </Link>
@@ -64,7 +64,7 @@ export default function Nav() {
           <li>
             <Link
               href={'/admin/complaint-products'}
-              className={`${pathname === 'complaint-products' ? 'font-semibold' : 'text-gray-600'}`}
+              className={`${pathname === '/admincomplaint-products' ? 'font-semibold' : 'text-gray-600'}`}
             >
               신고 게시물
             </Link>
