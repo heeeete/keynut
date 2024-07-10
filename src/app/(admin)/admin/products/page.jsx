@@ -1,11 +1,11 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import useUsers from '../_hooks/useUsers';
-import Image from 'next/image';
 import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
 import Loading from '@/app/(main)/_components/Loading';
+import useProducts from '../_hooks/useProducts';
+import useURLSearchParams from '@/hooks/useURLSearchParams';
 
 const PAGE_SIZE = 100;
 const PAGE_RANGE = 10;
@@ -21,7 +21,7 @@ const PageControl = ({ page, data }) => {
     if (totalPages)
       if (page > totalPages) {
         params.set('page', 1);
-        router.push(`/admin/users?${params.toString()}`);
+        router.push(`/admin/products?${params.toString()}`);
       }
   }, [totalPages]);
 
@@ -40,7 +40,7 @@ const PageControl = ({ page, data }) => {
     newPage => {
       if (newPage < 1 || newPage > totalPages) return;
       params.set('page', newPage);
-      router.push(`/admin/users?${params.toString()}`);
+      router.push(`/admin/products?${params.toString()}`);
     },
     [totalPages],
   );
@@ -75,108 +75,11 @@ const PageControl = ({ page, data }) => {
   );
 };
 
-const SearchBar = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [searchText, setSearchText] = useState(searchParams.get('keyword') || '');
-
-  const onSubmit = useCallback(
-    e => {
-      if (e.key === 'Enter') {
-        const params = new URLSearchParams(searchParams.toString());
-        if (searchText === '') params.delete('keyword');
-        else params.set('keyword', searchText);
-        params.delete('page');
-        router.push(`/admin/users?${params.toString()}`);
-      }
-    },
-    [searchText],
-  );
-
-  return (
-    <div className="flex border max-w-sm w-full bg-white rounded px-2">
-      <img src="/admin/search.svg" width={24} height={24} alt="searchSVG" />
-      <input
-        type="text"
-        value={searchText}
-        onChange={e => setSearchText(e.target.value)}
-        onKeyDown={onSubmit}
-        title="search"
-        className="w-full h-full outline-none"
-        placeholder="닉네임, 이메일로 검색하기"
-      />
-    </div>
-  );
-};
-
-const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
-  const onClickWithdrawal = async () => {
-    setIsLoading(true);
-    const selectedUsersKeys = Object.keys(selectedUsers);
-    try {
-      for (let key of selectedUsersKeys) {
-        const { _id, access_token, provider, providerAccountId } = selectedUsers[key];
-
-        if (provider === 'kakao') {
-          await handleKakaoWithdrawal(_id, access_token, providerAccountId);
-        } else if (provider === 'google') {
-          await handleGoogleWithdrawal(_id, access_token);
-        } else {
-          await handleOtherProviderWithdrawal(_id);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      alert('처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-    } finally {
-      dataRefetch();
-      setIsLoading(false);
-    }
-  };
-
-  const handleKakaoWithdrawal = async (_id, access_token, providerAccountId) => {
-    try {
-      const res = await fetch('/api/admin/kakao/unlink', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ providerAccountId, _id }),
-      });
-
-      if (!res.ok) throw new Error(await res.json());
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handleGoogleWithdrawal = async (_id, access_token) => {
-    try {
-      const res1 = await fetch(`/api/user/${_id}`, { method: 'DELETE' });
-      if (!res1.ok) throw new Error('Google user deletion error');
-      const res2 = await fetch(`https://accounts.google.com/o/oauth2/revoke?token=${access_token}`);
-      if (!res2.ok) throw new Error('Google token revocation error');
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handleOtherProviderWithdrawal = async _id => {
-    try {
-      const res = await fetch(`/api/user/${_id}`, { method: 'DELETE' });
-      if (!res.ok) {
-        throw new Error('Other provider user deletion error');
-      }
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  };
-
+const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }) => {
   return (
     <div className="flex flex-col sticky top-10 space-y-2 justify-center border-x px-4 py-2 bg-slate-100">
       <div className="flex space-x-4 justify-between h-9">
-        <AllUsersCnt userCnt={data?.total} />
+        <AllProductsCnt userCnt={data?.total} />
         <div className="flex space-x-4">
           <button className="px-2 py-1 border border-black rounded bg-white" onClick={dataRefetch}>
             <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 24 24">
@@ -186,68 +89,87 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
               </g>
             </svg>
           </button>
-          <button
-            onClick={onClickWithdrawal}
-            className="px-2 py-1 border border-black rounded bg-white text-gray-700 font-semibold line-clamp-1"
-          >
-            탈퇴
-          </button>
           <button className="px-2 py-1 border border-black rounded bg-white text-gray-700 font-semibold line-clamp-1">
-            정지
-          </button>
-          <button className="px-2 py-1 border border-black rounded bg-white text-gray-700 font-semibold line-clamp-1">
-            정지 해제
+            삭제
           </button>
         </div>
       </div>
       <div className="flex justify-between">
-        <SearchBar />
+        <div></div>
         <PageControl page={page} data={data} />
       </div>
     </div>
   );
 };
 
-const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers }) => {
+const SearchInput = ({ param }) => {
+  const router = useRouter();
+  const params = useURLSearchParams();
+  const searchParams = useSearchParams();
+  const [value, setValue] = useState(params.get(param) || '');
+
+  useEffect(() => {
+    const query = params.get(param);
+    if (!query) setValue('');
+    else setValue(query);
+  }, [searchParams]);
+
+  const onSubmit = e => {
+    if (e.key === 'Enter') {
+      if (value === '') params.delete(param);
+      else params.set(param, value);
+      router.push(`/admin/products?` + params.toString());
+    }
+  };
+
+  return (
+    <input
+      type="text"
+      value={value}
+      onChange={e => setValue(e.target.value)}
+      onKeyDown={onSubmit}
+      className="border outline-none rounded"
+    />
+  );
+};
+
+const Table = ({ data, selectAll, setSelectAll, selectedProducts, setSelectedProducts }) => {
   const handleSelectAll = useCallback(() => {
     if (selectAll) {
-      setSelectedUsers({});
+      setSelectedProducts({});
     } else {
       const obj = {};
       let i = 0;
-      for (let { _id, access_token, provider } of data.users) {
+      for (let { _id, access_token, provider } of data.products) {
         obj[i++] = {
           _id: _id,
           access_token: access_token,
           provider: provider,
         };
       }
-      setSelectedUsers(obj);
+      setSelectedProducts(obj);
     }
     setSelectAll(!selectAll);
-  }, [selectAll, selectedUsers, data]);
+  }, [selectAll, selectedProducts, data]);
 
   const handleSelectUser = useCallback(
-    (idx, user) => {
-      if (selectedUsers[idx]) {
-        const newObj = { ...selectedUsers };
+    (idx, userId, access_token, provider) => {
+      if (selectedProducts[idx]) {
+        const newObj = { ...selectedProducts };
         delete newObj[idx];
-        setSelectedUsers(newObj);
+        setSelectedProducts(newObj);
       } else {
-        const newObj = { ...selectedUsers };
+        const newObj = { ...selectedProducts };
         newObj[idx] = {
-          _id: user._id,
-          access_token: user.access_token,
-          provider: user.provider,
-          providerAccountId: user.providerAccountId,
+          _id: userId,
+          access_token: access_token,
+          provider: provider,
         };
-        setSelectedUsers(newObj);
+        setSelectedProducts(newObj);
       }
     },
-    [selectedUsers],
+    [selectedProducts],
   );
-
-  console.log(selectedUsers);
 
   return (
     <table className="w-full bg-slate-50 table-auto border-x border-separate border-spacing-0">
@@ -257,43 +179,46 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
             <input type="checkbox" checked={selectAll} onChange={handleSelectAll} />
           </th>
           <th className="border-b-2 border-r" style={{ width: '19%' }}>
-            Nickname
+            <div>Nickname</div>
+            <SearchInput param={'nickname'} />
           </th>
           <th className="border-b-2 border-r" style={{ width: '19%' }}>
-            Email
+            <div>Title</div>
+            <SearchInput param={'keyword'} />
           </th>
           <th className="border-b-2 border-r" style={{ width: '19%' }}>
-            Products
+            <div>Price</div>
+            <SearchInput param={'price'} />
           </th>
           <th className="border-b-2 border-r" style={{ width: '19%' }}>
-            Bookmarked
+            <div>Views</div>
           </th>
           <th className="border-b-2" style={{ width: '19%' }}>
-            Provider
+            <div>Bookmarked</div>
           </th>
         </tr>
       </thead>
       <tbody className="text-lg">
         {data
-          ? data?.users?.map((user, idx) => (
+          ? data?.products?.map((product, idx) => (
               <tr className="text-center h-9" key={idx}>
                 <td className="border-b">
                   <div className="flex justify-center">
                     <input
                       type="checkbox"
                       className="w-5 h-5"
-                      checked={Boolean(selectedUsers[idx])}
-                      onChange={() => handleSelectUser(idx, user)}
+                      checked={Boolean(selectedProducts[idx])}
+                      onChange={() => handleSelectUser(idx, product._id, product.access_token, product.provider)}
                     />
                   </div>
                 </td>
                 <td className="border-b">
-                  <button className="text-blue-700  underline">{user.nickname}</button>
+                  <button className="text-blue-700  underline">{product.nickname}</button>
                 </td>
-                <td className="border-b">{user.email}</td>
-                <td className="border-b">{user.products ? user.products.length : 0}</td>
-                <td className="border-b">{user.bookmarked ? user.bookmarked.length : 0}</td>
-                <td className="border-b">{user.provider}</td>
+                <td className="border-b">{product.title}</td>
+                <td className="border-b">{product.price.toLocaleString()} 원</td>
+                <td className="border-b">{product.views}</td>
+                <td className="border-b">{product.bookmarked ? product.bookmarked.length : 0}</td>
               </tr>
             ))
           : renderEmptyRows()}
@@ -302,7 +227,7 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
   );
 };
 
-const AllUsersCnt = ({ userCnt }) => {
+const AllProductsCnt = ({ userCnt }) => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
@@ -320,46 +245,26 @@ const AllUsersCnt = ({ userCnt }) => {
   );
 };
 
-export default function Users() {
+export default function Products() {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get('page')) || 1;
+  const nickname = searchParams.get('nickname') || '';
   const keyword = searchParams.get('keyword') || '';
-  const { data, error, refetch } = useUsers(page, keyword, PAGE_SIZE);
-  const [selectedUsers, setSelectedUsers] = useState({});
+  const price = searchParams.get('price') || '';
+  const { data, error, refetch } = useProducts(page, nickname, keyword, price, PAGE_SIZE);
+  const [selectedProducts, setSelectedProducts] = useState({});
   const [selectAll, setSelectAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { navStatus, setNavStatus } = useNav();
 
   useEffect(() => {
-    const initializeKakao = () => {
-      if (window.Kakao) {
-        if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY);
-        }
-        console.log(window.Kakao.isInitialized());
-      }
-    };
-
-    const script = document.createElement('script');
-    script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js';
-    script.integrity = 'sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4';
-    script.crossOrigin = 'anonymous';
-    script.onload = initializeKakao;
-
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  useEffect(() => {
     setSelectAll(false);
-    setSelectedUsers({});
+    setSelectedProducts({});
   }, [page, keyword]);
 
   const dataRefetch = () => {
     setSelectAll(false);
-    setSelectedUsers({});
+    setSelectedProducts({});
     refetch();
   };
 
@@ -370,16 +275,16 @@ export default function Users() {
           <Taskbar
             data={data}
             page={page}
-            selectedUsers={selectedUsers}
+            selectedProducts={selectedProducts}
             setIsLoading={setIsLoading}
             dataRefetch={dataRefetch}
           />
           <Table
             data={data}
             selectAll={selectAll}
-            selectedUsers={selectedUsers}
+            selectedProducts={selectedProducts}
             setSelectAll={setSelectAll}
-            setSelectedUsers={setSelectedUsers}
+            setSelectedProducts={setSelectedProducts}
           />
         </article>
       </div>

@@ -10,10 +10,6 @@ export async function DELETE(req, { params }) {
   const { userId: id } = params;
   const userId = new ObjectId(id);
   try {
-    const { user: session } = await getUserSession();
-    if (!session) {
-      return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
-    }
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const userCollection = db.collection('users');

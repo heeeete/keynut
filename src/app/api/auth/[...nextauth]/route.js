@@ -187,6 +187,7 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
       if (user) {
+        delete user.products;
         token.user = user;
         if (user.email === process.env.ADMIN_EMAIL) token.admin = true;
       }
