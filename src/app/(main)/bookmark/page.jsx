@@ -4,6 +4,8 @@ import { signIn, useSession } from 'next-auth/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getBookmarkedProducts from './_lib/getBookmarkedProducts';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
 
 const HandleBookMark = ({ productId }) => {
   const { data: session, status } = useSession();
@@ -74,11 +76,8 @@ export default function Bookmark() {
         <div className="grid grid-cols-2 gap-2 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:grid-cols-1 max-md:main-768">
           {data.map((item, index) => (
             <div
-              className="flex p-2 items-center cursor-pointer border border-gray-300 rounded-sm justify-between"
+              className="flex p-2 items-center cursor-pointer relative border border-gray-300 rounded-sm justify-between"
               key={index}
-              onClick={e => {
-                router.push(`/shop/product/${item._id}`);
-              }}
             >
               <div className="flex">
                 <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100">
@@ -93,6 +92,13 @@ export default function Bookmark() {
                 </div>
               </div>
               <HandleBookMark productId={item._id} />
+              <Link
+                href={`/shop/product/${item._id}`}
+                className="absolute left-0 top-0 w-full h-full rounded"
+                onClick={e => {
+                  onClickProduct(e);
+                }}
+              ></Link>
             </div>
           ))}
         </div>

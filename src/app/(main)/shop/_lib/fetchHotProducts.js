@@ -2,7 +2,7 @@ const fetchHotProducts = async category => {
   const url = category
     ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/hot?category=${category}`
     : `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/hot`;
-  const res = await fetch(url);
+  const res = await fetch(url, { cache: 'no-cache' });
   if (!res.ok) {
     throw new Error('Network response was not ok');
   }

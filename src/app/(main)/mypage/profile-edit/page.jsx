@@ -8,6 +8,7 @@ import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import Modal from '../../_components/Modal';
+import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
 
 const ProfileName = ({ session, update }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -74,7 +75,8 @@ const ProfileName = ({ session, update }) => {
         )}
         <button
           className="px-2 border outline-none rounded"
-          onClick={() => {
+          onClick={e => {
+            onClickProduct(e);
             if (isEditing && nickname !== tempNickname) handleNickname();
             setIsEditing(!isEditing);
           }}
@@ -161,7 +163,8 @@ const ProfileImage = ({ session, update }) => {
         <div className="flex space-x-2">
           <button
             className="px-2 border outline-none rounded"
-            onClick={() => {
+            onClick={e => {
+              onClickProduct(e);
               fileInputRef.current.click();
             }}
           >
@@ -177,7 +180,9 @@ const ProfileImage = ({ session, update }) => {
           </button>
           <button
             className="px-2 border outline-none rounded"
-            onClick={() => {
+            onClick={e => {
+              onClickProduct(e);
+
               handleImageDelete();
             }}
           >
@@ -291,14 +296,21 @@ export default function ProfileEdit() {
           <div className="text-lg w-full border-b rounded-none">계정</div>
           <div className="space-y-4">
             <button
-              className="flex"
-              onClick={() => {
+              className="flex rounded"
+              onClick={e => {
+                onClickProduct(e);
                 signOut({ callbackUrl: '/' });
               }}
             >
               •로그아웃
             </button>
-            <button className="flex" onClick={() => setWithdrawalModalStatus(true)}>
+            <button
+              className="flex"
+              onClick={e => {
+                onClickProduct(e);
+                setWithdrawalModalStatus(true);
+              }}
+            >
               •회원 탈퇴
             </button>
           </div>
