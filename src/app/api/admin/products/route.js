@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
+import { ObjectId } from 'mongodb';
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
+import s3Client from '@/lib/s3Client';
+import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 
 export async function GET(req) {
   try {
@@ -103,5 +107,44 @@ export async function GET(req) {
     );
   } catch (error) {
     return NextResponse.json(error, { status: 500 });
+  }
+}
+
+export async function DELETE(req) {
+  try {
+    const client = await connectDB;
+    const db = client.db(process.env.MONGODB_NAME);
+    const formData = await req.formData();
+    const ids = JSON.parse(formData.get('products'));
+
+    const deleteProduct = async id => {
+      const target = await db.collection('products').findOne({ _id: new ObjectId(id) });
+      if (!target) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      }
+
+      const deletePromises = target.images.map(file => {
+        const params = {
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: extractionS3ImageKey(file),
+        };
+        return s3Client.send(new DeleteObjectCommand(params));
+      });
+      await Promise.all(deletePromises);
+
+      await db.collection('products').deleteOne({ _id: new ObjectId(id) });
+      await db.collection('users').updateOne({ _id: target.userId }, { $pull: { products: new ObjectId(id) } });
+      await db
+        .collection('users')
+        .updateMany({ bookmarked: new ObjectId(id) }, { $pull: { bookmarked: new ObjectId(id) } });
+      await db.collection('viewHistory').deleteMany({ productId: new ObjectId(id) });
+    };
+
+    await Promise.all(ids.map(deleteProduct));
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

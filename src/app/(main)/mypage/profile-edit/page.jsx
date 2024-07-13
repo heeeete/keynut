@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
-import { signOut, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import getUserProfile from '@/lib/getUserProfile';
 import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
@@ -182,7 +182,6 @@ const ProfileImage = ({ session, update }) => {
             className="px-2 border outline-none rounded"
             onClick={e => {
               onClickProduct(e);
-
               handleImageDelete();
             }}
           >
@@ -195,91 +194,26 @@ const ProfileImage = ({ session, update }) => {
 };
 
 export default function ProfileEdit() {
-  const router = useRouter();
   const { data: session, status, update } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
-  const scriptRef = useRef(false);
-
-  useEffect(() => {
-    // Kakao SDK 초기화
-    const initializeKakao = () => {
-      if (window.Kakao) {
-        if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY);
-        }
-        scriptRef.current = window.Kakao.isInitialized();
-      }
-    };
-
-    // Script가 로드된 후 Kakao SDK 초기화
-    const script = document.createElement('script');
-    script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js';
-    script.integrity = 'sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4';
-    script.crossOrigin = 'anonymous';
-    script.onload = initializeKakao;
-
-    if (session?.provider === 'kakao') document.body.appendChild(script);
-
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, [session]);
 
   const onClickWithdrawal = async () => {
-    if (session.provider === 'kakao' && !scriptRef.current) return alert('잠시후 다시 시도해주세요.');
-
     setWithdrawalModalStatus(false);
     setIsLoading(true);
 
-    if (session.provider === 'kakao') {
-      if (session && session.access_token) {
-        window.Kakao.Auth.setAccessToken(session.access_token);
-      } else {
-        setIsLoading(false);
-        alert('사용자 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요');
-        console.error('No access token available');
-        return;
-      }
-
-      Kakao.API.request({
-        url: '/v1/user/unlink',
-      })
-        .then(async function (response) {
-          const res = await fetch(`/api/user/${session.user.id}`, { method: 'DELETE' });
-
-          if (res.ok) {
-            signOut();
-          } else {
-            setIsLoading(false);
-            const data = await res.json();
-            alert('회원 탈퇴 중 문제가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
-            console.error('Error deleting user:', data.message);
-          }
-        })
-        .catch(function (error) {
-          setIsLoading(false);
-          alert('회원 탈퇴 중 문제가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
-          console.error('Kakao unlink error:', error);
-        });
-    } else if (session.provider === 'google') {
-      try {
-        const res1 = await fetch(`/api/user/${session.user.id}`, { method: 'DELETE' });
-        if (!res1.ok) {
-          setIsLoading(false);
-          return alert('사용자 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요');
-        }
-        const res = await fetch(`https://accounts.google.com/o/oauth2/revoke?token=${session.access_token}`);
-        if (res.ok) {
-          signOut();
-        } else if (!res.ok) alert('잠시후 다시 시도해주세요.');
-      } catch (error) {
-        console.error(error);
-      }
-      setIsLoading(false);
+    const res = await fetch('/api/unlink', {
+      method: 'POST',
+    });
+    if (!res.ok) {
+      alert('회원 탈퇴 처리에 실패했습니다. 다시 로그인 후 시도합니다.');
+      await signIn();
+    } else {
+      alert('회원 탈퇴가 정상적으로 처리되었습니다.');
+      signOut();
     }
+
+    setIsLoading(false);
   };
 
   return (
