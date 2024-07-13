@@ -76,6 +76,25 @@ const PageControl = ({ page, data }) => {
 };
 
 const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }) => {
+  const onClickDelete = async () => {
+    setIsLoading(true);
+    const formData = new FormData();
+    const ids = Object.values(selectedProducts).map(item => item._id);
+    formData.append('products', JSON.stringify(ids));
+    try {
+      const res = await fetch('/api/admin/products', {
+        method: 'DELETE',
+        body: formData,
+      });
+      if (!res.ok) return alert('상품 삭제중 문제가 발생했습니다.');
+      return dataRefetch();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col sticky top-10 space-y-2 justify-center border-x px-4 py-2 bg-slate-100">
       <div className="flex space-x-4 justify-between h-9">
@@ -89,7 +108,10 @@ const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }) =>
               </g>
             </svg>
           </button>
-          <button className="px-2 py-1 border border-black rounded bg-white text-gray-700 font-semibold line-clamp-1">
+          <button
+            onClick={onClickDelete}
+            className="px-2 py-1 border border-black rounded bg-white text-gray-700 font-semibold line-clamp-1"
+          >
             삭제
           </button>
         </div>
@@ -140,11 +162,9 @@ const Table = ({ data, selectAll, setSelectAll, selectedProducts, setSelectedPro
     } else {
       const obj = {};
       let i = 0;
-      for (let { _id, access_token, provider } of data.products) {
+      for (let { _id } of data.products) {
         obj[i++] = {
           _id: _id,
-          access_token: access_token,
-          provider: provider,
         };
       }
       setSelectedProducts(obj);

@@ -5,6 +5,7 @@ import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
+import { revalidateTag } from 'next/cache';
 
 const priceRanges = [
   { id: 1, min: 0, max: 50000 },
@@ -215,6 +216,8 @@ export async function PUT(req) {
 
     await Promise.all([...deletePromises, ...uploadPromises]);
     await users.updateOne({ email: session.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
+    let tags = formData.get('tags');
+    tags = tags.length ? tags.split(',') : [];
     const result = await products.updateOne(
       { _id: new ObjectId(formData.get('id')) },
       {
@@ -226,12 +229,14 @@ export async function PUT(req) {
           price: Number(formData.get('price')),
           images: uploadedUrls,
           openChatUrl: formData.get('openChatUrl'),
-          tags: formData.get('tags').split(','),
+          tags: tags,
           updatedAt: new Date(),
         },
       },
     );
-
+    const productId = formData.get('id');
+    console.log(['product', productId]);
+    revalidateTag(productId);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.log(error);

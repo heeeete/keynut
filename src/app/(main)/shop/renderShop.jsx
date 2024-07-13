@@ -334,7 +334,7 @@ const RenderProducts = React.memo(({ params, mobile }) => {
     });
   };
 
-  const { ref, inView } = useInView({ threshold: 0, delay: 0 });
+  const { ref, inView } = useInView({ threshold: 0, delay: 0, rootMargin: '500px' });
   const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(initialQueryString());
 
   useEffect(() => {
@@ -401,7 +401,7 @@ const RenderProducts = React.memo(({ params, mobile }) => {
           </Fragment>
         ))}
       </div>
-      <div className="h-12 -translate-y-96" ref={ref}></div>
+      <div className="h-12 bg-red-400" ref={ref}></div>
       {isFetching ? (
         <div className="flex w-full items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 24 24">

@@ -247,8 +247,6 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
     [selectedUsers],
   );
 
-  console.log(selectedUsers);
-
   return (
     <table className="w-full bg-slate-50 table-auto border-x border-separate border-spacing-0">
       <thead className=" bg-slate-50 sticky top-32 text-lg h-10">
@@ -329,28 +327,6 @@ export default function Users() {
   const [selectAll, setSelectAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { navStatus, setNavStatus } = useNav();
-
-  useEffect(() => {
-    const initializeKakao = () => {
-      if (window.Kakao) {
-        if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY);
-        }
-        console.log(window.Kakao.isInitialized());
-      }
-    };
-
-    const script = document.createElement('script');
-    script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js';
-    script.integrity = 'sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4';
-    script.crossOrigin = 'anonymous';
-    script.onload = initializeKakao;
-
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   useEffect(() => {
     setSelectAll(false);
