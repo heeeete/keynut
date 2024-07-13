@@ -5,6 +5,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut, signIn } from 'next-auth/react';
 import handleLogin from '../../../utils/handleLogin';
 import { Nothing_You_Could_Do } from 'next/font/google';
+import onClickProduct from '@/utils/onClickProduct';
+import { useEffect } from 'react';
+import { isMobile } from '@/lib/isMobile';
 
 const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });
 
@@ -17,6 +20,7 @@ export default function Nav() {
     pathname.startsWith('/shop/product') ||
     pathname.startsWith('/gallery/post');
   const navRender = pathname === '/shop' || pathname === '/gallery';
+  const mobile = isMobile();
 
   return (
     <header
@@ -25,9 +29,9 @@ export default function Nav() {
       <nav className="flex flex-col w-full h-full  max-w-screen-xl mx-auto max-md:space-y-0">
         <ul className="flex justify-end pr-10 pt-2 max-md:hidden">
           <div className="flex justify-end space-x-2 text-xs">
-            <li>
+            {/* <li>
               <Link href="/search?c=keyboard">고객센터</Link>
-            </li>
+            </li> */}
             <li>
               <Link href="/mypage" onClick={e => handleLogin(e, router, session, '/mypage')}>
                 마이페이지
@@ -53,7 +57,10 @@ export default function Nav() {
           </div>
         </ul>
         <div className="flex flex-col pb-2 items-center space-y-5 max-md:space-y-0 max-md:py-2">
-          <div className="font-bold text-3xl max-md:text-2xl">
+          <div
+            className="flex font-bold text-3xl items-center rounded justify-center max-md:text-2xl max-md:w-28"
+            onClick={e => mobile && onClickProduct(e)}
+          >
             <Link href={'/'}>
               <p className={`${title.className}`}>KEYNUT</p>
             </Link>

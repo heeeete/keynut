@@ -1,34 +1,34 @@
 import { connectDB } from '@/lib/mongodb';
-import getUserSession from '@/lib/getUserSession';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 
 export async function GET(req, { params }) {
   const { userId } = params;
+  // console.log('userId', userId);
+  if (!ObjectId.isValid(userId)) {
+    return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
+  }
+
   try {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const users = db.collection('users');
     const products = db.collection('products');
-    if (!ObjectId.isValid(userId)) {
-      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
-    }
+
+    // 병렬로 사용자 정보와 사용자 제품 데이터를 가져옴
     const user = await users.findOne({ _id: new ObjectId(userId) });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    if (!user.products) {
-      return NextResponse.json([], { status: 200 });
-    }
+    // 사용자 제품 정보를 가져옴
     const userProducts = await products
-      .find({
-        _id: { $in: user.products },
-      })
+      .find({ _id: { $in: user.products || [] } }) // products 배열이 비어 있을 경우를 대비
       .sort({ createdAt: -1 })
       .toArray();
-    return NextResponse.json(userProducts, { status: 200 });
+
+    return NextResponse.json({ userProfile: user, userProducts }, { status: 200 });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

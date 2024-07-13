@@ -12,7 +12,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signIn, useSession } from 'next-auth/react';
 import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
-import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
+import onClickProduct from '@/utils/onClickProduct';
+import { isMobile } from '@/lib/isMobile';
 
 const RenderCondition = ({ condition }) => {
   if (condition === 1) condition = '미사용';
@@ -99,6 +100,7 @@ const RenderViews = ({ views }) => {
 };
 
 const RenderProfile = ({ user }) => {
+  const mobile = isMobile();
   if (!user) return;
 
   return (
@@ -128,7 +130,11 @@ const RenderProfile = ({ user }) => {
             {user.nickname}
           </Link>
         </div>
-        <Link className="flex items-center rounded" href={`/shop/${user._id}`} onClick={e => onClickProduct(e)}>
+        <Link
+          className="flex items-center rounded"
+          href={`/shop/${user._id}`}
+          onClick={e => mobile && onClickProduct(e)}
+        >
           <p className=" text-base px-2 border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</p>
         </Link>
       </div>

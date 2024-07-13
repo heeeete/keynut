@@ -9,7 +9,8 @@ import { useInView } from 'react-intersection-observer';
 import debounce from '../../../utils/debounce';
 import Link from 'next/link';
 import fetchHotProducts from './_lib/fetchHotProducts';
-import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
+import onClickProduct from '@/utils/onClickProduct';
+import { isMobile } from '@/lib/isMobile';
 
 const categories = [
   {
@@ -258,22 +259,18 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
         .filter(key => categoriesState[key].checked)
         .map(key => (
           <div
-            className="flex space-x-1 items-center text-sm p-1 bg-blue-50 rounded max-md:text-xs max-md:flex-nowrap max-md:whitespace-nowrap"
+            className="flex space-x-1 items-center text-sm p-1 bg-blue-50 rounded max-md:flex-nowrap max-md:whitespace-nowrap max-md:text-xs"
             key={key}
           >
             <div className="flex text-gray-500">{categoriesState[key]?.option}</div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="1em"
-              height="1em"
-              viewBox="0 0 256 256"
-              onClick={() => handleCategoryChange(key, false)}
-            >
-              <path
-                fill="gray"
-                d="M208.49 191.51a12 12 0 0 1-17 17L128 145l-63.51 63.49a12 12 0 0 1-17-17L111 128L47.51 64.49a12 12 0 0 1 17-17L128 111l63.51-63.52a12 12 0 0 1 17 17L145 128Z"
-              />
-            </svg>
+            <div className="cursor-pointer" onClick={() => handleCategoryChange(key, false)}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
+                <path
+                  fill="gray"
+                  d="M208.49 191.51a12 12 0 0 1-17 17L128 145l-63.51 63.49a12 12 0 0 1-17-17L111 128L47.51 64.49a12 12 0 0 1 17-17L128 111l63.51-63.52a12 12 0 0 1 17 17L145 128Z"
+                />
+              </svg>
+            </div>
           </div>
         ))}
       {Object.keys(pricesState)
@@ -284,7 +281,9 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
             key={key}
           >
             <div className="flex text-gray-500">{pricesState[key].option}</div>
+
             <svg
+              className="cursor-pointer"
               xmlns="http://www.w3.org/2000/svg"
               width="1em"
               height="1em"
@@ -302,12 +301,12 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
   );
 };
 
-const onClickAllProduct = e => {
-  onClickProduct(e);
+const onClickAllProduct = ({ e, mobile }) => {
+  mobile && onClickProduct(e);
   sessionStorage.setItem('scrollPos', window.scrollY);
 };
 
-const RenderProducts = React.memo(({ params }) => {
+const RenderProducts = React.memo(({ params, mobile }) => {
   const initialQueryString = () => {
     let query = '';
     if (params.get('keyword')) {
@@ -323,7 +322,6 @@ const RenderProducts = React.memo(({ params }) => {
     }
     return query;
   };
-  const router = useRouter();
   const useProducts = queryString => {
     return useInfiniteQuery({
       queryKey: ['products', queryString],
@@ -396,7 +394,7 @@ const RenderProducts = React.memo(({ params }) => {
                 <Link
                   href={`/shop/product/${product._id}`}
                   className="absolute top-0 left-0 w-full h-full rounded"
-                  onClick={e => onClickAllProduct(e)}
+                  onClick={e => onClickAllProduct(e, mobile)}
                 ></Link>
               </div>
             ))}
@@ -431,7 +429,7 @@ const RenderProducts = React.memo(({ params }) => {
   );
 });
 
-const RenderPopularProducts = React.memo(({ data, category, router }) => {
+const RenderPopularProducts = React.memo(({ data, category, mobile }) => {
   let categoryTitle =
     category === 0 ? '전체' : category === 1 ? '키보드' : category === 2 ? '마우스' : category === 9 ? '기타' : '';
   return (
@@ -462,7 +460,7 @@ const RenderPopularProducts = React.memo(({ data, category, router }) => {
               </div>
               <Link
                 href={`/shop/product/${product._id}`}
-                onClick={e => onClickProduct(e)}
+                onClick={e => mobile && onClickProduct(e)}
                 className="absolute left-0 right-0 w-full h-full rounded"
               ></Link>
             </div>
@@ -491,9 +489,9 @@ export default function RenderShop() {
     13: { option: '아티산', checked: false, parentId: 1 },
     14: { option: '키캡', checked: false, parentId: 1 },
     15: { option: 'PCB', checked: false, parentId: 1 },
-    19: { option: '기타', checked: false, parentId: 1 },
+    19: { option: '키보드-기타', checked: false, parentId: 1 },
     2: { option: '마우스', checked: false, childId: [29] },
-    29: { option: '기타', checked: false, parentId: 2 },
+    29: { option: '마우스-기타', checked: false, parentId: 2 },
     9: { option: '기타', checked: false },
   });
   const [pricesState, setPricesState] = useState({
@@ -503,12 +501,10 @@ export default function RenderShop() {
     4: { option: '30 - 50만원', checked: false },
     5: { option: '50만원 이상', checked: false },
   });
+  const mobile = isMobile();
   const hotProductFlag = useRef(0);
   const searchFlag = useRef(true);
   const obj = {};
-  // const b = new URLSearchParams(params.toString());
-  // b.set('category', 3);
-  // router.push(`/shop?${b.toString()}`);
 
   const initialQueryString = () => {
     let query = '';
@@ -527,8 +523,7 @@ export default function RenderShop() {
   };
 
   const [queryString, setQueryString] = useState(initialQueryString());
-  const innerContainerRef = useRef(null);
-  const filterRef = useRef(null);
+  // const innerContainerRef = useRef(null);
 
   useEffect(() => {
     const updateStateFromParams = () => {
@@ -641,27 +636,26 @@ export default function RenderShop() {
       enabled: !paramsKeyword && (category === 1 || category === 2 || category === 9 || category === 0),
     });
   };
-
-  console.log(hotProductFlag.current);
   const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
 
   return (
     <div className="flex items-start justify-start ">
       <div className="flex flex-col w-full">
-        <div className="sticky top-0 flex flex-col z-20 border-b bg-white">
+        <div className="sticky top-0 flex flex-col z-20 border-b bg-white ">
           <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
-          <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:justify-between max-md:px-2 max-md:p-0">
-            <div className="flex items-center md:hidden">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="1.5em"
-                height="1.5em"
-                viewBox="0 0 24 24"
-                onClick={() => setFilterActive(true)}
-              >
+          <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:justify-between max-md:px-2 max-md:pt-0 max-md:pb-2 max-md:items-center">
+            <div
+              className="flex items-center justify-center py-1 px-2 mr-3 rounded-xl border md:hidden cursor-pointer"
+              onClick={() => {
+                setFilterActive(true);
+                document.body.style.overflow = 'hidden';
+                document.body.classList.add('scroll');
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
                 <path
                   fill="none"
-                  stroke="currentColor"
+                  stroke="gray"
                   strokeLinecap="round"
                   strokeMiterlimit="10"
                   strokeWidth="1.5"
@@ -669,7 +663,7 @@ export default function RenderShop() {
                 />
               </svg>
             </div>
-            <div className="flex flex-1 flex-wrap pr-2 items-center gap-2 max-md:hidden">
+            <div className="flex flex-1 pr-2 items-center gap-2  overflow-auto scrollbar-hide md:flex-wrap">
               <SelectedFilters
                 categoriesState={categoriesState}
                 pricesState={pricesState}
@@ -678,46 +672,15 @@ export default function RenderShop() {
               />
             </div>
           </div>
-          <div className="flex items-center gap-2 mx-2 pb-2 pt-1 overflow-auto scrollbar-hide md:hidden">
-            <SelectedFilters
-              categoriesState={categoriesState}
-              pricesState={pricesState}
-              handleCategoryChange={handleCategoryChange}
-              handlePriceChange={handlePriceChange}
-            />
-          </div>
         </div>
         <div className="flex items-start w-full px-10 max-w-screen-xl mx-auto max-md:overflow-auto max-md:px-0">
-          <div
-            className={`${
-              filterActive ? 'flex' : 'hidden'
-            }  sticky w-44 space-y-5 z-30 top-52 flex-col h-full overflow-y-auto bg-white md:flex max-md:fixed max-md:top-0 max-md:pt-20 max-md:left-0 max-md:mt-0  max-md:border-r max-md:pb-28`}
-            ref={filterRef}
-          >
-            <div className="md:hidden fixed top-16 left-36 flex justify-end z-30">
-              <svg
-                stroke="gray"
-                strokeWidth={30}
-                xmlns="http://www.w3.org/2000/svg"
-                width="1em"
-                height="1em"
-                viewBox="0 0 2048 2048"
-                onClick={() => {
-                  setFilterActive(false);
-                }}
-              >
-                <path
-                  fill="gray"
-                  d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
-                />
-              </svg>
-            </div>
-            <div className="flex flex-col space-y-4 max-md:pl-2">
+          <div className={`sticky w-44 space-y-5 z-30 top-52 mt-10 flex flex-col h-full bg-white  max-md:hidden`}>
+            <div className="flex flex-col space-y-4 overflow-y-auto scrollbar-hide max-md:hidden">
               <div className="">
                 <div className="mb-1">카테고리</div>
                 {categories.map(category => (
                   <div key={category.id}>
-                    <label className="flex items-center space-x-1 p-1 max-md:m-1">
+                    <label className="flex items-center space-x-1 p-1">
                       <input
                         className="accent-black"
                         type="checkbox"
@@ -733,7 +696,7 @@ export default function RenderShop() {
                         categoriesState[category.id].checked) &&
                       category.subCategories?.map(sub => (
                         <div key={sub.id}>
-                          <label className="flex items-center space-x-1 ml-3 p-1 max-md:my-1">
+                          <label className="flex items-center space-x-1 ml-3 p-1">
                             <input
                               className="accent-black"
                               type="checkbox"
@@ -753,7 +716,7 @@ export default function RenderShop() {
                 <div className="mb-1">가격</div>
                 {prices.map(price => (
                   <div key={price.id}>
-                    <label className="flex items-center space-x-1 p-1 max-md:m-1">
+                    <label className="flex items-center space-x-1 p-1">
                       <input
                         className="accent-black"
                         type="checkbox"
@@ -769,13 +732,114 @@ export default function RenderShop() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col justify-center w-full " ref={innerContainerRef}>
+          <div
+            className={`${
+              filterActive ? 'flex' : 'hidden'
+            } z-60 fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 items-end md:hidden`}
+            onClick={() => {
+              document.body.classList.remove('scroll');
+              setFilterActive(false);
+            }}
+          >
+            <div
+              className={`flex-col bg-white w-full h-550 border border-b-0 rounded-t-2xl`}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="h-10 w-full rounded-t-2xl border-b flex items-center justify-center relative font-medium">
+                필터
+                <div
+                  className="absolute flex h-full w-10 right-0 z-30 cursor-pointer items-center justify-center"
+                  onClick={() => {
+                    document.body.classList.remove('scroll');
+
+                    setFilterActive(false);
+                  }}
+                >
+                  <svg
+                    stroke="gray"
+                    strokeWidth={30}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1.2em"
+                    height="1.2em"
+                    viewBox="0 0 2048 2048"
+                  >
+                    <path
+                      fill="gray"
+                      d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div className="py-3 h-4/5 overflow-auto scrollbar-hide">
+                <div className="border-b">
+                  <p className="px-3 mb-2 font-medium ">카테고리</p>
+                  <ul className="">
+                    {categories.map(category => (
+                      <li key={category.id} className="">
+                        <p className="px-3 text-sm font-medium">{category.option}</p>
+                        <ul className="filter-container">
+                          <li
+                            className={`filter-button cursor-pointer ${
+                              categoriesState[category.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                            }`}
+                            onClick={e => {
+                              handleCategoryChange(category.id, !categoriesState[category.id].checked);
+                            }}
+                          >
+                            전체
+                          </li>
+                          {category.subCategories.map(sub => (
+                            <li
+                              key={sub.id}
+                              className={`filter-button cursor-pointer ${
+                                categoriesState[sub.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                              }`}
+                              onClick={e => {
+                                handleCategoryChange(sub.id, !categoriesState[sub.id].checked);
+                              }}
+                            >
+                              {sub.option}
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="py-3">
+                  <p className="px-3 font-medium">가격</p>
+                  <ul className="filter-container">
+                    {prices.map(price => (
+                      <li
+                        key={price.id}
+                        className={`filter-button cursor-pointer ${
+                          pricesState[price.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                        }`}
+                        onClick={e => {
+                          handlePriceChange(price.id, !pricesState[price.id].checked);
+                        }}
+                      >
+                        {price.option}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="absolute bottom-3 right-3 space-x-3">
+                <Link href={'/shop'} className="px-4 py-2 border rounded-xl">
+                  초기화
+                </Link>
+                {/* <button className="px-4 py-2 border rounded-xl bg-slate-200">적용</button> */}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col justify-center w-full ">
             {!paramsKeyword && top && top.length ? (
-              <RenderPopularProducts data={top} category={hotProductFlag.current} router={router} />
+              <RenderPopularProducts data={top} category={hotProductFlag.current} mobile={mobile} />
             ) : (
               ''
             )}
-            <RenderProducts params={params} />
+            <RenderProducts params={params} mobile={mobile} />
           </div>
         </div>
       </div>

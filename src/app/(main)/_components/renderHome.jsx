@@ -2,51 +2,73 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 
-import { Do_Hyeon, Stylish, Gowun_Dodum } from 'next/font/google';
-import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
+import { Gowun_Dodum } from 'next/font/google';
+import onClickProduct from '@/utils/onClickProduct';
+import { isMobile } from '@/lib/isMobile';
 
 const title = Gowun_Dodum({ subsets: ['latin'], weight: ['400'] });
 
-const images = [
-  {
-    path: '/키보드1.webp',
-    name: 'pdpdpdpdpdpdppdpdpdpdpdpdpdpdpdpdpdpdpdpdpdpdpd',
-    price: '12,5000',
-    bookMarked: false,
-  },
-  { path: '/키보드4.png', name: 'yellow keyboard', price: '60,5000', bookMarked: true },
-  { path: '/키보드3.jpeg', name: 'purple keyboard sjdhfkajshd', price: '20,5000', bookMarked: true },
-  { path: '/키보드3.jpeg', name: 'purple keyboard', price: '15,5000', bookMarked: false },
-  { path: '/키보드1.webp', name: 'orange keyboard', price: '35,5000', bookMarked: false },
-];
-const picks = [
-  { profile: '/키보드1.webp', path: '/키보드1.webp', name: 'orange keyboard', heart: 5, comment: 10, title: 'haha' },
-  { profile: '/키보드3.jpeg', path: '/키보드4.png', name: 'yellow keyboard', heart: 5, comment: 10, title: 'hehe' },
-  {
-    profile: '/유리.webp',
-    path: '/키보드3.jpeg',
-    name: 'purple keyboard',
-    heart: 5,
-    comment: 10,
-    title: '내 키보드 헤헤헤헤 이뿌지?',
-  },
-  { profile: '/철수.webp', path: '/키보드3.jpeg', name: 'purple keyboard', heart: 5, comment: 10, title: '내 키보두' },
-  { profile: '/맹구.webp', path: '/키보드1.webp', name: 'orange keyboard', heart: 5, comment: 10, title: '내 키보두' },
-];
-export default function RenderHome() {
-  const router = useRouter();
+const JustIn = ({ mobile }) => {
   const { data, error, isLoading } = useQuery({
     queryKey: ['recentProducts'],
     queryFn: getRecentProducts,
     // staleTime: 60 * 60 * 1000,
   });
+  return (
+    <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
+      {data?.map((product, idx) => (
+        <div className="flex flex-col cursor-pointer relative max-md:max-w-40 max-md:w-40 max-md:text-sm" key={idx}>
+          <div className="w-full aspect-square relative min-h-32 min-w-32 bg-gray-100">
+            <Image
+              src={product.images[0]}
+              alt={product._id}
+              sizes="(max-width: 690px) 250px, (max-width: 1280px) 40vw, 500px"
+              fill
+              className="rounded object-cover"
+            />
+          </div>
+          <div className="mt-2 w-full">
+            <div className="break-all line-clamp-1">{product.title}</div>
+            <div className="space-x-1 font-semibold break-before-all line-clamp-1">
+              <span>{product.price.toLocaleString()}</span>
+              <span className="text-sm">원</span>
+            </div>
+          </div>
+          <Link
+            href={`/shop/product/${product._id}`}
+            className="absolute top-0 left-0 w-full h-full rounded"
+            onClick={e => mobile && onClickProduct(e)}
+          ></Link>
+        </div>
+      ))}
+      <div className="flex justify-center md:hidden">
+        <div className="flex flex-col w-20 justify-center items-center relative space-y-1 h-32">
+          <div className="relative">
+            <svg className="" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 16 16">
+              <g fill="gray">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+              </g>
+            </svg>
+          </div>
+          <p className="text-xs absolute bottom-6 text-gray-600">더보기</p>
+          <Link
+            href={'/shop'}
+            className="absolute top-0 left-0 w-full h-full"
+            onClick={e => mobile && onClickProduct(e)}
+          ></Link>
+        </div>
+      </div>
+    </div>
+  );
+};
 
+export default function RenderHome() {
+  const mobile = isMobile();
   return (
     <div className="flex flex-col w-full max-md:main-768 -translate-y-6">
       <div
@@ -76,7 +98,7 @@ export default function RenderHome() {
                 <Link
                   href={'/shop?categories=1'}
                   className="absolute top-0 left-0 w-full h-full"
-                  onClick={e => onClickProduct(e)}
+                  onClick={e => mobile && onClickProduct(e)}
                 ></Link>
               </div>
               <p className="text-gray-600">키보드</p>
@@ -89,7 +111,7 @@ export default function RenderHome() {
                 <Link
                   href={'/shop?categories=2'}
                   className="absolute top-0 left-0 w-full h-full"
-                  onClick={e => onClickProduct(e)}
+                  onClick={e => mobile && onClickProduct(e)}
                 ></Link>
               </div>
               <p className="text-gray-600">마우스</p>
@@ -113,7 +135,7 @@ export default function RenderHome() {
                 <Link
                   href={'/shop?categories=9'}
                   className="absolute top-0 left-0 w-full h-full"
-                  onClick={e => onClickProduct(e)}
+                  onClick={e => mobile && onClickProduct(e)}
                 ></Link>
               </div>
               <p className="text-gray-600">기타</p>
@@ -127,58 +149,11 @@ export default function RenderHome() {
               <div className="font-medium text-xl">just in</div>
               <div className="text-gray-500 font-medium">신규 등록 상품</div>
             </div>
-            <Link href={'/shop'} className="rounded" onClick={e => onClickProduct(e)}>
+            <Link href={'/shop'} className="rounded" onClick={e => mobile && onClickProduct(e)}>
               <div className="flex items-center font-medium text-sm text-gray-500 px-0.5">더보기</div>
             </Link>
           </div>
-          <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
-            {data?.map((product, idx) => (
-              <div
-                className="flex flex-col cursor-pointer relative max-md:max-w-40 max-md:w-40 max-md:text-sm"
-                key={idx}
-              >
-                <div className="w-full aspect-square relative min-h-32 min-w-32 bg-gray-100">
-                  <Image
-                    src={product.images[0]}
-                    alt={product._id}
-                    sizes="(max-width: 690px) 250px, (max-width: 1280px) 40vw, 500px"
-                    fill
-                    className="rounded object-cover"
-                  />
-                </div>
-                <div className="mt-2 w-full">
-                  <div className="break-all line-clamp-1">{product.title}</div>
-                  <div className="space-x-1 font-semibold break-before-all line-clamp-1">
-                    <span>{product.price.toLocaleString()}</span>
-                    <span className="text-sm">원</span>
-                  </div>
-                </div>
-                <Link
-                  href={`/shop/product/${product._id}`}
-                  className="absolute top-0 left-0 w-full h-full rounded"
-                  onClick={e => onClickProduct(e)}
-                ></Link>
-              </div>
-            ))}
-            <div className="flex justify-center md:hidden">
-              <div className="flex flex-col w-20 justify-center items-center relative space-y-1 h-32">
-                <div className="relative">
-                  <svg className="" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 16 16">
-                    <g fill="gray">
-                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                    </g>
-                  </svg>
-                </div>
-                <p className="text-xs absolute bottom-6 text-gray-600">더보기</p>
-                <Link
-                  href={'/shop'}
-                  className="absolute top-0 left-0 w-full h-full"
-                  onClick={e => onClickProduct(e)}
-                ></Link>
-              </div>
-            </div>
-          </div>
+          <JustIn mobile={mobile} />
         </section>
       </div>
       {/* <section className="flex flex-col space-y-5">

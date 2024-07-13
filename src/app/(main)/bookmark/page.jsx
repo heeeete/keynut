@@ -3,9 +3,9 @@ import Image from 'next/image';
 import { signIn, useSession } from 'next-auth/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getBookmarkedProducts from './_lib/getBookmarkedProducts';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
+import onClickProduct from '@/utils/onClickProduct';
+import { isMobile } from '@/lib/isMobile';
 
 const HandleBookMark = ({ productId }) => {
   const { data: session, status } = useSession();
@@ -57,15 +57,32 @@ const HandleBookMark = ({ productId }) => {
 };
 
 export default function Bookmark() {
-  const router = useRouter();
+  const mobile = isMobile();
+
   const { data, error, isLoading } = useQuery({
     queryKey: ['bookmarkedProducts'],
     queryFn: () => getBookmarkedProducts(),
   });
   if (!data) {
     return (
-      <div className="flex max-w-screen-xl mx-auto px-10 max-md:px-2 justify-center text-gray-500 ">
-        찜한 상품을 가져오는 중입니다.
+      <div className="flex max-w-screen-xl mx-auto px-10 max-md:px-2 justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 24 24">
+          <path
+            fill="#a599ff"
+            d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8A8 8 0 0 1 12 20Z"
+            opacity="0.5"
+          />
+          <path fill="#a599ff" d="M20 12h2A10 10 0 0 0 12 2V4A8 8 0 0 1 20 12Z">
+            <animateTransform
+              attributeName="transform"
+              dur="1.5s"
+              from="0 12 12"
+              repeatCount="indefinite"
+              to="360 12 12"
+              type="rotate"
+            />
+          </path>
+        </svg>
       </div>
     );
   }
@@ -96,7 +113,7 @@ export default function Bookmark() {
                 href={`/shop/product/${item._id}`}
                 className="absolute left-0 top-0 w-full h-full rounded"
                 onClick={e => {
-                  onClickProduct(e);
+                  mobile && onClickProduct(e);
                 }}
               ></Link>
             </div>
