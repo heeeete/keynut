@@ -345,7 +345,11 @@ export default function RenderProduct({ id }) {
   const [deleteState, setDeleteState] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { data, error, isLoading } = useQuery({ queryKey: ['product', id], queryFn: () => getProductWithUser(id) });
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['product', id],
+    queryFn: () => getProductWithUser(id),
+    staleTime: Infinity,
+  });
   const { user = null, ...product } = data || {};
 
   useEffect(() => {

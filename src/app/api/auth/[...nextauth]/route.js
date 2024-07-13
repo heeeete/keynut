@@ -159,6 +159,46 @@ async function addUserNickname(user) {
   return { ...user, nickname };
 }
 
+async function refreshAccessToken(token) {
+  try {
+    console.log('토큰 만료돼서 리프레쉬 토큰으로 어세스 토큰 재발급');
+    const url = 'https://oauth2.googleapis.com/token';
+    const params = new URLSearchParams();
+    params.append('client_id', process.env.GOOGLE_CLIENT_ID);
+    params.append('client_secret', process.env.GOOGLE_CLIENT_SECRET);
+    params.append('refresh_token', token.refreshToken);
+    params.append('grant_type', 'refresh_token');
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+    });
+
+    const refreshedTokens = await response.json();
+
+    if (!response.ok) {
+      throw refreshedTokens;
+    }
+
+    return {
+      ...token,
+      accessToken: refreshedTokens.access_token,
+      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
+    };
+  } catch (error) {
+    console.error('Error refreshing access token:', error);
+
+    return {
+      ...token,
+      error: 'RefreshAccessTokenError',
+    };
+  }
+}
+
 export const authOptions = {
   providers: [
     KakaoProvider({
@@ -176,6 +216,8 @@ export const authOptions = {
       authorization: {
         params: {
           scope: 'email', // 'profile' 범위를 제거하고 'email' 범위만 사용
+          access_type: 'offline',
+          prompt: 'consent',
         },
       },
     }),
@@ -186,15 +228,15 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
+      const client = await connectDB;
+      const db = client.db(process.env.MONGODB_NAME);
+
       if (user) {
         delete user.products;
         token.user = user;
         if (user.email === process.env.ADMIN_EMAIL) token.admin = true;
       }
-      if (account) {
-        token.access_token = account.access_token;
-        token.provider = account.provider;
-      }
+
       if (trigger === 'update' && session !== null) {
         const { openChatUrl, image, nickname, nicknameChangedAt, recentSearches } = session;
         if (openChatUrl) token.user.openChatUrl = openChatUrl;
@@ -203,6 +245,21 @@ export const authOptions = {
         if (nicknameChangedAt) token.user.nicknameChangedAt = nicknameChangedAt;
         if (recentSearches) token.user.recentSearches = recentSearches;
       }
+
+      if (account && account.provider === 'google') {
+        await db.collection('accounts').updateOne(
+          { userId: new ObjectId(token.user.id), provider: 'google' },
+          {
+            $set: {
+              access_token: account.access_token,
+              expires_at: account.expires_at,
+              refresh_token: account.refresh_token,
+            },
+          },
+        );
+      }
+
+      if (account) console.log(account);
       return token;
     },
     async session({ session, token }) {

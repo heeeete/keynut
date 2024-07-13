@@ -17,6 +17,5 @@ export default function Users() {
   const [page, setPage] = useState(1);
   const { data, error, isLoading } = useUsers(page);
 
-  if (data) console.log(data);
   return <div></div>;
 }

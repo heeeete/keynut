@@ -533,10 +533,14 @@ export default function Edit() {
         body: formData,
       });
 
-      const data = await res.json();
+      // const data = await res.json();
       if (res.ok) {
         update({ openChatUrl: openChatUrl });
-        if (data) router.push(`/shop/product/${id}`);
+        // if (data) window.location.href = `/shop/product/${id}`;
+        if (data) {
+          router.push(`/shop/product/${id}`);
+          router.refresh();
+        }
       } else {
         console.error(data.error);
       }
