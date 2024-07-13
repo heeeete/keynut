@@ -3,7 +3,8 @@ const getUserProducts = async id => {
     method: 'GET',
   });
   if (!res.ok) {
-    throw new Error(data.error || 'Network response was not ok');
+    console.error('API 요청 실패:', res.status, res.statusText);
+    throw new Error('Failed to fetch products');
   }
   const data = await res.json();
   return data;

@@ -8,13 +8,13 @@ import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import Modal from '../../_components/Modal';
-import onClickProduct from '@/app/(admin)/admin/_utils/onClickProduct';
+import onClickProduct from '@/utils/onClickProduct';
+import { isMobile } from '@/lib/isMobile';
 
-const ProfileName = ({ session, update }) => {
+const ProfileName = ({ session, update, mobile }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempNickname, setTempNickname] = useState('');
   const [nickname, setNickname] = useState('');
-  const [forbidden, setForbidden] = useState(false);
   const fetchNickname = async () => {
     const profile = await getUserProfile(session.user.id);
     setNickname(profile.nickname);
@@ -64,19 +64,20 @@ const ProfileName = ({ session, update }) => {
       <div className="flex items-center space-x-3">
         {isEditing ? (
           <input
-            className="border w-32 h-7 px-1 rounded outline-none"
+            maxLength={10}
+            className="border w-40 h-7 px-1 rounded outline-none"
             type="text"
             value={tempNickname}
             onChange={e => setTempNickname(e.target.value)}
             autoFocus
           />
         ) : (
-          <div className="border px-1 h-7 rounded w-32">{nickname}</div>
+          <div className="border px-1 h-7 rounded w-40">{nickname}</div>
         )}
         <button
           className="px-2 border outline-none rounded"
           onClick={e => {
-            onClickProduct(e);
+            mobile && onClickProduct(e);
             if (isEditing && nickname !== tempNickname) handleNickname();
             setIsEditing(!isEditing);
           }}
@@ -96,7 +97,7 @@ const ProfileName = ({ session, update }) => {
   );
 };
 
-const ProfileImage = ({ session, update }) => {
+const ProfileImage = ({ session, update, mobile }) => {
   const [profileImg, setProfileImg] = useState(null);
   const fileInputRef = useRef(null);
   useEffect(() => {
@@ -164,7 +165,7 @@ const ProfileImage = ({ session, update }) => {
           <button
             className="px-2 border outline-none rounded"
             onClick={e => {
-              onClickProduct(e);
+              mobile && onClickProduct(e);
               fileInputRef.current.click();
             }}
           >
@@ -181,7 +182,7 @@ const ProfileImage = ({ session, update }) => {
           <button
             className="px-2 border outline-none rounded"
             onClick={e => {
-              onClickProduct(e);
+              mobile && onClickProduct(e);
               handleImageDelete();
             }}
           >
@@ -197,6 +198,7 @@ export default function ProfileEdit() {
   const { data: session, status, update } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
+
 
   const onClickWithdrawal = async () => {
     setWithdrawalModalStatus(false);
@@ -220,10 +222,10 @@ export default function ProfileEdit() {
     <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:h-d-screen max-md:justify-center ">
       <div className="flex flex-col w-350 py-10 max-md:py-0 max-md:w-64">
         <section className="flex flex-col rounded-none space-y-10 ">
-          <ProfileImage session={session} update={update} />
+          <ProfileImage session={session} update={update} mobile={mobile} />
           <div className="flex space-y-5 flex-col">
             <div className="text-lg w-full border-b rounded-none">프로필 이름</div>
-            <ProfileName session={session} update={update} />
+            <ProfileName session={session} update={update} mobile={mobile} />
           </div>
         </section>
         <section className="flex flex-col space-y-5">
@@ -232,7 +234,7 @@ export default function ProfileEdit() {
             <button
               className="flex rounded"
               onClick={e => {
-                onClickProduct(e);
+                mobile && onClickProduct(e);
                 signOut({ callbackUrl: '/' });
               }}
             >
@@ -241,7 +243,7 @@ export default function ProfileEdit() {
             <button
               className="flex"
               onClick={e => {
-                onClickProduct(e);
+                mobile && onClickProduct(e);
                 setWithdrawalModalStatus(true);
               }}
             >

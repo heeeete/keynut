@@ -1,31 +1,48 @@
+'use client';
 import BookmarkLink from './BookmarkLink';
 import HomeLink from './HomeLink';
 import ShopLink from './ShopLink';
 import SellLink from './SellLink';
 import MyPageLink from './MyPageLink';
 import Link from 'next/link';
+import onClickProduct from '@/utils/onClickProduct';
 
 export default function BottomNav() {
   return (
     <nav className="hidden fixed z-40 border-t w-full max-w-screen-xl  bg-white justify-between bottom-nav-calc-height pb-safe-bottom bottom-0 left-1/2 -translate-x-1/2     max-md:flex ">
       <ul className="flex w-full justify-around items-center">
-        <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
+        <li
+          className="flex flex-col justify-center items-center h-full flex-1 -space-y-3"
+          onClick={e => onClickProduct(e)}
+        >
           <HomeLink />
           <p className="text-xxs">HOME</p>
         </li>
-        <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
+        <li
+          className="flex flex-col justify-center items-center h-full flex-1 -space-y-3"
+          onClick={e => onClickProduct(e)}
+        >
           <ShopLink />
           <p className="text-xxs">SHOP</p>
         </li>
-        <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
+        <li
+          className="flex flex-col justify-center items-center h-full flex-1 -space-y-3"
+          onClick={e => onClickProduct(e)}
+        >
           <SellLink />
           <p className="text-xxs">SELL</p>
         </li>
-        <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
+        <li
+          className="flex flex-col justify-center items-center h-full flex-1 -space-y-3"
+          onClick={e => onClickProduct(e)}
+        >
           <BookmarkLink />
           <p className="text-xxs">찜</p>
         </li>
-        <li className="flex flex-col justify-center items-center h-full flex-1 -space-y-3">
+        <li
+          className="flex flex-col justify-center items-center h-full flex-1 -space-y-3"
+          onClick={e => onClickProduct(e)}
+        >
           <MyPageLink />
           <Link href="/mypage" className="text-xxs">
             MY

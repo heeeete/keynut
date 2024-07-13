@@ -53,6 +53,7 @@ module.exports = {
         450: '450px',
         350: '350px',
         130: '130px',
+        6.5: '1.65rem',
       },
       height: {
         '10vh': '10vh',
@@ -91,6 +92,8 @@ module.exports = {
         'd-screen': '100dvh',
         52.5: '52.5px',
         130: '130px',
+        550: '550px',
+        6.5: '1.65rem',
       },
       backgroundColor: {
         'gray-5': '#D9D9D9',
@@ -114,6 +117,9 @@ module.exports = {
         600: '600px',
         300: '300px',
         10: '10px',
+      },
+      zIndex: {
+        60: 60,
       },
     },
   },
@@ -194,6 +200,23 @@ module.exports = {
           justifyContent: 'center',
           alignItems: 'flex-end',
           overflow: 'hidden',
+        },
+        // flex gap-2 flex-wrap px-2
+        '.filter-container': {
+          display: 'flex',
+          gap: '12px',
+          flexWrap: 'wrap',
+          padding: '10px 16px',
+        },
+
+        '.filter-button': {
+          display: 'flex',
+          padding: '4px 16px',
+          border: '1px solid gray',
+          borderRadius: '16px',
+          borderColor: '#e5e7eb',
+          fontSize: '15px',
+          // color: '#6b7280',
         },
       };
       //max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full
