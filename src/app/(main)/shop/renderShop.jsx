@@ -760,7 +760,7 @@ export default function RenderShop() {
           <div
             className={`${
               filterActive ? 'flex' : 'hidden'
-            } z-60 fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 items-end md:hidden`}
+            } z-60 fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 items-end  md:hidden`}
             onClick={() => {
               setFilterActive(false);
             }}
@@ -800,28 +800,28 @@ export default function RenderShop() {
                       <li key={category.id} className="">
                         <p className="px-3 text-sm font-medium">{category.option}</p>
                         <ul className="filter-container">
-                          <li
-                            className={`filter-button cursor-pointer ${
+                          <button
+                            className={`filter-button ${
                               categoriesState[category.id].checked ? 'bg-black text-white' : 'bg-white text-black'
                             }`}
                             onClick={e => {
                               handleCategoryChange(category.id, !categoriesState[category.id].checked);
                             }}
                           >
-                            전체
-                          </li>
+                            <li>전체</li>
+                          </button>
                           {category.subCategories.map(sub => (
-                            <li
+                            <button
                               key={sub.id}
-                              className={`filter-button cursor-pointer ${
+                              className={`filter-button ${
                                 categoriesState[sub.id].checked ? 'bg-black text-white' : 'bg-white text-black'
                               }`}
                               onClick={e => {
                                 handleCategoryChange(sub.id, !categoriesState[sub.id].checked);
                               }}
                             >
-                              {sub.option}
-                            </li>
+                              <li>{sub.option}</li>
+                            </button>
                           ))}
                         </ul>
                       </li>
@@ -832,17 +832,17 @@ export default function RenderShop() {
                   <p className="px-3 font-medium">가격</p>
                   <ul className="filter-container">
                     {prices.map(price => (
-                      <li
+                      <button
                         key={price.id}
-                        className={`filter-button cursor-pointer ${
+                        className={`filter-button${
                           pricesState[price.id].checked ? 'bg-black text-white' : 'bg-white text-black'
                         }`}
                         onClick={e => {
                           handlePriceChange(price.id, !pricesState[price.id].checked);
                         }}
                       >
-                        {price.option}
-                      </li>
+                        <li>{price.option}</li>
+                      </button>
                     ))}
                   </ul>
                 </div>
