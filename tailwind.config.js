@@ -102,7 +102,7 @@ module.exports = {
       },
       margin: {
         '12vw': '12vw',
-        'bottom-nav-heigth': 'calc(50px + env(safe-area-inset-bottom))',
+        'bottom-nav-height': 'calc(50px + env(safe-area-inset-bottom))',
       },
       spacing: {
         34: '136px',

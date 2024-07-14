@@ -481,6 +481,8 @@ export default function RenderShop() {
   const paramsKeyword = params.get('keyword') ? params.get('keyword') : '';
   const [filterActive, setFilterActive] = useState(false);
   const [searchText, setSearchText] = useState(paramsKeyword);
+  const pageRef = useRef(null);
+
   const [categoriesState, setCategoriesState] = useState({
     1: { option: '키보드', checked: false, childId: [10, 11, 12, 13, 14, 15, 19] },
     10: { option: '하우징', checked: false, parentId: 1 },
@@ -505,6 +507,31 @@ export default function RenderShop() {
   const hotProductFlag = useRef(0);
   const searchFlag = useRef(true);
   const obj = {};
+
+  useEffect(() => {
+    if (filterActive) {
+      // 현재 스크롤 위치 저장
+      const scrollY = window.scrollY;
+
+      // 페이지 컨테이너에 스타일 적용
+      if (pageRef.current) {
+        pageRef.current.style.position = 'fixed';
+        pageRef.current.style.top = `-${scrollY}px`;
+        pageRef.current.style.left = '0';
+        pageRef.current.style.right = '0';
+      }
+    } else {
+      // 스타일 제거 및 스크롤 위치 복원
+      if (pageRef.current) {
+        const scrollY = parseInt(pageRef.current.style.top || '0') * -1;
+        pageRef.current.style.removeProperty('position');
+        pageRef.current.style.removeProperty('top');
+        pageRef.current.style.removeProperty('left');
+        pageRef.current.style.removeProperty('right');
+        window.scrollTo(0, scrollY);
+      }
+    }
+  }, [filterActive]);
 
   const initialQueryString = () => {
     let query = '';
@@ -639,17 +666,15 @@ export default function RenderShop() {
   const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
 
   return (
-    <div className="flex items-start justify-start ">
+    <div className="flex items-start justify-start " ref={pageRef}>
       <div className="flex flex-col w-full">
         <div className="sticky top-0 flex flex-col z-20 border-b bg-white ">
           <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
           <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:justify-between max-md:px-2 max-md:pt-0 max-md:pb-2 max-md:items-center">
-            <div
+            <button
               className="flex items-center justify-center py-1 px-2 mr-3 rounded-xl border md:hidden cursor-pointer"
               onClick={() => {
                 setFilterActive(true);
-                document.body.style.overflow = 'hidden';
-                document.body.classList.add('scroll');
               }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
@@ -662,7 +687,7 @@ export default function RenderShop() {
                   d="M21.25 12H8.895m-4.361 0H2.75m18.5 6.607h-5.748m-4.361 0H2.75m18.5-13.214h-3.105m-4.361 0H2.75m13.214 2.18a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm-9.25 6.607a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm6.607 6.608a2.18 2.18 0 1 0 0-4.361a2.18 2.18 0 0 0 0 4.36Z"
                 />
               </svg>
-            </div>
+            </button>
             <div className="flex flex-1 pr-2 items-center gap-2  overflow-auto scrollbar-hide md:flex-wrap">
               <SelectedFilters
                 categoriesState={categoriesState}
@@ -737,7 +762,6 @@ export default function RenderShop() {
               filterActive ? 'flex' : 'hidden'
             } z-60 fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 items-end md:hidden`}
             onClick={() => {
-              document.body.classList.remove('scroll');
               setFilterActive(false);
             }}
           >
@@ -750,8 +774,6 @@ export default function RenderShop() {
                 <div
                   className="absolute flex h-full w-10 right-0 z-30 cursor-pointer items-center justify-center"
                   onClick={() => {
-                    document.body.classList.remove('scroll');
-
                     setFilterActive(false);
                   }}
                 >

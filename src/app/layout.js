@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body className={inter.className + 'flex flex-col justify-center items-center max-md:mb-bottom-nav-heigth'}>
+      <body className={inter.className + 'flex flex-col justify-center items-center max-md:mb-bottom-nav-height'}>
         <RQProvider>
           <AuthProvider>
             <main>{children}</main>
