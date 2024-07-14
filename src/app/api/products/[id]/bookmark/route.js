@@ -1,6 +1,7 @@
 import getUserSession from '@/lib/getUserSession';
 import { connectDB } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 export async function POST(req, { params }) {
@@ -25,6 +26,7 @@ export async function POST(req, { params }) {
         { _id: new ObjectId(session.user.id) },
         isBookmarked ? { $pull: { bookmarked: new ObjectId(id) } } : { $addToSet: { bookmarked: new ObjectId(id) } },
       );
+    revalidateTag(id);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: `상품 조회 error : ${error}` }, { status: 500 });

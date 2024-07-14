@@ -16,7 +16,7 @@ const JustIn = ({ mobile }) => {
   const { data, error, isLoading } = useQuery({
     queryKey: ['recentProducts'],
     queryFn: getRecentProducts,
-    // staleTime: 60 * 60 * 1000,
+    staleTime: Infinity,
   });
   return (
     <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
