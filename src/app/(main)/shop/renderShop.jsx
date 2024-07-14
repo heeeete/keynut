@@ -331,6 +331,7 @@ const RenderProducts = React.memo(({ params, mobile }) => {
         if (lastPage.length === 0) return undefined;
         return lastPage[lastPage.length - 1]._id; // `_id` 기준으로 페이징
       },
+      staleTime: Infinity,
     });
   };
 
@@ -509,6 +510,7 @@ export default function RenderShop() {
   const obj = {};
 
   useEffect(() => {
+    const footer = document.getElementById('footer');
     if (filterActive) {
       // 현재 스크롤 위치 저장
       const scrollY = window.scrollY;
@@ -519,6 +521,7 @@ export default function RenderShop() {
         pageRef.current.style.top = `-${scrollY}px`;
         pageRef.current.style.left = '0';
         pageRef.current.style.right = '0';
+        footer.style.visibility = 'hidden';
       }
     } else {
       // 스타일 제거 및 스크롤 위치 복원
@@ -528,10 +531,20 @@ export default function RenderShop() {
         pageRef.current.style.removeProperty('top');
         pageRef.current.style.removeProperty('left');
         pageRef.current.style.removeProperty('right');
+        footer.style.visibility = 'visible';
         window.scrollTo(0, scrollY);
       }
     }
   }, [filterActive]);
+
+  useEffect(() => {
+    const debounceViewResizing = debounce(e => {
+      if (e.target.innerWidth >= 768) setFilterActive(false);
+    }, 100);
+
+    window.addEventListener('resize', debounceViewResizing);
+    return () => window.removeEventListener('resize', debounceViewResizing);
+  }, []);
 
   const initialQueryString = () => {
     let query = '';
@@ -661,12 +674,13 @@ export default function RenderShop() {
       queryKey: ['topProducts', category],
       queryFn: () => fetchHotProducts(category),
       enabled: !paramsKeyword && (category === 1 || category === 2 || category === 9 || category === 0),
+      staleTime: 5 * 60 * 1000,
     });
   };
   const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
 
   return (
-    <div className="flex items-start justify-start " ref={pageRef}>
+    <div className="flex items-start justify-start z-60" ref={pageRef}>
       <div className="flex flex-col w-full">
         <div className="sticky top-0 flex flex-col z-20 border-b bg-white ">
           <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
