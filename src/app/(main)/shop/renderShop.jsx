@@ -322,14 +322,15 @@ const RenderProducts = React.memo(({ params, mobile }) => {
     }
     return query;
   };
+
   const useProducts = queryString => {
     return useInfiniteQuery({
       queryKey: ['products', queryString],
       queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
       initialPageParam: 0, //[1,2,3,4,5] [6,7,8,9,10] [11,12,13,14,15] -> 데이터를 페이지별로 관리 , 이차원 배열
       getNextPageParam: (lastPage, allPages) => {
-        if (lastPage.length === 0) return undefined;
-        return lastPage[lastPage.length - 1]._id; // `_id` 기준으로 페이징
+        if (lastPage.products.length === 0) return undefined;
+        return lastPage.products[lastPage.products.length - 1]._id; // `_id` 기준으로 페이징
       },
       staleTime: Infinity,
     });
@@ -338,6 +339,7 @@ const RenderProducts = React.memo(({ params, mobile }) => {
   const { ref, inView } = useInView({ threshold: 0, delay: 0, rootMargin: '500px' });
   const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(initialQueryString());
 
+  const total = data?.pages[0]?.total;
   useEffect(() => {
     const scrollPos = Number(sessionStorage.getItem('scrollPos'));
     sessionStorage.removeItem('scrollPos');
@@ -354,12 +356,15 @@ const RenderProducts = React.memo(({ params, mobile }) => {
 
   return (
     <>
+      <div className="flex max-md:px-3 max-md:py-1 max-md:text-sm">
+        <p className="font-semibold">{total}</p>개의 검색 결과
+      </div>
       <div
         className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-3 max-md:pt-1`}
       >
         {data?.pages.map((page, i) => (
           <Fragment key={i}>
-            {page.map((product, idx) => (
+            {page.products.map((product, idx) => (
               <div className="flex flex-col cursor-pointer relative rounded" key={product._id}>
                 <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
                   <Image
@@ -484,6 +489,8 @@ export default function RenderShop() {
   const paramsKeyword = params.get('keyword') ? params.get('keyword') : '';
   const [filterActive, setFilterActive] = useState(false);
   const [searchText, setSearchText] = useState(paramsKeyword);
+  const [categoryCount, setCategoryCount] = useState(0);
+  const [priceCount, setPriceCount] = useState(0);
   const pageRef = useRef(null);
 
   const [categoriesState, setCategoriesState] = useState({
@@ -640,6 +647,9 @@ export default function RenderShop() {
     newState[id].checked = checked;
     if (checked) {
       updateParentCategory(id);
+      setCategoryCount(categoryCount + 1);
+    } else {
+      setCategoryCount(categoryCount - 1);
     }
     setCategoriesState(newState);
   };
@@ -648,6 +658,9 @@ export default function RenderShop() {
     searchFlag.current = true;
     const newState = { ...pricesState };
     newState[id].checked = checked;
+    if (checked) setPriceCount(priceCount + 1);
+    else setPriceCount(priceCount - 1);
+
     setPricesState(newState);
   };
 
@@ -780,48 +793,69 @@ export default function RenderShop() {
             ) : (
               ''
             )}
-            <div className="sticky z-50 top-14 bg-white border-b flex w-full max-w-screen-xl mx-auto p-3 items-center space-x-2">
-              <button
-                className="flex items-center justify-center py-1 px-2 rounded-xl border"
-                onClick={() => {
-                  setFilterActive(true);
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
-                  <path
+            <div className="sticky z-50 top-14 bg-white border-b flex w-full max-w-screen-xl mx-auto p-3 items-center">
+              <div className="flex flex-1 space-x-2">
+                <button
+                  className="flex items-center justify-center py-1 px-2 rounded-xl bg-black relative"
+                  onClick={() => {
+                    setFilterActive(true);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
+                    <path
+                      fill="none"
+                      stroke="white"
+                      strokeLinecap="round"
+                      strokeMiterlimit="10"
+                      strokeWidth="1.5"
+                      d="M21.25 12H8.895m-4.361 0H2.75m18.5 6.607h-5.748m-4.361 0H2.75m18.5-13.214h-3.105m-4.361 0H2.75m13.214 2.18a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm-9.25 6.607a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm6.607 6.608a2.18 2.18 0 1 0 0-4.361a2.18 2.18 0 0 0 0 4.36Z"
+                    />
+                  </svg>
+                  {/* {priceCount + categoryCount ? (
+                    <div className="absolute top-0 right-0 bg-green-500">{priceCount + categoryCount}</div>
+                  ) : (
+                    ''
+                  )} */}
+                </button>
+                <button className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1 flex-nowrap whitespace-nowrap">
+                  <p>카테고리</p>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
+                    <path
+                      fill="currentColor"
+                      d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                    />
+                  </svg>
+                </button>
+                <button className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1 flex-nowrap whitespace-nowrap">
+                  <p>가격</p>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
+                    <path
+                      fill="currentColor"
+                      d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <Link href={'/shop'}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 21 21">
+                  <g
                     fill="none"
-                    stroke="gray"
-                    strokeLinecap="round"
-                    strokeMiterlimit="10"
-                    strokeWidth="1.5"
-                    d="M21.25 12H8.895m-4.361 0H2.75m18.5 6.607h-5.748m-4.361 0H2.75m18.5-13.214h-3.105m-4.361 0H2.75m13.214 2.18a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm-9.25 6.607a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm6.607 6.608a2.18 2.18 0 1 0 0-4.361a2.18 2.18 0 0 0 0 4.36Z"
-                  />
+                    fill-rule="evenodd"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3.578 6.487A8 8 0 1 1 2.5 10.5" />
+                    <path d="M7.5 6.5h-4v-4" />
+                  </g>
                 </svg>
-              </button>
-              <button className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1">
-                <p>카테고리</p>
-                <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
-                  <path
-                    fill="currentColor"
-                    d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
-                  />
-                </svg>
-              </button>
-              <button className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1">
-                <p>가격</p>
-                <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
-                  <path
-                    fill="currentColor"
-                    d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
-                  />
-                </svg>
-              </button>
+              </Link>
               {/* <div className="flex flex-1 pr-2 items-center gap-2  overflow-auto scrollbar-hide">
                   <SelectedFilters
-                    categoriesState={categoriesState}
-                    pricesState={pricesState}
-                    handleCategoryChange={handleCategoryChange}
-                    handlePriceChange={handlePriceChange}
+                  categoriesState={categoriesState}
+                  pricesState={pricesState}
+                  handleCategoryChange={handleCategoryChange}
+                  handlePriceChange={handlePriceChange}
                   />
                 </div> */}
             </div>
