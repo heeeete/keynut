@@ -198,7 +198,7 @@ export default function ProfileEdit() {
   const { data: session, status, update } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
-
+  const mobile = isMobile();
 
   const onClickWithdrawal = async () => {
     setWithdrawalModalStatus(false);

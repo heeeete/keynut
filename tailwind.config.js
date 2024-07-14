@@ -120,6 +120,9 @@ module.exports = {
       },
       zIndex: {
         60: 60,
+        70: 70,
+        80: 80,
+        90: 90,
       },
     },
   },
@@ -175,7 +178,7 @@ module.exports = {
         '.search-bar-container-maxmd': {
           minHeight: '56px',
           height: '56px',
-          padding: '8px',
+          padding: '8px 12px',
         },
         '.search-bar-md': {
           display: 'flex',
