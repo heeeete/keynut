@@ -5,7 +5,7 @@ import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 const priceRanges = [
   { id: 1, min: 0, max: 50000 },
@@ -165,6 +165,8 @@ export async function POST(req) {
         },
       },
     );
+    // revalidatePath('/shop');
+    revalidateTag('product');
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
     console.log(error);
@@ -234,9 +236,9 @@ export async function PUT(req) {
         },
       },
     );
-    const productId = formData.get('id');
-    console.log(['product', productId]);
-    revalidateTag(productId);
+    // const productId = formData.get('id');
+    revalidateTag('product');
+    // revalidatePath('/shop');
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.log(error);

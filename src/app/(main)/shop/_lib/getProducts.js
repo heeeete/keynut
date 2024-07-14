@@ -11,7 +11,9 @@ const getProducts = async (queryString, pageParam) => {
     if (pageParam) {
       url += `${queryString ? '&' : '?'}lastId=${pageParam}`;
     }
-    const res = await fetch(url, { cache: 'no-cache' });
+    const res = await fetch(url, {
+      next: { tags: ['product'] },
+    });
 
     if (!res.ok) {
       console.error('API 요청 실패:', res.status, res.statusText);
