@@ -246,9 +246,9 @@ export const authOptions = {
         if (recentSearches) token.user.recentSearches = recentSearches;
       }
 
-      if (account && account.provider === 'google') {
+      if (account) {
         await db.collection('accounts').updateOne(
-          { userId: new ObjectId(token.user.id), provider: 'google' },
+          { userId: new ObjectId(token.user.id) },
           {
             $set: {
               access_token: account.access_token,

@@ -8,7 +8,6 @@ const getUserProducts = async id => {
   }
   const data = await res.json();
   return data;
-  //   setProducts(data);
 };
 
 export default getUserProducts;

@@ -208,6 +208,7 @@ export default function ProfileEdit() {
       method: 'POST',
     });
     if (!res.ok) {
+      console.log(await res.json());
       alert('회원 탈퇴 처리에 실패했습니다. 다시 로그인 후 시도합니다.');
       await signIn();
     } else {
