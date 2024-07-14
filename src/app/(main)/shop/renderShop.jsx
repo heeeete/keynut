@@ -354,7 +354,9 @@ const RenderProducts = React.memo(({ params, mobile }) => {
 
   return (
     <>
-      <div className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-2`}>
+      <div
+        className={`grid grid-cols-4 gap-2 py-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-3 max-md:pt-1`}
+      >
         {data?.pages.map((page, i) => (
           <Fragment key={i}>
             {page.map((product, idx) => (
@@ -434,7 +436,7 @@ const RenderPopularProducts = React.memo(({ data, category, mobile }) => {
   let categoryTitle =
     category === 0 ? '전체' : category === 1 ? '키보드' : category === 2 ? '마우스' : category === 9 ? '기타' : '';
   return (
-    <div className="border-x-2 border-b-2 bg-gray-100 px-2 max-md:border-0 max-md:border-b">
+    <div className="px-2 md:bg-gray-100 max-md:border-0 max-md:border-b-8 max-md:px-3">
       <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
       <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
         {data?.length ? (
@@ -680,205 +682,251 @@ export default function RenderShop() {
   const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
 
   return (
-    <div className="flex items-start justify-start z-60" ref={pageRef}>
-      <div className="flex flex-col w-full">
-        <div className="sticky top-0 flex flex-col z-20 border-b bg-white ">
-          <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
-          <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto max-md:justify-between max-md:px-2 max-md:pt-0 max-md:pb-2 max-md:items-center">
-            <button
-              className="flex items-center justify-center py-1 px-2 mr-3 rounded-xl border md:hidden cursor-pointer"
-              onClick={() => {
-                setFilterActive(true);
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
-                <path
-                  fill="none"
-                  stroke="gray"
-                  strokeLinecap="round"
-                  strokeMiterlimit="10"
-                  strokeWidth="1.5"
-                  d="M21.25 12H8.895m-4.361 0H2.75m18.5 6.607h-5.748m-4.361 0H2.75m18.5-13.214h-3.105m-4.361 0H2.75m13.214 2.18a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm-9.25 6.607a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm6.607 6.608a2.18 2.18 0 1 0 0-4.361a2.18 2.18 0 0 0 0 4.36Z"
+    <>
+      <div className="flex items-start justify-start max-md:hidden" ref={pageRef}>
+        <div className="flex flex-col w-full">
+          <div className="sticky top-0 flex flex-col z-20 border-b bg-white ">
+            <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
+            <div className="flex justify-end items-end w-full px-10 pb-1 pt-6 max-w-screen-xl mx-auto">
+              <div className="flex flex-1 pr-2 items-center gap-2  overflow-auto scrollbar-hide flex-wrap">
+                <SelectedFilters
+                  categoriesState={categoriesState}
+                  pricesState={pricesState}
+                  handleCategoryChange={handleCategoryChange}
+                  handlePriceChange={handlePriceChange}
                 />
-              </svg>
-            </button>
-            <div className="flex flex-1 pr-2 items-center gap-2  overflow-auto scrollbar-hide md:flex-wrap">
-              <SelectedFilters
-                categoriesState={categoriesState}
-                pricesState={pricesState}
-                handleCategoryChange={handleCategoryChange}
-                handlePriceChange={handlePriceChange}
-              />
+              </div>
+            </div>
+          </div>
+          <div className="flex items-start w-full px-10 max-w-screen-xl mx-auto">
+            <div className={`sticky w-44 space-y-5 z-30 top-52 mt-10 flex flex-col h-full bg-white`}>
+              <div className="flex flex-col space-y-4 overflow-y-auto scrollbar-hide">
+                <div className="">
+                  <div className="mb-1">카테고리</div>
+                  {categories.map(category => (
+                    <div key={category.id}>
+                      <label className="flex items-center space-x-1 p-1">
+                        <input
+                          className="accent-black"
+                          type="checkbox"
+                          checked={categoriesState[category.id]?.checked || false}
+                          onChange={e => {
+                            handleCategoryChange(category.id, e.target.checked);
+                          }}
+                        />
+                        <div>{category.option}</div>
+                      </label>
+                      {categoriesState[category.id] &&
+                        (category.subCategories?.some(sub => categoriesState[sub.id]?.checked) ||
+                          categoriesState[category.id].checked) &&
+                        category.subCategories?.map(sub => (
+                          <div key={sub.id}>
+                            <label className="flex items-center space-x-1 ml-3 p-1">
+                              <input
+                                className="accent-black"
+                                type="checkbox"
+                                checked={categoriesState[sub.id]?.checked || false}
+                                onChange={e => {
+                                  handleCategoryChange(sub.id, e.target.checked);
+                                }}
+                              />
+                              <div>{sub.option}</div>
+                            </label>
+                          </div>
+                        ))}
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div className="mb-1">가격</div>
+                  {prices.map(price => (
+                    <div key={price.id}>
+                      <label className="flex items-center space-x-1 p-1">
+                        <input
+                          className="accent-black"
+                          type="checkbox"
+                          checked={pricesState[price.id]?.checked || false}
+                          onChange={e => {
+                            handlePriceChange(price.id, e.target.checked);
+                          }}
+                        />
+                        <div>{price.option}</div>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col justify-center w-full ">
+              {!paramsKeyword && top && top.length ? (
+                <RenderPopularProducts data={top} category={hotProductFlag.current} mobile={mobile} />
+              ) : (
+                ''
+              )}
+              <RenderProducts params={params} mobile={mobile} />
             </div>
           </div>
         </div>
-        <div className="flex items-start w-full px-10 max-w-screen-xl mx-auto max-md:overflow-auto max-md:px-0">
-          <div className={`sticky w-44 space-y-5 z-30 top-52 mt-10 flex flex-col h-full bg-white  max-md:hidden`}>
-            <div className="flex flex-col space-y-4 overflow-y-auto scrollbar-hide max-md:hidden">
-              <div className="">
-                <div className="mb-1">카테고리</div>
-                {categories.map(category => (
-                  <div key={category.id}>
-                    <label className="flex items-center space-x-1 p-1">
-                      <input
-                        className="accent-black"
-                        type="checkbox"
-                        checked={categoriesState[category.id]?.checked || false}
-                        onChange={e => {
-                          handleCategoryChange(category.id, e.target.checked);
-                        }}
-                      />
-                      <div>{category.option}</div>
-                    </label>
-                    {categoriesState[category.id] &&
-                      (category.subCategories?.some(sub => categoriesState[sub.id]?.checked) ||
-                        categoriesState[category.id].checked) &&
-                      category.subCategories?.map(sub => (
-                        <div key={sub.id}>
-                          <label className="flex items-center space-x-1 ml-3 p-1">
-                            <input
-                              className="accent-black"
-                              type="checkbox"
-                              checked={categoriesState[sub.id]?.checked || false}
-                              onChange={e => {
-                                handleCategoryChange(sub.id, e.target.checked);
-                              }}
-                            />
-                            <div>{sub.option}</div>
-                          </label>
-                        </div>
-                      ))}
-                  </div>
-                ))}
-              </div>
-              <div>
-                <div className="mb-1">가격</div>
-                {prices.map(price => (
-                  <div key={price.id}>
-                    <label className="flex items-center space-x-1 p-1">
-                      <input
-                        className="accent-black"
-                        type="checkbox"
-                        checked={pricesState[price.id]?.checked || false}
-                        onChange={e => {
-                          handlePriceChange(price.id, e.target.checked);
-                        }}
-                      />
-                      <div>{price.option}</div>
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
+      </div>
+      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+      <div className="flex items-start justify-start md:hidden" ref={pageRef}>
+        <div className="flex flex-col w-full">
+          <div className="sticky top-0  border-b flex flex-col z-60 bg-white">
+            <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
           </div>
-          <div
-            className={`${
-              filterActive ? 'flex' : 'hidden'
-            } z-60 fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 items-end  md:hidden`}
-            onClick={() => {
-              setFilterActive(false);
-            }}
-          >
-            <div
-              className={`flex-col bg-white w-full h-550 border border-b-0 rounded-t-2xl`}
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="h-10 w-full rounded-t-2xl border-b flex items-center justify-center relative font-medium">
-                필터
-                <div
-                  className="absolute flex h-full w-10 right-0 z-30 cursor-pointer items-center justify-center"
-                  onClick={() => {
-                    setFilterActive(false);
-                  }}
-                >
-                  <svg
-                    stroke="gray"
-                    strokeWidth={30}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1.2em"
-                    height="1.2em"
-                    viewBox="0 0 2048 2048"
-                  >
-                    <path
-                      fill="gray"
-                      d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div className="py-3 h-4/5 overflow-auto scrollbar-hide">
-                <div className="border-b">
-                  <p className="px-3 mb-2 font-medium ">카테고리</p>
-                  <ul className="">
-                    {categories.map(category => (
-                      <li key={category.id} className="">
-                        <p className="px-3 text-sm font-medium">{category.option}</p>
-                        <ul className="filter-container">
-                          <button
-                            className={`filter-button ${
-                              categoriesState[category.id].checked ? 'bg-black text-white' : 'bg-white text-black'
-                            }`}
-                            onClick={e => {
-                              handleCategoryChange(category.id, !categoriesState[category.id].checked);
-                            }}
-                          >
-                            <li>전체</li>
-                          </button>
-                          {category.subCategories.map(sub => (
-                            <button
-                              key={sub.id}
-                              className={`filter-button ${
-                                categoriesState[sub.id].checked ? 'bg-black text-white' : 'bg-white text-black'
-                              }`}
-                              onClick={e => {
-                                handleCategoryChange(sub.id, !categoriesState[sub.id].checked);
-                              }}
-                            >
-                              <li>{sub.option}</li>
-                            </button>
-                          ))}
-                        </ul>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="py-3">
-                  <p className="px-3 font-medium">가격</p>
-                  <ul className="filter-container">
-                    {prices.map(price => (
-                      <button
-                        key={price.id}
-                        className={`filter-button${
-                          pricesState[price.id].checked ? 'bg-black text-white' : 'bg-white text-black'
-                        }`}
-                        onClick={e => {
-                          handlePriceChange(price.id, !pricesState[price.id].checked);
-                        }}
-                      >
-                        <li>{price.option}</li>
-                      </button>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="absolute bottom-3 right-3 space-x-3">
-                <Link href={'/shop'} className="px-4 py-2 border rounded-xl">
-                  초기화
-                </Link>
-                {/* <button className="px-4 py-2 border rounded-xl bg-slate-200">적용</button> */}
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center w-full ">
+          <div className="flex flex-col justify-center w-full">
             {!paramsKeyword && top && top.length ? (
               <RenderPopularProducts data={top} category={hotProductFlag.current} mobile={mobile} />
             ) : (
               ''
             )}
+            <div className="sticky z-50 top-14 bg-white border-b flex w-full max-w-screen-xl mx-auto p-3 items-center space-x-2">
+              <button
+                className="flex items-center justify-center py-1 px-2 rounded-xl border"
+                onClick={() => {
+                  setFilterActive(true);
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
+                  <path
+                    fill="none"
+                    stroke="gray"
+                    strokeLinecap="round"
+                    strokeMiterlimit="10"
+                    strokeWidth="1.5"
+                    d="M21.25 12H8.895m-4.361 0H2.75m18.5 6.607h-5.748m-4.361 0H2.75m18.5-13.214h-3.105m-4.361 0H2.75m13.214 2.18a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm-9.25 6.607a2.18 2.18 0 1 0 0-4.36a2.18 2.18 0 0 0 0 4.36Zm6.607 6.608a2.18 2.18 0 1 0 0-4.361a2.18 2.18 0 0 0 0 4.36Z"
+                  />
+                </svg>
+              </button>
+              <button className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1">
+                <p>카테고리</p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
+                  <path
+                    fill="currentColor"
+                    d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                  />
+                </svg>
+              </button>
+              <button className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1">
+                <p>가격</p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
+                  <path
+                    fill="currentColor"
+                    d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                  />
+                </svg>
+              </button>
+              {/* <div className="flex flex-1 pr-2 items-center gap-2  overflow-auto scrollbar-hide">
+                  <SelectedFilters
+                    categoriesState={categoriesState}
+                    pricesState={pricesState}
+                    handleCategoryChange={handleCategoryChange}
+                    handlePriceChange={handlePriceChange}
+                  />
+                </div> */}
+            </div>
             <RenderProducts params={params} mobile={mobile} />
           </div>
         </div>
+        <div
+          className={`${
+            filterActive ? 'flex' : 'hidden'
+          } z-60 fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 items-end`}
+          onClick={() => {
+            setFilterActive(false);
+          }}
+        >
+          <div
+            className={`flex-col bg-white w-full h-550 border border-b-0 rounded-t-2xl`}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="h-10 w-full rounded-t-2xl border-b flex items-center justify-center relative font-medium text-lg">
+              필터
+              <div
+                className="absolute flex h-full w-10 right-0 z-30 cursor-pointer items-center justify-center"
+                onClick={() => {
+                  setFilterActive(false);
+                }}
+              >
+                <svg
+                  stroke="lightgray"
+                  strokeWidth={30}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1.2em"
+                  height="1.2em"
+                  viewBox="0 0 2048 2048"
+                >
+                  <path
+                    fill="lightgray"
+                    d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div className="py-3 h-4/5 overflow-auto scrollbar-hide">
+              <div className="border-b">
+                <p className="px-3 mb-2 font-medium ">카테고리</p>
+                <ul className="">
+                  {categories.map(category => (
+                    <li key={category.id} className="">
+                      <p className="px-3 text-sm font-medium">{category.option}</p>
+                      <ul className="filter-container">
+                        <button
+                          className={`filter-button ${
+                            categoriesState[category.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                          }`}
+                          onClick={e => {
+                            handleCategoryChange(category.id, !categoriesState[category.id].checked);
+                          }}
+                        >
+                          <li>전체</li>
+                        </button>
+                        {category.subCategories.map(sub => (
+                          <button
+                            key={sub.id}
+                            className={`filter-button ${
+                              categoriesState[sub.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                            }`}
+                            onClick={e => {
+                              handleCategoryChange(sub.id, !categoriesState[sub.id].checked);
+                            }}
+                          >
+                            <li>{sub.option}</li>
+                          </button>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="py-3">
+                <p className="px-3 font-medium">가격</p>
+                <ul className="filter-container">
+                  {prices.map(price => (
+                    <button
+                      key={price.id}
+                      className={`filter-button ${
+                        pricesState[price.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                      }`}
+                      onClick={e => {
+                        handlePriceChange(price.id, !pricesState[price.id].checked);
+                      }}
+                    >
+                      <li>{price.option}</li>
+                    </button>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="absolute bottom-3 right-3 space-x-3">
+              <Link href={'/shop'} className="px-4 py-2 border rounded-xl">
+                초기화
+              </Link>
+              <button className="px-4 py-2 border rounded-xl bg-slate-200">적용</button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
