@@ -33,7 +33,7 @@ const RenderCondition = ({ condition }) => {
   );
 };
 
-const RenderInfo = React.memo(({ category }) => {
+const RenderCategory = ({ category }) => {
   const obj = {
     10: '하우징',
     11: '스위치',
@@ -52,7 +52,7 @@ const RenderInfo = React.memo(({ category }) => {
   else mainCategory = '기타';
 
   return (
-    <span className="flex items-center text-gray-400 text-sm px-10 max-md:px-2">
+    <span className="flex items-center text-gray-400 text-sm px-10 max-md:px-4 max-md:pb-3">
       <Link href={`/shop?categories=${~~(category / 10)}`}>{mainCategory}</Link>
       <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24">
         <g fill="none" fillRule="evenodd">
@@ -66,9 +66,7 @@ const RenderInfo = React.memo(({ category }) => {
       <Link href={`/shop?categories=${category}`}>{obj[category]}</Link>
     </span>
   );
-});
-
-RenderInfo.displayName = 'RenderInfo';
+};
 
 const RenderTimeAgo = ({ date }) => {
   return <p>{timeAgo(date)}</p>;
@@ -135,7 +133,14 @@ const RenderProfile = ({ user }) => {
           href={`/shop/${user._id}`}
           onClick={e => mobile && onClickProduct(e)}
         >
-          <p className=" text-base px-2 border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</p>
+          {/* <p className=" text-base px-2 border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</p>
+           */}
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" viewBox="0 0 24 24">
+            <path
+              fill="lightgray"
+              d="M3.778 3.655c-.181.36-.27.806-.448 1.696l-.598 2.99a3.06 3.06 0 1 0 6.043.904l.07-.69a3.167 3.167 0 1 0 6.307-.038l.073.728a3.06 3.06 0 1 0 6.043-.904l-.598-2.99c-.178-.89-.267-1.335-.448-1.696a3 3 0 0 0-1.888-1.548C17.944 2 17.49 2 16.582 2H7.418c-.908 0-1.362 0-1.752.107a3 3 0 0 0-1.888 1.548M18.269 13.5a4.53 4.53 0 0 0 2.231-.581V14c0 3.771 0 5.657-1.172 6.828c-.943.944-2.348 1.127-4.828 1.163V18.5c0-.935 0-1.402-.201-1.75a1.5 1.5 0 0 0-.549-.549C13.402 16 12.935 16 12 16s-1.402 0-1.75.201a1.5 1.5 0 0 0-.549.549c-.201.348-.201.815-.201 1.75v3.491c-2.48-.036-3.885-.22-4.828-1.163C3.5 19.657 3.5 17.771 3.5 14v-1.081a4.53 4.53 0 0 0 2.232.581a4.549 4.549 0 0 0 3.112-1.228A4.643 4.643 0 0 0 12 13.5a4.644 4.644 0 0 0 3.156-1.228a4.549 4.549 0 0 0 3.112 1.228"
+            />
+          </svg>
         </Link>
       </div>
     </>
@@ -196,7 +201,7 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
 
 const RenderHashTag = ({ product }) => {
   return (
-    <div className="space-y-0 flex text-gray-500 flex-wrap">
+    <div className="flex text-gray-500 flex-wrap">
       {product.tags.map((e, idx) => (
         <Link href={`/shop?keyword=${encodeURIComponent(e)}`} key={idx} className="flex items-center mr-3">
           <span>{e}</span>
@@ -385,9 +390,9 @@ export default function RenderProduct({ id }) {
   if (!data) return <div>데이터를 가져오고 있습니다...</div>;
   return (
     <div className="max-w-screen-xl mx-auto max-md:main-768">
-      <RenderInfo category={Number(product.category)} />
+      <RenderCategory category={Number(product.category)} />
       <ImageSlider images={product.images} state={product.state} />
-      <div className="p-10 space-y-6 max-md:px-2">
+      <div className="p-10 space-y-6 max-md:px-4">
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold">{product.title}</p>
           <div className="flex">
