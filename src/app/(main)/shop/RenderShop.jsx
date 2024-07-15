@@ -547,6 +547,7 @@ export default function RenderShop() {
 
   const mobile = isMobile();
   const hotProductFlag = useRef(0);
+  const currPosY = useRef(0);
   const searchFlag = useRef(true);
   const obj = {};
 
@@ -554,12 +555,12 @@ export default function RenderShop() {
     const footer = document.getElementById('footer');
     if (filterActive) {
       // 현재 스크롤 위치 저장
-      const scrollY = window.scrollY;
+      currPosY.current = window.scrollY;
 
       // 페이지 컨테이너에 스타일 적용
       if (pageRef.current) {
         pageRef.current.style.position = 'fixed';
-        pageRef.current.style.top = `-${scrollY}px`;
+        pageRef.current.style.top = `-${currPosY.current}px`;
         pageRef.current.style.left = '0';
         pageRef.current.style.right = '0';
         footer.style.visibility = 'hidden';
@@ -567,13 +568,12 @@ export default function RenderShop() {
     } else {
       // 스타일 제거 및 스크롤 위치 복원
       if (pageRef.current) {
-        const scrollY = parseInt(pageRef.current.style.top || '0') * -1;
         pageRef.current.style.removeProperty('position');
         pageRef.current.style.removeProperty('top');
         pageRef.current.style.removeProperty('left');
         pageRef.current.style.removeProperty('right');
         footer.style.visibility = 'visible';
-        window.scrollTo(0, scrollY);
+        window.scrollTo(0, currPosY.current);
       }
     }
   }, [filterActive]);
@@ -694,7 +694,7 @@ export default function RenderShop() {
       queryFn: () => fetchHotProducts(category),
       enabled:
         !paramsKeyword && (category === 1 || category === 2 || category === 9 || category === 3 || category === 0),
-      staleTime: 5 * 60 * 1000,
+      staleTime: Infinity,
     });
   };
   const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);

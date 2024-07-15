@@ -69,8 +69,8 @@ const RenderCategory = ({ category }) => {
 
   return (
     <span className="flex items-center text-gray-400 text-sm px-10 max-md:px-4 max-md:pb-3">
-      <Link href={`/shop?categories=${~~(category / 10)}`}>{mainCategory}</Link>
-      {category !== 99 && (
+      <Link href={`/shop?categories=${~~(category / 10) ? ~~(category / 10) : 9}`}>{mainCategory}</Link>
+      {category !== 9 && (
         <>
           <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24">
             <g fill="none" fillRule="evenodd">
