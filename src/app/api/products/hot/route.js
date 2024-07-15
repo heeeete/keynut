@@ -14,9 +14,11 @@ export async function GET(req) {
   if (category) {
     const categoryNum = parseInt(category, 10);
     if (categoryNum === 1) {
-      categories.push(10, 11, 12, 13, 14, 15, 19);
+      categories.push(10, 11, 12, 13, 14, 15, 16, 19);
     } else if (categoryNum === 2) {
-      categories.push(29);
+      categories.push(20, 21, 22, 23, 29);
+    } else if (categoryNum === 3) {
+      categories.push(30, 31, 39);
     } else if (categoryNum === 9) {
       categories.push(9);
     }

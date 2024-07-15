@@ -20,6 +20,7 @@ export async function GET(req) {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
 
+    console.log('dsklfnalksdjfl;jkasDlk;fjaslkdjfklasjdflkasjlkdf');
     const { searchParams } = new URL(req.url, `${process.env.NEXT_PUBLIC_BASE_URL}`);
     const keywordParam = searchParams.get('keyword');
     const categoriesParam = searchParams.get('categories');
@@ -30,7 +31,6 @@ export async function GET(req) {
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
     let query = { state: 1 };
-
     if (keywordParam) {
       //해시태그일 경우 해시태그에서 검색
       if (keywordParam[0] == '#') {
@@ -40,10 +40,13 @@ export async function GET(req) {
     }
     if (categories.length > 0) {
       if (categories.includes(1)) {
-        categories.push(10, 11, 12, 13, 14, 15, 19);
+        categories.push(10, 11, 12, 13, 14, 15, 16, 19);
       }
       if (categories.includes(2)) {
-        categories.push(29);
+        categories.push(20, 21, 22, 23, 29);
+      }
+      if (categories.includes(3)) {
+        categories.push(30, 31, 39);
       }
       query.category = { $in: categories };
     }

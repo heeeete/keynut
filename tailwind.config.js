@@ -92,7 +92,7 @@ module.exports = {
         'd-screen': '100dvh',
         52.5: '52.5px',
         130: '130px',
-        550: '550px',
+        500: '500px',
         6.5: '1.65rem',
       },
       backgroundColor: {
