@@ -3,7 +3,9 @@ const fetchHotProducts = async category => {
     ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/hot?category=${category}`
     : `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/hot`;
   const res = await fetch(url, {
-    next: { tags: ['product'] },
+    next: {
+      revalidate: 5 * 60,
+    },
   });
   if (!res.ok) {
     throw new Error('Network response was not ok');

@@ -519,7 +519,7 @@ export default function Edit() {
           originalUploadImages.imageUrls.push(img);
         });
         setUploadImages(originalUploadImages);
-        setMainCategory(~~(data.category / 10));
+        setMainCategory(~~(data.category / 10) ? ~~(data.category / 10) : 9);
         setSubCategory(data.category);
         setCondition(data.condition);
         setDescription(data.description);
