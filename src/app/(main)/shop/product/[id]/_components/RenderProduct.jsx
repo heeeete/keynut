@@ -316,9 +316,9 @@ const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
           }}
         >
           <div className="flex flex-col justify-center items-center rounded-sm border-2 space-y-1 bg-white w-72">
-            <button className="w-full py-4 font-semibold ">
-              <Link href={`/shop/product/${id}/edit`}>수정</Link>
-            </button>
+            <Link className="w-full py-4 text-center font-semibold" href={`/shop/product/${id}/edit`}>
+              수정
+            </Link>
             <button
               className="w-full py-4 font-semibold"
               onClick={() => {
