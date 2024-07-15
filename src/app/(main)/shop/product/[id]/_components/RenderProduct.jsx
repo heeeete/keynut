@@ -23,7 +23,7 @@ const RenderCondition = ({ condition }) => {
   else if (condition === 5) condition = '고장 / 파손';
 
   return (
-    <div className="flex space-x-4 justify-center items-center">
+    <div className="flex space-x-2 justify-center items-center">
       <div className="flex  items-center space-x-2">
         <div className="w-2 h-2 rounded-full bg-slate-400"></div>
         <span>상품상태</span>
@@ -124,7 +124,7 @@ const RenderProfile = ({ user }) => {
   return (
     <>
       <div className="flex max-w-md justify-between border rounded flex-wrap p-2">
-        <div className="flex items-center ml-2 space-x-2">
+        <div className="flex items-center space-x-2">
           <Link
             href={`/shop/${user._id}`}
             className="flex relative rounded-full  aspect-square justify-center items-center cursor-pointer"
@@ -233,7 +233,7 @@ const RenderHashTag = ({ product }) => {
 
 const RenderDescriptor = ({ product }) => {
   return (
-    <div className="border px-3 py-1 rounded min-h-24">
+    <div className="border px-2 py-1 rounded min-h-24">
       <p className="whitespace-pre-wrap">{product.description}</p>
     </div>
   );
