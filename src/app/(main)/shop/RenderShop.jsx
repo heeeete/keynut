@@ -259,10 +259,12 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
         .filter(key => categoriesState[key].checked)
         .map(key => (
           <div
-            className="flex space-x-1 items-center text-sm p-1 bg-blue-50 rounded max-md:flex-nowrap max-md:whitespace-nowrap max-md:text-xs"
+            className="flex space-x-1 items-center text-sm p-1 rounded md:bg-blue-50 max-md:flex-nowrap max-md:whitespace-nowrap max-md:text-xs max-md:bg-white"
             key={key}
           >
-            <div className="flex text-gray-500">{categoriesState[key]?.option}</div>
+            <div className="flex md:text-gray-500 max-md:text-black max-md:font-semibold">
+              {categoriesState[key]?.option}
+            </div>
             <div className="cursor-pointer" onClick={() => handleCategoryChange(key, false)}>
               <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
                 <path
@@ -277,10 +279,10 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
         .filter(key => pricesState[key].checked)
         .map(key => (
           <div
-            className="flex space-x-1 items-center text-sm p-1  bg-blue-50 rounded  max-md:text-xs max-md:flex-nowrap max-md:whitespace-nowrap"
+            className="flex space-x-1 items-center text-sm p-1  rounded md:bg-blue-50  max-md:text-xs max-md:flex-nowrap max-md:whitespace-nowrap max-md:bg-white"
             key={key}
           >
-            <div className="flex text-gray-500">{pricesState[key].option}</div>
+            <div className="flex text-gray-50  max-md:text-black max-md:font-semibold">{pricesState[key].option}</div>
 
             <svg
               className="cursor-pointer"
@@ -307,22 +309,15 @@ const onClickAllProduct = ({ e, mobile }) => {
 };
 
 const RenderProducts = React.memo(({ params, mobile }) => {
-  const initialQueryString = () => {
-    let query = '';
-    if (params.get('keyword')) {
-      query += 'keyword=' + encodeURIComponent(params.get('keyword'));
-    }
-    if (params.get('categories')) {
-      if (query.length > 0) query += '&';
-      query += 'categories=' + params.get('categories');
-    }
-    if (params.get('prices')) {
-      if (query.length > 0) query += '&';
-      query += 'prices=' + params.get('prices');
-    }
-    return query;
-  };
+  const createQueryString = useCallback(() => {
+    const queryParams = new URLSearchParams();
+    if (params.get('keyword')) queryParams.append('keyword', params.get('keyword'));
+    if (params.get('categories')) queryParams.append('categories', params.get('categories'));
+    if (params.get('prices')) queryParams.append('prices', params.get('prices'));
+    return queryParams.toString();
+  }, [params]);
 
+  const queryString = createQueryString();
   const useProducts = queryString => {
     return useInfiniteQuery({
       queryKey: ['products', queryString],
@@ -337,7 +332,7 @@ const RenderProducts = React.memo(({ params, mobile }) => {
   };
 
   const { ref, inView } = useInView({ threshold: 0, delay: 0, rootMargin: '500px' });
-  const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(initialQueryString());
+  const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(queryString);
 
   const total = data?.pages[0]?.total;
   useEffect(() => {
@@ -489,8 +484,10 @@ export default function RenderShop() {
   const paramsKeyword = params.get('keyword') ? params.get('keyword') : '';
   const [filterActive, setFilterActive] = useState(false);
   const [searchText, setSearchText] = useState(paramsKeyword);
-  const [categoryCount, setCategoryCount] = useState(0);
-  const [priceCount, setPriceCount] = useState(0);
+  const [categoryOpen, setCategoryOpen] = useState(true);
+  const [priceOpen, setPriceOpen] = useState(true);
+  // const [categoryCount, setCategoryCount] = useState(0);
+  // const [priceCount, setPriceCount] = useState(0);
   const pageRef = useRef(null);
 
   const [categoriesState, setCategoriesState] = useState({
@@ -513,6 +510,15 @@ export default function RenderShop() {
     4: { option: '30 - 50만원', checked: false },
     5: { option: '50만원 이상', checked: false },
   });
+
+  const [queryString, setQueryString] = useState(() => {
+    const queryParams = new URLSearchParams();
+    if (paramsKeyword.length) queryParams.append('keyword', paramsKeyword);
+    if (paramsCategories.length) queryParams.append('categories', paramsCategories);
+    if (paramsPrices.length) queryParams.append('prices', paramsPrices);
+    return queryParams.toString();
+  });
+
   const mobile = isMobile();
   const hotProductFlag = useRef(0);
   const searchFlag = useRef(true);
@@ -555,25 +561,6 @@ export default function RenderShop() {
     return () => window.removeEventListener('resize', debounceViewResizing);
   }, []);
 
-  const initialQueryString = () => {
-    let query = '';
-    if (paramsKeyword.length) {
-      query += 'keyword=' + encodeURIComponent(paramsKeyword);
-    }
-    if (paramsCategories.length) {
-      if (query.length > 0) query += '&';
-      query += 'categories=' + paramsCategories;
-    }
-    if (paramsPrices.length) {
-      if (query.length > 0) query += '&';
-      query += 'prices=' + paramsPrices;
-    }
-    return query;
-  };
-
-  const [queryString, setQueryString] = useState(initialQueryString());
-  // const innerContainerRef = useRef(null);
-
   useEffect(() => {
     const updateStateFromParams = () => {
       const newCategoriesState = { ...categoriesState };
@@ -602,79 +589,16 @@ export default function RenderShop() {
     updateStateFromParams();
   }, [params]);
 
-  const createQueryString = useCallback(() => {
-    const categoryQuery = Object.keys(categoriesState)
-      .filter(key => categoriesState[key].checked)
-      .join(',');
-
-    const priceQuery = Object.keys(pricesState)
-      .filter(key => pricesState[key].checked)
-      .join(',');
-
-    const queryParams = [];
-    if (searchText.length) queryParams.push(`keyword=${encodeURIComponent(searchText)}`);
-    if (categoryQuery) queryParams.push(`categories=${categoryQuery}`);
-    if (priceQuery) queryParams.push(`prices=${priceQuery}`);
-
-    return queryParams.join('&');
-  }, [categoriesState, pricesState, searchText]);
-
-  const debounceSetQueryString = useCallback(debounce(setQueryString, 1000), []);
-
   useEffect(() => {
-    if (searchFlag.current) debounceSetQueryString(createQueryString());
-    else setQueryString(createQueryString());
-  }, [debounceSetQueryString, createQueryString]);
-
-  useEffect(() => {
-    if (queryString.length) router.push(`/shop?${queryString}`);
-    else router.push('/shop');
-  }, [queryString]);
-
-  const handleCategoryChange = (id, checked) => {
-    searchFlag.current = true;
-    const newState = { ...categoriesState };
-    const updateParentCategory = cId => {
-      const pId = categoriesState[cId].parentId;
-      const childId = categoriesState[cId].childId;
-      if (pId && categoriesState[pId].checked) {
-        newState[pId].checked = false;
-      }
-      if (childId) {
-        for (let i of childId) newState[i].checked = false;
-      }
+    const categoriesCheck = () => {
+      paramsCategories.forEach(c => {
+        if (c >= 10) {
+          obj[Math.floor(c / 10)] = true;
+        } else {
+          obj[c] = true;
+        }
+      });
     };
-    newState[id].checked = checked;
-    if (checked) {
-      updateParentCategory(id);
-      setCategoryCount(categoryCount + 1);
-    } else {
-      setCategoryCount(categoryCount - 1);
-    }
-    setCategoriesState(newState);
-  };
-
-  const handlePriceChange = (id, checked) => {
-    searchFlag.current = true;
-    const newState = { ...pricesState };
-    newState[id].checked = checked;
-    if (checked) setPriceCount(priceCount + 1);
-    else setPriceCount(priceCount - 1);
-
-    setPricesState(newState);
-  };
-
-  const categoriesCheck = () => {
-    paramsCategories.map(c => {
-      if (c >= 10) {
-        obj[~~(c / 10)] = true;
-      } else {
-        obj[c] = true;
-      }
-    });
-  };
-
-  useEffect(() => {
     categoriesCheck();
   }, [paramsCategories]);
 
@@ -683,6 +607,60 @@ export default function RenderShop() {
     else if (Object.keys(obj).length === 1) hotProductFlag.current = Number(Object.keys(obj)[0]);
     else hotProductFlag.current = 0;
   }, [obj]);
+
+  // ======================================================
+  const createQueryString = useCallback(() => {
+    const categoryQuery = Object.keys(categoriesState)
+      .filter(key => categoriesState[key].checked)
+      .join(',');
+    const priceQuery = Object.keys(pricesState)
+      .filter(key => pricesState[key].checked)
+      .join(',');
+    const queryParams = new URLSearchParams();
+    if (searchText.length) queryParams.append('keyword', searchText);
+    if (categoryQuery) queryParams.append('categories', categoryQuery);
+    if (priceQuery) queryParams.append('prices', priceQuery);
+    return queryParams.toString();
+  }, [categoriesState, pricesState, searchText]);
+
+  const debounceSetQueryString = useCallback(debounce(setQueryString, 1000), []);
+  useEffect(() => {
+    if (searchFlag.current) debounceSetQueryString(createQueryString());
+    else setQueryString(createQueryString());
+  }, [debounceSetQueryString, createQueryString]);
+  // ======================================================
+
+  useEffect(() => {
+    if (queryString.length) router.push(`/shop?${queryString}`);
+    else router.push('/shop');
+  }, [queryString, router]);
+
+  const handleCategoryChange = (id, checked) => {
+    searchFlag.current = true;
+    const newState = { ...categoriesState };
+
+    newState[id].checked = checked;
+
+    if (newState[id].childId) {
+      newState[id].childId.forEach(childId => {
+        newState[childId].checked = false;
+      });
+    }
+
+    if (newState[id].parentId) {
+      const parentId = newState[id].parentId;
+      newState[parentId].checked = false;
+    }
+
+    setCategoriesState(newState);
+  };
+
+  const handlePriceChange = (id, checked) => {
+    searchFlag.current = true;
+    const newState = { ...pricesState };
+    newState[id].checked = checked;
+    setPricesState(newState);
+  };
 
   const useHotProducts = category => {
     return useQuery({
@@ -782,7 +760,7 @@ export default function RenderShop() {
         </div>
       </div>
       {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <div className="flex items-start justify-start md:hidden" ref={pageRef}>
+      <div className="flex items-start justify-start md:hidden z-60" ref={pageRef}>
         <div className="flex flex-col w-full">
           <div className="sticky top-0  border-b flex flex-col z-60 bg-white">
             <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
@@ -798,6 +776,8 @@ export default function RenderShop() {
                 <button
                   className="flex items-center justify-center py-1 px-2 rounded-xl bg-black relative"
                   onClick={() => {
+                    setPriceOpen(true);
+                    setCategoryOpen(true);
                     setFilterActive(true);
                   }}
                 >
@@ -817,7 +797,16 @@ export default function RenderShop() {
                     ''
                   )} */}
                 </button>
-                <button className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1 flex-nowrap whitespace-nowrap">
+                <button
+                  className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1 flex-nowrap whitespace-nowrap"
+                  onClick={() => {
+                    if (!filterActive) {
+                      setCategoryOpen(true);
+                      setPriceOpen(false);
+                      setFilterActive(true);
+                    } else setFilterActive(false);
+                  }}
+                >
                   <p>카테고리</p>
                   <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
                     <path
@@ -826,7 +815,16 @@ export default function RenderShop() {
                     />
                   </svg>
                 </button>
-                <button className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1 flex-nowrap whitespace-nowrap">
+                <button
+                  className="flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1 flex-nowrap whitespace-nowrap"
+                  onClick={() => {
+                    if (!filterActive) {
+                      setPriceOpen(true);
+                      setCategoryOpen(false);
+                      setFilterActive(true);
+                    } else setFilterActive(false);
+                  }}
+                >
                   <p>가격</p>
                   <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
                     <path
@@ -838,26 +836,12 @@ export default function RenderShop() {
               </div>
               <Link href={'/shop'}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 21 21">
-                  <g
-                    fill="none"
-                    fill-rule="evenodd"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
+                  <g fill="none" fillRule="evenodd" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3.578 6.487A8 8 0 1 1 2.5 10.5" />
                     <path d="M7.5 6.5h-4v-4" />
                   </g>
                 </svg>
               </Link>
-              {/* <div className="flex flex-1 pr-2 items-center gap-2  overflow-auto scrollbar-hide">
-                  <SelectedFilters
-                  categoriesState={categoriesState}
-                  pricesState={pricesState}
-                  handleCategoryChange={handleCategoryChange}
-                  handlePriceChange={handlePriceChange}
-                  />
-                </div> */}
             </div>
             <RenderProducts params={params} mobile={mobile} />
           </div>
@@ -871,7 +855,7 @@ export default function RenderShop() {
           }}
         >
           <div
-            className={`flex-col bg-white w-full h-550 border border-b-0 rounded-t-2xl`}
+            className={`flex-col bg-white w-full border border-b-0 rounded-t-2xl`}
             onClick={e => e.stopPropagation()}
           >
             <div className="h-10 w-full rounded-t-2xl border-b flex items-center justify-center relative font-medium text-lg">
@@ -897,66 +881,152 @@ export default function RenderShop() {
                 </svg>
               </div>
             </div>
-            <div className="py-3 h-4/5 overflow-auto scrollbar-hide">
+            <div className="py-3 h-500 overflow-auto scrollbar-hide">
               <div className="border-b">
-                <p className="px-3 mb-2 font-medium ">카테고리</p>
-                <ul className="">
-                  {categories.map(category => (
-                    <li key={category.id} className="">
-                      <p className="px-3 text-sm font-medium">{category.option}</p>
-                      <ul className="filter-container">
-                        <button
-                          className={`filter-button ${
-                            categoriesState[category.id].checked ? 'bg-black text-white' : 'bg-white text-black'
-                          }`}
-                          onClick={e => {
-                            handleCategoryChange(category.id, !categoriesState[category.id].checked);
-                          }}
-                        >
-                          <li>전체</li>
-                        </button>
-                        {category.subCategories.map(sub => (
+                <div className="flex justify-between items-center px-3 mb-2">
+                  <p className="font-medium ">카테고리</p>
+                  {categoryOpen ? (
+                    <button onClick={() => setCategoryOpen(false)}>
+                      <svg
+                        // stroke="lightgray"
+                        // strokeWidth={0}
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="1em"
+                        height="1em"
+                        viewBox="0 0 1024 1024"
+                        transform="rotate(180)"
+                      >
+                        <path
+                          fill="lightgray"
+                          d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                        />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button onClick={() => setCategoryOpen(true)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+                        <path
+                          fill="lightgray"
+                          d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {categoryOpen ? (
+                  <ul className="">
+                    {categories.map(category => (
+                      <li key={category.id} className="">
+                        <p className="px-3 text-sm font-medium">{category.option}</p>
+                        <ul className="filter-container">
                           <button
-                            key={sub.id}
                             className={`filter-button ${
-                              categoriesState[sub.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                              categoriesState[category.id].checked ? 'bg-black text-white' : 'bg-white text-black'
                             }`}
                             onClick={e => {
-                              handleCategoryChange(sub.id, !categoriesState[sub.id].checked);
+                              handleCategoryChange(category.id, !categoriesState[category.id].checked);
                             }}
                           >
-                            <li>{sub.option}</li>
+                            <li>전체</li>
                           </button>
-                        ))}
-                      </ul>
-                    </li>
-                  ))}
-                </ul>
+                          {category.subCategories.map(sub => (
+                            <button
+                              key={sub.id}
+                              className={`filter-button ${
+                                categoriesState[sub.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                              }`}
+                              onClick={e => {
+                                handleCategoryChange(sub.id, !categoriesState[sub.id].checked);
+                              }}
+                            >
+                              <li>{sub.option}</li>
+                            </button>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  ''
+                )}
               </div>
               <div className="py-3">
-                <p className="px-3 font-medium">가격</p>
-                <ul className="filter-container">
-                  {prices.map(price => (
-                    <button
-                      key={price.id}
-                      className={`filter-button ${
-                        pricesState[price.id].checked ? 'bg-black text-white' : 'bg-white text-black'
-                      }`}
-                      onClick={e => {
-                        handlePriceChange(price.id, !pricesState[price.id].checked);
-                      }}
-                    >
-                      <li>{price.option}</li>
+                <div className="flex px-3 justify-between">
+                  <p className="font-medium">가격</p>
+                  {priceOpen ? (
+                    <button onClick={() => setPriceOpen(false)}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="1em"
+                        height="1em"
+                        viewBox="0 0 1024 1024"
+                        transform="rotate(180)"
+                      >
+                        <path
+                          fill="lightgray"
+                          d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                        />
+                      </svg>
                     </button>
-                  ))}
-                </ul>
+                  ) : (
+                    <button onClick={() => setPriceOpen(true)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+                        <path
+                          fill="lightgray"
+                          d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {priceOpen ? (
+                  <ul className="filter-container">
+                    {prices.map(price => (
+                      <button
+                        key={price.id}
+                        className={`filter-button ${
+                          pricesState[price.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                        }`}
+                        onClick={e => {
+                          handlePriceChange(price.id, !pricesState[price.id].checked);
+                        }}
+                      >
+                        <li>{price.option}</li>
+                      </button>
+                    ))}
+                  </ul>
+                ) : (
+                  ''
+                )}
               </div>
+              {Object.keys(categoriesState).filter(key => categoriesState[key].checked).length +
+              Object.keys(pricesState).filter(key => pricesState[key].checked).length ? (
+                <div className="h-6"></div>
+              ) : (
+                ''
+              )}
+              <div className="py-2 h-14"></div>
             </div>
-            <div className="absolute bottom-3 right-3 space-x-3">
-              <Link href={'/shop'} className="px-4 py-2 border rounded-xl">
-                초기화
-              </Link>
-              <button className="px-4 py-2 border rounded-xl bg-slate-200">적용</button>
+            <div className="flex flex-col absolute bottom-0 w-full border-t bg-white">
+              {Object.keys(categoriesState).filter(key => categoriesState[key].checked).length +
+              Object.keys(pricesState).filter(key => pricesState[key].checked).length ? (
+                <div className="flex flex-1 m-2 items-center gap-2  overflow-auto scrollbar-hide">
+                  <SelectedFilters
+                    categoriesState={categoriesState}
+                    pricesState={pricesState}
+                    handleCategoryChange={handleCategoryChange}
+                    handlePriceChange={handlePriceChange}
+                  />
+                </div>
+              ) : (
+                ''
+              )}
+              <div className="flex justify-end items-center space-x-3 px-3 py-2 h-14 bg-white">
+                <Link href={'/shop'} className="px-4 py-2 border rounded-xl">
+                  초기화
+                </Link>
+                <button className="px-4 py-2 border rounded-xl bg-slate-200">적용</button>
+              </div>
             </div>
           </div>
         </div>
