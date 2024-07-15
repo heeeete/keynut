@@ -17,19 +17,35 @@ const categories = [
     id: 1,
     option: '키보드',
     subCategories: [
-      { id: 10, option: '하우징' },
-      { id: 11, option: '스위치' },
-      { id: 12, option: '보강판' },
-      { id: 13, option: '아티산' },
-      { id: 14, option: '키캡' },
-      { id: 15, option: 'PCB' },
+      { id: 10, option: '커스텀' },
+      { id: 11, option: '기성품' },
+      { id: 12, option: '스위치' },
+      { id: 13, option: '보강판' },
+      { id: 14, option: '아티산' },
+      { id: 15, option: '키캡' },
+      { id: 16, option: 'PCB' },
       { id: 19, option: '기타' },
     ],
   },
   {
     id: 2,
     option: '마우스',
-    subCategories: [{ id: 29, option: '기타' }],
+    subCategories: [
+      { id: 20, option: '완제품' },
+      { id: 21, option: '마우스피트' },
+      { id: 22, option: '그립테이프' },
+      { id: 23, option: 'PCB' },
+      { id: 29, option: '기타' },
+    ],
+  },
+  {
+    id: 3,
+    option: '패드',
+    subCategories: [
+      { id: 30, option: '마우스패드' },
+      { id: 31, option: '장패드' },
+      { id: 39, option: '기타' },
+    ],
   },
   {
     id: 9,
@@ -318,6 +334,7 @@ const RenderProducts = React.memo(({ params, mobile }) => {
   }, [params]);
 
   const queryString = createQueryString();
+
   const useProducts = queryString => {
     return useInfiniteQuery({
       queryKey: ['products', queryString],
@@ -491,16 +508,25 @@ export default function RenderShop() {
   const pageRef = useRef(null);
 
   const [categoriesState, setCategoriesState] = useState({
-    1: { option: '키보드', checked: false, childId: [10, 11, 12, 13, 14, 15, 19] },
-    10: { option: '하우징', checked: false, parentId: 1 },
-    11: { option: '스위치', checked: false, parentId: 1 },
-    12: { option: '보강판', checked: false, parentId: 1 },
-    13: { option: '아티산', checked: false, parentId: 1 },
-    14: { option: '키캡', checked: false, parentId: 1 },
-    15: { option: 'PCB', checked: false, parentId: 1 },
+    1: { option: '키보드', checked: false, childId: [10, 11, 12, 13, 14, 15, 16, 19] },
+    10: { option: '커스텀', checked: false, parentId: 1 },
+    11: { option: '기성품', checked: false, parentId: 1 },
+    12: { option: '스위치', checked: false, parentId: 1 },
+    13: { option: '보강판', checked: false, parentId: 1 },
+    14: { option: '아티산', checked: false, parentId: 1 },
+    15: { option: '키캡', checked: false, parentId: 1 },
+    16: { option: 'PCB', checked: false, parentId: 1 },
     19: { option: '키보드-기타', checked: false, parentId: 1 },
-    2: { option: '마우스', checked: false, childId: [29] },
+    2: { option: '마우스', checked: false, childId: [20, 21, 22, 23, 29] },
+    20: { option: '완제품', checked: false, parentId: 2 },
+    21: { option: '마우스피트', checked: false, parentId: 2 },
+    22: { option: '그립테이프', checked: false, parentId: 2 },
+    23: { option: 'PCB', checked: false, parentId: 2 },
     29: { option: '마우스-기타', checked: false, parentId: 2 },
+    3: { option: '패드', checked: false, childId: [30, 31, 39] },
+    30: { option: '마우스패드', checked: false, parentId: 3 },
+    31: { option: '장패드', checked: false, parentId: 3 },
+    39: { option: '패드-기타', checked: false, parentId: 3 },
     9: { option: '기타', checked: false },
   });
   const [pricesState, setPricesState] = useState({
@@ -666,7 +692,8 @@ export default function RenderShop() {
     return useQuery({
       queryKey: ['topProducts', category],
       queryFn: () => fetchHotProducts(category),
-      enabled: !paramsKeyword && (category === 1 || category === 2 || category === 9 || category === 0),
+      enabled:
+        !paramsKeyword && (category === 1 || category === 2 || category === 9 || category === 3 || category === 0),
       staleTime: 5 * 60 * 1000,
     });
   };
@@ -846,190 +873,192 @@ export default function RenderShop() {
             <RenderProducts params={params} mobile={mobile} />
           </div>
         </div>
-        <div
-          className={`${
-            filterActive ? 'flex' : 'hidden'
-          } z-60 fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 items-end`}
-          onClick={() => {
-            setFilterActive(false);
-          }}
-        >
+        {filterActive ? (
           <div
-            className={`flex-col bg-white w-full border border-b-0 rounded-t-2xl`}
-            onClick={e => e.stopPropagation()}
+            className={`flex z-60 fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 items-end`}
+            onClick={() => {
+              setFilterActive(false);
+            }}
           >
-            <div className="h-10 w-full rounded-t-2xl border-b flex items-center justify-center relative font-medium text-lg">
-              필터
-              <div
-                className="absolute flex h-full w-10 right-0 z-30 cursor-pointer items-center justify-center"
-                onClick={() => {
-                  setFilterActive(false);
-                }}
-              >
-                <svg
-                  stroke="lightgray"
-                  strokeWidth={30}
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="1.2em"
-                  height="1.2em"
-                  viewBox="0 0 2048 2048"
+            <div
+              className={`flex-col bg-white w-full border border-b-0 rounded-t-2xl`}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="h-10 w-full rounded-t-2xl border-b flex items-center justify-center relative font-medium text-lg">
+                필터
+                <div
+                  className="absolute flex h-full w-10 right-0 z-30 cursor-pointer items-center justify-center"
+                  onClick={() => {
+                    setFilterActive(false);
+                  }}
                 >
-                  <path
-                    fill="lightgray"
-                    d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div className="py-3 h-500 overflow-auto scrollbar-hide">
-              <div className="border-b">
-                <div className="flex justify-between items-center px-3 mb-2">
-                  <p className="font-medium ">카테고리</p>
-                  {categoryOpen ? (
-                    <button onClick={() => setCategoryOpen(false)}>
-                      <svg
-                        // stroke="lightgray"
-                        // strokeWidth={0}
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="1em"
-                        height="1em"
-                        viewBox="0 0 1024 1024"
-                        transform="rotate(180)"
-                      >
-                        <path
-                          fill="lightgray"
-                          d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
-                        />
-                      </svg>
-                    </button>
-                  ) : (
-                    <button onClick={() => setCategoryOpen(true)}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
-                        <path
-                          fill="lightgray"
-                          d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
-                        />
-                      </svg>
-                    </button>
-                  )}
+                  <svg
+                    stroke="lightgray"
+                    strokeWidth={30}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1.2em"
+                    height="1.2em"
+                    viewBox="0 0 2048 2048"
+                  >
+                    <path
+                      fill="lightgray"
+                      d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                    />
+                  </svg>
                 </div>
-                {categoryOpen ? (
-                  <ul className="">
-                    {categories.map(category => (
-                      <li key={category.id} className="">
-                        <p className="px-3 text-sm font-medium">{category.option}</p>
-                        <ul className="filter-container">
-                          <button
-                            className={`filter-button ${
-                              categoriesState[category.id].checked ? 'bg-black text-white' : 'bg-white text-black'
-                            }`}
-                            onClick={e => {
-                              handleCategoryChange(category.id, !categoriesState[category.id].checked);
-                            }}
-                          >
-                            <li>전체</li>
-                          </button>
-                          {category.subCategories.map(sub => (
+              </div>
+              <div className="py-3 h-500 overflow-auto scrollbar-hide">
+                <div className="border-b">
+                  <div className="flex justify-between items-center px-3 mb-2">
+                    <p className="font-medium ">카테고리</p>
+                    {categoryOpen ? (
+                      <button onClick={() => setCategoryOpen(false)}>
+                        <svg
+                          // stroke="lightgray"
+                          // strokeWidth={0}
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 1024 1024"
+                          transform="rotate(180)"
+                        >
+                          <path
+                            fill="lightgray"
+                            d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                          />
+                        </svg>
+                      </button>
+                    ) : (
+                      <button onClick={() => setCategoryOpen(true)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+                          <path
+                            fill="lightgray"
+                            d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  {categoryOpen ? (
+                    <ul className="">
+                      {categories.map(category => (
+                        <li key={category.id} className="">
+                          <p className="px-3 text-sm font-medium">{category.option}</p>
+                          <ul className="filter-container">
                             <button
-                              key={sub.id}
                               className={`filter-button ${
-                                categoriesState[sub.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                                categoriesState[category.id].checked ? 'bg-black text-white' : 'bg-white text-black'
                               }`}
                               onClick={e => {
-                                handleCategoryChange(sub.id, !categoriesState[sub.id].checked);
+                                handleCategoryChange(category.id, !categoriesState[category.id].checked);
                               }}
                             >
-                              <li>{sub.option}</li>
+                              <li>전체</li>
                             </button>
-                          ))}
-                        </ul>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  ''
-                )}
-              </div>
-              <div className="py-3">
-                <div className="flex px-3 justify-between">
-                  <p className="font-medium">가격</p>
-                  {priceOpen ? (
-                    <button onClick={() => setPriceOpen(false)}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="1em"
-                        height="1em"
-                        viewBox="0 0 1024 1024"
-                        transform="rotate(180)"
-                      >
-                        <path
-                          fill="lightgray"
-                          d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
-                        />
-                      </svg>
-                    </button>
+                            {category.subCategories.map(sub => (
+                              <button
+                                key={sub.id}
+                                className={`filter-button ${
+                                  categoriesState[sub.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                                }`}
+                                onClick={e => {
+                                  handleCategoryChange(sub.id, !categoriesState[sub.id].checked);
+                                }}
+                              >
+                                <li>{sub.option}</li>
+                              </button>
+                            ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ul>
                   ) : (
-                    <button onClick={() => setPriceOpen(true)}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
-                        <path
-                          fill="lightgray"
-                          d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
-                        />
-                      </svg>
-                    </button>
+                    ''
                   )}
                 </div>
-                {priceOpen ? (
-                  <ul className="filter-container">
-                    {prices.map(price => (
-                      <button
-                        key={price.id}
-                        className={`filter-button ${
-                          pricesState[price.id].checked ? 'bg-black text-white' : 'bg-white text-black'
-                        }`}
-                        onClick={e => {
-                          handlePriceChange(price.id, !pricesState[price.id].checked);
-                        }}
-                      >
-                        <li>{price.option}</li>
+                <div className="py-3">
+                  <div className="flex px-3 justify-between">
+                    <p className="font-medium">가격</p>
+                    {priceOpen ? (
+                      <button onClick={() => setPriceOpen(false)}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 1024 1024"
+                          transform="rotate(180)"
+                        >
+                          <path
+                            fill="lightgray"
+                            d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                          />
+                        </svg>
                       </button>
-                    ))}
-                  </ul>
+                    ) : (
+                      <button onClick={() => setPriceOpen(true)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+                          <path
+                            fill="lightgray"
+                            d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  {priceOpen ? (
+                    <ul className="filter-container">
+                      {prices.map(price => (
+                        <button
+                          key={price.id}
+                          className={`filter-button ${
+                            pricesState[price.id].checked ? 'bg-black text-white' : 'bg-white text-black'
+                          }`}
+                          onClick={e => {
+                            handlePriceChange(price.id, !pricesState[price.id].checked);
+                          }}
+                        >
+                          <li>{price.option}</li>
+                        </button>
+                      ))}
+                    </ul>
+                  ) : (
+                    ''
+                  )}
+                </div>
+                {Object.keys(categoriesState).filter(key => categoriesState[key].checked).length +
+                Object.keys(pricesState).filter(key => pricesState[key].checked).length ? (
+                  <div className="h-6"></div>
                 ) : (
                   ''
                 )}
+                <div className="py-2 h-14"></div>
               </div>
-              {Object.keys(categoriesState).filter(key => categoriesState[key].checked).length +
-              Object.keys(pricesState).filter(key => pricesState[key].checked).length ? (
-                <div className="h-6"></div>
-              ) : (
-                ''
-              )}
-              <div className="py-2 h-14"></div>
-            </div>
-            <div className="flex flex-col absolute bottom-0 w-full border-t bg-white">
-              {Object.keys(categoriesState).filter(key => categoriesState[key].checked).length +
-              Object.keys(pricesState).filter(key => pricesState[key].checked).length ? (
-                <div className="flex flex-1 m-2 items-center gap-2  overflow-auto scrollbar-hide">
-                  <SelectedFilters
-                    categoriesState={categoriesState}
-                    pricesState={pricesState}
-                    handleCategoryChange={handleCategoryChange}
-                    handlePriceChange={handlePriceChange}
-                  />
+              <div className="flex flex-col absolute bottom-0 w-full border-t bg-white">
+                {Object.keys(categoriesState).filter(key => categoriesState[key].checked).length +
+                Object.keys(pricesState).filter(key => pricesState[key].checked).length ? (
+                  <div className="flex flex-1 m-2 items-center gap-2  overflow-auto scrollbar-hide">
+                    <SelectedFilters
+                      categoriesState={categoriesState}
+                      pricesState={pricesState}
+                      handleCategoryChange={handleCategoryChange}
+                      handlePriceChange={handlePriceChange}
+                    />
+                  </div>
+                ) : (
+                  ''
+                )}
+                <div className="flex justify-end items-center space-x-3 px-3 py-2 h-14 bg-white">
+                  <Link href={'/shop'} className="px-4 py-2 border rounded-xl">
+                    초기화
+                  </Link>
+                  <button className="px-4 py-2 border rounded-xl bg-slate-200">적용</button>
                 </div>
-              ) : (
-                ''
-              )}
-              <div className="flex justify-end items-center space-x-3 px-3 py-2 h-14 bg-white">
-                <Link href={'/shop'} className="px-4 py-2 border rounded-xl">
-                  초기화
-                </Link>
-                <button className="px-4 py-2 border rounded-xl bg-slate-200">적용</button>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          ''
+        )}
       </div>
     </>
   );
