@@ -170,8 +170,7 @@ export async function POST(req) {
         },
       },
     );
-    // revalidatePath('/shop');
-    revalidateTag('product');
+    revalidateTag('products');
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
     console.log(error);
@@ -241,9 +240,9 @@ export async function PUT(req) {
         },
       },
     );
-    // const productId = formData.get('id');
-    revalidateTag('product');
-    // revalidatePath('/shop');
+    const productId = formData.get('id');
+    revalidateTag(productId);
+    revalidateTag('products');
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.log(error);

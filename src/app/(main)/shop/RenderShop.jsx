@@ -352,18 +352,19 @@ const RenderProducts = React.memo(
 
     const queryString = createQueryString();
 
-    const useProducts = queryString => {
-      return useInfiniteQuery({
-        queryKey: ['products', queryString],
-        queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
-        initialPageParam: 0, //[1,2,3,4,5] [6,7,8,9,10] [11,12,13,14,15] -> 데이터를 페이지별로 관리 , 이차원 배열
-        getNextPageParam: (lastPage, allPages) => {
-          if (lastPage.products.length === 0) return undefined;
-          return lastPage.products[lastPage.products.length - 1]._id; // `_id` 기준으로 페이징
-        },
-        staleTime: Infinity,
-      });
-    };
+  const useProducts = queryString => {
+    return useInfiniteQuery({
+      queryKey: ['products', queryString],
+      queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
+      initialPageParam: 0, //[1,2,3,4,5] [6,7,8,9,10] [11,12,13,14,15] -> 데이터를 페이지별로 관리 , 이차원 배열
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.products.length === 0) return undefined;
+        return lastPage.products[lastPage.products.length - 1]._id; // `_id` 기준으로 페이징
+      },
+      staleTime: 60 * 1000,
+    });
+  };
+
 
     const { ref, inView } = useInView({ threshold: 0, delay: 0, rootMargin: '500px' });
     const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(queryString);
@@ -714,6 +715,7 @@ export default function RenderShop() {
 
   const mobile = isMobile();
   const hotProductFlag = useRef(0);
+  const currPosY = useRef(0);
   const searchFlag = useRef(true);
   const obj = {};
 
@@ -725,12 +727,12 @@ export default function RenderShop() {
     const footer = document.getElementById('footer');
     if (filterActive) {
       // 현재 스크롤 위치 저장
-      const scrollY = window.scrollY;
+      currPosY.current = window.scrollY;
 
       // 페이지 컨테이너에 스타일 적용
       if (pageRef.current) {
         pageRef.current.style.position = 'fixed';
-        pageRef.current.style.top = `-${scrollY}px`;
+        pageRef.current.style.top = `-${currPosY.current}px`;
         pageRef.current.style.left = '0';
         pageRef.current.style.right = '0';
         footer.style.visibility = 'hidden';
@@ -738,13 +740,12 @@ export default function RenderShop() {
     } else {
       // 스타일 제거 및 스크롤 위치 복원
       if (pageRef.current) {
-        const scrollY = parseInt(pageRef.current.style.top || '0') * -1;
         pageRef.current.style.removeProperty('position');
         pageRef.current.style.removeProperty('top');
         pageRef.current.style.removeProperty('left');
         pageRef.current.style.removeProperty('right');
         footer.style.visibility = 'visible';
-        window.scrollTo(0, scrollY);
+        window.scrollTo(0, currPosY.current);
       }
     }
   }, [filterActive]);
@@ -887,7 +888,7 @@ export default function RenderShop() {
       queryFn: () => fetchHotProducts(category),
       enabled:
         !paramsKeyword && (category === 1 || category === 2 || category === 9 || category === 3 || category === 0),
-      staleTime: 5 * 60 * 1000,
+      staleTime: Infinity,
     });
   };
   const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
