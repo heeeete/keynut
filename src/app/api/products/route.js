@@ -20,7 +20,6 @@ export async function GET(req) {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
 
-    console.log('dsklfnalksdjfl;jkasDlk;fjaslkdjfklasjdflkasjlkdf');
     const { searchParams } = new URL(req.url, `${process.env.NEXT_PUBLIC_BASE_URL}`);
     const keywordParam = searchParams.get('keyword');
     const categoriesParam = searchParams.get('categories');

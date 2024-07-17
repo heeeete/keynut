@@ -35,7 +35,9 @@ const MyProfile = React.memo(({ mobile, data, session }) => {
             </svg>
           </div>
         )}
-        <div className="text-lg max-md:text-base">{session ? session.user.nickname : data?.nickname}</div>
+        <div className="text-lg max-md:text-base">
+          {session?.user.nickname ? session.user.nickname : data?.nickname}
+        </div>
       </div>
       <button>
         <Link
