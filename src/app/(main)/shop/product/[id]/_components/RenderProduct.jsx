@@ -14,6 +14,7 @@ import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
 import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
+import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 
 const RenderCondition = ({ condition }) => {
   if (condition === 1) condition = '미사용';
@@ -239,8 +240,9 @@ const RenderDescriptor = ({ product }) => {
   );
 };
 
-const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
+const IsWriter = ({ id, state, session, setDeleteState, setUpModal, setRaiseCount, queryClient }) => {
   const [settingModal, setSettingModal] = useState(null);
+  const invalidateFilters = useInvalidateFiltersQuery();
 
   const mutation = useMutation({
     mutationFn: async ({ productId }) => {
@@ -268,6 +270,7 @@ const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
       queryClient.setQueryData(['product', variables.productId], context.previousProduct);
     },
     onSettled: (data, error, variables) => {
+      invalidateFilters();
       queryClient.invalidateQueries(['product', variables.productId]);
     },
   });
@@ -284,22 +287,33 @@ const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
     mutation.mutate({ productId: id });
   };
 
+  const openUpModal = async () => {
+    if (!session) return signIn();
+    try {
+      const res = await fetch(`/api/user/${session.user.id}/profile`);
+      const data = await res.json();
+      if (!res.ok) {
+      }
+      setRaiseCount(data.raiseCount);
+      setUpModal(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <div className="flex space-x-4 max-md:space-x-2 max-[480px]:hidden">
+        <button className="flex text-gray-500 font-medium items-center" onClick={openUpModal}>
+          <img src="/product/up.svg" width={24} height={24} alt="UP" />
+          <p>UP</p>
+        </button>
         <Link href={`/shop/product/${id}/edit`} className="flex items-center text-gray-500 font-semibold">
-          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-            <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-              <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1" />
-              <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3zM16 5l3 3" />
-            </g>
-          </svg>
+          <img src="/product/modify.svg" width={20} height={20} alt="MODIFY" />
           수정
         </Link>
         <button className="flex items-center text-gray-500 font-semibold" onClick={() => setDeleteState(true)}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-            <path fill="grey" d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z" />
-          </svg>
+          <img src="/product/delete.svg" width={20} height={20} alt="DELETE" />
           삭제
         </button>
         <div className="space-x-1 bg-slate-200 p-1 rounded-sm">
@@ -321,12 +335,7 @@ const IsWriter = ({ id, state, session, setDeleteState, queryClient }) => {
           setSettingModal(true);
         }}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 1024 1024">
-          <path
-            fill="gray"
-            d="M176 416a112 112 0 1 1 0 224a112 112 0 0 1 0-224m336 0a112 112 0 1 1 0 224a112 112 0 0 1 0-224m336 0a112 112 0 1 1 0 224a112 112 0 0 1 0-224"
-          />
-        </svg>
+        <img src="/product/more.svg" width={24} height={24} alt="MORE" />
       </button>
       {settingModal && (
         <div
@@ -374,6 +383,8 @@ const incrementViewCount = async productId => {
 export default function RenderProduct({ id }) {
   const queryClient = useQueryClient();
   const [deleteState, setDeleteState] = useState(false);
+  const [upModal, setUpModal] = useState(false);
+  const [raiseCount, setRaiseCount] = useState(5);
   const router = useRouter();
   const { data: session, status } = useSession();
   const { data, error, isLoading } = useQuery({
@@ -381,11 +392,17 @@ export default function RenderProduct({ id }) {
     queryFn: () => getProductWithUser(id),
     staleTime: Infinity,
   });
+  const invalidateFilters = useInvalidateFiltersQuery();
   const { user = null, ...product } = data || {};
 
   useEffect(() => {
     const fetchUpdateViews = async () => {
       const data = await incrementViewCount(id);
+      if (!data) {
+        alert('삭제된 상품입니다.');
+        invalidateFilters();
+        return router.back();
+      }
       queryClient.setQueryData(['product', id], oldData => ({
         ...oldData,
         views: data.views,
@@ -399,7 +416,11 @@ export default function RenderProduct({ id }) {
   const deleteProduct = async () => {
     try {
       const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-      if (res.ok) router.back();
+      if (res.ok) {
+        invalidateFilters();
+        router.back();
+        router.refresh();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -422,6 +443,8 @@ export default function RenderProduct({ id }) {
                 state={product.state}
                 session={session}
                 setDeleteState={setDeleteState}
+                setUpModal={setUpModal}
+                setRaiseCount={setRaiseCount}
                 queryClient={queryClient}
               />
             ) : (
@@ -453,9 +476,8 @@ export default function RenderProduct({ id }) {
         {!writer && <RenderProfile user={user} />}
         <RenderDescriptor product={product} />
       </div>
-      {deleteState === true && (
-        <Modal message={'삭제하시겠습니까?'} yesCallback={deleteProduct} modalSet={setDeleteState} />
-      )}
+      {deleteState && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteProduct} modalSet={setDeleteState} />}
+      {upModal && <Modal message={'UP'} subMessage={`${raiseCount}개있고 사용할꺼야 말꺼야`} modalSet={setUpModal} />}
     </div>
   );
 }

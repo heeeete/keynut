@@ -11,7 +11,8 @@ export async function PUT(req, { params }) {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     await db.collection('products').updateOne({ _id: new ObjectId(id) }, { $set: { state: state === 1 ? 0 : 1 } });
-    revalidateTag('product');
+    revalidateTag(id);
+    revalidateTag('products');
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error }, { status: 500 });
