@@ -5,6 +5,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Loading from '../_components/Loading';
+import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   switch (mainCategory) {
@@ -486,6 +487,7 @@ export default function Sell() {
   const fileInputRef = useRef(null);
   const router = new useRouter();
   const { data: session, status, update } = useSession();
+  const invalidateFilters = useInvalidateFiltersQuery();
 
   useEffect(() => {
     if (status !== 'loading' && !session) return router.push('/signin');
@@ -529,7 +531,11 @@ export default function Sell() {
       const data = await res.json();
       if (res.ok) {
         update({ openChatUrl: openChatUrl });
-        if (data) router.push(`/shop/product/${data.insertedId}`);
+        if (data) {
+          invalidateFilters();
+          router.push(`/shop/product/${data.insertedId}`);
+          router.refresh();
+        }
       } else {
         console.error(data.error);
       }

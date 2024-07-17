@@ -12,7 +12,7 @@ const getProducts = async (queryString, pageParam) => {
       url += `${queryString ? '&' : '?'}lastId=${pageParam}`;
     }
     const res = await fetch(url, {
-      next: { tags: ['product'] },
+      next: { tags: ['products'] },
     });
 
     if (!res.ok) {

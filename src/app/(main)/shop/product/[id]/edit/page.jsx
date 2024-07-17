@@ -4,8 +4,9 @@ import Image from 'next/image';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useParams, useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
+import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   switch (mainCategory) {
@@ -500,6 +501,7 @@ export default function Edit() {
   const fileInputRef = useRef(null);
   const router = useRouter();
   const { data: session, update } = useSession();
+  const invalidateFilters = useInvalidateFiltersQuery();
 
   const { data, error, isLoading } = useQuery({
     queryKey: ['product', id],
@@ -570,14 +572,11 @@ export default function Edit() {
         body: formData,
       });
 
-      // const data = await res.json();
       if (res.ok) {
         update({ openChatUrl: openChatUrl });
-        // if (data) window.location.href = `/shop/product/${id}`;
-        if (data) {
-          router.push(`/shop/product/${id}`);
-          router.refresh();
-        }
+        invalidateFilters();
+        router.push(`/shop/product/${id}`);
+        router.refresh();
       } else {
         console.error(data.error);
       }

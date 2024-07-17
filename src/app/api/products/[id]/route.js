@@ -6,6 +6,7 @@ import s3Client from '@/lib/s3Client';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 import { cookies } from 'next/headers';
 import getUserSession from '@/lib/getUserSession';
+import { revalidateTag } from 'next/cache';
 
 export async function GET(req, { params }) {
   try {
@@ -122,6 +123,7 @@ export async function DELETE(req, { params }) {
     await db.collection('users').updateOne({ _id: target.userId }, { $pull: { products: new ObjectId(id) } });
     db.collection('users').updateMany({ bookmarked: new ObjectId(id) }, { $pull: { bookmarked: new ObjectId(id) } });
     db.collection('viewHistory').deleteMany({ productId: new ObjectId(id) });
+    revalidateTag('products');
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.log(error);

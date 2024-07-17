@@ -346,7 +346,7 @@ const RenderProducts = React.memo(({ params, mobile }) => {
         if (lastPage.products.length === 0) return undefined;
         return lastPage.products[lastPage.products.length - 1]._id; // `_id` 기준으로 페이징
       },
-      staleTime: Infinity,
+      staleTime: 60 * 1000,
     });
   };
 
