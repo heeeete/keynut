@@ -42,13 +42,13 @@ const HandleBookMark = ({ productId }) => {
     },
   });
   const handleBookmarkClick = e => {
-    e.stopPropagation();
+    e.preventDefault();
     if (!session) return signIn();
     mutation.mutate({ productId });
   };
 
   return (
-    <button onClick={e => handleBookmarkClick(e)}>
+    <button onClick={e => handleBookmarkClick(e)} className="p-1">
       <svg className="min-w-7" xmlns="http://www.w3.org/2000/svg" width="28px" height="28px" viewBox="0 0 32 32">
         <path stroke="black" fill="black" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
@@ -63,9 +63,10 @@ export default function Bookmark() {
     queryKey: ['bookmarkedProducts'],
     queryFn: () => getBookmarkedProducts(),
   });
-  if (!data) {
+
+  if (isLoading || !data) {
     return (
-      <div className="flex max-w-screen-xl mx-auto px-10 max-md:px-2 justify-center">
+      <div className="flex max-w-screen-xl mx-auto px-10 max-md:px-2 justify-center items-center max-md:h-100dvh">
         <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 24 24">
           <path
             fill="#a599ff"
@@ -89,16 +90,17 @@ export default function Bookmark() {
 
   return (
     <>
-      {data && data.length ? (
+      {data.length ? (
         <div className="grid grid-cols-2 gap-2 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:grid-cols-1 max-md:main-768">
           {data.map((item, index) => (
-            <div
-              className="flex p-2 items-center cursor-pointer relative border border-gray-300 rounded-sm justify-between"
+            <Link
+              href={`/shop/product/${item._id}`}
+              className="flex p-2 items-center cursor-pointer border border-gray-300 rounded-sm justify-between"
               key={index}
             >
               <div className="flex">
                 <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100">
-                  <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="112px" />
+                  <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="200px" />
                 </div>
                 <div className="flex flex-col justify-center pr-5">
                   <p className="break-all line-clamp-1">{item.title}</p>
@@ -109,14 +111,7 @@ export default function Bookmark() {
                 </div>
               </div>
               <HandleBookMark productId={item._id} />
-              <Link
-                href={`/shop/product/${item._id}`}
-                className="absolute left-0 top-0 w-full h-full rounded"
-                onClick={e => {
-                  mobile && onClickProduct(e);
-                }}
-              ></Link>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (
