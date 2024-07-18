@@ -18,6 +18,7 @@ const JustIn = ({ mobile }) => {
     queryFn: getRecentProducts,
     staleTime: Infinity,
   });
+
   return (
     <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
       {data?.map((product, idx) => (
@@ -78,7 +79,7 @@ export default function RenderHome() {
           키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요!
         </div>
       </div>
-      <div className="w-full max-w-screen-xl mx-auto px-10  space-y-12 my-10 max-md:px-2 ">
+      <div className="w-full max-w-screen-xl mx-auto px-10  space-y-12 my-10 max-md:px-3 ">
         <section className="flex flex-col space-y-5">
           <div className="flex flex-col">
             <div className="font-medium text-xl">cateory</div>
@@ -113,7 +114,7 @@ export default function RenderHome() {
             </li>
             <li className="flex flex-col items-center space-y-1">
               <div className="relative">
-                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-black bg-opacity-10 justify-center items-center max-md:w-24">
+                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-black bg-opacity-5 justify-center items-center max-md:w-24">
                   <svg width="60" height="50" viewBox="0 0 496 265" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="0.5" y="0.5" width="494.042" height="264" rx="19.5" fill="#EBEBEB" stroke="black" />
                     <rect x="17.5" y="14.5" width="461" height="236" rx="19.5" fill="#A3A3A3" stroke="black" />
@@ -129,7 +130,7 @@ export default function RenderHome() {
             </li>
             <li className="flex flex-col items-center space-y-1">
               <div className="relative">
-                <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded justify-center items-center max-md:w-24">
+                <div className="flex w-28 aspect-square min-h-16 min-w-16 bg-black bg-opacity-10 rounded justify-center items-center max-md:w-24">
                   <svg
                     className="max-md:w-10"
                     xmlns="http://www.w3.org/2000/svg"
@@ -138,7 +139,7 @@ export default function RenderHome() {
                     viewBox="0 0 24 24"
                   >
                     <path
-                      fill="gray"
+                      fill="white"
                       d="M7.673 21.02L11.712 14L4 13.096L15.25 2.981h1.116l-4.135 7.038l7.769.885L8.75 21.019z"
                     />
                   </svg>

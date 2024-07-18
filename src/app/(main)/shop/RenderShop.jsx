@@ -381,7 +381,8 @@ const RenderProducts = React.memo(
             handlePriceChange={handlePriceChange}
           />
         )}
-        <div className="grid grid-cols-4 md:gap-3 max-md:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-3">
+        {/* 검색 결과 없을 때 일단 min-h로.. */}
+        <div className="grid grid-cols-4 min-h-64 md:gap-3 max-md:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-3">
           {data?.pages.map((page, i) => (
             <Fragment key={i}>
               {page.products.map((product, idx) => (
@@ -1010,7 +1011,7 @@ export default function RenderShop() {
   return (
     <div className="flex items-start justify-start z-60" ref={pageRef}>
       <div className="flex flex-col w-full">
-        <div className="relative flex flex-col border-b z-20 bg-white max-md:z-60">
+        <div className="sticky top-0 flex flex-col border-b z-20 bg-white max-md:z-60">
           <SearchBar
             paramsKeyword={paramsKeyword}
             setSearchText={setSearchText}

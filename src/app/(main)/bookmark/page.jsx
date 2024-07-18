@@ -115,7 +115,7 @@ export default function Bookmark() {
           ))}
         </div>
       ) : (
-        <div className="flex max-w-screen-xl h-70dvh items-center  mx-auto px-10 justify-center text-gray-500 max-md:px-2 ">
+        <div className="flex max-w-screen-xl h-80dvh items-center  mx-auto px-10 justify-center text-gray-500 max-md:px-2 ">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20%" viewBox="0 0 24 24">
               <path

@@ -140,7 +140,7 @@ const RenderProfile = ({ user }) => {
               <div className="w-10 h-10 defualt-profile">
                 <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
                   <path
-                    fill="rgb(229, 231, 235)"
+                    fill="rgba(0,0,0,0.2)"
                     d="M224 256a128 128 0 1 0 0-256a128 128 0 1 0 0 256m-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512h388.6c16.4 0 29.7-13.3 29.7-29.7c0-98.5-79.8-178.3-178.3-178.3z"
                   />
                 </svg>

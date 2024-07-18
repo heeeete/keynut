@@ -198,7 +198,8 @@ module.exports = {
         },
         '.defualt-profile': {
           display: 'flex',
-          border: '2px solid rgb(243,244,246)',
+          backgroundColor: 'rgb(243,244,246)',
+          // border: '2px solid rgb(243,244,246)',
           borderRadius: '50%',
           justifyContent: 'center',
           alignItems: 'flex-end',
