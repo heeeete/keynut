@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import ImageSlider from '@/app/(main)/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/utils/timeAgo';
@@ -69,7 +69,7 @@ const RenderCategory = ({ category }) => {
   else mainCategory = '기타';
 
   return (
-    <div className="flex w-full px-10 max-md:px-4 max-md:pb-3 justify-between">
+    <div className="flex w-full justify-between">
       <span className="flex items-center text-gray-400 text-sm">
         <Link href={`/shop?categories=${~~(category / 10) ? ~~(category / 10) : 9}`}>{mainCategory}</Link>
         {category !== 9 && (
@@ -87,7 +87,6 @@ const RenderCategory = ({ category }) => {
           </>
         )}
       </span>
-      <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-[480px]:block" />
     </div>
   );
 };
@@ -243,8 +242,7 @@ const RenderDescriptor = ({ product }) => {
   );
 };
 
-const IsWriter = ({ id, state, session, setDeleteState, setUpModal, setRaiseCount, queryClient }) => {
-  const [settingModal, setSettingModal] = useState(null);
+const IsWriter = ({ id, state, session, setSettingModal, queryClient }) => {
   const invalidateFilters = useInvalidateFiltersQuery();
 
   const mutation = useMutation({
@@ -290,20 +288,6 @@ const IsWriter = ({ id, state, session, setDeleteState, setUpModal, setRaiseCoun
     mutation.mutate({ productId: id });
   };
 
-  const openUpModal = async () => {
-    if (!session) return signIn();
-    try {
-      const res = await fetch(`/api/user/${session.user.id}/profile`);
-      const data = await res.json();
-      if (!res.ok) {
-      }
-      setRaiseCount(data.raiseCount);
-      setUpModal(true);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <>
       <div className="flex space-x-2">
@@ -328,74 +312,62 @@ const IsWriter = ({ id, state, session, setDeleteState, setUpModal, setRaiseCoun
           </button>
         </div>
       </div>
-      {settingModal && (
-        <div
-          className="fixed w-d-screen h-d-screen top-0 left-0 z-50 flex flex-col justify-center items-center"
-          onClick={e => {
-            if (e.currentTarget === e.target) setSettingModal(false);
+    </>
+  );
+};
+
+const SettingModal = ({ id, session, setSettingModal, setDeleteState, setRaiseCount, setUpModal }) => {
+  const openUpModal = async () => {
+    if (!session) return signIn();
+    try {
+      const res = await fetch(`/api/user/${session.user.id}/profile`);
+      const data = await res.json();
+      if (!res.ok) {
+      }
+      setRaiseCount(data.raiseCount);
+      setUpModal(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div
+      className="fixed w-d-screen h-d-screen top-0 left-0 z-50 flex flex-col justify-center items-center"
+      onClick={e => {
+        if (e.currentTarget === e.target) setSettingModal(false);
+      }}
+    >
+      <div className="flex flex-col justify-center items-center rounded-md border space-y-1 bg-white w-72">
+        <Link
+          className="flex items-center justify-center space-x-1 w-full py-4 text-center font-semibold border-b"
+          href={`/shop/product/${id}/edit`}
+        >
+          <p>수정</p>
+          <img src="/product/modify.svg" width={19} height={19} alt="MODIFY" />
+        </Link>
+        <button
+          className="flex items-center justify-center space-x-1 w-full py-4 font-semibold border-b"
+          onClick={() => {
+            openUpModal();
+            setSettingModal(false);
           }}
         >
-          <div className="flex flex-col justify-center items-center rounded-md border space-y-1 bg-white w-72">
-            <Link
-              className="flex items-center justify-center space-x-1 w-full py-4 text-center font-semibold border-b"
-              href={`/shop/product/${id}/edit`}
-            >
-              <p>수정</p>
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-                <path
-                  fill="currentColor"
-                  d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"
-                />
-                <path
-                  fill="currentColor"
-                  d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"
-                />
-              </svg>
-            </Link>
-            <button
-              className="flex items-center justify-center space-x-1 w-full py-4 font-semibold border-b"
-              onClick={openUpModal}
-            >
-              <p>UP</p>
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M11.223 8.372L5.129 15.14a.517.517 0 0 0 .383.859h12.976a.519.519 0 0 0 .383-.86l-6.094-6.81a1.036 1.036 0 0 0-1.554.042"
-                />
-              </svg>
-            </button>
-            <button
-              className="flex items-center justify-center space-x-1 w-full py-4 font-semibold text-red-500"
-              onClick={() => {
-                setSettingModal(false);
-                setDeleteState(true);
-              }}
-            >
-              <p>삭제</p>
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 12 12">
-                <path
-                  fill="currentColor"
-                  d="M5 3h2a1 1 0 0 0-2 0M4 3a2 2 0 1 1 4 0h2.5a.5.5 0 0 1 0 1h-.441l-.443 5.17A2 2 0 0 1 7.623 11H4.377a2 2 0 0 1-1.993-1.83L1.941 4H1.5a.5.5 0 0 1 0-1zm3.5 3a.5.5 0 0 0-1 0v2a.5.5 0 0 0 1 0zM5 5.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5M3.38 9.085a1 1 0 0 0 .997.915h3.246a1 1 0 0 0 .996-.915L9.055 4h-6.11z"
-                />
-              </svg>
-            </button>
-            {/* <button className={`${state === 1 ? 'bg-main' : ''} w-full py-4 font-semibold`} onClick={onClickSelling}>
-              판매중
-            </button>
-            <button
-              className={`${state === 0 ? 'bg-main' : ''} w-full py-4 font-semibold`}
-              onClick={onClickSellCompleted}
-            >
-              판매완료
-            </button> */}
-          </div>
-        </div>
-      )}
-    </>
+          <p>UP</p>
+          <img src="/product/up.svg" width={24} height={24} alt="UP" />
+        </button>
+        <button
+          className="flex items-center justify-center space-x-1 w-full py-4 font-semibold text-red-500"
+          onClick={() => {
+            setSettingModal(false);
+            setDeleteState(true);
+          }}
+        >
+          <p>삭제</p>
+          <img src="/product/delete.svg" width={19} height={19} alt="DELETE" />
+        </button>
+      </div>
+    </div>
   );
 };
 
@@ -409,6 +381,7 @@ const incrementViewCount = async productId => {
 export default function RenderProduct({ id }) {
   const queryClient = useQueryClient();
   const [deleteState, setDeleteState] = useState(false);
+  const [settingModal, setSettingModal] = useState(null);
   const [upModal, setUpModal] = useState(false);
   const [raiseCount, setRaiseCount] = useState(5);
   const router = useRouter();
@@ -420,6 +393,7 @@ export default function RenderProduct({ id }) {
   });
   const invalidateFilters = useInvalidateFiltersQuery();
   const { user = null, ...product } = data || {};
+  const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
 
   useEffect(() => {
     const fetchUpdateViews = async () => {
@@ -437,9 +411,7 @@ export default function RenderProduct({ id }) {
     fetchUpdateViews();
   }, []);
 
-  const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
-
-  const deleteProduct = async () => {
+  const deleteProduct = useCallback(async () => {
     try {
       const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
       if (res.ok) {
@@ -450,14 +422,23 @@ export default function RenderProduct({ id }) {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [router]);
 
   if (!data && isLoading === false) return router.replace('/');
   if (error) return <div>Error loading product</div>;
   if (!data) return <div>데이터를 가져오고 있습니다...</div>;
   return (
     <div className="max-w-screen-xl mx-auto max-md:main-768">
-      <RenderCategory category={Number(product.category)} />
+      <div className="flex px-10 max-md:pb-3 max-md:px-4">
+        <RenderCategory category={Number(product.category)} />
+        {writer || session?.admin ? (
+          <button onClick={() => setSettingModal(true)}>
+            <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-[480px]:flex" />
+          </button>
+        ) : (
+          ''
+        )}
+      </div>
       <ImageSlider images={product.images} state={product.state} />
       <div className="p-10 space-y-6 max-md:px-4">
         <div className="flex justify-between items-center">
@@ -468,9 +449,7 @@ export default function RenderProduct({ id }) {
                 id={id}
                 state={product.state}
                 session={session}
-                setDeleteState={setDeleteState}
-                setUpModal={setUpModal}
-                setRaiseCount={setRaiseCount}
+                setSettingModal={setSettingModal}
                 queryClient={queryClient}
               />
             ) : (
@@ -504,6 +483,16 @@ export default function RenderProduct({ id }) {
       </div>
       {deleteState && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteProduct} modalSet={setDeleteState} />}
       {upModal && <Modal message={'UP'} subMessage={`${raiseCount}개있고 사용할꺼야 말꺼야`} modalSet={setUpModal} />}
+      {settingModal && (
+        <SettingModal
+          id={id}
+          session={session}
+          setSettingModal={setSettingModal}
+          setRaiseCount={setRaiseCount}
+          setDeleteState={setDeleteState}
+          setUpModal={setUpModal}
+        />
+      )}
     </div>
   );
 }

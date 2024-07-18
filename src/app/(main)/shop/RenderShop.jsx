@@ -125,12 +125,10 @@ const RecentSearch = React.memo(
   },
 );
 
-const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
+const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocused, setIsFocused }) => {
   const [tempSearchText, setTempSearchText] = useState(paramsKeyword);
   const [recentSearches, setRecentSearches] = useState([]);
-  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef(null);
-  const recentRef = useRef(null);
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -148,29 +146,8 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
     };
     document.addEventListener('mousedown', handleClickOutside);
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.boundingClientRect.top <= 5) {
-          setIsFocused(false);
-          if (inputRef.current) inputRef.current.blur();
-        }
-      },
-      {
-        //실제로 요소의 상단이 뷰포트 상단보다 100픽셀 더 아래에 있을 때 교차로 인식
-        rootMargin: '-100px',
-        threshold: 0, // 요소의 0%가 보일 때 콜백이 호출됨
-      },
-    );
-
-    if (recentRef.current) {
-      observer.observe(recentRef.current);
-    }
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      if (recentRef.current) {
-        observer.unobserve(recentRef.current);
-      }
     };
   }, []);
 
@@ -195,11 +172,12 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag }) => {
     localStorage.setItem('recentSearches', JSON.stringify([]));
   };
   return (
-    <div className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col" ref={recentRef}>
+    <div className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col">
       <div className="max-md:search-bar-maxmd max-md:px">
         <div className="search-bar-md max-md:search-bar-maxmd">
           <form className="flex w-450 max-md:w-full items-center" onSubmit={handleSearch}>
             <input
+              id="searchInput"
               ref={inputRef}
               type="text"
               placeholder="상품명, #태그 입력"
@@ -483,11 +461,43 @@ const RenderProducts = React.memo(
   },
 );
 
-const RenderPopularProducts = React.memo(({ data, category, mobile }) => {
+const RenderPopularProducts = React.memo(({ data, category, mobile, setIsFocused }) => {
+  const ref = useRef(null);
   let categoryTitle =
     category === 0 ? '전체' : category === 1 ? '키보드' : category === 2 ? '마우스' : category === 9 ? '기타' : '';
+
+  useEffect(() => {
+    const $nav = document.getElementById('nav');
+    const $searchInput = document.getElementById('searchInput');
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          setIsFocused(false);
+          $searchInput?.blur();
+          $nav.style.borderBottom = '1px solid lightgray';
+        } else {
+          $nav.style.borderBottom = '';
+        }
+      },
+      {
+        rootMargin: '-112px 0px 0px 0px',
+        threshold: 1,
+      },
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) observer.unobserve(ref.current);
+    };
+  }, []);
   return (
-    <div className="px-2 max-md:border-0 max-md:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto md:px-10">
+    <div
+      ref={ref}
+      className="px-2 max-md:border-0 max-md:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto md:px-10"
+    >
       <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
       <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
         {data?.length ? (
@@ -777,8 +787,8 @@ export default function RenderShop() {
   const [categoryOpen, setCategoryOpen] = useState(true);
   const [priceOpen, setPriceOpen] = useState(true);
   const [isMaxmd, setIsMaxmd] = useState(true);
+  const [isFocused, setIsFocused] = useState(false);
   const pageRef = useRef(null);
-
   const [categoriesState, setCategoriesState] = useState({
     1: { option: '키보드', checked: false, childId: [10, 11, 12, 13, 14, 15, 16, 19] },
     10: { option: '커스텀', checked: false, parentId: 1 },
@@ -1000,12 +1010,23 @@ export default function RenderShop() {
   return (
     <div className="flex items-start justify-start z-60" ref={pageRef}>
       <div className="flex flex-col w-full">
-        <div className="sticky top-0 flex flex-col border-b z-20 bg-white max-md:z-60">
-          <SearchBar paramsKeyword={paramsKeyword} setSearchText={setSearchText} searchFlag={searchFlag} />
+        <div className="relative flex flex-col border-b z-20 bg-white max-md:z-60">
+          <SearchBar
+            paramsKeyword={paramsKeyword}
+            setSearchText={setSearchText}
+            searchFlag={searchFlag}
+            isFocused={isFocused}
+            setIsFocused={setIsFocused}
+          />
         </div>
         <div className="border-b max-md:border-0">
           {!paramsKeyword && top && top.length ? (
-            <RenderPopularProducts data={top} category={hotProductFlag.current} mobile={mobile} />
+            <RenderPopularProducts
+              data={top}
+              category={hotProductFlag.current}
+              mobile={mobile}
+              setIsFocused={setIsFocused}
+            />
           ) : (
             ''
           )}

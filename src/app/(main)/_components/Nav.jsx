@@ -24,6 +24,7 @@ export default function Nav() {
 
   return (
     <header
+      id="nav"
       className={`${border ? 'border-b' : ''} ${navRender ? 'max-md:hidden' : ''} fixed w-full top-0 bg-white z-50`}
     >
       <nav className="flex flex-col w-full h-full  max-w-screen-xl mx-auto max-md:space-y-0">
