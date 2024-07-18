@@ -17,7 +17,7 @@ export default function Nav() {
   const router = useRouter();
   const border =
     (!pathname.startsWith('/gallery') && !pathname.startsWith('/shop')) ||
-    pathname.startsWith('/shop/product') ||
+    pathname.startsWith('/shop/') ||
     pathname.startsWith('/gallery/post');
   const navRender = pathname === '/shop' || pathname === '/gallery';
   const mobile = isMobile();

@@ -69,23 +69,26 @@ const RenderCategory = ({ category }) => {
   else mainCategory = '기타';
 
   return (
-    <span className="flex items-center text-gray-400 text-sm px-10 max-md:px-4 max-md:pb-3">
-      <Link href={`/shop?categories=${~~(category / 10) ? ~~(category / 10) : 9}`}>{mainCategory}</Link>
-      {category !== 9 && (
-        <>
-          <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24">
-            <g fill="none" fillRule="evenodd">
-              <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
-              <path
-                fill="#ababab"
-                d="M15.707 11.293a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 1 1-1.414-1.414l4.95-4.95l-4.95-4.95a1 1 0 0 1 1.414-1.414z"
-              />
-            </g>
-          </svg>
-          <Link href={`/shop?categories=${category}`}>{obj[category]}</Link>
-        </>
-      )}
-    </span>
+    <div className="flex w-full px-10 max-md:px-4 max-md:pb-3 justify-between">
+      <span className="flex items-center text-gray-400 text-sm">
+        <Link href={`/shop?categories=${~~(category / 10) ? ~~(category / 10) : 9}`}>{mainCategory}</Link>
+        {category !== 9 && (
+          <>
+            <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24">
+              <g fill="none" fillRule="evenodd">
+                <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
+                <path
+                  fill="#ababab"
+                  d="M15.707 11.293a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 1 1-1.414-1.414l4.95-4.95l-4.95-4.95a1 1 0 0 1 1.414-1.414z"
+                />
+              </g>
+            </svg>
+            <Link href={`/shop?categories=${category}`}>{obj[category]}</Link>
+          </>
+        )}
+      </span>
+      <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-[480px]:block" />
+    </div>
   );
 };
 
@@ -303,20 +306,17 @@ const IsWriter = ({ id, state, session, setDeleteState, setUpModal, setRaiseCoun
 
   return (
     <>
-      <div className="flex space-x-4 max-md:space-x-2 max-[480px]:hidden">
-        <button className="flex text-gray-500 font-medium items-center" onClick={openUpModal}>
-          <img src="/product/up.svg" width={24} height={24} alt="UP" />
-          <p>UP</p>
+      <div className="flex space-x-2">
+        <button
+          className="align-text-top items-center p-2 rounded max-[480px]:hidden"
+          onClick={e => {
+            onClickProduct(e);
+            setSettingModal(true);
+          }}
+        >
+          <img src="/product/more.svg" width={24} height={24} alt="MORE" />
         </button>
-        <Link href={`/shop/product/${id}/edit`} className="flex items-center text-gray-500 font-semibold">
-          <img src="/product/modify.svg" width={20} height={20} alt="MODIFY" />
-          수정
-        </Link>
-        <button className="flex items-center text-gray-500 font-semibold" onClick={() => setDeleteState(true)}>
-          <img src="/product/delete.svg" width={20} height={20} alt="DELETE" />
-          삭제
-        </button>
-        <div className="space-x-1 bg-slate-200 p-1 rounded-sm">
+        <div className="space-x-1 bg-slate-200 p-1 rounded-sm max-[480px]:text-sm">
           <button onClick={onClickSelling} className={`${state === 1 ? 'bg-white' : 'opacity-30'} p-1 rounded-s-sm`}>
             판매중
           </button>
@@ -328,15 +328,6 @@ const IsWriter = ({ id, state, session, setDeleteState, setUpModal, setRaiseCoun
           </button>
         </div>
       </div>
-      <button
-        className="hidden align-text-top items-center p-2 rounded max-[480px]:flex"
-        onClick={e => {
-          onClickProduct(e);
-          setSettingModal(true);
-        }}
-      >
-        <img src="/product/more.svg" width={24} height={24} alt="MORE" />
-      </button>
       {settingModal && (
         <div
           className="fixed w-d-screen h-d-screen top-0 left-0 z-50 flex flex-col justify-center items-center"
@@ -344,20 +335,55 @@ const IsWriter = ({ id, state, session, setDeleteState, setUpModal, setRaiseCoun
             if (e.currentTarget === e.target) setSettingModal(false);
           }}
         >
-          <div className="flex flex-col justify-center items-center rounded-sm border-2 space-y-1 bg-white w-72">
-            <Link className="w-full py-4 text-center font-semibold" href={`/shop/product/${id}/edit`}>
-              수정
+          <div className="flex flex-col justify-center items-center rounded-md border space-y-1 bg-white w-72">
+            <Link
+              className="flex items-center justify-center space-x-1 w-full py-4 text-center font-semibold border-b"
+              href={`/shop/product/${id}/edit`}
+            >
+              <p>수정</p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"
+                />
+              </svg>
             </Link>
             <button
-              className="w-full py-4 font-semibold"
+              className="flex items-center justify-center space-x-1 w-full py-4 font-semibold border-b"
+              onClick={openUpModal}
+            >
+              <p>UP</p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M11.223 8.372L5.129 15.14a.517.517 0 0 0 .383.859h12.976a.519.519 0 0 0 .383-.86l-6.094-6.81a1.036 1.036 0 0 0-1.554.042"
+                />
+              </svg>
+            </button>
+            <button
+              className="flex items-center justify-center space-x-1 w-full py-4 font-semibold text-red-500"
               onClick={() => {
                 setSettingModal(false);
                 setDeleteState(true);
               }}
             >
-              삭제
+              <p>삭제</p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 12 12">
+                <path
+                  fill="currentColor"
+                  d="M5 3h2a1 1 0 0 0-2 0M4 3a2 2 0 1 1 4 0h2.5a.5.5 0 0 1 0 1h-.441l-.443 5.17A2 2 0 0 1 7.623 11H4.377a2 2 0 0 1-1.993-1.83L1.941 4H1.5a.5.5 0 0 1 0-1zm3.5 3a.5.5 0 0 0-1 0v2a.5.5 0 0 0 1 0zM5 5.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5M3.38 9.085a1 1 0 0 0 .997.915h3.246a1 1 0 0 0 .996-.915L9.055 4h-6.11z"
+                />
+              </svg>
             </button>
-            <button className={`${state === 1 ? 'bg-main' : ''} w-full py-4 font-semibold`} onClick={onClickSelling}>
+            {/* <button className={`${state === 1 ? 'bg-main' : ''} w-full py-4 font-semibold`} onClick={onClickSelling}>
               판매중
             </button>
             <button
@@ -365,7 +391,7 @@ const IsWriter = ({ id, state, session, setDeleteState, setUpModal, setRaiseCoun
               onClick={onClickSellCompleted}
             >
               판매완료
-            </button>
+            </button> */}
           </div>
         </div>
       )}

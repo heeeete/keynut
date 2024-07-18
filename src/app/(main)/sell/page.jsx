@@ -451,12 +451,20 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
         />
         <p className="flex text-xs ml-2 text-gray-400 items-center">{`(${tempTag.length}/10)`}</p>
       </div>
-      <div className="flex text-gray-500 flex-wrap h-4">
+      <div className="flex text-gray-500 flex-wrap py-1">
         {tags.map((e, idx) => (
-          <div key={idx} className="flex items-center space-x-1 mr-3">
+          <div key={idx} className="flex items-center space-x-1 mr-3 max-md:text-sm">
             <span>{e}</span>
             <button onClick={() => removeTag(idx)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="0.8rem" height="0.8rem" viewBox="0 0 2048 2048">
+              <svg
+                className="max-md:w-3"
+                xmlns="http://www.w3.org/2000/svg"
+                width="0.8rem"
+                height="0.8rem"
+                viewBox="0 0 2048 2048"
+                stroke="gray"
+                strokeWidth={20}
+              >
                 <path
                   fill="currentColor"
                   d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
