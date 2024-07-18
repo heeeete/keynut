@@ -6,7 +6,7 @@ export default function Modal({ message, subMessage = '', yesCallback, modalSet 
         if (e.currentTarget === e.target) modalSet(false);
       }}
     >
-      <div className="w-72 space-y-6 py-3 bg-white rounded-sm  flex flex-col  justify-center items-center border-solid border-2">
+      <div className="w-72 rounded space-y-6 py-3 bg-white flex flex-col  justify-center items-center border-solid border">
         <div>
           <p className=" font-semibold text-lg text-center break-all">{message}</p>
           {subMessage && <p>{subMessage}</p>}
