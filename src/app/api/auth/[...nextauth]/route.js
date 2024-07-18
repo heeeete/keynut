@@ -257,6 +257,10 @@ export const authOptions = {
       }
 
       if (account) {
+        const userDoc = await db.collection('users').findOne({ _id: new ObjectId(user.id) });
+        token.user.nickname = userDoc.nickname;
+        // token.user.lastRaiseReset = userDoc.lastRaiseReset;
+        // token.user.raiseCount = userDoc.raiseCount;
         await db.collection('accounts').updateOne(
           { userId: new ObjectId(token.user.id) },
           {
@@ -269,7 +273,6 @@ export const authOptions = {
         );
       }
 
-      if (account) console.log(account);
       return token;
     },
     async session({ session, token }) {
