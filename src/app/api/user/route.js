@@ -30,6 +30,7 @@ export async function PUT(req) {
     const db = client.db(process.env.MONGODB_NAME);
     const users = db.collection('users');
     const { user: session } = await getUserSession();
+    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     let uploadedUrl = null;
     const formData = await req.formData();
     const oldImage = JSON.parse(formData.get('oldImage'));

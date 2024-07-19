@@ -5,7 +5,9 @@ import s3Client from '@/lib/s3Client';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId } from 'mongodb';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
+import { revalidateTag } from 'next/cache';
 
+//회원탈퇴
 export async function DELETE(req, { params }) {
   const { userId: id } = params;
   const userId = new ObjectId(id);
@@ -69,7 +71,7 @@ export async function DELETE(req, { params }) {
     ];
 
     await Promise.all(deleteUserPromises);
-
+    revalidateTag('products');
     return NextResponse.json({ message: 'User deleted successfully' }, { status: 200 });
   } catch (error) {
     console.error('Error deleting user:', error);
