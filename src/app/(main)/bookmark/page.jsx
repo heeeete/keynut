@@ -6,6 +6,7 @@ import getBookmarkedProducts from './_lib/getBookmarkedProducts';
 import Link from 'next/link';
 import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
+import { Fragment } from 'react';
 
 const HandleBookMark = ({ productId }) => {
   const { data: session, status } = useSession();
@@ -66,24 +67,32 @@ export default function Bookmark() {
 
   if (isLoading || !data) {
     return (
-      <div className="flex max-w-screen-xl mx-auto px-10 max-md:px-2 justify-center items-center max-md:h-100dvh">
-        <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 24 24">
-          <path
-            fill="#a599ff"
-            d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8A8 8 0 0 1 12 20Z"
-            opacity="0.5"
-          />
-          <path fill="#a599ff" d="M20 12h2A10 10 0 0 0 12 2V4A8 8 0 0 1 20 12Z">
-            <animateTransform
-              attributeName="transform"
-              dur="1.5s"
-              from="0 12 12"
-              repeatCount="indefinite"
-              to="360 12 12"
-              type="rotate"
-            />
-          </path>
-        </svg>
+      <div className="grid grid-cols-2 gap-2 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:grid-cols-1 max-md:main-768">
+        {Array.from({ length: 20 }).map((_, index) => (
+          <Fragment key={index}>
+            <div className="flex p-2 items-center border border-gray-300 rounded-sm justify-between" key={index}>
+              <div className="flex">
+                <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100"></div>
+                <div className="flex flex-col justify-center pr-5 space-y-1">
+                  <div className="h-5 w-36 bg-gray-100"></div>
+                  <div className="space-x-1 items-center h-5 w-32 bg-gray-100"></div>
+                </div>
+              </div>
+              <svg
+                className="min-w-7"
+                xmlns="http://www.w3.org/2000/svg"
+                width="28px"
+                height="28px"
+                viewBox="0 0 32 32"
+              >
+                <path stroke="#f3f4f6" fill="#f3f4f6" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
+              </svg>
+            </div>
+          </Fragment>
+        ))}
+        <div className="absolute top-0 left-0 h-full w-full animate-loading">
+          <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
+        </div>
       </div>
     );
   }

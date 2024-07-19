@@ -4,13 +4,15 @@ import React, { useState, useRef, useEffect, useCallback, Fragment, useLayoutEff
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import getProducts from './_lib/getProducts';
+import getProducts from '../_lib/getProducts';
 import { useInView } from 'react-intersection-observer';
-import debounce from '../../../utils/debounce';
+import debounce from '../../../../utils/debounce';
 import Link from 'next/link';
-import fetchHotProducts from './_lib/fetchHotProducts';
+import fetchHotProducts from '../_lib/fetchHotProducts';
 import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
+import Skeletons from './Skeletons';
+import Skeleton from '../../_components/Skeleton';
 
 const categories = [
   {
@@ -321,14 +323,25 @@ const onClickAllProduct = () => {
 
 const RenderProductsNum = ({ total }) => {
   return (
-    <div className="flex py-4 text-sm max-md:py-2 max-md:px-3">
-      <p className="font-semibold">{total}</p>개의 검색 결과
-    </div>
+    <>
+      {total === undefined ? (
+        <div className="flex h-5 w-32 my-4 max-md:my-2 max-md:mx-3 bg-gray-100 relative rounded-sm">
+          <div className="absolute top-0 left-0 h-full w-full animate-loading">
+            <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex py-4 text-sm max-md:py-2 max-md:px-3">
+          <p className="font-semibold">{total}</p>개의 검색 결과
+        </div>
+      )}
+    </>
   );
 };
 
 const RenderProducts = React.memo(
   ({ params, mobile, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxmd }) => {
+    const initPageRef = useRef(true);
     const createQueryString = useCallback(() => {
       const queryParams = new URLSearchParams();
       if (params.get('keyword')) queryParams.append('keyword', params.get('keyword'));
@@ -355,6 +368,8 @@ const RenderProducts = React.memo(
     const { ref, inView } = useInView({ threshold: 0, delay: 0, rootMargin: '500px' });
     const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(queryString);
 
+    const hasProducts = data?.pages.some(page => page.products.length > 0);
+
     const total = data?.pages[0]?.total;
     useEffect(() => {
       const scrollPos = Number(sessionStorage.getItem('scrollPos'));
@@ -370,6 +385,14 @@ const RenderProducts = React.memo(
       }
     }, [inView, fetchNextPage]);
 
+    useEffect(() => {
+      initPageRef.current = true;
+    }, [params]);
+
+    useEffect(() => {
+      if (!isFetching) initPageRef.current = false;
+    }, [isFetching]);
+
     return (
       <div className="flex-col w-full">
         <RenderProductsNum total={total} />
@@ -382,90 +405,94 @@ const RenderProducts = React.memo(
           />
         )}
         {/* 검색 결과 없을 때 일단 min-h로.. */}
-        <div className="grid grid-cols-4 min-h-64 md:gap-3 max-md:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-3">
-          {data?.pages.map((page, i) => (
-            <Fragment key={i}>
-              {page.products.map((product, idx) => (
-                <div className="flex flex-col cursor-pointer relative rounded" key={product._id}>
-                  <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
-                    <Image
-                      className="rounded object-cover"
-                      src={product.images.length ? product.images[0] : '/키보드1.webp'}
-                      alt={product.title}
-                      fill
-                      sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
-                    />
-                    <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
-                      {conditions[product.condition].option}
-                    </div>
-                    {product.images.length !== 1 && (
-                      <svg
-                        className="absolute right-1 top-1 opacity-90 max-md:w-7"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="2em"
-                        height="2em"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fill="white"
-                          d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
+        {isFetching && initPageRef.current ? (
+          <Skeletons />
+        ) : hasProducts ? (
+          <>
+            <div className="grid grid-cols-4 md:gap-3 max-md:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-3">
+              {data?.pages.map((page, i) => (
+                <Fragment key={i}>
+                  {page.products.map((product, idx) => (
+                    <div className="flex flex-col cursor-pointer relative rounded" key={product._id}>
+                      <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
+                        <Image
+                          className="rounded object-cover"
+                          src={product.images.length ? product.images[0] : '/키보드1.webp'}
+                          alt={product.title}
+                          fill
+                          sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
                         />
-                      </svg>
-                    )}
-                  </div>
-                  <div className=" flex flex-col py-1 max-md:text-sm justify-center h-14">
-                    <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>
-                    <div className="space-x-1 font-semibold break-all line-clamp-1">
-                      <span className="">{product.price.toLocaleString()}</span>
-                      <span className="text-sm">원</span>
+                        <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
+                          {conditions[product.condition].option}
+                        </div>
+                        {product.images.length !== 1 && (
+                          <svg
+                            className="absolute right-1 top-1 opacity-90 max-md:w-7"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="2em"
+                            height="2em"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fill="white"
+                              d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      <div className=" flex flex-col py-1 max-md:text-sm justify-center h-14">
+                        <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>
+                        <div className="space-x-1 font-semibold break-all line-clamp-1">
+                          <span className="">{product.price.toLocaleString()}</span>
+                          <span className="text-sm">원</span>
+                        </div>
+                      </div>
+                      <Link
+                        href={`/shop/product/${product._id}`}
+                        className="absolute top-0 left-0 w-full h-full rounded"
+                        onClick={e => {
+                          if (mobile) onClickProduct(e);
+                          onClickAllProduct();
+                        }}
+                      ></Link>
                     </div>
-                  </div>
-                  <Link
-                    href={`/shop/product/${product._id}`}
-                    className="absolute top-0 left-0 w-full h-full rounded"
-                    onClick={e => {
-                      if (mobile) onClickProduct(e);
-                      onClickAllProduct();
-                    }}
-                  ></Link>
-                </div>
+                  ))}
+                </Fragment>
               ))}
-            </Fragment>
-          ))}
-        </div>
-        <div className="h-12" ref={ref}></div>
-        {isFetching ? (
-          <div className="flex w-full items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 24 24">
-              <path
-                fill="#a599ff"
-                d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8A8 8 0 0 1 12 20Z"
-                opacity="0.5"
-              />
-              <path fill="#a599ff" d="M20 12h2A10 10 0 0 0 12 2V4A8 8 0 0 1 20 12Z">
-                <animateTransform
-                  attributeName="transform"
-                  dur="1.5s"
-                  from="0 12 12"
-                  repeatCount="indefinite"
-                  to="360 12 12"
-                  type="rotate"
-                />
-              </path>
-            </svg>
-          </div>
+            </div>
+            {isFetching && <Skeletons />}
+          </>
         ) : (
-          ''
+          <div className="flex flex-col items-center h-72 justify-center space-y-1 max-md:h-44">
+            <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 256 256">
+              <path
+                fill="lightgray"
+                d="m212.24 83.76l-56-56A6 6 0 0 0 152 26H56a14 14 0 0 0-14 14v176a14 14 0 0 0 14 14h144a14 14 0 0 0 14-14V88a6 6 0 0 0-1.76-4.24M158 46.48L193.52 82H158ZM202 216a2 2 0 0 1-2 2H56a2 2 0 0 1-2-2V40a2 2 0 0 1 2-2h90v50a6 6 0 0 0 6 6h50Zm-45.76-92.24a6 6 0 0 1 0 8.48L136.49 152l19.75 19.76a6 6 0 1 1-8.48 8.48L128 160.49l-19.76 19.75a6 6 0 0 1-8.48-8.48L119.51 152l-19.75-19.76a6 6 0 1 1 8.48-8.48L128 143.51l19.76-19.75a6 6 0 0 1 8.48 0"
+              />
+            </svg>
+            <p className="text-gray-300 font-medium">해당하는 상품이 없습니다</p>
+          </div>
         )}
+        <div className="h-12" ref={ref}></div>
       </div>
     );
   },
 );
 
-const RenderPopularProducts = React.memo(({ data, category, mobile, setIsFocused }) => {
+const RenderPopularProducts = React.memo(({ data, category, mobile, setIsFocused, isLoading }) => {
   const ref = useRef(null);
   let categoryTitle =
-    category === 0 ? '전체' : category === 1 ? '키보드' : category === 2 ? '마우스' : category === 9 ? '기타' : '';
+    category === 0
+      ? '전체'
+      : category === 1
+      ? '키보드'
+      : category === 2
+      ? '마우스'
+      : category === 3
+      ? '패드'
+      : category === 9
+      ? '기타'
+      : '';
 
   useEffect(() => {
     const $nav = document.getElementById('nav');
@@ -494,47 +521,71 @@ const RenderPopularProducts = React.memo(({ data, category, mobile, setIsFocused
       if (ref.current) observer.unobserve(ref.current);
     };
   }, []);
-  return (
-    <div
-      ref={ref}
-      className="px-2 max-md:border-0 max-md:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto md:px-10"
-    >
-      <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
-      <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
-        {data?.length ? (
-          data.map((product, idx) => (
-            <div className="flex flex-col  cursor-pointer relative max-md:min-w-28 max-md:w-36" key={idx}>
-              <div className="w-full aspect-square relative min-h-20 min-w-20 bg-gray-100">
-                <Image
-                  className="rounded object-cover"
-                  src={product.images.length ? product.images[0] : '/키보드4.png'}
-                  alt={product.title}
-                  fill
-                  sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"
-                />
-                <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
-                  {conditions[product.condition].option}
-                </div>
-              </div>
-              <div className=" flex flex-col py-1 max-md:text-sm justify-center h-14">
-                <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>
-                <div className="space-x-1 font-semibold break-all line-clamp-1">
-                  <span className="">{product.price.toLocaleString()}</span>
-                  <span className="text-sm">원</span>
-                </div>
-              </div>
-              <Link
-                href={`/shop/product/${product._id}`}
-                onClick={e => mobile && onClickProduct(e)}
-                className="absolute left-0 right-0 w-full h-full rounded"
-              ></Link>
-            </div>
-          ))
-        ) : (
-          <div className=""></div>
-        )}
+
+  if (isLoading) {
+    return (
+      <div className="px-2 max-md:border-0 max-md:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto md:px-10">
+        <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
+        <div className="grid grid-cols-6 gap-2 pb-2 w-full relative max-md:flex">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Fragment key={index}>
+              <Skeleton />
+            </Fragment>
+          ))}
+          <div className="absolute top-0 left-0 h-full w-full animate-loading">
+            <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
+          </div>
+        </div>
       </div>
-    </div>
+    );
+  }
+  return (
+    <>
+      {data?.length ? (
+        <div
+          ref={ref}
+          className="px-2 max-md:border-0 max-md:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto md:px-10"
+        >
+          <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
+          <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
+            {data?.length ? (
+              data.map((product, idx) => (
+                <div className="flex flex-col  cursor-pointer relative max-md:min-w-28 max-md:w-36" key={idx}>
+                  <div className="w-full aspect-square relative min-h-20 min-w-20 bg-gray-100">
+                    <Image
+                      className="rounded object-cover"
+                      src={product.images.length ? product.images[0] : '/키보드4.png'}
+                      alt={product.title}
+                      fill
+                      sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"
+                    />
+                    <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
+                      {conditions[product.condition].option}
+                    </div>
+                  </div>
+                  <div className=" flex flex-col py-1 max-md:text-sm justify-center h-14">
+                    <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>
+                    <div className="space-x-1 font-semibold break-all line-clamp-1">
+                      <span className="">{product.price.toLocaleString()}</span>
+                      <span className="text-sm">원</span>
+                    </div>
+                  </div>
+                  <Link
+                    href={`/shop/product/${product._id}`}
+                    onClick={e => mobile && onClickProduct(e)}
+                    className="absolute left-0 right-0 w-full h-full rounded"
+                  ></Link>
+                </div>
+              ))
+            ) : (
+              <div className=""></div>
+            )}
+          </div>
+        </div>
+      ) : (
+        ''
+      )}
+    </>
   );
 });
 
@@ -1021,8 +1072,9 @@ export default function RenderShop() {
           />
         </div>
         <div className="border-b max-md:border-0">
-          {!paramsKeyword && top && top.length ? (
+          {!paramsKeyword ? (
             <RenderPopularProducts
+              isLoading={isLoading}
               data={top}
               category={hotProductFlag.current}
               mobile={mobile}
