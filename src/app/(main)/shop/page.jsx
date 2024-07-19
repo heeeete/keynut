@@ -1,4 +1,4 @@
-import RenderShop from './RenderShop';
+import RenderShop from './_components/RenderShop';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import getProducts from './_lib/getProducts';
 import { Suspense } from 'react';

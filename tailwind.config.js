@@ -124,6 +124,20 @@ module.exports = {
         80: 80,
         90: 90,
       },
+      keyframes: {
+        loading: {
+          '0%': {
+            transform: 'translateX(0%)',
+          },
+
+          '100%': {
+            transform: 'translateX(100%)',
+          },
+        },
+      },
+      animation: {
+        loading: 'loading 1s infinite',
+      },
     },
   },
 

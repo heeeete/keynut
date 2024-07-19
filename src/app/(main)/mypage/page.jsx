@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 
 // import MyPost from './_components/MyPost';
 // import LikedPost from './_components/LikedPost';
@@ -10,6 +10,7 @@ import getUserProducts from '@/lib/getUserProducts';
 import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
 import { useQuery } from '@tanstack/react-query';
+import ProfileSkeleton from '../_components/ProfileSkeleton';
 
 const MyProfile = React.memo(({ mobile, session }) => {
   return (
@@ -35,7 +36,15 @@ const MyProfile = React.memo(({ mobile, session }) => {
             </svg>
           </div>
         )}
-        <div className="text-lg max-md:text-base">{session?.user.nickname ? session.user.nickname : ''}</div>
+        {session?.user.nickname ? (
+          <div className="text-lg max-md:text-base">{session.user.nickname}</div>
+        ) : (
+          <div className="h-6 w-32 bg-gray-100 relative rounded-sm">
+            <div className="absolute top-0 left-0 h-full w-full animate-loading">
+              <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
+            </div>
+          </div>
+        )}
       </div>
       <button>
         <Link
@@ -141,24 +150,15 @@ const MyProducts = ({ data, mobile }) => {
               </div>
             )
           ) : (
-            <div className="flex w-full h-full items-center justify-center ">
-              <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 24 24">
-                <path
-                  fill="#a599ff"
-                  d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8A8 8 0 0 1 12 20Z"
-                  opacity="0.5"
-                />
-                <path fill="#a599ff" d="M20 12h2A10 10 0 0 0 12 2V4A8 8 0 0 1 20 12Z">
-                  <animateTransform
-                    attributeName="transform"
-                    dur="1.5s"
-                    from="0 12 12"
-                    repeatCount="indefinite"
-                    to="360 12 12"
-                    type="rotate"
-                  />
-                </path>
-              </svg>
+            <div className="grid grid-cols-3 gap-1 min-h-14 relative max-md:grid-cols-1">
+              {Array.from({ length: 30 }).map((_, index) => (
+                <Fragment key={index}>
+                  <ProfileSkeleton />
+                </Fragment>
+              ))}
+              <div className="absolute top-0 left-0 h-full w-full animate-loading">
+                <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
+              </div>
             </div>
           )}
         </div>
