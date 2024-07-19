@@ -1,4 +1,6 @@
 'use client';
+
+import Link from 'next/link';
 import Image from 'next/image';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -357,7 +359,7 @@ const RenderDescriptionInput = React.memo(({ description, setDescription }) => {
           }}
           maxLength={1000}
           placeholder="상품 설명을 입력해주세요."
-          className="flex-1 outline-none no-underline text-xl  border scrollbar-hide resize-none max-[480px]:text-base"
+          className="flex-1 p-2 bg-gray-50 outline-none no-underline text-xl  scrollbar-hide resize-none max-[480px]:text-base"
           id="description"
           rows={8}
         />
@@ -395,9 +397,19 @@ const RenderPriceInput = React.memo(({ price, setPrice }) => {
 const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl }) => {
   return (
     <div className="mt-10 max-w-lg border-b">
-      <div className="flex items-end my-3">
-        <div className="font-medium text-xl max-[480px]:text-base">오픈채팅방</div>
-        <div className="text-sm">(선택)</div>
+      <div className="flex items-end my-3 justify-between">
+        <div className="flex items-end">
+          <div className="font-medium text-xl max-[480px]:text-base">오픈채팅방</div>
+          <div className="text-sm">(선택)</div>
+        </div>
+        <Link
+          href="/notices/open-chat-guide"
+          // href="/guide/1.svg"
+          target="_blank"
+          className="border px-2 rounded bg-gray-100 text-gray-400 font-semibold"
+        >
+          가이드
+        </Link>
       </div>
       <input
         type="text"

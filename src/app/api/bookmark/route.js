@@ -11,6 +11,7 @@ const users = db.collection('users');
 export async function GET(req) {
   try {
     const session = await getUserSession();
+    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const { bookmarked } = await users.findOne({ _id: new ObjectId(session.user.id) });
     if (!bookmarked || bookmarked.length === 0) {
       return NextResponse.json([], { status: 200 });

@@ -7,7 +7,8 @@ import { NextResponse } from 'next/server';
 export async function POST(req, { params }) {
   try {
     const { id } = params;
-    const session = await getUserSession();
+    const { user: session } = await getUserSession();
+    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const { isBookmarked } = await req.json();
 
     const client = await connectDB;

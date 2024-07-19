@@ -62,9 +62,7 @@ export async function GET(req) {
       query._id = { $lt: new ObjectId(lastProductId) };
     }
 
-    console.log('-------------------haha-----------------');
     const total = await db.collection('products').countDocuments(query);
-    console.log('-------------', total);
     const products = await db.collection('products').find(query).sort({ createdAt: -1 }).limit(48).toArray();
     if (products) {
       return NextResponse.json({ products, total }, { status: 200 });
@@ -86,6 +84,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const { user: session } = await getUserSession();
+    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const products = db.collection('products');

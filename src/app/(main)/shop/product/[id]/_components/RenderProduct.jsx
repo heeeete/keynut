@@ -316,19 +316,13 @@ const IsWriter = ({ id, state, session, setSettingModal, queryClient }) => {
   );
 };
 
-const SettingModal = ({ id, session, setSettingModal, setDeleteState, setRaiseCount, setUpModal }) => {
-  const openUpModal = async () => {
-    if (!session) return signIn();
-    try {
-      const res = await fetch(`/api/user/${session.user.id}/profile`);
-      const data = await res.json();
-      if (!res.ok) {
-      }
-      setRaiseCount(data.raiseCount);
-      setUpModal(true);
-    } catch (error) {
-      console.error(error);
-    }
+const SettingModal = ({ id, setSettingModal, setDeleteState, setRaiseCount, setUpModal }) => {
+  const { data: session } = useSession();
+
+  const openUpModal = () => {
+    setSettingModal(false);
+    if (!session) signIn();
+    setUpModal(true);
   };
 
   return (
@@ -348,10 +342,7 @@ const SettingModal = ({ id, session, setSettingModal, setDeleteState, setRaiseCo
         </Link>
         <button
           className="flex items-center justify-center space-x-1 w-full py-4 font-semibold border-b"
-          onClick={() => {
-            openUpModal();
-            setSettingModal(false);
-          }}
+          onClick={() => openUpModal()}
         >
           <p>UP</p>
           <img src="/product/up.svg" width={24} height={24} alt="UP" />
@@ -378,12 +369,25 @@ const incrementViewCount = async productId => {
   return res.json();
 };
 
+const initRaiseCount = setRaiseCount => {
+  return () => {
+    fetch('/api/user/raise')
+      .then(res => res.json())
+      .then(data => {
+        setRaiseCount(data);
+      })
+      .catch(error => {
+        console.error('Error fetching raise count:', error);
+      });
+  };
+};
+
 export default function RenderProduct({ id }) {
   const queryClient = useQueryClient();
   const [deleteState, setDeleteState] = useState(false);
   const [settingModal, setSettingModal] = useState(null);
   const [upModal, setUpModal] = useState(false);
-  const [raiseCount, setRaiseCount] = useState(5);
+  const [raiseCount, setRaiseCount] = useState(0);
   const router = useRouter();
   const { data: session, status } = useSession();
   const { data, error, isLoading } = useQuery({
@@ -392,6 +396,7 @@ export default function RenderProduct({ id }) {
     staleTime: Infinity,
   });
   const invalidateFilters = useInvalidateFiltersQuery();
+  const fetchRaiseCount = initRaiseCount(setRaiseCount);
   const { user = null, ...product } = data || {};
   const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
 
@@ -411,6 +416,10 @@ export default function RenderProduct({ id }) {
     fetchUpdateViews();
   }, []);
 
+  useEffect(() => {
+    if (writer) fetchRaiseCount();
+  }, [writer]);
+
   const deleteProduct = useCallback(async () => {
     try {
       const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
@@ -423,6 +432,25 @@ export default function RenderProduct({ id }) {
       console.log(error);
     }
   }, [router]);
+
+  const raiseProduct = async () => {
+    try {
+      const res = await fetch(`/api/products/${id}/raise`, { method: 'PATCH' });
+      if (res.ok) {
+        router.refresh();
+        invalidateFilters();
+        fetchRaiseCount();
+        alert('성공!');
+        setUpModal(false);
+      } else {
+        alert('오류가 발생했습니다. 잠시후 다시 시도해주세요.');
+        location.reload();
+      }
+    } catch (error) {
+      alert('오류가 발생했습니다. 잠시후 다시 시도해주세요.');
+      location.reload();
+    }
+  };
 
   if (!data && isLoading === false) return router.replace('/');
   if (error) return <div>Error loading product</div>;
@@ -482,7 +510,14 @@ export default function RenderProduct({ id }) {
         <RenderDescriptor product={product} />
       </div>
       {deleteState && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteProduct} modalSet={setDeleteState} />}
-      {upModal && <Modal message={'UP'} subMessage={`${raiseCount}개있고 사용할꺼야 말꺼야`} modalSet={setUpModal} />}
+      {upModal && (
+        <Modal
+          message={raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.'}
+          subMessage={raiseCount ? `사용 시 1회 차감됩니다.` : ''}
+          modalSet={setUpModal}
+          yesCallback={raiseCount ? raiseProduct : null}
+        />
+      )}
       {settingModal && (
         <SettingModal
           id={id}

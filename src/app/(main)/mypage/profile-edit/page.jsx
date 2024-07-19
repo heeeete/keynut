@@ -10,6 +10,7 @@ import Script from 'next/script';
 import Modal from '../../_components/Modal';
 import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
+import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 
 const ProfileName = ({ session, update, mobile }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -196,8 +197,10 @@ const ProfileImage = ({ session, update, mobile }) => {
 
 export default function ProfileEdit() {
   const { data: session, status, update } = useSession();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
+  const invalidateFilters = useInvalidateFiltersQuery();
   const mobile = isMobile();
 
   const onClickWithdrawal = async () => {
@@ -213,7 +216,9 @@ export default function ProfileEdit() {
       await signIn();
     } else {
       alert('회원 탈퇴가 정상적으로 처리되었습니다.');
-      signOut();
+      invalidateFilters();
+      router.refresh();
+      signOut({ callbackUrl: '/' });
     }
 
     setIsLoading(false);
