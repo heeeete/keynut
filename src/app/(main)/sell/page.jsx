@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Loading from '../_components/Loading';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
+import Modal from '../_components/Modal';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   switch (mainCategory) {
@@ -404,10 +405,19 @@ const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl }) => {
         </div>
         <Link
           href="/notices/open-chat-guide"
-          // href="/guide/1.svg"
           target="_blank"
-          className="border px-2 rounded bg-gray-100 text-gray-400 font-semibold"
+          className="flex justify-center items-center px-1 rounded border bg-gray-100 text-gray-400 text-sm font-semibold"
         >
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m5 12l5 5L20 7"
+            />
+          </svg>
           가이드
         </Link>
       </div>
@@ -417,7 +427,7 @@ const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl }) => {
         maxLength={50}
         onChange={e => setOpenChatUrl(e.target.value)}
         className="w-full outline-none no-underline text-xl max-[480px]:text-base"
-        placeholder="카카오톡의 오픈채팅방을 개설하여 주소를 입력해주세요."
+        placeholder="카카오톡의 오픈 채팅방을 개설하여 주소를 입력해주세요."
       />
     </div>
   );
@@ -512,6 +522,7 @@ export default function Sell() {
   useEffect(() => {
     if (status !== 'loading' && !session) return router.push('/signin');
     if (session) setOpenChatUrl(session.user.openChatUrl || '');
+    console.log(session);
   }, [session]);
 
   const handleDisabled = () => {
@@ -529,6 +540,10 @@ export default function Sell() {
   };
 
   const handleUpload = async () => {
+    if (!openChatUrl) {
+      const proceed = confirm('오픈 채팅방 주소가 없습니다. 계속 진행하시겠습니까?');
+      if (!proceed) return;
+    }
     setIsLoading(true);
     const formData = new FormData();
     uploadImages.imageFiles.forEach(file => {

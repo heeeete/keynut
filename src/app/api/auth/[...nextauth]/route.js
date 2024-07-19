@@ -249,7 +249,7 @@ export const authOptions = {
 
       if (trigger === 'update' && session !== null) {
         const { openChatUrl, image, nickname, nicknameChangedAt, recentSearches } = session;
-        if (openChatUrl) token.user.openChatUrl = openChatUrl;
+        if (openChatUrl !== undefined || openChatUrl !== null) token.user.openChatUrl = openChatUrl;
         if (image !== undefined) token.user.image = image;
         if (nickname) token.user.nickname = nickname;
         if (nicknameChangedAt) token.user.nicknameChangedAt = nicknameChangedAt;

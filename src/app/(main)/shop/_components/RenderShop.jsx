@@ -132,6 +132,35 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
   const [recentSearches, setRecentSearches] = useState([]);
   const inputRef = useRef(null);
   const searchRef = useRef(null);
+  const searchContainerRef = useRef(null);
+
+  useEffect(() => {
+    const $nav = document.getElementById('nav');
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          setIsFocused(false);
+          searchRef.current?.blur();
+          $nav.style.borderBottom = '1px solid lightgray';
+        } else {
+          $nav.style.borderBottom = '';
+        }
+      },
+      {
+        rootMargin: '-114px 0px 0px 0px',
+        threshold: 0,
+      },
+    );
+
+    if (searchContainerRef.current) {
+      observer.observe(searchContainerRef.current);
+    }
+
+    return () => {
+      if (searchContainerRef.current) observer.unobserve(searchContainerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const storedSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
@@ -174,7 +203,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
     localStorage.setItem('recentSearches', JSON.stringify([]));
   };
   return (
-    <div className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col">
+    <div ref={searchContainerRef} className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col">
       <div className="max-md:search-bar-maxmd max-md:px">
         <div className="search-bar-md max-md:search-bar-maxmd">
           <form className="flex w-450 max-md:w-full items-center" onSubmit={handleSearch}>
@@ -479,8 +508,7 @@ const RenderProducts = React.memo(
   },
 );
 
-const RenderPopularProducts = React.memo(({ data, category, mobile, setIsFocused, isLoading }) => {
-  const ref = useRef(null);
+const RenderPopularProducts = React.memo(({ data, category, mobile, isLoading }) => {
   let categoryTitle =
     category === 0
       ? '전체'
@@ -493,34 +521,6 @@ const RenderPopularProducts = React.memo(({ data, category, mobile, setIsFocused
       : category === 9
       ? '기타'
       : '';
-
-  useEffect(() => {
-    const $nav = document.getElementById('nav');
-    const $searchInput = document.getElementById('searchInput');
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) {
-          setIsFocused(false);
-          $searchInput?.blur();
-          $nav.style.borderBottom = '1px solid lightgray';
-        } else {
-          $nav.style.borderBottom = '';
-        }
-      },
-      {
-        rootMargin: '-112px 0px 0px 0px',
-        threshold: 1,
-      },
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) observer.unobserve(ref.current);
-    };
-  }, []);
 
   if (isLoading) {
     return (
@@ -542,10 +542,7 @@ const RenderPopularProducts = React.memo(({ data, category, mobile, setIsFocused
   return (
     <>
       {data?.length ? (
-        <div
-          ref={ref}
-          className="px-2 max-md:border-0 max-md:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto md:px-10"
-        >
+        <div className="px-2 max-md:border-0 max-md:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto md:px-10">
           <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
           <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
             {data?.length ? (
@@ -1073,13 +1070,7 @@ export default function RenderShop() {
         </div>
         <div className="border-b max-md:border-0">
           {!paramsKeyword ? (
-            <RenderPopularProducts
-              isLoading={isLoading}
-              data={top}
-              category={hotProductFlag.current}
-              mobile={mobile}
-              setIsFocused={setIsFocused}
-            />
+            <RenderPopularProducts isLoading={isLoading} data={top} category={hotProductFlag.current} mobile={mobile} />
           ) : (
             ''
           )}

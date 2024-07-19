@@ -10,11 +10,16 @@ export async function GET() {
 
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
-    const { lastRaiseReset, raiseCount } = await db.collection('users').findOne({ _id: new ObjectId(session.id) });
+    const user = await db.collection('users').findOne({ _id: new ObjectId(session.id) });
+    const { lastRaiseReset, raiseCount } = user;
 
     const now = new Date();
-    const nowDate = now.toISOString().split('T')[0];
-    const lastRaiseResetDate = new Date(lastRaiseReset).toISOString().split('T')[0];
+    const kstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    const nowDate = kstNow.toISOString().split('T')[0];
+
+    const lastRaiseResetDate = new Date(lastRaiseReset.getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    console.log('lastRaiseResetDate ================== ', lastRaiseResetDate, 'nowDate ================ ', nowDate);
 
     if (nowDate === lastRaiseResetDate) {
       return NextResponse.json(raiseCount, { status: 200 });

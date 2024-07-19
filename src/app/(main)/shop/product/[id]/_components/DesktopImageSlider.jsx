@@ -32,8 +32,6 @@ export default function DesktopImageSlider({ images, state }) {
     window.open(images[currentImageIndex], '_blank');
   };
 
-  console.log(images);
-
   return (
     <div className="max-w-screen-xl mx-auto flex flex-col items-center justify-center">
       <div
