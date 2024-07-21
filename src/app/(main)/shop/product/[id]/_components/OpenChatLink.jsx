@@ -3,7 +3,6 @@
 import Link from 'next/link';
 
 export default function OpenChatLink({ url }) {
-  console.log(url);
   return (
     <Link
       href={url}
