@@ -400,13 +400,6 @@ const RenderProducts = React.memo(
     const hasProducts = data?.pages.some(page => page.products.length > 0);
 
     const total = data?.pages[0]?.total;
-    useEffect(() => {
-      const scrollPos = Number(sessionStorage.getItem('scrollPos'));
-      sessionStorage.removeItem('scrollPos');
-      setTimeout(() => {
-        window.scrollTo(0, scrollPos);
-      }, 100);
-    }, []);
 
     useEffect(() => {
       if (inView && !isFetching && hasNextPage) {
@@ -996,7 +989,14 @@ export default function RenderShop() {
   }, [debounceSetQueryString, createQueryString]);
   // ======================================================
 
+  const firstRenderRef = useRef(true);
+
   useEffect(() => {
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false;
+      return;
+    }
+
     if (queryString.length) router.push(`/shop?${queryString}`);
     else router.push('/shop');
   }, [queryString, router]);
