@@ -4,7 +4,10 @@ import { usePathname } from 'next/navigation';
 export default function Footer() {
   const pathname = usePathname();
   const footer =
-    (!pathname.startsWith('/mypage') && !pathname.startsWith('/bookmark') && !pathname.startsWith('/shop/')) ||
+    (!pathname.startsWith('/mypage') &&
+      !pathname.startsWith('/bookmark') &&
+      !pathname.startsWith('/shop/') &&
+      !pathname.startsWith('/gallery')) ||
     pathname.startsWith('/shop/product');
   return (
     <>
