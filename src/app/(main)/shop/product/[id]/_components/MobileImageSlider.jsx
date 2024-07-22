@@ -23,6 +23,12 @@ export default function MobileImageSlider({ images, state }) {
   const totalChildren = images.length;
 
   useEffect(() => {
+    return () => {
+      document.body.style.position = '';
+    };
+  }, []);
+
+  useEffect(() => {
     if (imageShowRef.current) {
       setClientWidth(imageShowRef.current.clientWidth / totalChildren);
     }
@@ -36,12 +42,13 @@ export default function MobileImageSlider({ images, state }) {
       if (isPinching.current) return;
       setIsTransitioning(false);
       cancelAnimationFrame(animationFrame.current);
-      if (Math.abs(travelRatio.current) > 0.2) {
+      if (Math.abs(travelRatio.current) >= 0.2) {
         const newIdx =
           travelRatio.current > 0
             ? Math.max(currentImageIndex - 1, 0)
             : Math.min(currentImageIndex + 1, totalChildren - 1);
         setCurrentImageIndex(newIdx);
+        console.log(newIdx, clientWidth);
         setOffset(newIdx * -clientWidth);
         setFullScreenOffset(newIdx * -window.innerWidth);
       } else {
@@ -57,11 +64,10 @@ export default function MobileImageSlider({ images, state }) {
       if (isPinching.current) return;
       if (Math.abs(travelRatio.current) < 0.8) {
         const travel = e.touches[0].clientX - initDragPos.current;
+        console.log(travel);
         travelRatio.current = travel / clientWidth;
-        animationFrame.current = requestAnimationFrame(() => {
-          setOffset(originOffset.current + travel);
-          setFullScreenOffset(originFullScreenOffset.current + travel);
-        });
+        setOffset(originOffset.current + travel);
+        setFullScreenOffset(originFullScreenOffset.current + travel);
       }
     };
 
@@ -71,7 +77,6 @@ export default function MobileImageSlider({ images, state }) {
         return;
       }
       isPinching.current = false;
-      if (!fullScreenModal) e.preventDefault();
       setIsTransitioning(true);
       travelRatio.current = 0;
       initDragPos.current = e.touches[0].clientX;
@@ -127,7 +132,7 @@ export default function MobileImageSlider({ images, state }) {
             }}
           >
             {images.map((img, idx) => (
-              <div key={idx} className="flex relative max-w-lg w-d-screen aspect-square">
+              <div key={idx} className="flex relative max-w-lg w-screen aspect-square">
                 <Image
                   src={img}
                   alt="product-img"
@@ -154,7 +159,7 @@ export default function MobileImageSlider({ images, state }) {
         </div>
       )}
       {fullScreenModal && (
-        <div className="fixed top-0 left-0 w-d-screen h-d-screen bg-black z-60">
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black z-90">
           <div className="fixed flex w-full z-60">
             <button onClick={handleFullScreenModal} className="p-3">
               <img src="/close.svg" width={30} height={30} alt="close button" />
@@ -170,8 +175,8 @@ export default function MobileImageSlider({ images, state }) {
               }}
             >
               {images.map((img, idx) => (
-                <div key={idx} className="flex relative w-d-screen h-d-screen">
-                  <Image src={img} alt="product-img" sizes="100dvh" fill style={{ objectFit: 'contain' }} />
+                <div key={idx} className="flex relative w-screen custom-dvh  bg-red-300">
+                  <Image src={img} alt="product-img" sizes="100vw" fill style={{ objectFit: 'contain' }} />
                 </div>
               ))}
             </div>
