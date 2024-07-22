@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useReducer, useRef } from 'react';
 import ImageSlider from '@/app/(main)/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/utils/timeAgo';
@@ -316,7 +316,7 @@ const IsWriter = ({ id, state, session, setSettingModal, queryClient }) => {
   );
 };
 
-const SettingModal = ({ id, setSettingModal, setDeleteState, setRaiseCount, setUpModal }) => {
+const SettingModal = ({ id, setSettingModal, setDeleteModal, setRaiseCount, setUpModal }) => {
   const { data: session } = useSession();
 
   const openUpModal = () => {
@@ -327,7 +327,7 @@ const SettingModal = ({ id, setSettingModal, setDeleteState, setRaiseCount, setU
 
   return (
     <div
-      className="fixed w-d-screen h-d-screen top-0 left-0 z-50 flex flex-col justify-center items-center"
+      className="fixed w-screen h-screen top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
       onClick={e => {
         if (e.currentTarget === e.target) setSettingModal(false);
       }}
@@ -351,7 +351,7 @@ const SettingModal = ({ id, setSettingModal, setDeleteState, setRaiseCount, setU
           className="flex items-center justify-center space-x-1 w-full py-4 font-semibold text-red-500"
           onClick={() => {
             setSettingModal(false);
-            setDeleteState(true);
+            setDeleteModal(true);
           }}
         >
           <p>삭제</p>
@@ -384,10 +384,11 @@ const initRaiseCount = setRaiseCount => {
 
 export default function RenderProduct({ id }) {
   const queryClient = useQueryClient();
-  const [deleteState, setDeleteState] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [settingModal, setSettingModal] = useState(null);
   const [upModal, setUpModal] = useState(false);
   const [raiseCount, setRaiseCount] = useState(0);
+  const posY = useRef(0);
   const router = useRouter();
   const { data: session, status } = useSession();
   const { data, error, isLoading } = useQuery({
@@ -399,6 +400,21 @@ export default function RenderProduct({ id }) {
   const fetchRaiseCount = initRaiseCount(setRaiseCount);
   const { user = null, ...product } = data || {};
   const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
+
+  useEffect(() => {
+    if (settingModal || upModal || deleteModal) {
+      if (posY.current === 0) posY.current = window.scrollY;
+      document.documentElement.style.setProperty('--posY', `-${posY.current}px`);
+      document.body.classList.add('fixed');
+    } else {
+      document.body.classList.remove('fixed');
+      window.scrollTo(0, posY.current);
+      posY.current = 0;
+    }
+    return () => {
+      document.body.classList.remove('fixed');
+    };
+  }, [settingModal, upModal, deleteModal]);
 
   useEffect(() => {
     const fetchUpdateViews = async () => {
@@ -460,7 +476,11 @@ export default function RenderProduct({ id }) {
       <div className="flex px-10 max-md:pb-3 max-md:px-4">
         <RenderCategory category={Number(product.category)} />
         {writer || session?.admin ? (
-          <button onClick={() => setSettingModal(true)}>
+          <button
+            onClick={() => {
+              setSettingModal(true);
+            }}
+          >
             <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-[480px]:flex" />
           </button>
         ) : (
@@ -509,7 +529,7 @@ export default function RenderProduct({ id }) {
         {!writer && <RenderProfile user={user} />}
         <RenderDescriptor product={product} />
       </div>
-      {deleteState && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteProduct} modalSet={setDeleteState} />}
+      {deleteModal && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteProduct} modalSet={setDeleteModal} />}
       {upModal && (
         <Modal
           message={raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.'}
@@ -524,7 +544,7 @@ export default function RenderProduct({ id }) {
           session={session}
           setSettingModal={setSettingModal}
           setRaiseCount={setRaiseCount}
-          setDeleteState={setDeleteState}
+          setDeleteModal={setDeleteModal}
           setUpModal={setUpModal}
         />
       )}

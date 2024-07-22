@@ -13,6 +13,13 @@ html {
 body {
 }
 
+body.fixed {
+  position: fixed;
+  top: var(--posY);
+  left: 0;
+  right: 0;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

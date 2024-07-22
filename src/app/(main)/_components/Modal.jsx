@@ -1,7 +1,7 @@
 export default function Modal({ message, subMessage = '', yesCallback, modalSet }) {
   return (
     <div
-      className="fixed top-0 left-0 w-d-screen h-d-screen flex justify-center items-center z-50"
+      className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-black bg-opacity-50 z-50"
       onClick={e => {
         if (e.currentTarget === e.target) modalSet(false);
       }}

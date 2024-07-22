@@ -125,6 +125,9 @@ export default function Nav() {
                   </li>
                 </>
               )}
+              <li>
+                <Link href={'/price'}>시세</Link>
+              </li>
             </div>
           </ul>
         </div>

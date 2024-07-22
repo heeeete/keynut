@@ -147,6 +147,10 @@ module.exports = {
         '.bottom-nav-calc-height': {
           height: 'calc(50px + env(safe-area-inset-bottom))',
         },
+        '.custom-dvh': {
+          height: '100vh',
+          height: 'calc(var(--vh, 1vh) * 100)',
+        },
         '.radio-checked-before::before': {
           content: '""',
           position: 'absolute',
@@ -226,7 +230,6 @@ module.exports = {
           flexWrap: 'wrap',
           padding: '10px 16px',
         },
-
         '.filter-button': {
           display: 'flex',
           padding: '4px 16px',
