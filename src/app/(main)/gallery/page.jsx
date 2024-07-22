@@ -34,6 +34,17 @@ export default function Gallery() {
   //   onSettled() {},
   // });
   return (
+    <div className="flex flex-col h-96 items-center justify-center space-y-2 max-md:custom-dvh">
+      <svg xmlns="http://www.w3.org/2000/svg" width="6em" height="6em" viewBox="0 0 32 32">
+        <path
+          fill="currentColor"
+          d="M7.5 6A1.5 1.5 0 0 0 6 7.5H4A1.5 1.5 0 0 0 2.5 9v11A1.5 1.5 0 0 0 4 21.5h2V30h2v-8.5h16V30h2v-8.5h2a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 28 7.5h-2a1.5 1.5 0 0 0-3 0H9A1.5 1.5 0 0 0 7.5 6m-4 5.975L6.975 8.5h5.05L3.5 17.025zM4.975 20.5l12-12h5.05l-12 12zm22-12H28a.5.5 0 0 1 .5.5v3.025L20.025 20.5h-5.05zm1.525 8.475V20a.5.5 0 0 1-.5.5h-3.025z"
+        />
+      </svg>
+      <p className="font-semibold text-xl">페이지 공사중..</p>
+    </div>
+  );
+  return (
     <div className="flex w-full flex-col">
       <div className="sticky top-0 flex flex-col z-20 border-b bg-white">
         <div className="search-bar-container-md max-md:search-bar-container-maxmd">
