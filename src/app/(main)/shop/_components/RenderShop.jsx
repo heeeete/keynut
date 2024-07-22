@@ -9,7 +9,6 @@ import { useInView } from 'react-intersection-observer';
 import debounce from '../../../../utils/debounce';
 import Link from 'next/link';
 import fetchHotProducts from '../_lib/fetchHotProducts';
-import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
 import Skeletons from './Skeletons';
 import Skeleton from '../../_components/Skeleton';
@@ -473,7 +472,6 @@ const RenderProducts = React.memo(
                         href={`/shop/product/${product._id}`}
                         className="absolute top-0 left-0 w-full h-full rounded"
                         onClick={e => {
-                          if (mobile) onClickProduct(e);
                           onClickAllProduct();
                         }}
                       ></Link>
@@ -562,7 +560,6 @@ const RenderPopularProducts = React.memo(({ data, category, mobile, isLoading })
                   </div>
                   <Link
                     href={`/shop/product/${product._id}`}
-                    onClick={e => mobile && onClickProduct(e)}
                     className="absolute left-0 right-0 w-full h-full rounded"
                   ></Link>
                 </div>
@@ -800,13 +797,7 @@ const FilterBar = ({
           </svg>
         </button>
       </div>
-      <button
-        onClick={e => {
-          onClickProduct(e);
-          resetFilter();
-        }}
-        className="p-1 md:hidden"
-      >
+      <button onClick={e => resetFilter()} className="p-1 md:hidden">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 21 21">
           <g fill="none" fillRule="evenodd" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3.578 6.487A8 8 0 1 1 2.5 10.5" />

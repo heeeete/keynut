@@ -5,8 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Nothing_You_Could_Do } from 'next/font/google';
 import Link from 'next/link';
-import onClickProduct from '@/utils/onClickProduct';
-import { isMobile } from '@/lib/isMobile';
 
 const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });
 
@@ -14,7 +12,6 @@ export default function SignIn() {
   const { data: session, status } = useSession();
   const [providers, setProviders] = useState({});
   const [callbackUrl, setCallbackUrl] = useState('/');
-  const mobile = isMobile();
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
@@ -44,9 +41,7 @@ export default function SignIn() {
       <div className="flex flex-col gap-y-4 relative p-2">
         <Link
           href={'/'}
-          onClick={e => {
-            mobile && onClickProduct(e);
-          }}
+          onClick={e => {}}
           className={`${title.className} absolute -top-16 left-1/2 -translate-x-1/2 flex text-3xl justify-center cursor-pointer w-34`}
         >
           KEYNUT

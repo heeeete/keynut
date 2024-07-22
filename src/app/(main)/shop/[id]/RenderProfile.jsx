@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 import getUserProducts from '@/lib/getUserProducts';
 import { isMobile } from '@/lib/isMobile';
-import onClickProduct from '@/utils/onClickProduct';
 import { useQuery } from '@tanstack/react-query';
 import ProfileSkeleton from '../../_components/ProfileSkeleton';
 
@@ -116,7 +115,6 @@ const UserProducts = ({ data, mobile }) => {
                       <Link
                         className="absolute top-0 left-0 w-full h-full rounded"
                         href={`/shop/product/${product._id}`}
-                        onClick={e => mobile && onClickProduct(e)}
                       ></Link>
                     </div>
                   );

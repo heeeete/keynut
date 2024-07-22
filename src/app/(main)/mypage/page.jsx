@@ -7,7 +7,6 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import getUserProducts from '@/lib/getUserProducts';
-import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
 import { useQuery } from '@tanstack/react-query';
 import ProfileSkeleton from '../_components/ProfileSkeleton';
@@ -50,7 +49,6 @@ const MyProfile = React.memo(({ mobile, session }) => {
         <Link
           className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm "
           href={'/mypage/profile-edit'}
-          onClick={e => mobile && onClickProduct(e)}
         >
           프로필 관리
         </Link>
@@ -130,7 +128,6 @@ const MyProducts = ({ data, mobile }) => {
                         <Link
                           href={`/shop/product/${product._id}`}
                           className="absolute top-0 left-0 w-full h-full rounded"
-                          onClick={e => mobile && onClickProduct(e)}
                         ></Link>
                       </div>
                     );

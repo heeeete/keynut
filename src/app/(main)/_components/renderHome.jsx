@@ -7,7 +7,6 @@ import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 
 import { Gowun_Dodum } from 'next/font/google';
-import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
 
 const title = Gowun_Dodum({ subsets: ['latin'], weight: ['400'] });
@@ -39,11 +38,7 @@ const JustIn = ({ mobile }) => {
               <span className="text-sm">원</span>
             </div>
           </div>
-          <Link
-            href={`/shop/product/${product._id}`}
-            className="absolute top-0 left-0 w-full h-full rounded"
-            onClick={e => mobile && onClickProduct(e)}
-          ></Link>
+          <Link href={`/shop/product/${product._id}`} className="absolute top-0 left-0 w-full h-full rounded"></Link>
         </div>
       ))}
       <div className="flex justify-center md:hidden">
@@ -57,11 +52,7 @@ const JustIn = ({ mobile }) => {
             </svg>
           </div>
           <p className="text-xs absolute bottom-6 text-gray-600">더보기</p>
-          <Link
-            href={'/shop'}
-            className="absolute top-0 left-0 w-full h-full"
-            onClick={e => mobile && onClickProduct(e)}
-          ></Link>
+          <Link href={'/shop'} className="absolute top-0 left-0 w-full h-full"></Link>
         </div>
       </div>
     </div>
@@ -91,11 +82,7 @@ export default function RenderHome() {
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
                   <Image className="max-md:w-16" src="/keyboard.svg" width={80} height={80} alt="keyboard" />
                 </div>
-                <Link
-                  href={'/shop?categories=1'}
-                  className="absolute top-0 left-0 w-full h-full"
-                  onClick={e => mobile && onClickProduct(e)}
-                ></Link>
+                <Link href={'/shop?categories=1'} className="absolute top-0 left-0 w-full h-full"></Link>
               </div>
               <p className="text-gray-600">키보드</p>
             </li>
@@ -104,11 +91,7 @@ export default function RenderHome() {
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-slate-100 justify-center items-center max-md:w-24">
                   <Image className="max-md:w-9" src="/mouse.svg" width={45} height={45} alt="mouse" />
                 </div>
-                <Link
-                  href={'/shop?categories=2'}
-                  className="absolute top-0 left-0 w-full h-full"
-                  onClick={e => mobile && onClickProduct(e)}
-                ></Link>
+                <Link href={'/shop?categories=2'} className="absolute top-0 left-0 w-full h-full"></Link>
               </div>
               <p className="text-gray-600">마우스</p>
             </li>
@@ -120,11 +103,7 @@ export default function RenderHome() {
                     <rect x="17.5" y="14.5" width="461" height="236" rx="19.5" fill="#A3A3A3" stroke="black" />
                   </svg>
                 </div>
-                <Link
-                  href={'/shop?categories=3'}
-                  className="absolute top-0 left-0 w-full h-full"
-                  onClick={e => mobile && onClickProduct(e)}
-                ></Link>
+                <Link href={'/shop?categories=3'} className="absolute top-0 left-0 w-full h-full"></Link>
               </div>
               <p className="text-gray-600">패드</p>
             </li>
@@ -144,11 +123,7 @@ export default function RenderHome() {
                     />
                   </svg>
                 </div>
-                <Link
-                  href={'/shop?categories=9'}
-                  className="absolute top-0 left-0 w-full h-full"
-                  onClick={e => mobile && onClickProduct(e)}
-                ></Link>
+                <Link href={'/shop?categories=9'} className="absolute top-0 left-0 w-full h-full"></Link>
               </div>
               <p className="text-gray-600">기타</p>
             </li>
@@ -161,7 +136,7 @@ export default function RenderHome() {
               <div className="font-medium text-xl">just in</div>
               <div className="text-gray-500 font-medium">신규 등록 상품</div>
             </div>
-            <Link href={'/shop'} className="rounded" onClick={e => mobile && onClickProduct(e)}>
+            <Link href={'/shop'} className="rounded">
               <div className="flex items-center font-medium text-sm text-gray-500 px-0.5">더보기</div>
             </Link>
           </div>
