@@ -76,9 +76,9 @@ const ProfileName = ({ session, update, mobile }) => {
           <div className="border px-1 h-7 rounded w-40">{nickname}</div>
         )}
         <button
-          className="px-2 border outline-none rounded"
+          className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500 active:bg-gray-100"
           onClick={e => {
-            mobile && onClickProduct(e);
+            // mobile && onClickProduct(e);
             if (isEditing && nickname !== tempNickname) handleNickname();
             setIsEditing(!isEditing);
           }}
@@ -164,9 +164,9 @@ const ProfileImage = ({ session, update, mobile }) => {
         </div>
         <div className="flex space-x-2">
           <button
-            className="px-2 border outline-none rounded"
+            className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
             onClick={e => {
-              mobile && onClickProduct(e);
+              // mobile && onClickProduct(e);
               fileInputRef.current.click();
             }}
           >
@@ -181,9 +181,9 @@ const ProfileImage = ({ session, update, mobile }) => {
             변경
           </button>
           <button
-            className="px-2 border outline-none rounded"
+            className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
             onClick={e => {
-              mobile && onClickProduct(e);
+              // mobile && onClickProduct(e);
               handleImageDelete();
             }}
           >
@@ -225,7 +225,7 @@ export default function ProfileEdit() {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:h-d-screen max-md:justify-center ">
+    <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:main-768">
       <div className="flex flex-col w-350 py-10 max-md:py-0 max-md:w-64">
         <section className="flex flex-col rounded-none space-y-10 ">
           <ProfileImage session={session} update={update} mobile={mobile} />

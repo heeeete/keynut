@@ -4,7 +4,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getBookmarkedProducts from './_lib/getBookmarkedProducts';
 import Link from 'next/link';
-import onClickProduct from '@/utils/onClickProduct';
+// import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
 import { Fragment } from 'react';
 
