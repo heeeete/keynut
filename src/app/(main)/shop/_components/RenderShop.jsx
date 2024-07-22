@@ -882,28 +882,19 @@ export default function RenderShop() {
   useEffect(() => {
     const footer = document.getElementById('footer');
     if (filterActive) {
-      // 현재 스크롤 위치 저장
       currPosY.current = window.scrollY;
-
-      // 페이지 컨테이너에 스타일 적용
-      if (pageRef.current) {
-        pageRef.current.style.position = 'fixed';
-        pageRef.current.style.top = `-${currPosY.current}px`;
-        pageRef.current.style.left = '0';
-        pageRef.current.style.right = '0';
-        footer.style.visibility = 'hidden';
-      }
+      document.documentElement.style.setProperty('--posY', `-${currPosY.current}px`);
+      document.body.classList.add('fixed');
+      footer.style.display = 'hidden';
     } else {
-      // 스타일 제거 및 스크롤 위치 복원
-      if (pageRef.current) {
-        pageRef.current.style.removeProperty('position');
-        pageRef.current.style.removeProperty('top');
-        pageRef.current.style.removeProperty('left');
-        pageRef.current.style.removeProperty('right');
-        footer.style.visibility = 'visible';
-        window.scrollTo(0, currPosY.current);
-      }
+      footer.style.visibility = 'visible';
+      document.body.classList.remove('fixed');
+      window.scrollTo(0, currPosY.current);
     }
+    return () => {
+      document.body.classList.remove('fixed');
+      footer.style.visibility = 'visible';
+    };
   }, [filterActive]);
 
   useEffect(() => {
