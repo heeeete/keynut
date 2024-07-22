@@ -120,15 +120,15 @@ export default function Bookmark() {
           ))}
         </div>
       ) : (
-        <div className="flex max-w-screen-xl h-80dvh items-center  mx-auto px-10 justify-center text-gray-500 max-md:px-2 ">
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20%" viewBox="0 0 24 24">
+        <div className="flex max-w-screen-xl items-center mx-auto px-10 h-72 justify-center text-gray-500 max-md:px-2 max-md:custom-dvh">
+          <div className="flex flex-col justify-center items-center space-y-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 256 256">
               <path
                 fill="lightgray"
-                d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m-5 8.5a1.5 1.5 0 1 1 3.001.001A1.5 1.5 0 0 1 7 10.5m1.124 6.492l-.248-1.984l8-1l.248 1.984zm7.369-5.006a1.494 1.494 0 1 1 .001-2.987a1.494 1.494 0 0 1-.001 2.987"
+                d="m212.24 83.76l-56-56A6 6 0 0 0 152 26H56a14 14 0 0 0-14 14v176a14 14 0 0 0 14 14h144a14 14 0 0 0 14-14V88a6 6 0 0 0-1.76-4.24M158 46.48L193.52 82H158ZM202 216a2 2 0 0 1-2 2H56a2 2 0 0 1-2-2V40a2 2 0 0 1 2-2h90v50a6 6 0 0 0 6 6h50Zm-45.76-92.24a6 6 0 0 1 0 8.48L136.49 152l19.75 19.76a6 6 0 1 1-8.48 8.48L128 160.49l-19.76 19.75a6 6 0 0 1-8.48-8.48L119.51 152l-19.75-19.76a6 6 0 1 1 8.48-8.48L128 143.51l19.76-19.75a6 6 0 0 1 8.48 0"
               />
             </svg>
-            <p>찜한 상품이 없습니다. 상품을 둘러보고 찜해보세요!</p>
+            <p className="text-gray-300 font-medium">찜한 상품이 없습니다. 상품을 둘러보고 찜해보세요!</p>
           </div>
         </div>
       )}
