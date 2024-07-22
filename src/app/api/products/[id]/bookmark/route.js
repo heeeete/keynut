@@ -18,18 +18,19 @@ export async function POST(req, { params }) {
       .updateOne(
         { _id: new ObjectId(id) },
         isBookmarked
-          ? { $pull: { bookmarked: new ObjectId(session.user.id) } }
-          : { $addToSet: { bookmarked: new ObjectId(session.user.id) } },
+          ? { $pull: { bookmarked: new ObjectId(session.id) } }
+          : { $addToSet: { bookmarked: new ObjectId(session.id) } },
       );
     await db
       .collection('users')
       .updateOne(
-        { _id: new ObjectId(session.user.id) },
+        { _id: new ObjectId(session.id) },
         isBookmarked ? { $pull: { bookmarked: new ObjectId(id) } } : { $addToSet: { bookmarked: new ObjectId(id) } },
       );
     revalidateTag(id);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ error: `상품 조회 error : ${error}` }, { status: 500 });
   }
 }
