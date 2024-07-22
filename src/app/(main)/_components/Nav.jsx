@@ -55,7 +55,7 @@ export default function Nav() {
         </ul>
         <div className="flex flex-col pb-2 items-center space-y-5 max-md:space-y-0 max-md:py-2">
           <div className="flex font-bold text-3xl items-center rounded justify-center max-md:text-2xl max-md:w-28">
-            <Link href={'/'}>
+            <Link className="flex w-full justify-center" href={'/'}>
               <p className={`${title.className}`}>KEYNUT</p>
             </Link>
           </div>
