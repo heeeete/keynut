@@ -175,7 +175,7 @@ export default function MobileImageSlider({ images, state }) {
               }}
             >
               {images.map((img, idx) => (
-                <div key={idx} className="flex relative w-screen custom-dvh  bg-red-300">
+                <div key={idx} className="flex relative w-screen custom-dvh">
                   <Image src={img} alt="product-img" sizes="100vw" fill style={{ objectFit: 'contain' }} />
                 </div>
               ))}

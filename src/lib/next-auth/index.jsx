@@ -13,6 +13,7 @@ const AuthProvider = ({ children }) => {
 
     if (isMobile()) {
       console.log('MOBILE INIT');
+      initVh();
       window.addEventListener('resize', initVh);
       return () => {
         window.removeEventListener('resize', initVh);
