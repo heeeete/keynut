@@ -225,7 +225,7 @@ export default function ProfileEdit() {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:main-768">
+    <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:custom-dvh max-md:justify-center">
       <div className="flex flex-col w-350 py-10 max-md:py-0 max-md:w-64">
         <section className="flex flex-col rounded-none space-y-10 ">
           <ProfileImage session={session} update={update} mobile={mobile} />

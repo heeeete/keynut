@@ -579,9 +579,24 @@ const RenderPopularProducts = React.memo(({ data, category, mobile, isLoading })
   );
 });
 
-const RenderMdFilter = ({ categoriesState, pricesState, handleCategoryChange, handlePriceChange, resetFilter }) => {
-  const [showCategory, setShowCategory] = useState(false);
-  const [showPrice, setShowPrice] = useState(false);
+const RenderMdFilter = ({
+  categoriesState,
+  pricesState,
+  handleCategoryChange,
+  handlePriceChange,
+  resetFilter,
+  paramsCategories,
+  paramsPrices,
+  params,
+}) => {
+  const [showCategory, setShowCategory] = useState(paramsCategories.length ? true : false);
+  const [showPrice, setShowPrice] = useState(paramsPrices.length ? true : false);
+
+  useEffect(() => {
+    setShowCategory(paramsCategories.length ? true : false);
+    setShowPrice(paramsPrices.length ? true : false);
+  }, [params]);
+
   return (
     <div className="flex flex-col space-y-4 overflow-y-auto scrollbar-hide text-sm h-full max-md:hidden">
       <div className="w-full pr-8 flex items-center justify-end">
@@ -1086,6 +1101,9 @@ export default function RenderShop() {
               handleCategoryChange={handleCategoryChange}
               handlePriceChange={handlePriceChange}
               resetFilter={resetFilter}
+              paramsCategories={paramsCategories}
+              paramsPrices={paramsPrices}
+              params={params}
             />
           </div>
           <div className="flex flex-col w-full">
