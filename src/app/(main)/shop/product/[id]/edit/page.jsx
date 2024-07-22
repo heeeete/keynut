@@ -500,7 +500,7 @@ export default function Edit() {
   const [tags, setTags] = useState([]);
   const fileInputRef = useRef(null);
   const router = useRouter();
-  const { data: session, update } = useSession();
+  const { data: session, update, status } = useSession();
   const invalidateFilters = useInvalidateFiltersQuery();
 
   const { data, error, isLoading } = useQuery({
@@ -508,14 +508,17 @@ export default function Edit() {
     queryFn: () => getProductWithUser(id),
   });
 
+  console.log(data ? data : 'NO', uploadImages, status);
+
   useEffect(() => {
     const originalDataInit = () => {
-      if (data.userId !== session.user.id) {
+      console.log('INTI~~~~~~~~~~~~~~~~~~~~~');
+      if ((session && data.userId !== session.user.id) || status === 'unauthenticated') {
         alert('비정상적인 접근입니다.');
         return router.push('/');
       } else {
         setTitle(data.title);
-        const originalUploadImages = { ...uploadImages };
+        const originalUploadImages = { imageFiles: [], imageUrls: [] };
         data.images.map(img => {
           originalUploadImages.imageFiles.push(img);
           originalUploadImages.imageUrls.push(img);
@@ -532,7 +535,7 @@ export default function Edit() {
     };
 
     if (data) originalDataInit();
-  }, [data]);
+  }, [isLoading, session]);
 
   const handleDisabled = () => {
     if (
