@@ -8,7 +8,6 @@ import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import Modal from '../../_components/Modal';
-import onClickProduct from '@/utils/onClickProduct';
 import { isMobile } from '@/lib/isMobile';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 
@@ -78,7 +77,6 @@ const ProfileName = ({ session, update, mobile }) => {
         <button
           className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500 active:bg-gray-100"
           onClick={e => {
-            // mobile && onClickProduct(e);
             if (isEditing && nickname !== tempNickname) handleNickname();
             setIsEditing(!isEditing);
           }}
@@ -166,7 +164,6 @@ const ProfileImage = ({ session, update, mobile }) => {
           <button
             className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
             onClick={e => {
-              // mobile && onClickProduct(e);
               fileInputRef.current.click();
             }}
           >
@@ -183,7 +180,6 @@ const ProfileImage = ({ session, update, mobile }) => {
           <button
             className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
             onClick={e => {
-              // mobile && onClickProduct(e);
               handleImageDelete();
             }}
           >
@@ -240,7 +236,6 @@ export default function ProfileEdit() {
             <button
               className="flex text-gray-500 underline"
               onClick={e => {
-                mobile && onClickProduct(e);
                 signOut({ callbackUrl: '/' });
               }}
             >
@@ -249,7 +244,6 @@ export default function ProfileEdit() {
             <button
               className="flex text-gray-500 underline"
               onClick={e => {
-                mobile && onClickProduct(e);
                 setWithdrawalModalStatus(true);
               }}
             >

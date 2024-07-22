@@ -12,8 +12,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signIn, useSession } from 'next-auth/react';
 import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
-import onClickProduct from '@/utils/onClickProduct';
-import { isMobile } from '@/lib/isMobile';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 
 const RenderCondition = ({ condition }) => {
@@ -121,7 +119,6 @@ const RenderViews = ({ views }) => {
 };
 
 const RenderProfile = ({ user }) => {
-  const mobile = isMobile();
   if (!user) return;
 
   return (
@@ -151,11 +148,7 @@ const RenderProfile = ({ user }) => {
             {user.nickname}
           </Link>
         </div>
-        <Link
-          className="flex items-center rounded"
-          href={`/shop/${user._id}`}
-          onClick={e => mobile && onClickProduct(e)}
-        >
+        <Link className="flex items-center rounded" href={`/shop/${user._id}`}>
           {/* <p className=" text-base px-2 border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</p>
            */}
           <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" viewBox="0 0 24 24">
@@ -214,7 +207,7 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
   };
 
   return (
-    <button onClick={handleClick} className="flex justify-end items-center w-10 rounded">
+    <button onClick={handleClick} className="flex justify-center items-center w-10 rounded -mr-3">
       <svg xmlns="http://www.w3.org/2000/svg" width="60%" height="60%" viewBox="0 0 32 32">
         <path fill={color} stroke="black" strokeWidth={3} d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
@@ -294,7 +287,6 @@ const IsWriter = ({ id, state, session, setSettingModal, queryClient }) => {
         <button
           className="align-text-top items-center p-2 rounded max-[480px]:hidden"
           onClick={e => {
-            onClickProduct(e);
             setSettingModal(true);
           }}
         >
@@ -441,7 +433,7 @@ export default function RenderProduct({ id }) {
       const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
       if (res.ok) {
         invalidateFilters();
-        router.back();
+        router.push('/shop');
         router.refresh();
       }
     } catch (error) {

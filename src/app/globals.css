@@ -20,6 +20,15 @@ body.fixed {
   right: 0;
 }
 
+a,
+button {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+
+  &:focus {
+    outline: none;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
