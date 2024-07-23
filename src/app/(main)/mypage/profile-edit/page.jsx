@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { getSession, signIn, signOut, useSession } from 'next-auth/react';
 import getUserProfile from '@/lib/getUserProfile';
 import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
@@ -76,7 +76,8 @@ const ProfileName = ({ session, update, mobile }) => {
         )}
         <button
           className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500 active:bg-gray-100"
-          onClick={e => {
+          onClick={async e => {
+            if (!(await getSession())) return signIn();
             if (isEditing && nickname !== tempNickname) handleNickname();
             setIsEditing(!isEditing);
           }}
@@ -113,6 +114,7 @@ const ProfileImage = ({ session, update, mobile }) => {
       body: formData,
     });
     if (!res.ok) {
+      if (res.status === 401) return signIn();
     } else {
       const data = await res.json();
       update({ image: data.url });
@@ -179,7 +181,8 @@ const ProfileImage = ({ session, update, mobile }) => {
           </button>
           <button
             className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
-            onClick={e => {
+            onClick={async e => {
+              if (!(await getSession())) return signIn();
               handleImageDelete();
             }}
           >
@@ -221,7 +224,7 @@ export default function ProfileEdit() {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:custom-dvh max-md:justify-center">
+    <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:justify-center max-md:main-768">
       <div className="flex flex-col w-350 py-10 max-md:py-0 max-md:w-64">
         <section className="flex flex-col rounded-none space-y-10 ">
           <ProfileImage session={session} update={update} mobile={mobile} />
