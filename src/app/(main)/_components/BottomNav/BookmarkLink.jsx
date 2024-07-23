@@ -1,8 +1,9 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import handleLogin from '@/utils/handleLogin';
 
-export default function BookmarkLink() {
+export default function BookmarkLink({ router }) {
   const pathName = usePathname();
   return (
     <>
@@ -20,7 +21,11 @@ export default function BookmarkLink() {
           </svg>
         </div>
       ) : (
-        <Link href={'/bookmark'} className="flex justify-center items-center w-full h-full">
+        <Link
+          href={'/bookmark'}
+          onClick={e => handleLogin(e, router, '/bookmark')}
+          className="flex justify-center items-center w-full h-full"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 24 24">
             <path
               fill="none"
