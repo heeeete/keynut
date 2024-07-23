@@ -64,17 +64,11 @@ const HandleBookMark = ({ productId }) => {
 };
 
 export default function Bookmark() {
+  const { data: user } = useSession();
   const { data, error, isLoading } = useQuery({
     queryKey: ['bookmarkedProducts'],
     queryFn: () => getBookmarkedProducts(),
   });
-
-  // return (
-  //   <div className="flex flex-col bg-blue-400">
-  //     <div className="bg-red-400 w-auto mx-8">gg</div>
-  //     <div className="bg-purple-300">dfsfsd</div>
-  //   </div>
-  // );
 
   if (isLoading || !data) {
     return (

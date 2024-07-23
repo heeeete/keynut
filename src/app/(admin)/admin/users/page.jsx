@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
 import Loading from '@/app/(main)/_components/Loading';
+import { revalidateTag } from 'next/cache';
 
 const PAGE_SIZE = 100;
 const PAGE_RANGE = 10;
@@ -124,6 +125,7 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
         } else {
           await handleOtherProviderWithdrawal(_id);
         }
+        revalidateTag('products');
       }
     } catch (error) {
       console.error(error);

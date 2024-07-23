@@ -535,23 +535,33 @@ export default function Edit() {
     };
 
     if (data) originalDataInit();
-  }, [isLoading, session]);
+  }, [status, session, data, router]);
 
   const handleDisabled = () => {
-    if (
+    return (
       !uploadImages.imageUrls.length ||
       !title.trim().length ||
       !mainCategory ||
-      (mainCategory !== 'others' && !subCategory) ||
+      (mainCategory !== 9 && !subCategory) ||
       !price.length ||
       !condition ||
       !description.trim().length
-    )
-      return true;
-    else return false;
+    );
   };
 
   const handleUpload = async () => {
+    if (!openChatUrl) {
+      const proceed = confirm(
+        '오픈 채팅방 주소가 없습니다. 계속 진행하시겠습니까?\n오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
+      );
+      if (!proceed) return;
+    } else {
+      if (!openChatUrl.startsWith('https://open.kakao.com/'))
+        return alert(
+          '올바르지 않은 오픈 채팅방 주소입니다. 올바른 주소를 입력해주세요.\n예: https://open.kakao.com/o/sBsuGODg\n사용하지 않을 경우, 입력란을 비워주세요.',
+        );
+    }
+
     setUploadLoading(true);
     const formData = new FormData();
     uploadImages.imageFiles.forEach(file => {
@@ -581,10 +591,13 @@ export default function Edit() {
         router.push(`/shop/product/${id}`);
         router.refresh();
       } else {
-        console.error(data.error);
+        const errorData = await res.json();
+        console.error(errorData.error);
+        alert('상품 수정을 실패했습니다. 나중에 다시 시도해주세요.');
       }
     } catch (error) {
       console.error('Error edit files:', error);
+      alert('상품을 수정하는 도중 에러가 발생했습니다. 나중에 다시 시도해 주세요.');
     } finally {
       setUploadLoading(false);
     }
@@ -592,44 +605,42 @@ export default function Edit() {
 
   return (
     <div className="max-w-screen-xl px-10 mx-auto max-md:px-2 max-md:main-768">
-      <>
-        <RenderImageUploadButton
-          fileInputRef={fileInputRef}
-          uploadImages={uploadImages}
-          setUploadImages={setUploadImages}
+      <RenderImageUploadButton
+        fileInputRef={fileInputRef}
+        uploadImages={uploadImages}
+        setUploadImages={setUploadImages}
+      />
+      <RenderDNDImages
+        uploadImages={uploadImages}
+        setUploadImages={setUploadImages}
+        deleteImages={deleteImages}
+        setDeleteImages={setDeleteImages}
+      />
+      <RenderTitle title={title} setTitle={setTitle} />
+      <RenderHashTagInputWithTag tags={tags} setTags={setTags} />
+      <div className="flex flex-1 justify-between my-3 max-md:flex-col">
+        <RenderCategory
+          mainCategory={mainCategory}
+          subCategory={subCategory}
+          setMainCategory={setMainCategory}
+          setSubCategory={setSubCategory}
         />
-        <RenderDNDImages
-          uploadImages={uploadImages}
-          setUploadImages={setUploadImages}
-          deleteImages={deleteImages}
-          setDeleteImages={setDeleteImages}
-        />
-        <RenderTitle title={title} setTitle={setTitle} />
-        <RenderHashTagInputWithTag tags={tags} setTags={setTags} />
-        <div className="flex flex-1 justify-between my-3 max-md:flex-col">
-          <RenderCategory
-            mainCategory={mainCategory}
-            subCategory={subCategory}
-            setMainCategory={setMainCategory}
-            setSubCategory={setSubCategory}
-          />
-          <RenderCondition condition={condition} setCondition={setCondition} />
-        </div>
+        <RenderCondition condition={condition} setCondition={setCondition} />
+      </div>
 
-        <RenderDescriptionInput description={description} setDescription={setDescription} />
-        <RenderOpenChatUrlInput openChatUrl={openChatUrl} setOpenChatUrl={setOpenChatUrl} />
-        <RenderPriceInput price={price} setPrice={setPrice} />
+      <RenderDescriptionInput description={description} setDescription={setDescription} />
+      <RenderOpenChatUrlInput openChatUrl={openChatUrl} setOpenChatUrl={setOpenChatUrl} />
+      <RenderPriceInput price={price} setPrice={setPrice} />
 
-        <div className="w-full flex justify-end">
-          <button
-            className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
-            disabled={handleDisabled()}
-            onClick={handleUpload}
-          >
-            <p>수정</p>
-          </button>
-        </div>
-      </>
+      <div className="w-full flex justify-end">
+        <button
+          className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
+          disabled={handleDisabled()}
+          onClick={handleUpload}
+        >
+          <p>수정</p>
+        </button>
+      </div>
     </div>
   );
 }
