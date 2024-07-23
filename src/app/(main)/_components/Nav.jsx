@@ -16,7 +16,7 @@ export default function Nav() {
     (!pathname.startsWith('/gallery') && !pathname.startsWith('/shop')) ||
     pathname.startsWith('/shop/') ||
     pathname.startsWith('/gallery/post');
-  const navRender = pathname === '/shop' || pathname === '/gallery';
+  const navRender = pathname === '/shop' || pathname === '/gallery' || pathname === '/bookmark';
 
   return (
     <header
@@ -98,7 +98,7 @@ export default function Nav() {
                   SELL
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href={'/post'}
                   onClick={e => handleLogin(e, router, '/post')}
@@ -110,7 +110,7 @@ export default function Nav() {
                 >
                   POST
                 </Link>
-              </li>
+              </li> */}
               {session?.admin && (
                 <>
                   <li>
@@ -118,9 +118,9 @@ export default function Nav() {
                   </li>
                 </>
               )}
-              <li>
+              {/* <li>
                 <Link href={'/price'}>시세</Link>
-              </li>
+              </li> */}
             </div>
           </ul>
         </div>

@@ -4,14 +4,16 @@ import React, { Fragment, useEffect, useState } from 'react';
 
 // import MyPost from './_components/MyPost';
 // import LikedPost from './_components/LikedPost';
-import { useSession } from 'next-auth/react';
+import { getSession, signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import getUserProducts from '@/lib/getUserProducts';
 import { isMobile } from '@/lib/isMobile';
 import { useQuery } from '@tanstack/react-query';
 import ProfileSkeleton from '../_components/ProfileSkeleton';
+import { useRouter } from 'next/navigation';
 
 const MyProfile = React.memo(({ mobile, session }) => {
+  const router = useRouter();
   return (
     <div className="flex h-24 border border-gray-300 rounded-md items-center px-4 max-md:px-2">
       <div className="flex flex-1 items-center space-x-5">
@@ -47,7 +49,14 @@ const MyProfile = React.memo(({ mobile, session }) => {
       </div>
       <button>
         <Link
-          className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm "
+          onClick={async e => {
+            e.preventDefault();
+            if (!(await getSession())) {
+              return signIn();
+            }
+            router.push('/mypage/profile-edit');
+          }}
+          className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm"
           href={'/mypage/profile-edit'}
         >
           프로필 관리
@@ -72,7 +81,7 @@ const MyProducts = ({ data, mobile }) => {
                   productOption !== 1 && setProductOption(1);
                 }}
               >
-                판매 중
+                판매 중 {data?.filter(a => a.state === 1).length}
               </li>
             </button>
             <button>
@@ -82,7 +91,7 @@ const MyProducts = ({ data, mobile }) => {
                   productOption !== 0 && setProductOption(0);
                 }}
               >
-                판매 완료
+                판매 완료 {data?.filter(a => a.state === 0).length}
               </li>
             </button>
           </ul>
@@ -96,7 +105,7 @@ const MyProducts = ({ data, mobile }) => {
                   .map((product, index) => {
                     return (
                       <div
-                        className="p-2 items-center border cursor-pointer border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm relative max-md:border-gray-200"
+                        className="p-2 items-center border cursor-pointer border-gray-300 justify-between max-md:border-0 max-md:border-b rounded-sm relative max-md:border-gray-200 max-md:rounded-none"
                         key={index}
                       >
                         {!productOption && (
@@ -118,7 +127,7 @@ const MyProducts = ({ data, mobile }) => {
                             ></Image>
                           </div>
                           <div className="flex flex-col justify-center w-full">
-                            <div className="break-all line-clamp-2">{product.title}</div>
+                            <div className="break-all line-clamp-1">{product.title}</div>
                             <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
                               <span>{product.price.toLocaleString()}</span>
                               <span className="text-sm">원</span>
@@ -175,7 +184,7 @@ export default function MyPage() {
   });
 
   return (
-    <div className="flex flex-col h-full space-y-8 max-w-screen-xl mx-auto px-10 max-md:px-3 max-md:main-768">
+    <div className="flex flex-col h-full space-y-8 max-w-screen-xl mx-auto px-10 max-md:px-3 max-md:main-768 max-md:pb-3">
       <MyProfile mobile={mobile} data={data?.userProfile} session={session} />
       {/* 카카오 API */}
       <MyProducts data={data?.userProducts} mobile={mobile} />

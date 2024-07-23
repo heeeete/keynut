@@ -5,6 +5,7 @@ import s3Client from '@/lib/s3Client';
 import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId } from 'mongodb';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
+import { revalidateTag } from 'next/cache';
 
 const forbiddenList = [
   '씨발',
@@ -29,7 +30,8 @@ export async function PUT(req) {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const users = db.collection('users');
-    const { user: session } = await getUserSession();
+    const products = db.collection('products');
+    const session = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     let uploadedUrl = null;
     const formData = await req.formData();
@@ -64,7 +66,7 @@ export async function PUT(req) {
       if (oldImage) await deleteImage();
       if (newImage) await uploadImage();
       const res = await users.updateOne(
-        { _id: new ObjectId(session.id) },
+        { _id: new ObjectId(session.user.id) },
         {
           $set: {
             image: uploadedUrl,
@@ -72,11 +74,15 @@ export async function PUT(req) {
         },
       );
       const resUrl = { url: uploadedUrl };
+      const userProducts = await products.find({ userId: new ObjectId(session.user.id) }).toArray();
+      userProducts.map(({ _id }) => {
+        revalidateTag(_id.toString());
+      });
       return NextResponse.json(resUrl, { status: 200 });
     }
     if (nickname) {
       const now = new Date();
-      const lastChanged = session.nicknameChangedAt ? new Date(session.nicknameChangedAt) : null;
+      const lastChanged = session.user.nicknameChangedAt ? new Date(session.user.nicknameChangedAt) : null;
       if (lastChanged) {
         const period = Math.floor((now - lastChanged) / (1000 * 60 * 60 * 24));
         if (period < 30) return NextResponse.json({ state: 0 }, { status: 403 });
@@ -94,14 +100,18 @@ export async function PUT(req) {
         return NextResponse.json('invalid', { status: 400 });
       }
       const res = await users.updateOne(
-        { _id: new ObjectId(session.id) },
+        { _id: new ObjectId(session.user.id) },
         {
           $set: {
-            nickname: nickname ? nickname : session.nickname,
+            nickname: nickname ? nickname : session.user.nickname,
             nicknameChangedAt: now,
           },
         },
       );
+      const userProducts = await products.find({ userId: new ObjectId(session.user.id) }).toArray();
+      userProducts.map(({ _id }) => {
+        revalidateTag(_id.toString());
+      });
       return NextResponse.json({ time: now }, { status: 200 });
     }
   } catch (error) {

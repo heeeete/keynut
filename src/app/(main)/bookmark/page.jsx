@@ -1,10 +1,18 @@
 'use client';
 import Image from 'next/image';
-import { signIn, useSession } from 'next-auth/react';
+import { getSession, signIn, useSession } from 'next-auth/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getBookmarkedProducts from './_lib/getBookmarkedProducts';
 import Link from 'next/link';
 import { Fragment } from 'react';
+
+const conditions = {
+  1: { option: '미사용' },
+  2: { option: '사용감 없음' },
+  3: { option: '사용감 적음' },
+  4: { option: '사용감 많음' },
+  5: { option: '고장 / 파손' },
+};
 
 const HandleBookMark = ({ productId }) => {
   const { data: session, status } = useSession();
@@ -40,9 +48,9 @@ const HandleBookMark = ({ productId }) => {
       queryClient.invalidateQueries(['bookmarkedProducts']);
     },
   });
-  const handleBookmarkClick = e => {
+  const handleBookmarkClick = async e => {
     e.preventDefault();
-    if (!session) return signIn();
+    if (!(await getSession())) return signIn();
     mutation.mutate({ productId });
   };
 
@@ -62,33 +70,34 @@ export default function Bookmark() {
     queryFn: () => getBookmarkedProducts(),
   });
 
-  console.log(user);
-
   if (isLoading || !data) {
     return (
-      <div className="grid grid-cols-2 gap-2 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:grid-cols-1 max-md:main-768">
-        {Array.from({ length: 20 }).map((_, index) => (
-          <Fragment key={index}>
-            <div className="flex p-2 items-center border border-gray-300 rounded-sm justify-between" key={index}>
-              <div className="flex">
-                <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100"></div>
-                <div className="flex flex-col justify-center pr-5 space-y-1">
-                  <div className="h-5 w-36 bg-gray-100"></div>
-                  <div className="space-x-1 items-center h-5 w-32 bg-gray-100"></div>
+      <div className="flex flex-col  max-w-screen-xl mx-auto px-10 space-y-2 max-md:px-2 max-md:mt-3">
+        <div className="h-6 w-24 bg-gray-100 rounded-sm"></div>
+        <div className="grid grid-cols-2 gap-2 max-md:grid-cols-1">
+          {Array.from({ length: 20 }).map((_, index) => (
+            <Fragment key={index}>
+              <div className="flex p-2 items-center border border-gray-300 rounded-sm justify-between" key={index}>
+                <div className="flex">
+                  <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100"></div>
+                  <div className="flex flex-col justify-center pr-5 space-y-1">
+                    <div className="h-5 w-36 bg-gray-100"></div>
+                    <div className="space-x-1 items-center h-5 w-32 bg-gray-100"></div>
+                  </div>
                 </div>
+                <svg
+                  className="min-w-7"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28px"
+                  height="28px"
+                  viewBox="0 0 32 32"
+                >
+                  <path stroke="#f3f4f6" fill="#f3f4f6" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
+                </svg>
               </div>
-              <svg
-                className="min-w-7"
-                xmlns="http://www.w3.org/2000/svg"
-                width="28px"
-                height="28px"
-                viewBox="0 0 32 32"
-              >
-                <path stroke="#f3f4f6" fill="#f3f4f6" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
-              </svg>
-            </div>
-          </Fragment>
-        ))}
+            </Fragment>
+          ))}
+        </div>
         <div className="absolute top-0 left-0 h-full w-full animate-loading">
           <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
         </div>
@@ -99,28 +108,36 @@ export default function Bookmark() {
   return (
     <>
       {data.length ? (
-        <div className="grid grid-cols-2 gap-2 max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:grid-cols-1 max-md:main-768">
-          {data.map((item, index) => (
-            <Link
-              href={`/shop/product/${item._id}`}
-              className="flex p-2 items-center cursor-pointer border border-gray-300 rounded-sm justify-between"
-              key={index}
-            >
-              <div className="flex">
-                <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100">
-                  <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="200px" />
-                </div>
-                <div className="flex flex-col justify-center pr-5">
-                  <p className="break-all line-clamp-1">{item.title}</p>
-                  <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
-                    <span>{item.price.toLocaleString()}</span>
-                    <span className="text-sm">원</span>
+        <div className="flex flex-col max-w-screen-xl mx-auto px-10 space-y-2 max-md:px-2 max-md:mt-3 max-md:pb-3">
+          <p className="text-gray-500 max-md:text-sm">전체 {data.length}</p>
+          <div className="grid grid-cols-2 gap-2  max-md:grid-cols-1">
+            {data.map((item, index) => (
+              <Link
+                href={`/shop/product/${item._id}`}
+                className="flex p-2 items-center cursor-pointer border border-gray-300 rounded-sm justify-between"
+                key={index}
+              >
+                <div className="flex">
+                  <div className="flex w-28 min-w-28 aspect-square mr-4 relative">
+                    <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="200px" />
+                  </div>
+                  <div className="flex flex-col items-start justify-center space-y-1">
+                    <div className="flex flex-col mr-5">
+                      <p className="break-all line-clamp-1">{item.title}</p>
+                      <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
+                        <span>{item.price.toLocaleString()}</span>
+                        <span className="text-sm">원</span>
+                      </div>
+                    </div>
+                    <p className="break-all line-clamp-1 rounded text-xs font-medium  text-gray-500">
+                      {conditions[item.condition].option}
+                    </p>
                   </div>
                 </div>
-              </div>
-              <HandleBookMark productId={item._id} />
-            </Link>
-          ))}
+                <HandleBookMark productId={item._id} />
+              </Link>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="flex max-w-screen-xl items-center mx-auto px-10 h-72 justify-center text-gray-500 max-md:px-2 max-md:custom-dvh">

@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server';
 export async function POST(req, { params }) {
   try {
     const { id } = params;
-    const { user: session } = await getUserSession();
+    const session = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const { isBookmarked } = await req.json();
 
@@ -18,13 +18,13 @@ export async function POST(req, { params }) {
       .updateOne(
         { _id: new ObjectId(id) },
         isBookmarked
-          ? { $pull: { bookmarked: new ObjectId(session.id) } }
-          : { $addToSet: { bookmarked: new ObjectId(session.id) } },
+          ? { $pull: { bookmarked: new ObjectId(session.user.id) } }
+          : { $addToSet: { bookmarked: new ObjectId(session.user.id) } },
       );
     await db
       .collection('users')
       .updateOne(
-        { _id: new ObjectId(session.id) },
+        { _id: new ObjectId(session.user.id) },
         isBookmarked ? { $pull: { bookmarked: new ObjectId(id) } } : { $addToSet: { bookmarked: new ObjectId(id) } },
       );
     revalidateTag(id);

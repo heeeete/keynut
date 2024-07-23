@@ -3,13 +3,12 @@ import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 
-const client = await connectDB;
-const db = client.db(process.env.MONGODB_NAME);
-const collection = db.collection('products');
-const users = db.collection('users');
-
 export async function GET(req) {
   try {
+    const client = await connectDB;
+    const db = client.db(process.env.MONGODB_NAME);
+    const collection = db.collection('products');
+    const users = db.collection('users');
     const session = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const { bookmarked } = await users.findOne({ _id: new ObjectId(session.user.id) });
