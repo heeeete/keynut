@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import s3Client from '@/lib/s3Client';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
+import { revalidateTag } from 'next/cache';
 
 export async function GET(req) {
   try {
@@ -142,6 +143,7 @@ export async function DELETE(req) {
 
     await Promise.all(ids.map(deleteProduct));
 
+    revalidateTag('products');
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error(error);

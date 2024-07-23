@@ -9,7 +9,7 @@ import OpenChatLink from './OpenChatLink';
 import { useQuery } from '@tanstack/react-query';
 import getProductWithUser from '../_lib/getProductWithUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { signIn, useSession } from 'next-auth/react';
+import { getSession, signIn, useSession } from 'next-auth/react';
 import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
@@ -201,8 +201,8 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
     },
   });
 
-  const handleClick = () => {
-    if (!session) return signIn();
+  const handleClick = async () => {
+    if (!(await getSession())) return signIn();
     mutation.mutate({ productId, isBookmarked });
   };
 
@@ -414,7 +414,11 @@ export default function RenderProduct({ id }) {
       if (!data) {
         alert('삭제된 상품입니다.');
         invalidateFilters();
-        return router.back();
+        router.back();
+        setTimeout(() => {
+          router.refresh();
+        }, 300);
+        return;
       }
       queryClient.setQueryData(['product', id], oldData => ({
         ...oldData,
@@ -435,6 +439,7 @@ export default function RenderProduct({ id }) {
         invalidateFilters();
         router.push('/shop');
         router.refresh();
+        return;
       }
     } catch (error) {
       console.log(error);
@@ -448,7 +453,7 @@ export default function RenderProduct({ id }) {
         router.refresh();
         invalidateFilters();
         fetchRaiseCount();
-        alert('성공!');
+        alert(`최상단으로 UP!\n${raiseCount - 1}회 사용가능`);
         setUpModal(false);
       } else {
         alert('오류가 발생했습니다. 잠시후 다시 시도해주세요.');

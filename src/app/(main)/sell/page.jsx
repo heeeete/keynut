@@ -5,10 +5,9 @@ import Image from 'next/image';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Loading from '../_components/Loading';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
-import Modal from '../_components/Modal';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   switch (mainCategory) {
@@ -299,6 +298,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="1"
+            checked={condition === 1}
             onChange={() => handleConditionClick(1)}
           />
           <span>미사용</span>
@@ -309,6 +309,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="2"
+            checked={condition === 2}
             onChange={() => handleConditionClick(2)}
           />
           <span>사용감 없음</span>
@@ -319,6 +320,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="3"
+            checked={condition === 3}
             onChange={() => handleConditionClick(3)}
           />
           <span>사용감 적음</span>
@@ -329,6 +331,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="4"
+            checked={condition === 4}
             onChange={() => handleConditionClick(4)}
           />
           <span>사용감 많음</span>
@@ -339,6 +342,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
             type="radio"
             name="condition"
             id="5"
+            checked={condition === 5}
             onChange={() => handleConditionClick(5)}
           />
           <span>파손 / 고장</span>
@@ -518,12 +522,44 @@ export default function Sell() {
   const router = new useRouter();
   const { data: session, status, update } = useSession();
   const invalidateFilters = useInvalidateFiltersQuery();
+  const isInitialRender = useRef(true); // 첫 번째 렌더링인지 확인하는 ref
 
   useEffect(() => {
     if (status !== 'loading' && !session) return router.push('/signin');
-    if (session) setOpenChatUrl(session.user.openChatUrl || '');
-    console.log(session);
-  }, [session]);
+    if (status === 'authenticated') {
+      setOpenChatUrl(session.user.openChatUrl || '');
+      const draft = JSON.parse(sessionStorage.getItem('draft'));
+      if (draft) {
+        const proceed = confirm('이전에 작성 중인 글이 있습니다. 이어서 작성하시겠습니까?');
+        if (proceed) {
+          setTitle(draft.title);
+          setMainCategory(draft.mainCategory);
+          setSubCategory(draft.subCategory);
+          setCondition(draft.condition);
+          setDescription(draft.description);
+          setPrice(draft.price);
+          setOpenChatUrl(draft.openChatUrl);
+          setTags(draft.tags);
+        } else sessionStorage.removeItem('draft');
+      }
+      isInitialRender.current = false;
+    }
+  }, [status]);
+
+  useEffect(() => {
+    if (isInitialRender.current) return;
+    const draft = { title, mainCategory, subCategory, condition, description, price, openChatUrl, tags };
+    sessionStorage.setItem('draft', JSON.stringify(draft));
+  }, [title, mainCategory, subCategory, condition, description, price, openChatUrl, tags]);
+
+  useEffect(() => {
+    return () => {
+      const draft = JSON.parse(sessionStorage.getItem('draft'));
+      if (draft && !draft.title && !draft.description && !draft.price && (!draft.tags || !draft.tags.length)) {
+        sessionStorage.removeItem('draft');
+      }
+    };
+  }, []);
 
   const handleDisabled = () => {
     return (
@@ -539,8 +575,15 @@ export default function Sell() {
 
   const handleUpload = async () => {
     if (!openChatUrl) {
-      const proceed = confirm('오픈 채팅방 주소가 없습니다. 계속 진행하시겠습니까?');
+      const proceed = confirm(
+        '오픈 채팅방 주소가 없습니다. 계속 진행하시겠습니까?\n오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
+      );
       if (!proceed) return;
+    } else {
+      if (!openChatUrl.startsWith('https://open.kakao.com/'))
+        return alert(
+          '올바르지 않은 오픈 채팅방 주소입니다. 올바른 주소를 입력해주세요.\n예: https://open.kakao.com/o/sBsuGODg\n사용하지 않을 경우, 입력란을 비워주세요.',
+        );
     }
     setIsLoading(true);
     const formData = new FormData();
@@ -564,18 +607,24 @@ export default function Sell() {
       const data = await res.json();
       if (res.ok) {
         update({ openChatUrl: openChatUrl });
+        sessionStorage.removeItem('draft');
         if (data) {
           invalidateFilters();
           router.push(`/shop/product/${data.insertedId}`);
           router.refresh();
         }
+      } else if (res.status === 401) {
+        alert('로그인이 만료되었습니다. 다시 로그인해 주세요.');
+        signIn();
       } else {
         console.error(data.error);
         alert('상품 업로드를 실패했습니다. 나중에 다시 시도해주세요.');
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Error uploading files:', error);
       alert('상품을 업도를 하는 도중 에러가 발생했습니다. 나중에 다시 시도해 주세요.');
+      setIsLoading(false);
     }
   };
 

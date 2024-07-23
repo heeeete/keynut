@@ -83,8 +83,11 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
-    const { user: session } = await getUserSession();
-    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
+    const session = await getUserSession();
+    console.log('===========================', session);
+    if (!session) {
+      return NextResponse.json({ error: 'No session found' }, { status: 401 });
+    }
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const products = db.collection('products');
@@ -143,7 +146,7 @@ export async function POST(req) {
     await Promise.all(uploadPromises);
 
     const product = {
-      userId: new ObjectId(session.id), // 사용자 ID 추가
+      userId: new ObjectId(session.user.id), // 사용자 ID 추가
       title: formData.get('title'),
       category: Number(formData.get('subCategory')),
       condition: Number(formData.get('condition')),
@@ -161,7 +164,7 @@ export async function POST(req) {
 
     const result = await products.insertOne(product);
     await users.updateOne(
-      { email: session.email },
+      { email: session.user.email },
       {
         $set: { openChatUrl: formData.get('openChatUrl') },
         $addToSet: {

@@ -234,7 +234,9 @@ export const authOptions = {
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30일
+    // maxAge: 30 * 24 * 60 * 60, // 30일
+    maxAge: 1 * 24 * 60 * 60,
+    // maxAge: 8,
   },
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
@@ -247,7 +249,7 @@ export const authOptions = {
         if (user.email === process.env.ADMIN_EMAIL) token.admin = true;
       }
 
-      if (trigger === 'update' && session !== null) {
+      if (trigger === 'update' && session) {
         const { openChatUrl, image, nickname, nicknameChangedAt, recentSearches } = session;
         if (openChatUrl !== undefined || openChatUrl !== null) token.user.openChatUrl = openChatUrl;
         if (image !== undefined) token.user.image = image;

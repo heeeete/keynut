@@ -1,9 +1,9 @@
-import { signIn } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 
-const handleLogin = (e, router, session, url) => {
+const handleLogin = async (e, router, url) => {
   e.preventDefault();
 
-  if (session) {
+  if (await getSession()) {
     router.push(url);
   } else {
     signIn(null, { callbackUrl: url });

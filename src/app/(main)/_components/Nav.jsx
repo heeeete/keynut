@@ -30,7 +30,7 @@ export default function Nav() {
               <Link href="/search?c=keyboard">고객센터</Link>
             </li> */}
             <li>
-              <Link href="/mypage" onClick={e => handleLogin(e, router, session, '/mypage')}>
+              <Link href="/mypage" onClick={e => handleLogin(e, router, '/mypage')}>
                 마이페이지
               </Link>
             </li>
@@ -38,7 +38,7 @@ export default function Nav() {
               <Link href="/search?c=mouse">알림</Link>
             </li> */}
             <li>
-              <Link href="/bookmark" onClick={e => handleLogin(e, router, session, '/bookmark')}>
+              <Link href="/bookmark" onClick={e => handleLogin(e, router, '/bookmark')}>
                 찜
               </Link>
             </li>
@@ -88,7 +88,7 @@ export default function Nav() {
               <li>
                 <Link
                   href={'/sell'}
-                  onClick={e => handleLogin(e, router, session, '/sell')}
+                  onClick={e => handleLogin(e, router, '/sell')}
                   className={`${
                     pathname.startsWith('/sell')
                       ? 'after:block after:w-full after:h-px after:absolute after:-rotate-12 after:top-1/2 after:bg-slate-950'
@@ -101,7 +101,7 @@ export default function Nav() {
               <li>
                 <Link
                   href={'/post'}
-                  onClick={e => handleLogin(e, router, session, '/post')}
+                  onClick={e => handleLogin(e, router, '/post')}
                   className={`${
                     pathname.startsWith('/post')
                       ? 'after:block after:w-full after:h-px after:absolute after:-rotate-12 after:top-1/2 after:bg-slate-950'

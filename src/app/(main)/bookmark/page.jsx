@@ -56,10 +56,13 @@ const HandleBookMark = ({ productId }) => {
 };
 
 export default function Bookmark() {
+  const { data: user } = useSession();
   const { data, error, isLoading } = useQuery({
     queryKey: ['bookmarkedProducts'],
     queryFn: () => getBookmarkedProducts(),
   });
+
+  console.log(user);
 
   if (isLoading || !data) {
     return (

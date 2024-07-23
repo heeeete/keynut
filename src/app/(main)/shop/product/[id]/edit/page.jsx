@@ -550,6 +550,18 @@ export default function Edit() {
   };
 
   const handleUpload = async () => {
+    if (!openChatUrl) {
+      const proceed = confirm(
+        '오픈 채팅방 주소가 없습니다. 계속 진행하시겠습니까?\n오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
+      );
+      if (!proceed) return;
+    } else {
+      if (!openChatUrl.startsWith('https://open.kakao.com/'))
+        return alert(
+          '올바르지 않은 오픈 채팅방 주소입니다. 올바른 주소를 입력해주세요.\n예: https://open.kakao.com/o/sBsuGODg\n사용하지 않을 경우, 입력란을 비워주세요.',
+        );
+    }
+
     setUploadLoading(true);
     const formData = new FormData();
     uploadImages.imageFiles.forEach(file => {
