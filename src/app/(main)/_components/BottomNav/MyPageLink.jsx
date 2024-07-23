@@ -1,6 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import handleLogin from '@/utils/handleLogin';
 
 export default function MyPageLink() {
   const pathName = usePathname();
@@ -13,7 +14,11 @@ export default function MyPageLink() {
           </svg>
         </div>
       ) : (
-        <Link href={'/mypage'} className="flex justify-center items-center w-full h-full">
+        <Link
+          href={'/mypage'}
+          onClick={e => handleLogin(e, router, '/mypage')}
+          className="flex justify-center items-center w-full h-full"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 16 16">
             <path
               fill="black"
