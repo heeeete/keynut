@@ -526,17 +526,15 @@ export default function Sell() {
   }, [session]);
 
   const handleDisabled = () => {
-    if (
+    return (
       !uploadImages.imageUrls.length ||
       !title.trim().length ||
       !mainCategory ||
-      (mainCategory !== 'others' && !subCategory) ||
+      (mainCategory !== 9 && !subCategory) ||
       !price.length ||
       !condition ||
       !description.trim().length
-    )
-      return true;
-    else return false;
+    );
   };
 
   const handleUpload = async () => {
@@ -573,9 +571,11 @@ export default function Sell() {
         }
       } else {
         console.error(data.error);
+        alert('상품 업로드를 실패했습니다. 나중에 다시 시도해주세요.');
       }
     } catch (error) {
       console.error('Error uploading files:', error);
+      alert('상품을 업도를 하는 도중 에러가 발생했습니다. 나중에 다시 시도해 주세요.');
     }
   };
 
