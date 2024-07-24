@@ -14,6 +14,9 @@ import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import useProductStateMutation from '@/hooks/useProductStateMutaion';
+import initRaiseCount from '@/lib/initRaiseCount';
+import raiseProduct from '@/lib/raiseProduct';
+import deleteProduct from '@/lib/deleteProduct';
 
 const RenderCondition = ({ condition }) => {
   if (condition === 1) condition = '미사용';
@@ -150,8 +153,6 @@ const RenderProfile = ({ user }) => {
           </Link>
         </div>
         <Link className="flex items-center rounded" href={`/shop/${user._id}`}>
-          {/* <p className=" text-base px-2 border border-gray-300 rounded max-md:text-sm line-clamp-1">상점 가기</p>
-           */}
           <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" viewBox="0 0 24 24">
             <path
               fill="lightgray"
@@ -236,7 +237,7 @@ const RenderDescriptor = ({ product }) => {
   );
 };
 
-const IsWriter = ({ id, state, session, setSettingModal }) => {
+const IsWriter = ({ id, state, setSettingModal }) => {
   const { onClickSelling, onClickSellCompleted } = useProductStateMutation();
 
   return (
@@ -322,19 +323,6 @@ const incrementViewCount = async productId => {
   return res.json();
 };
 
-const initRaiseCount = setRaiseCount => {
-  return () => {
-    fetch('/api/user/raise')
-      .then(res => res.json())
-      .then(data => {
-        setRaiseCount(data);
-      })
-      .catch(error => {
-        console.error('Error fetching raise count:', error);
-      });
-  };
-};
-
 export default function RenderProduct({ id }) {
   const queryClient = useQueryClient();
   const [deleteModal, setDeleteModal] = useState(false);
@@ -390,40 +378,25 @@ export default function RenderProduct({ id }) {
   }, []);
 
   useEffect(() => {
-    if (writer) fetchRaiseCount();
-  }, [writer]);
+    if (status === 'authenticated') fetchRaiseCount();
+  }, [status]);
 
-  const deleteProduct = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        invalidateFilters();
-        router.push('/shop');
-        router.refresh();
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  const deleteHandler = useCallback(async () => {
+    await deleteProduct(id, () => {
+      invalidateFilters();
+      router.push('/shop');
+      router.refresh();
+    });
   }, [router]);
 
-  const raiseProduct = async () => {
-    try {
-      const res = await fetch(`/api/products/${id}/raise`, { method: 'PATCH' });
-      if (res.ok) {
-        router.refresh();
-        invalidateFilters();
-        fetchRaiseCount();
-        alert(`최상단으로 UP!\n${raiseCount - 1}회 사용가능`);
-        setUpModal(false);
-      } else {
-        alert('오류가 발생했습니다. 잠시후 다시 시도해주세요.');
-        location.reload();
-      }
-    } catch (error) {
-      alert('오류가 발생했습니다. 잠시후 다시 시도해주세요.');
-      location.reload();
-    }
+  const raiseHandler = async () => {
+    await raiseProduct(id, () => {
+      router.refresh();
+      invalidateFilters();
+      fetchRaiseCount();
+      alert(`최상단으로 UP!\n${raiseCount - 1}회 사용가능`);
+      setUpModal(false);
+    });
   };
 
   if (!data && isLoading === false) return router.replace('/');
@@ -451,13 +424,7 @@ export default function RenderProduct({ id }) {
           <p className="text-xl font-bold">{product.title}</p>
           <div className="flex">
             {writer || session?.admin ? (
-              <IsWriter
-                id={id}
-                state={product.state}
-                session={session}
-                setSettingModal={setSettingModal}
-                queryClient={queryClient}
-              />
+              <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
             ) : (
               <>
                 <OpenChatLink url={product.openChatUrl} />
@@ -487,13 +454,13 @@ export default function RenderProduct({ id }) {
         {!writer && <RenderProfile user={user} />}
         <RenderDescriptor product={product} />
       </div>
-      {deleteModal && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteProduct} modalSet={setDeleteModal} />}
+      {deleteModal && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteHandler} modalSet={setDeleteModal} />}
       {upModal && (
         <Modal
           message={raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.'}
           subMessage={raiseCount ? `사용 시 1회 차감됩니다.` : ''}
           modalSet={setUpModal}
-          yesCallback={raiseCount ? raiseProduct : null}
+          yesCallback={raiseCount ? raiseHandler : null}
         />
       )}
       {settingModal && (
