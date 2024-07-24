@@ -110,7 +110,15 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
 
   return (
     <div className="flex w-full items-center py-3">
-      <input type="file" multiple accept="image/*" ref={fileInputRef} onChange={handleImageUpload} id="images" hidden />
+      <input
+        type="file"
+        multiple
+        accept="image/jpeg,image/png,image/bmp,image/webp,image/svg+xml,image/tiff"
+        ref={fileInputRef}
+        onChange={handleImageUpload}
+        id="images"
+        hidden
+      />
       <button
         onClick={handleImageUploadClick}
         className="flex flex-col justify-center items-center aspect-square w-28  mr-1 border rounded "

@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import handleLogin from '@/utils/handleLogin';
 
-export default function MyPageLink() {
+export default function MyPageLink({ router }) {
   const pathName = usePathname();
   return (
     <>
