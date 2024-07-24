@@ -171,7 +171,7 @@ const ProfileImage = ({ session, update, mobile }) => {
           >
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/bmp,image/webp,image/svg+xml,image/tiff"
               ref={fileInputRef}
               id="profileImg"
               onChange={handleImageSelect}

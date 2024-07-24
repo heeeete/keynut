@@ -111,7 +111,15 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
 
   return (
     <div className="flex w-full items-center py-3 ">
-      <input type="file" multiple accept="image/*" ref={fileInputRef} onChange={handleImageUpload} id="images" hidden />
+      <input
+        type="file"
+        multiple
+        accept="image/jpeg,image/png,image/bmp,image/webp,image/svg+xml,image/tiff"
+        ref={fileInputRef}
+        onChange={handleImageUpload}
+        id="images"
+        hidden
+      />
       <button
         onClick={handleImageUploadClick}
         className="flex flex-col justify-center items-center aspect-square w-28  mr-1 border rounded "
@@ -525,7 +533,7 @@ export default function Sell() {
   const isInitialRender = useRef(true); // 첫 번째 렌더링인지 확인하는 ref
 
   useEffect(() => {
-    if (status !== 'loading' && !session) return router.push('/signin');
+    if (status !== 'loading' && status === 'unauthenticated') return router.push('/signin');
     if (status === 'authenticated') {
       setOpenChatUrl(session.user.openChatUrl || '');
       const draft = JSON.parse(sessionStorage.getItem('draft'));
