@@ -41,20 +41,6 @@ const JustIn = ({ mobile }) => {
           <Link href={`/shop/product/${product._id}`} className="absolute top-0 left-0 w-full h-full rounded"></Link>
         </div>
       ))}
-      <div className="flex justify-center md:hidden">
-        <div className="flex flex-col w-20 justify-center items-center relative space-y-1 h-32">
-          <div className="relative">
-            <svg className="" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 16 16">
-              <g fill="gray">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-              </g>
-            </svg>
-          </div>
-          <p className="text-xs absolute bottom-6 text-gray-600">더보기</p>
-          <Link href={'/shop'} className="absolute top-0 left-0 w-full h-full"></Link>
-        </div>
-      </div>
     </div>
   );
 };
@@ -63,13 +49,14 @@ export default function RenderHome() {
   const mobile = isMobile();
   return (
     <div className="flex flex-col w-full max-md:main-768 -translate-y-6">
-      <div
+      <Link
+        href={'/shop'}
         className={`${title.className} flex flex-col text-center bg-black overflow-hidden h-48 text-2xl items-center relative justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
       >
         <div className="flex items-center justify-center font-semibold text-gray-100 z-20">
           키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요!
         </div>
-      </div>
+      </Link>
       <div className="w-full max-w-screen-xl mx-auto px-10  space-y-12 my-10 max-md:px-3 ">
         <section className="flex flex-col space-y-5">
           <div className="flex flex-col">

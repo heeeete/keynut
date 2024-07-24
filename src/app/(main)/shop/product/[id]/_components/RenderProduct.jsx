@@ -280,7 +280,7 @@ const SettingModal = ({ id, setSettingModal, setDeleteModal, setRaiseCount, setU
 
   return (
     <div
-      className="fixed w-screen h-screen top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
+      className="fixed w-screen custom-dvh top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
       onClick={e => {
         if (e.currentTarget === e.target) setSettingModal(false);
       }}

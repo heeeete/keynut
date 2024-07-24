@@ -13,16 +13,19 @@ export default function MobileImageSlider({ images, state }) {
   const [fullScreenModal, setFullScreenModal] = useState(false);
   const imageShowRef = useRef(null);
   const fullScreenImageRef = useRef(null);
+  const innerWidth = useRef(0);
+  const innerHeight = useRef(0);
   const isPinching = useRef(false);
   const travelRatio = useRef(0);
   const initDragPos = useRef(0);
   const originOffset = useRef(0);
   const originFullScreenOffset = useRef(0);
-  const animationFrame = useRef(null);
   const pathname = usePathname();
   const totalChildren = images.length;
 
   useEffect(() => {
+    innerWidth.current = window.innerWidth;
+    innerHeight.current = window.innerHeight;
     return () => {
       document.body.style.position = '';
     };
@@ -41,19 +44,17 @@ export default function MobileImageSlider({ images, state }) {
     const end = () => {
       if (isPinching.current) return;
       setIsTransitioning(false);
-      cancelAnimationFrame(animationFrame.current);
       if (Math.abs(travelRatio.current) >= 0.2) {
         const newIdx =
           travelRatio.current > 0
             ? Math.max(currentImageIndex - 1, 0)
             : Math.min(currentImageIndex + 1, totalChildren - 1);
         setCurrentImageIndex(newIdx);
-        console.log(newIdx, clientWidth);
         setOffset(newIdx * -clientWidth);
-        setFullScreenOffset(newIdx * -window.innerWidth);
+        setFullScreenOffset(newIdx * -innerWidth.current);
       } else {
         setOffset(currentImageIndex * -clientWidth);
-        setFullScreenOffset(currentImageIndex * -window.innerWidth);
+        setFullScreenOffset(currentImageIndex * -innerWidth.current);
       }
       if (!fullScreenModal && Math.abs(travelRatio.current) < 0.01) handleFullScreenModal();
       document.removeEventListener('touchmove', move);
@@ -61,10 +62,9 @@ export default function MobileImageSlider({ images, state }) {
     };
 
     const move = e => {
-      if (isPinching.current) return;
+      if (isPinching.current) return; // 확대 상태에서는 드래그 금지
       if (Math.abs(travelRatio.current) < 0.8) {
         const travel = e.touches[0].clientX - initDragPos.current;
-        console.log(travel);
         travelRatio.current = travel / clientWidth;
         setOffset(originOffset.current + travel);
         setFullScreenOffset(originFullScreenOffset.current + travel);
@@ -92,7 +92,6 @@ export default function MobileImageSlider({ images, state }) {
     return () => {
       imageShow?.removeEventListener('touchstart', startTouch);
       fullScreenImage?.removeEventListener('touchstart', startTouch);
-      cancelAnimationFrame(animationFrame.current);
     };
   }, [clientWidth, totalChildren, offset, fullScreenOffset, fullScreenModal]);
 
@@ -109,7 +108,7 @@ export default function MobileImageSlider({ images, state }) {
       if (dir === 1) newIdx = Math.min(currentImageIndex + 1, images.length - 1);
       else newIdx = Math.max(currentImageIndex - 1, 0);
       setCurrentImageIndex(newIdx);
-      setFullScreenOffset(newIdx * -window.innerWidth);
+      setFullScreenOffset(newIdx * -innerWidth.current);
     },
     [currentImageIndex],
   );
@@ -159,7 +158,10 @@ export default function MobileImageSlider({ images, state }) {
         </div>
       )}
       {fullScreenModal && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black z-90">
+        <div
+          className={`fixed top-0 left-0 w-screen overflow-y-hidden bg-black z-90`}
+          style={{ height: `${innerHeight.current}px` }}
+        >
           <div className="fixed flex w-full z-60">
             <button onClick={handleFullScreenModal} className="p-3">
               <img src="/close.svg" width={30} height={30} alt="close button" />
@@ -167,7 +169,7 @@ export default function MobileImageSlider({ images, state }) {
           </div>
           <div className="flex w-full h-full overflow-hidden">
             <div
-              className="relative flex"
+              className="relative flex bg-red-300"
               ref={fullScreenImageRef}
               style={{
                 transform: `translateX(${fullScreenOffset}px)`,
@@ -175,7 +177,7 @@ export default function MobileImageSlider({ images, state }) {
               }}
             >
               {images.map((img, idx) => (
-                <div key={idx} className="flex relative w-screen custom-dvh">
+                <div key={idx} className={`flex relative w-screen`} style={{ height: `${innerHeight.current}px` }}>
                   <Image src={img} alt="product-img" sizes="100vw" fill style={{ objectFit: 'contain' }} />
                 </div>
               ))}

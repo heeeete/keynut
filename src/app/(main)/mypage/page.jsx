@@ -184,6 +184,42 @@ const MyProducts = ({ data }) => {
   );
 };
 
+// const UserSupport = () => {
+//   return (
+//     <div className="flex border rounded space-x-20 p-4">
+//       <Link href={'/qna/new'} className="flex flex-col w-24 aspect-square justify-center items-center">
+//         <svg xmlns="http://www.w3.org/2000/svg" width="2.5rem" height="2.5rem" viewBox="0 0 24 24">
+//           <path
+//             fill="none"
+//             stroke="currentColor"
+//             stroke-linecap="round"
+//             stroke-linejoin="round"
+//             stroke-width="2"
+//             d="M12 14v-3m0 0V8m0 3H9m3 0h3m-7.876 7.701L5.6 19.921c-.833.665-1.249.998-1.599.999a1 1 0 0 1-.783-.377C3 20.27 3 19.737 3 18.671V7.201c0-1.12 0-1.681.218-2.11c.192-.376.497-.681.874-.873C4.52 4 5.08 4 6.2 4h11.6c1.12 0 1.68 0 2.108.218a2 2 0 0 1 .874.874c.218.427.218.987.218 2.105v7.607c0 1.117 0 1.676-.218 2.104a2 2 0 0 1-.874.874c-.427.218-.986.218-2.104.218H9.123c-.416 0-.625 0-.824.04a2 2 0 0 0-.507.179c-.18.092-.342.221-.665.48z"
+//           />
+//         </svg>
+//         <p>1:1 문의</p>
+//       </Link>
+//       <Link href={} className="flex flex-col w-24 aspect-square justify-center items-center">
+//         <svg xmlns="http://www.w3.org/2000/svg" width="2.5rem" height="2.5rem" viewBox="0 0 24 24">
+//           <g
+//             fill="none"
+//             stroke="currentColor"
+//             stroke-linecap="round"
+//             stroke-linejoin="round"
+//             stroke-width="2"
+//             color="currentColor"
+//           >
+//             <path d="M7.998 16h4m-4-5h8M7.5 3.5c-1.556.047-2.483.22-3.125.862c-.879.88-.879 2.295-.879 5.126v6.506c0 2.832 0 4.247.879 5.127C5.253 22 6.668 22 9.496 22h5c2.829 0 4.243 0 5.121-.88c.88-.879.88-2.294.88-5.126V9.488c0-2.83 0-4.246-.88-5.126c-.641-.642-1.569-.815-3.125-.862" />
+//             <path d="M7.496 3.75c0-.966.784-1.75 1.75-1.75h5.5a1.75 1.75 0 1 1 0 3.5h-5.5a1.75 1.75 0 0 1-1.75-1.75" />
+//           </g>
+//         </svg>
+//         <p>1:1 문의 내역</p>
+//       </Link>
+//     </div>
+//   );
+// };
+
 export default function MyPage() {
   const { data: session, status, update } = useSession();
 
@@ -196,7 +232,7 @@ export default function MyPage() {
   return (
     <div className="flex flex-col h-full space-y-8 max-w-screen-xl mx-auto px-10 max-md:px-3 max-md:main-768 max-md:pb-3">
       <MyProfile data={data?.userProfile} session={session} update={update} status={status} />
-      {/* 카카오 API */}
+      {/* <UserSupport /> */}
       <MyProducts data={data?.userProducts} />
     </div>
   );

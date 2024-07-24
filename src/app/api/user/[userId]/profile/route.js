@@ -1,9 +1,12 @@
 import { connectDB } from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
+import getUserSession from '@/lib/getUserSession';
 
 export async function GET(req, { params }) {
   try {
+    const session = await getUserSession();
+    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const users = db.collection('users');
