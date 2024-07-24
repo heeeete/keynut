@@ -7,13 +7,26 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { getSession, signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import getUserProducts from '@/lib/getUserProducts';
-import { isMobile } from '@/lib/isMobile';
 import { useQuery } from '@tanstack/react-query';
 import ProfileSkeleton from '../_components/ProfileSkeleton';
 import { useRouter } from 'next/navigation';
+import getUserProfile from '@/lib/getUserProfile';
 
-const MyProfile = React.memo(({ mobile, session }) => {
+const MyProfile = React.memo(({ session, update, status }) => {
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const profile = await getUserProfile(session.user.id);
+      if (profile.nickname !== session.user.nickname) update({ nickname: profile.nickname });
+      if (profile.image !== session.user.image) update({ image: profile.image });
+    };
+
+    if (status === 'authenticated') {
+      fetchProfile();
+    }
+  }, [status]);
+
   return (
     <div className="flex h-24 border border-gray-300 rounded-md items-center px-4 max-md:px-2">
       <div className="flex flex-1 items-center space-x-5">
@@ -47,31 +60,29 @@ const MyProfile = React.memo(({ mobile, session }) => {
           </div>
         )}
       </div>
-      <button>
-        <Link
-          onClick={async e => {
-            e.preventDefault();
-            if (!(await getSession())) {
-              return signIn();
-            }
-            router.push('/mypage/profile-edit');
-          }}
-          className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm"
-          href={'/mypage/profile-edit'}
-        >
-          프로필 관리
-        </Link>
-      </button>
+      <Link
+        onClick={async e => {
+          e.preventDefault();
+          if (!(await getSession())) {
+            return signIn();
+          }
+          router.push('/mypage/profile-edit');
+        }}
+        className="flex text-base px-3 py-1 border border-gray-300 rounded-md max-md:text-sm"
+        href={'/mypage/profile-edit'}
+      >
+        프로필 관리
+      </Link>
     </div>
   );
 });
 
-const MyProducts = ({ data, mobile }) => {
+const MyProducts = ({ data }) => {
   const [productOption, setProductOption] = useState(1);
   return (
     <div className="flex flex-col h-full space-y-8">
       <section className="space-y-3">
-        <h2 className="text-xl max-md:text-lg">상품 관리</h2>
+        <h2 className="text-xl max-md:text-lg">내 상품</h2>
         <nav className="mb-2">
           <ul className="grid grid-cols-2 items-center bg-gray-100 border-gray-100 border-t border-l border-r">
             <button>
@@ -99,7 +110,7 @@ const MyProducts = ({ data, mobile }) => {
         <div>
           {data ? (
             data.filter(a => a.state === productOption).length ? (
-              <div className="grid grid-cols-3 gap-1 min-h-14 max-md:grid-cols-1">
+              <div className="grid grid-cols-3 gap-1 max-md:grid-cols-1">
                 {data
                   .filter(a => a.state === productOption)
                   .map((product, index) => {
@@ -127,7 +138,7 @@ const MyProducts = ({ data, mobile }) => {
                             ></Image>
                           </div>
                           <div className="flex flex-col justify-center w-full">
-                            <div className="break-all line-clamp-1">{product.title}</div>
+                            <div className="break-all line-clamp-1 mr-5">{product.title}</div>
                             <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
                               <span>{product.price.toLocaleString()}</span>
                               <span className="text-sm">원</span>
@@ -210,8 +221,7 @@ const MyProducts = ({ data, mobile }) => {
 // };
 
 export default function MyPage() {
-  const { data: session, status } = useSession();
-  const mobile = isMobile();
+  const { data: session, status, update } = useSession();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['userProducts', session?.user?.id],
@@ -221,9 +231,9 @@ export default function MyPage() {
 
   return (
     <div className="flex flex-col h-full space-y-8 max-w-screen-xl mx-auto px-10 max-md:px-3 max-md:main-768 max-md:pb-3">
-      <MyProfile mobile={mobile} data={data?.userProfile} session={session} />
+      <MyProfile data={data?.userProfile} session={session} update={update} status={status} />
       {/* <UserSupport /> */}
-      <MyProducts data={data?.userProducts} mobile={mobile} />
+      <MyProducts data={data?.userProducts} />
     </div>
   );
 }
