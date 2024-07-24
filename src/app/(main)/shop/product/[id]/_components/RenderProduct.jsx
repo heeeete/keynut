@@ -131,7 +131,7 @@ const RenderProfile = ({ user }) => {
           >
             {user.image ? (
               <div className="relative w-10 h-10">
-                <Image className="rounded-full" src={user.image} sizes="80px" alt="profile" fill />
+                <Image className="rounded-full object-cover" src={user.image} sizes="80px" alt="profile" fill />
               </div>
             ) : (
               <div className="w-10 h-10 defualt-profile">
