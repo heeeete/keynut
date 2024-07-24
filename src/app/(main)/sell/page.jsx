@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import Loading from '../_components/Loading';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
+import getUserProfile from '@/lib/getUserProfile';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   switch (mainCategory) {
@@ -535,6 +536,11 @@ export default function Sell() {
   useEffect(() => {
     if (status !== 'loading' && status === 'unauthenticated') return router.push('/signin');
     if (status === 'authenticated') {
+      const fetchUserProfile = async () => {
+        const user = await getUserProfile(session.user.id);
+        if (session.user.openChatUrl !== user.openChatUrl) update({ openChatUrl: user.openChatUrl });
+      };
+      fetchUserProfile();
       setOpenChatUrl(session.user.openChatUrl || '');
       const draft = JSON.parse(sessionStorage.getItem('draft'));
       if (draft) {

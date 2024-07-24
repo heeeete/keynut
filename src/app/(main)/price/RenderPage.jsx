@@ -2,7 +2,7 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import getProducts from './_lib/getProducts';
 
 function SearchBar() {
@@ -56,12 +56,10 @@ export default function RenderPage() {
   // }, [data]);
 
   return (
-    <Suspense>
-      <div className="max-w-screen-xl mx-auto">
-        <SearchBar />
-        <div>평균 가격: {price}</div>
-        {/* 데이터 렌더링 부분 추가 */}
-      </div>
-    </Suspense>
+    <div className="max-w-screen-xl mx-auto">
+      <SearchBar />
+      <div>평균 가격: {price}</div>
+      {/* 데이터 렌더링 부분 추가 */}
+    </div>
   );
 }

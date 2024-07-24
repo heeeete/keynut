@@ -73,18 +73,11 @@ export async function GET(req) {
     console.error('Failed to retrieve data:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
-  // finally {
-  //   // Ensure the client is closed to prevent memory leaks
-  //   if (client) {
-  //     await client.close();
-  //   }
-  // }
 }
 
 export async function POST(req) {
   try {
     const session = await getUserSession();
-    console.log('===========================', session);
     if (!session) {
       return NextResponse.json({ error: 'No session found' }, { status: 401 });
     }
@@ -192,7 +185,8 @@ export async function PUT(req) {
     const formData = await req.formData();
     const deleteFiles = formData.getAll('deleteFiles');
     const uploadFiles = formData.getAll('uploadFiles');
-    const uploadedUrls = [];
+
+    const uploadedUrls = new Array(uploadFiles.length);
 
     const deletePromises = deleteFiles.map(file => {
       const params = {
@@ -202,7 +196,7 @@ export async function PUT(req) {
       return s3Client.send(new DeleteObjectCommand(params)); // Promise 반환
     });
 
-    const uploadPromises = uploadFiles.map(async file => {
+    const uploadPromises = uploadFiles.map(async (file, index) => {
       if (typeof file === 'object') {
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
@@ -216,13 +210,14 @@ export async function PUT(req) {
 
         await s3Client.send(command);
         const url = `${process.env.AWS_S3_BASE_URL}/${uploadParams.Key}`;
-        uploadedUrls.push(url);
+        uploadedUrls[index] = url;
       } else {
-        uploadedUrls.push(file); // 이미 업로드된 파일의 URL
+        uploadedUrls[index] = file; // 이미 업로드된 파일의 URL
       }
     });
 
     await Promise.all([...deletePromises, ...uploadPromises]);
+
     await users.updateOne({ email: session.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
     let tags = formData.get('tags');
     tags = tags.length ? tags.split(',') : [];

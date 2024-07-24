@@ -17,7 +17,7 @@ export default function Footer() {
           className="flex flex-col h-32 w-full border-t px-10 pt-6 mt-6 items-center space-y-4  max-md:px-5"
         >
           <p className="font-bold">KEYNUT</p>
-          <p className="flex">
+          <p className="flex text-sm text-gray-600">
             <span className="font-semibold">Email :&nbsp;</span>
             <a href="mailto:helloword@na.com">keynut65@gmail.com</a>
           </p>
