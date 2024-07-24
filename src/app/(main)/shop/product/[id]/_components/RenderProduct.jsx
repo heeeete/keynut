@@ -13,6 +13,7 @@ import { getSession, signIn, useSession } from 'next-auth/react';
 import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
+import useProductStateMutation from '@/hooks/useProductStateMutaion';
 
 const RenderCondition = ({ condition }) => {
   if (condition === 1) condition = '미사용';
@@ -235,51 +236,8 @@ const RenderDescriptor = ({ product }) => {
   );
 };
 
-const IsWriter = ({ id, state, session, setSettingModal, queryClient }) => {
-  const invalidateFilters = useInvalidateFiltersQuery();
-
-  const mutation = useMutation({
-    mutationFn: async ({ productId }) => {
-      const res = await fetch(`/api/products/${productId}/state`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ state }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Network response was not ok');
-      return data;
-    },
-    onMutate: async ({ productId }) => {
-      await queryClient.cancelQueries(['product', productId]);
-      const previousProduct = queryClient.getQueryData(['product', productId]);
-      queryClient.setQueryData(['product', productId], old => ({
-        ...old,
-        state: state === 1 ? 0 : 1,
-      }));
-      return previousProduct;
-    },
-    onError: (err, variables, context) => {
-      queryClient.setQueryData(['product', variables.productId], context.previousProduct);
-    },
-    onSettled: (data, error, variables) => {
-      invalidateFilters();
-      queryClient.invalidateQueries(['product', variables.productId]);
-    },
-  });
-
-  const onClickSelling = () => {
-    if (!session) return signIn();
-    else if (state === 1) return;
-    mutation.mutate({ productId: id });
-  };
-
-  const onClickSellCompleted = () => {
-    if (!session) return signIn();
-    else if (state === 0) return;
-    mutation.mutate({ productId: id });
-  };
+const IsWriter = ({ id, state, session, setSettingModal }) => {
+  const { onClickSelling, onClickSellCompleted } = useProductStateMutation();
 
   return (
     <>
@@ -293,11 +251,14 @@ const IsWriter = ({ id, state, session, setSettingModal, queryClient }) => {
           <img src="/product/more.svg" width={24} height={24} alt="MORE" />
         </button>
         <div className="space-x-1 bg-slate-200 p-1 rounded-sm max-[480px]:text-sm">
-          <button onClick={onClickSelling} className={`${state === 1 ? 'bg-white' : 'opacity-30'} p-1 rounded-s-sm`}>
+          <button
+            onClick={() => onClickSelling(id, state)}
+            className={`${state === 1 ? 'bg-white' : 'opacity-30'} p-1 rounded-s-sm`}
+          >
             판매중
           </button>
           <button
-            onClick={onClickSellCompleted}
+            onClick={() => onClickSellCompleted(id, state)}
             className={`${state === 0 ? 'bg-white' : 'opacity-30'} p-1 rounded-e-sm`}
           >
             판매완료
