@@ -387,7 +387,8 @@ const RenderProducts = React.memo(
         initialPageParam: 0, //[1,2,3,4,5] [6,7,8,9,10] [11,12,13,14,15] -> 데이터를 페이지별로 관리 , 이차원 배열
         getNextPageParam: (lastPage, allPages) => {
           if (lastPage.products.length === 0) return undefined;
-          return lastPage.products[lastPage.products.length - 1]._id; // `_id` 기준으로 페이징
+          const lastProduct = lastPage.products[lastPage.products.length - 1];
+          return { lastId: lastProduct._id, lastCreatedAt: lastProduct.createdAt };
         },
         staleTime: 60 * 1000,
       });

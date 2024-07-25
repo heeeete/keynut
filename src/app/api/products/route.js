@@ -25,18 +25,21 @@ export async function GET(req) {
     const categoriesParam = searchParams.get('categories');
     const pricesParam = searchParams.get('prices');
     const lastProductId = searchParams.get('lastId');
+    const lastProductCreatedAt = searchParams.get('lastCreatedAt');
 
-    // console.log('categoriesParam', categoriesParam);
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
     let query = { state: 1 };
+
     if (keywordParam) {
-      //해시태그일 경우 해시태그에서 검색
       if (keywordParam[0] == '#') {
         const hashTag = keywordParam.split(' ')[0];
         query.tags = { $elemMatch: { $eq: hashTag } };
-      } else query.title = { $regex: keywordParam, $options: 'i' };
+      } else {
+        query.title = { $regex: keywordParam, $options: 'i' };
+      }
     }
+
     if (categories.length > 0) {
       if (categories.includes(1)) {
         categories.push(10, 11, 12, 13, 14, 15, 16, 19);
@@ -55,15 +58,22 @@ export async function GET(req) {
         const range = priceRanges.find(range => range.id === priceId);
         return { price: { $gte: range.min, $lte: range.max } };
       });
-      query.$or = priceConditions;
+      query.$and = [{ $or: priceConditions }];
     }
 
-    if (lastProductId) {
-      query._id = { $lt: new ObjectId(lastProductId) };
+    if (lastProductCreatedAt && lastProductId) {
+      query.$and = query.$and || [];
+      query.$and.push({
+        $or: [
+          { createdAt: { $lt: new Date(lastProductCreatedAt) } },
+          { createdAt: new Date(lastProductCreatedAt), _id: { $lt: new ObjectId(lastProductId) } },
+        ],
+      });
     }
 
     const total = await db.collection('products').countDocuments(query);
-    const products = await db.collection('products').find(query).sort({ createdAt: -1 }).limit(48).toArray();
+    const products = await db.collection('products').find(query).sort({ createdAt: -1, _id: -1 }).limit(48).toArray();
+
     if (products) {
       return NextResponse.json({ products, total }, { status: 200 });
     } else {
