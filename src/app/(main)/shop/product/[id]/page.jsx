@@ -10,17 +10,17 @@ export async function generateMetadata({ params }) {
   return {
     title: product ? `${product.title}ㅣKEYNUT` : 'KEYNUT',
     description: product ? `${product.description}` : '다양한 전자기기를 한눈에',
-    openGraph: {
-      title: product ? `${product.title}ㅣKEYNUT` : 'KEYNUT',
-      description: product ? `${product.description}` : '다양한 전자기기를 한눈에',
-      images: [
-        {
-          url: product.images ? product.images[0] : '/keynutLogo',
-          width: 400,
-          height: 400,
-        },
-      ],
-    },
+    // openGraph: {
+    //   title: product ? `${product.title}ㅣKEYNUT` : 'KEYNUT',
+    //   description: product ? `${product.description}` : '다양한 전자기기를 한눈에',
+    //   images: [
+    //     {
+    //       url: product.images ? product.images[0] : '/keynutLogo',
+    //       width: 400,
+    //       height: 400,
+    //     },
+    //   ],
+    // },
   };
 }
 
