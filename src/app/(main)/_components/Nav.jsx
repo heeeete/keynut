@@ -12,13 +12,19 @@ export default function Nav() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const router = useRouter();
-  const border = pathname.startsWith('/shop/') || pathname.startsWith('/gallery/post');
+  const border =
+    (!pathname.startsWith('/gallery') && !pathname.startsWith('/shop')) ||
+    pathname.startsWith('/shop/') ||
+    pathname.startsWith('/gallery/post');
   const navRender = pathname === '/shop' || pathname === '/gallery' || pathname === '/bookmark';
 
+  const maxMdBorder = pathname.startsWith('/mypage/product-edit');
   return (
     <header
       id="nav"
-      className={`${border ? 'border-b' : ''} ${navRender ? 'max-md:hidden' : ''} fixed w-full top-0 bg-white z-50`}
+      className={`${border ? 'border-b' : ''} ${navRender ? 'max-md:hidden' : ''} fixed w-full top-0 bg-white z-50 ${
+        maxMdBorder ? 'max-md:border-0' : ''
+      }`}
     >
       <nav className="flex flex-col w-full h-full  max-w-screen-xl mx-auto max-md:space-y-0">
         <ul className="flex justify-end pr-10 pt-2 max-md:hidden">
