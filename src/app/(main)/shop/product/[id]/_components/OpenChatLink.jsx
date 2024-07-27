@@ -5,10 +5,10 @@ import Link from 'next/link';
 export default function OpenChatLink({ url }) {
   return (
     <Link
-      href={url}
+      href={url ? url : ''}
       target="_blank"
       className="flex justify-center items-center rounded aspect-square w-10"
-      style={url.length ? {} : { cursor: 'not-allowed', opacity: 0.1 }}
+      style={url ? {} : { cursor: 'not-allowed', opacity: 0.1 }}
       onClick={e => {
         if (!url.length) {
           e.preventDefault();

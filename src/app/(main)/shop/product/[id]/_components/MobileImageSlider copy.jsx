@@ -6,25 +6,49 @@ import Image from 'next/image';
 import { touchInit } from '../utils/touch';
 
 export default function MobileImageSlider({ images, state }) {
-  console.log(images);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [offset, setOffset] = useState(0);
+  const [fullScreenOffset, setFullScreenOffset] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [clientWidth, setClientWidth] = useState(0);
+  const [fullScreenModal, setFullScreenModal] = useState(false);
   const imageShowRef = useRef(null);
+  const fullScreenRef = useRef(null);
+  const innerWidth = useRef(0);
+  const innerHeight = useRef(0);
   const travelRatio = useRef(0);
   const initDragPos = useRef(0);
   const originOffset = useRef(0);
+  const originFullScreenOffset = useRef(0);
   const pathname = usePathname();
   const totalChildren = images.length;
+  const isZoom = useRef(1);
 
-  // useEffect(() => {
-  //   innerWidth.current = window.innerWidth;
-  //   innerHeight.current = window.innerHeight;
-  //   return () => {
-  //     document.body.style.position = '';
-  //   };
-  // }, []);
+  useEffect(() => {
+    let destroyPinchZoom;
+    const fullScreenImages = document.getElementsByClassName('fullScreenImage');
+    if (fullScreenModal) {
+      if (fullScreenRef.current && fullScreenImages.length > 0) {
+        destroyPinchZoom = touchInit(fullScreenRef.current, fullScreenImages, currentImageIndex, isZoom);
+      }
+    } else {
+      isZoom.current = 1;
+    }
+    return () => {
+      if (destroyPinchZoom) destroyPinchZoom();
+      if (fullScreenImages[currentImageIndex]) {
+        fullScreenImages[currentImageIndex].style.transform = '';
+      }
+    };
+  }, [fullScreenModal, currentImageIndex]);
+
+  useEffect(() => {
+    innerWidth.current = window.innerWidth;
+    innerHeight.current = window.innerHeight;
+    return () => {
+      document.body.style.position = '';
+    };
+  }, []);
 
   useEffect(() => {
     if (imageShowRef.current) {
@@ -34,6 +58,7 @@ export default function MobileImageSlider({ images, state }) {
 
   useEffect(() => {
     const end = () => {
+      if (isZoom.current !== 1) return;
       setIsTransitioning(false);
       if (Math.abs(travelRatio.current) >= 0.2) {
         const newIdx =
@@ -42,50 +67,73 @@ export default function MobileImageSlider({ images, state }) {
             : Math.min(currentImageIndex + 1, totalChildren - 1);
         setCurrentImageIndex(newIdx);
         if (imageShowRef.current) imageShowRef.current.style.transform = `translateX(${newIdx * -clientWidth}px)`;
+        if (fullScreenRef.current)
+          fullScreenRef.current.style.transform = `translateX(${newIdx * -innerWidth.current}px)`;
         setOffset(newIdx * -clientWidth);
+        setFullScreenOffset(newIdx * -innerWidth.current);
       } else {
         if (imageShowRef.current)
           imageShowRef.current.style.transform = `translateX(${currentImageIndex * -clientWidth}px)`;
+        if (fullScreenRef.current)
+          fullScreenRef.current.style.transform = `translateX(${currentImageIndex * -innerWidth.current}px)`;
       }
+      if (!fullScreenModal && Math.abs(travelRatio.current) < 0.01) handleFullScreenModal();
       document.removeEventListener('touchmove', move);
       document.removeEventListener('touchend', end);
     };
 
     const move = e => {
+      if (isZoom.current !== 1 || e.targetTouches.length > 1) return;
       if (Math.abs(travelRatio.current) < 0.8) {
         const travel = e.touches[0].clientX - initDragPos.current;
         travelRatio.current = travel / clientWidth;
         if (imageShowRef.current)
           imageShowRef.current.style.transform = `translateX(${originOffset.current + travel}px)`;
+        if (fullScreenRef.current)
+          fullScreenRef.current.style.transform = `translateX(${originFullScreenOffset.current + travel}px)`;
       }
     };
 
     const startTouch = e => {
+      e.preventDefault();
+      if (isZoom.current !== 1) {
+        return;
+      }
       setIsTransitioning(true);
       travelRatio.current = 0;
       initDragPos.current = e.touches[0].clientX;
       originOffset.current = offset;
+      originFullScreenOffset.current = fullScreenOffset;
       document.addEventListener('touchmove', move);
       document.addEventListener('touchend', end);
     };
 
     imageShowRef.current?.addEventListener('touchstart', startTouch);
+    if (fullScreenModal) fullScreenRef.current?.addEventListener('touchstart', startTouch);
 
     return () => {
       imageShowRef.current?.removeEventListener('touchstart', startTouch);
+      fullScreenRef.current?.removeEventListener('touchstart', startTouch);
     };
-  }, [clientWidth, totalChildren, offset]);
+  }, [clientWidth, totalChildren, offset, fullScreenOffset, fullScreenModal]);
 
-  // const handleNavigator = useCallback(
-  //   dir => {
-  //     let newIdx;
-  //     if (dir === 1) newIdx = Math.min(currentImageIndex + 1, images.length - 1);
-  //     else newIdx = Math.max(currentImageIndex - 1, 0);
-  //     setCurrentImageIndex(newIdx);
-  //     setFullScreenOffset(newIdx * -innerWidth.current);
-  //   },
-  //   [currentImageIndex],
-  // );
+  const handleFullScreenModal = useCallback(() => {
+    setFullScreenModal(curr => !curr);
+    if (fullScreenModal) {
+      document.body.style.position = '';
+    } else document.body.style.position = 'fixed';
+  }, [fullScreenModal]);
+
+  const handleNavigator = useCallback(
+    dir => {
+      let newIdx;
+      if (dir === 1) newIdx = Math.min(currentImageIndex + 1, images.length - 1);
+      else newIdx = Math.max(currentImageIndex - 1, 0);
+      setCurrentImageIndex(newIdx);
+      setFullScreenOffset(newIdx * -innerWidth.current);
+    },
+    [currentImageIndex],
+  );
 
   return (
     <div className="flex flex-col items-center">
@@ -104,25 +152,14 @@ export default function MobileImageSlider({ images, state }) {
             }}
           >
             {images.map((img, idx) => (
-              <a
-                key={idx}
-                href={img.url}
-                data-pswp-width={img.width}
-                data-pswp-height={img.height}
-                target="_blank"
-                rel="noreferrer"
-                className="z-90"
-              >
-                <div key={idx} className="flex relative max-w-lg w-screen aspect-square">
-                  <Image
-                    unoptimized
-                    src={img.url}
-                    alt="product-img"
-                    fill
-                    style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
-                  />
-                </div>
-              </a>
+              <div key={idx} className="flex relative max-w-lg w-screen aspect-square">
+                <Image
+                  src={img}
+                  alt="product-img"
+                  fill
+                  style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
+                />
+              </div>
             ))}
           </div>
         </button>
@@ -141,7 +178,7 @@ export default function MobileImageSlider({ images, state }) {
           ))}
         </div>
       )}
-      {/* {fullScreenModal && (
+      {fullScreenModal && (
         <div className={`fixed top-0 left-0 w-screen h-screen overflow-y-hidden bg-black z-90`}>
           <div className="fixed flex w-full z-60">
             <button onClick={handleFullScreenModal} className="p-3">
@@ -158,23 +195,16 @@ export default function MobileImageSlider({ images, state }) {
               }}
             >
               {images.map((img, idx) => (
-                <a
-                  key={idx}
-                  href={img.url}
-                  data-pswp-width={img.width}
-                  data-pswp-height={img.height}
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <div key={idx} className={`flex relative w-screen`} style={{ height: `${innerHeight.current}px` }}>
                   <Image
                     className="fullScreenImage"
-                    src={img.url}
+                    src={img}
                     alt="product-img"
                     sizes="100vw"
                     fill
                     style={{ objectFit: 'contain' }}
                   />
-                </a>
+                </div>
               ))}
             </div>
           </div>
@@ -188,7 +218,7 @@ export default function MobileImageSlider({ images, state }) {
             </button>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 }
