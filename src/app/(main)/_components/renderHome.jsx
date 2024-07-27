@@ -7,11 +7,10 @@ import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 
 import { Gowun_Dodum } from 'next/font/google';
-import { isMobile } from '@/lib/isMobile';
 
 const title = Gowun_Dodum({ subsets: ['latin'], weight: ['400'] });
 
-const JustIn = ({ mobile }) => {
+const JustIn = () => {
   const { data, error, isLoading } = useQuery({
     queryKey: ['recentProducts'],
     queryFn: getRecentProducts,
@@ -21,7 +20,11 @@ const JustIn = ({ mobile }) => {
   return (
     <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
       {data?.map((product, idx) => (
-        <div className="flex flex-col cursor-pointer relative max-md:max-w-40 max-md:w-40 max-md:text-sm" key={idx}>
+        <Link
+          href={`/shop/product/${product._id}`}
+          className="flex flex-col cursor-pointer relative max-md:max-w-40 max-md:w-40 max-md:text-sm"
+          key={idx}
+        >
           <div className="w-full aspect-square relative min-h-32 min-w-32 bg-gray-100">
             <Image
               src={product.images[0]}
@@ -38,22 +41,20 @@ const JustIn = ({ mobile }) => {
               <span className="text-sm">원</span>
             </div>
           </div>
-          <Link href={`/shop/product/${product._id}`} className="absolute top-0 left-0 w-full h-full rounded"></Link>
-        </div>
+        </Link>
       ))}
     </div>
   );
 };
 
 export default function RenderHome() {
-  const mobile = isMobile();
   return (
     <div className="flex flex-col w-full max-md:main-768 -translate-y-6">
       <Link
         href={'/shop'}
         className={`${title.className} flex flex-col text-center bg-black overflow-hidden h-48 text-2xl items-center relative justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
       >
-        <div className="flex items-center justify-center font-semibold text-gray-100 z-20">
+        <div className="flex items-center justify-center font-semibold text-gray-100 z-2">
           키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요!
         </div>
       </Link>
@@ -65,37 +66,34 @@ export default function RenderHome() {
           </div>
           <ul className="flex space-x-3 overflow-auto scrollbar-hide">
             <li className="flex flex-col items-center space-y-1">
-              <div className="relative">
+              <Link href={'/shop?categories=1'}>
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
                   <Image className="max-md:w-16" src="/keyboard.svg" width={80} height={80} alt="keyboard" />
                 </div>
-                <Link href={'/shop?categories=1'} className="absolute top-0 left-0 w-full h-full"></Link>
-              </div>
+              </Link>
               <p className="text-gray-600">키보드</p>
             </li>
             <li className="flex flex-col items-center space-y-1">
-              <div className="relative">
+              <Link href={'/shop?categories=2'}>
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-slate-100 justify-center items-center max-md:w-24">
                   <Image className="max-md:w-9" src="/mouse.svg" width={45} height={45} alt="mouse" />
                 </div>
-                <Link href={'/shop?categories=2'} className="absolute top-0 left-0 w-full h-full"></Link>
-              </div>
+              </Link>
               <p className="text-gray-600">마우스</p>
             </li>
             <li className="flex flex-col items-center space-y-1">
-              <div className="relative">
+              <Link href={'/shop?categories=3'}>
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-black bg-opacity-5 justify-center items-center max-md:w-24">
                   <svg width="60" height="50" viewBox="0 0 496 265" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="0.5" y="0.5" width="494.042" height="264" rx="19.5" fill="#EBEBEB" stroke="black" />
                     <rect x="17.5" y="14.5" width="461" height="236" rx="19.5" fill="#A3A3A3" stroke="black" />
                   </svg>
                 </div>
-                <Link href={'/shop?categories=3'} className="absolute top-0 left-0 w-full h-full"></Link>
-              </div>
+              </Link>
               <p className="text-gray-600">패드</p>
             </li>
             <li className="flex flex-col items-center space-y-1">
-              <div className="relative">
+              <Link href={'/shop?categories=9'}>
                 <div className="flex w-28 aspect-square min-h-16 min-w-16 bg-black bg-opacity-10 rounded justify-center items-center max-md:w-24">
                   <svg
                     className="max-md:w-10"
@@ -110,8 +108,7 @@ export default function RenderHome() {
                     />
                   </svg>
                 </div>
-                <Link href={'/shop?categories=9'} className="absolute top-0 left-0 w-full h-full"></Link>
-              </div>
+              </Link>
               <p className="text-gray-600">기타</p>
             </li>
             {/* <li className="flex w-28 aspect-square min-h-16 min-w-16 bg-white  border rounded">갤러리</li> */}
@@ -127,7 +124,7 @@ export default function RenderHome() {
               <div className="flex items-center font-medium text-sm text-gray-500 px-0.5">더보기</div>
             </Link>
           </div>
-          <JustIn mobile={mobile} />
+          <JustIn />
         </section>
       </div>
       {/* <section className="flex flex-col space-y-5">

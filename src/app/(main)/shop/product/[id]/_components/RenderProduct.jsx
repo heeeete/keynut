@@ -242,14 +242,14 @@ const IsWriter = ({ id, state, setSettingModal }) => {
 
   return (
     <>
-      <div className="flex space-x-2">
+      <div className="flex space-x-2 flex-nowrap whitespace-nowrap">
         <button
           className="align-text-top items-center p-2 rounded max-[480px]:hidden"
           onClick={e => {
             setSettingModal(true);
           }}
         >
-          <img src="/product/more.svg" width={24} height={24} alt="MORE" />
+          <img className="min-w-6" src="/product/more.svg" width={24} height={24} alt="MORE" />
         </button>
         <div className="space-x-1 bg-slate-200 p-1 rounded-sm max-[480px]:text-sm">
           <button
@@ -288,28 +288,28 @@ const SettingModal = ({ id, setSettingModal, setDeleteModal, setRaiseCount, setU
     >
       <div className="flex flex-col justify-center items-center rounded-md border space-y-1 bg-white w-72">
         <Link
-          className="flex items-center justify-center space-x-1 w-full py-4 text-center font-semibold border-b"
+          className="flex items-center justify-center w-full py-4 text-center font-semibold border-b"
           href={`/shop/product/${id}/edit`}
         >
           <p>수정</p>
-          <img src="/product/modify.svg" width={19} height={19} alt="MODIFY" />
+          {/* <img src="/product/modify.svg" width={19} height={19} alt="MODIFY" /> */}
         </Link>
         <button
-          className="flex items-center justify-center space-x-1 w-full py-4 font-semibold border-b"
+          className="flex items-center justify-center w-full py-4 font-semibold border-b"
           onClick={() => openUpModal()}
         >
           <p>UP</p>
-          <img src="/product/up.svg" width={24} height={24} alt="UP" />
+          {/* <img src="/product/up.svg" width={24} height={24} alt="UP" /> */}
         </button>
         <button
-          className="flex items-center justify-center space-x-1 w-full py-4 font-semibold text-red-500"
+          className="flex items-center justify-center w-full py-4 font-semibold text-red-500"
           onClick={() => {
             setSettingModal(false);
             setDeleteModal(true);
           }}
         >
           <p>삭제</p>
-          <img src="/product/delete.svg" width={19} height={19} alt="DELETE" />
+          {/* <img src="/product/delete.svg" width={19} height={19} alt="DELETE" /> */}
         </button>
       </div>
     </div>
@@ -384,8 +384,10 @@ export default function RenderProduct({ id }) {
   const deleteHandler = useCallback(async () => {
     await deleteProduct(id, () => {
       invalidateFilters();
-      router.push('/shop');
-      router.refresh();
+      router.back();
+      setTimeout(() => {
+        router.refresh();
+      }, 300);
     });
   }, [router]);
 
@@ -421,7 +423,7 @@ export default function RenderProduct({ id }) {
       <ImageSlider images={product.images} state={product.state} />
       <div className="p-10 space-y-6 max-md:px-4">
         <div className="flex justify-between items-center">
-          <p className="text-xl font-bold">{product.title}</p>
+          <p className="text-xl font-bold break-all mr-4">{product.title}</p>
           <div className="flex">
             {writer || session?.admin ? (
               <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />

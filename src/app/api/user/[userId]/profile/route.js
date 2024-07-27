@@ -5,12 +5,13 @@ import getUserSession from '@/lib/getUserSession';
 
 export async function GET(req, { params }) {
   try {
-    const session = await getUserSession();
-    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
+    // const session = await getUserSession();
+    // if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const users = db.collection('users');
     const { userId } = params;
+    // console.log('_______________', userId);
     const user = await users.findOne({ _id: new ObjectId(userId) });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });

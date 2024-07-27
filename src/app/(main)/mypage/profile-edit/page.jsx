@@ -8,10 +8,9 @@ import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import Modal from '../../_components/Modal';
-import { isMobile } from '@/lib/isMobile';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 
-const ProfileName = ({ session, status, update, mobile }) => {
+const ProfileName = ({ session, status, update }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempNickname, setTempNickname] = useState('');
   const [nickname, setNickname] = useState('');
@@ -89,7 +88,7 @@ const ProfileName = ({ session, status, update, mobile }) => {
   );
 };
 
-const ProfileImage = ({ session, status, update, mobile }) => {
+const ProfileImage = ({ session, status, update }) => {
   const [profileImg, setProfileImg] = useState(null);
   const fileInputRef = useRef(null);
   useEffect(() => {
@@ -192,7 +191,6 @@ export default function ProfileEdit() {
   const [isLoading, setIsLoading] = useState(false);
   const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
   const invalidateFilters = useInvalidateFiltersQuery();
-  const mobile = isMobile();
 
   const onClickWithdrawal = async () => {
     setWithdrawalModalStatus(false);
@@ -216,13 +214,13 @@ export default function ProfileEdit() {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:justify-center max-md:main-768">
+    <div className="flex flex-col items-center max-w-screen-lg mx-auto px-10 max-md:px-2 max-md:justify-center max-md:main-768">
       <div className="flex flex-col w-350 py-10 max-md:py-0 max-md:w-64">
         <section className="flex flex-col rounded-none space-y-10 ">
-          <ProfileImage session={session} status={status} update={update} mobile={mobile} />
+          <ProfileImage session={session} status={status} update={update} />
           <div className="flex space-y-5 flex-col">
             <div className="text-lg w-full border-b rounded-none">프로필 이름</div>
-            <ProfileName session={session} status={status} update={update} mobile={mobile} />
+            <ProfileName session={session} status={status} update={update} />
           </div>
         </section>
         <section className="flex flex-col space-y-5">
