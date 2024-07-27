@@ -9,7 +9,6 @@ import { useInView } from 'react-intersection-observer';
 import debounce from '../../../../utils/debounce';
 import Link from 'next/link';
 import fetchHotProducts from '../_lib/fetchHotProducts';
-import { isMobile } from '@/lib/isMobile';
 import Skeletons from './Skeletons';
 import Skeleton from '../../_components/Skeleton';
 
@@ -345,10 +344,6 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
   );
 };
 
-const onClickAllProduct = () => {
-  sessionStorage.setItem('scrollPos', window.scrollY);
-};
-
 const RenderProductsNum = ({ total }) => {
   return (
     <>
@@ -368,7 +363,7 @@ const RenderProductsNum = ({ total }) => {
 };
 
 const RenderProducts = React.memo(
-  ({ params, mobile, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxmd }) => {
+  ({ params, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxmd }) => {
     const initPageRef = useRef(true);
     const createQueryString = useCallback(() => {
       const queryParams = new URLSearchParams();
@@ -435,7 +430,14 @@ const RenderProducts = React.memo(
               {data?.pages.map((page, i) => (
                 <Fragment key={i}>
                   {page.products.map((product, idx) => (
-                    <div className="flex flex-col cursor-pointer relative rounded" key={product._id}>
+                    <Link
+                      href={`/shop/product/${product._id}`}
+                      className="flex flex-col cursor-pointer relative rounded"
+                      key={product._id}
+                      onClick={() => {
+                        sessionStorage.setItem('scrollPos', window.scrollY);
+                      }}
+                    >
                       <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
                         <Image
                           className="rounded object-cover"
@@ -469,14 +471,7 @@ const RenderProducts = React.memo(
                           <span className="text-sm">원</span>
                         </div>
                       </div>
-                      <Link
-                        href={`/shop/product/${product._id}`}
-                        className="absolute top-0 left-0 w-full h-full rounded"
-                        onClick={e => {
-                          onClickAllProduct();
-                        }}
-                      ></Link>
-                    </div>
+                    </Link>
                   ))}
                 </Fragment>
               ))}
@@ -500,7 +495,7 @@ const RenderProducts = React.memo(
   },
 );
 
-const RenderPopularProducts = React.memo(({ data, category, mobile, isLoading }) => {
+const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
   let categoryTitle =
     category === 0
       ? '전체'
@@ -539,7 +534,11 @@ const RenderPopularProducts = React.memo(({ data, category, mobile, isLoading })
           <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
             {data?.length ? (
               data.map((product, idx) => (
-                <div className="flex flex-col  cursor-pointer relative max-md:min-w-28 max-md:w-36" key={idx}>
+                <Link
+                  href={`/shop/product/${product._id}`}
+                  className="flex flex-col  cursor-pointer relative max-md:min-w-28 max-md:w-36"
+                  key={idx}
+                >
                   <div className="w-full aspect-square relative min-h-20 min-w-20 bg-gray-100">
                     <Image
                       className="rounded object-cover"
@@ -559,11 +558,7 @@ const RenderPopularProducts = React.memo(({ data, category, mobile, isLoading })
                       <span className="text-sm">원</span>
                     </div>
                   </div>
-                  <Link
-                    href={`/shop/product/${product._id}`}
-                    className="absolute left-0 right-0 w-full h-full rounded"
-                  ></Link>
-                </div>
+                </Link>
               ))
             ) : (
               <div className=""></div>
@@ -876,7 +871,6 @@ export default function RenderShop() {
     return queryParams.toString();
   });
 
-  const mobile = isMobile();
   const hotProductFlag = useRef(0);
   const currPosY = useRef(0);
   const searchFlag = useRef(true);
@@ -1068,7 +1062,7 @@ export default function RenderShop() {
         </div>
         <div className="border-b max-md:border-0">
           {!paramsKeyword ? (
-            <RenderPopularProducts isLoading={isLoading} data={top} category={hotProductFlag.current} mobile={mobile} />
+            <RenderPopularProducts isLoading={isLoading} data={top} category={hotProductFlag.current} />
           ) : (
             ''
           )}
@@ -1101,7 +1095,6 @@ export default function RenderShop() {
           <div className="flex flex-col w-full">
             <RenderProducts
               params={params}
-              mobile={mobile}
               categoriesState={categoriesState}
               pricesState={pricesState}
               handleCategoryChange={handleCategoryChange}

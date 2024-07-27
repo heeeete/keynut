@@ -54,6 +54,7 @@ module.exports = {
         350: '350px',
         130: '130px',
         6.5: '1.65rem',
+        85: '85px',
       },
       height: {
         '10vh': '10vh',
@@ -105,9 +106,11 @@ module.exports = {
         'bottom-nav-height': 'calc(50px + env(safe-area-inset-bottom))',
       },
       spacing: {
+        30: '30px',
         34: '136px',
         205: '205px',
         250: '250px',
+        '70vh': '70vh',
       },
       filter: {
         none: 'none',
@@ -131,7 +134,7 @@ module.exports = {
           },
 
           '100%': {
-            transform: 'translateX(100%)',
+            transform: 'translateX(50%)',
           },
         },
       },

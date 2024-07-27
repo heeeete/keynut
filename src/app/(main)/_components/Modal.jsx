@@ -21,7 +21,10 @@ export default function Modal({ message, subMessage = '', yesCallback, modalSet 
           {yesCallback && (
             <button
               className="flex rounded justify-center items-center w-32 bg-red-500 text-white"
-              onClick={yesCallback}
+              onClick={() => {
+                yesCallback();
+                modalSet(false);
+              }}
             >
               확인
             </button>

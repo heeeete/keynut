@@ -6,7 +6,9 @@ const getUserProfile = async id => {
     cache: 'no-cache',
   });
   if (!res.ok) {
-    if (res.status === 401) return signIn();
+    // if (res.status === 401) {
+    //   return signIn();
+    // }
     console.error('API 요청 실패:', res.status, res.statusText);
     throw new Error('Failed to fetch profile');
   }

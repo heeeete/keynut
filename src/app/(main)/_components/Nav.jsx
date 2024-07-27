@@ -12,10 +12,7 @@ export default function Nav() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const router = useRouter();
-  const border =
-    (!pathname.startsWith('/gallery') && !pathname.startsWith('/shop')) ||
-    pathname.startsWith('/shop/') ||
-    pathname.startsWith('/gallery/post');
+  const border = pathname.startsWith('/shop/') || pathname.startsWith('/gallery/post');
   const navRender = pathname === '/shop' || pathname === '/gallery' || pathname === '/bookmark';
 
   return (
