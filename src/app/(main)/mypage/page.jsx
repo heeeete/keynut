@@ -30,7 +30,7 @@ const MyProfile = React.memo(({ session, update, status }) => {
   return (
     <div className="flex h-24 border border-gray-300 rounded-md items-center px-4 space-x-4 max-md:px-3 max-md:h-34 max-md:space-x-3  max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
       {session && session.user.image ? (
-        <div className="flex rounded-full w-20 aspect-square relative justify-center items-center border max-md:w-16">
+        <div className="flex rounded-full w-20 aspect-square relative justify-center items-center border">
           <Image
             className="rounded-full object-cover"
             src={session.user.image}

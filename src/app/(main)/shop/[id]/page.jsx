@@ -8,16 +8,16 @@ export async function generateMetadata({ params }) {
   console.log(data);
   return {
     title: `${data.nickname}ㅣKEYNUT`,
-    openGraph: {
-      title: `${data.nickname}ㅣKEYNUT`,
-      images: [
-        {
-          url: data.image ? data.image : '/defaultProfile',
-          width: 400,
-          height: 400,
-        },
-      ],
-    },
+    // openGraph: {
+    //   title: `${data.nickname}ㅣKEYNUT`,
+    //   images: [
+    //     {
+    //       url: data.image ? data.image : '/defaultProfile',
+    //       width: 400,
+    //       height: 400,
+    //     },
+    //   ],
+    // },
   };
 }
 

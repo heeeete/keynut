@@ -111,6 +111,7 @@ module.exports = {
         205: '205px',
         250: '250px',
         '70vh': '70vh',
+        '50vh': '50vh',
       },
       filter: {
         none: 'none',
@@ -134,7 +135,7 @@ module.exports = {
           },
 
           '100%': {
-            transform: 'translateX(50%)',
+            transform: 'translateX(100%)',
           },
         },
       },
