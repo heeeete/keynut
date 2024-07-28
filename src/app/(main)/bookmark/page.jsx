@@ -75,8 +75,9 @@ export default function Bookmark() {
                 <div className="flex">
                   <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100"></div>
                   <div className="flex flex-col justify-center pr-5 space-y-1">
-                    <div className="h-5 w-36 bg-gray-100"></div>
+                    <div className="h-5 w-28 bg-gray-100"></div>
                     <div className="h-5 w-32 bg-gray-100"></div>
+                    <div className="h-5 w-20 bg-gray-100"></div>
                   </div>
                 </div>
                 <svg
