@@ -57,7 +57,7 @@ const Product = ({ product, productOption }) => {
 export default function ProfileProducts({ data }) {
   const [productOption, setProductOption] = useState(1);
   return (
-    <div className="flex flex-col h-full space-y-8">
+    <div className="flex flex-col h-full space-y-8 overflow-x-hidden">
       <section className="space-y-2">
         <h2 className="text-xl max-md:text-lg max-md:px-3">상품</h2>
         <nav className="mb-2">
