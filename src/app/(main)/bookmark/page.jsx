@@ -66,8 +66,8 @@ export default function Bookmark() {
 
   if (isLoading || !data) {
     return (
-      <div className="flex flex-col  max-w-screen-xl mx-auto px-10 space-y-2 max-md:px-2 max-md:mt-3">
-        <div className="h-6 w-24 bg-gray-100 rounded-sm"></div>
+      <div className="relative flex flex-col max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:mt-3 overflow-x-hidden">
+        <div className="h-6 w-24 bg-gray-100 rounded-sm mb-2"></div>
         <div className="grid grid-cols-2 gap-2 max-md:grid-cols-1">
           {Array.from({ length: 20 }).map((_, index) => (
             <Fragment key={index}>
@@ -76,7 +76,7 @@ export default function Bookmark() {
                   <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100"></div>
                   <div className="flex flex-col justify-center pr-5 space-y-1">
                     <div className="h-5 w-36 bg-gray-100"></div>
-                    <div className="space-x-1 items-center h-5 w-32 bg-gray-100"></div>
+                    <div className="h-5 w-32 bg-gray-100"></div>
                   </div>
                 </div>
                 <svg
@@ -92,8 +92,8 @@ export default function Bookmark() {
             </Fragment>
           ))}
         </div>
-        <div className="absolute top-0 left-0 h-full w-full animate-loading">
-          <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
+        <div className="absolute top-0 left-0 h-full w-full animate-loading overflow-hidden">
+          <div className="w-20 blur-xl h-full bg-white bg-gradient-to-r from-white  "></div>
         </div>
       </div>
     );
