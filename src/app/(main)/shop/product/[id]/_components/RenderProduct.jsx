@@ -231,7 +231,7 @@ const RenderHashTag = ({ product }) => {
 
 const RenderDescriptor = ({ product }) => {
   return (
-    <div className="border px-2 py-1 rounded min-h-24">
+    <div className="border px-2 py-1 rounded min-h-24 break-all">
       <p className="whitespace-pre-wrap">{product.description}</p>
     </div>
   );

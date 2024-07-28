@@ -19,8 +19,6 @@ export async function GET() {
 
     const lastRaiseResetDate = new Date(lastRaiseReset.getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    console.log('lastRaiseResetDate ================== ', lastRaiseResetDate, 'nowDate ================ ', nowDate);
-
     if (nowDate === lastRaiseResetDate) {
       return NextResponse.json(raiseCount, { status: 200 });
     } else {
