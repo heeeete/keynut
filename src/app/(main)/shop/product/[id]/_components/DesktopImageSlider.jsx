@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import 'photoswipe/style.css';
 
-export default function DesktopImageSlider({ images, state }) {
+export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const pathname = usePathname();
@@ -27,8 +27,11 @@ export default function DesktopImageSlider({ images, state }) {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto flex flex-col items-center justify-center">
-      <div className="flex relative w-full max-w-lg aspect-square items-center group bg-gray-50 rounded">
+    <div className="flex max-w-screen-xl mx-auto flex-col items-center justify-center">
+      <div
+        onClick={() => initPhotoSwipe(currentImageIndex)}
+        className="flex relative w-full max-w-lg aspect-square items-center group bg-gray-500 rounded"
+      >
         {state === 0 && (
           <div className="absolute flex items-center justify-center z-40 top-0 left-0 w-full h-full bg-black opacity-70">
             <p className="text-white font-semibold text-3xl">판매완료</p>
@@ -47,26 +50,18 @@ export default function DesktopImageSlider({ images, state }) {
           </button>
         )}
         {images.map((img, idx) => (
-          <a
+          <Image
+            id="image"
             key={idx}
-            href={img.url}
-            data-pswp-width={img.width}
-            data-pswp-height={img.height}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Image
-              unoptimized
-              src={img.url}
-              alt="product-img"
-              fill
-              sizes="(max-width: 24rem) 100vw, 50rem"
-              className={`absolute bg-blue-300 transition-opacity duration-200 cursor-pointer ${
-                currentImageIndex === idx ? 'opacity-100 z-10' : 'opacity-0 z-0'
-              }`}
-              style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
-            />
-          </a>
+            src={img}
+            alt="product-img"
+            fill
+            sizes="(max-width: 24rem) 100vw, 50rem"
+            className={`absolute bg-gray-50 transition-opacity duration-200 cursor-pointer ${
+              currentImageIndex === idx ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
+          />
         ))}
         {images && images.length > 1 && (
           <button

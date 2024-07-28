@@ -144,7 +144,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
       },
     );
 
-    if (searchContainerRef.current) {
+    if (searchContainerRef.current && window.innerWidth >= 768) {
       observer.observe(searchContainerRef.current);
     }
 
