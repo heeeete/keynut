@@ -21,7 +21,7 @@ const ProductSkeleton = () => {
           </svg>
         </div>
         <div className="h-5 w-24 mb-2 bg-gray-100"></div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-end">
           <div className="flex w-48 bg-gray-100 h-6 max-md:w-32"></div>
           <div className="flex w-20 h-4 bg-gray-100"></div>
         </div>
