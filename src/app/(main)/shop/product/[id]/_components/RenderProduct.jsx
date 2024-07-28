@@ -17,21 +17,17 @@ import useProductStateMutation from '@/hooks/useProductStateMutaion';
 import initRaiseCount from '@/lib/initRaiseCount';
 import raiseProduct from '@/lib/raiseProduct';
 import deleteProduct from '@/lib/deleteProduct';
+import conditions from '@/app/(main)/_constants/conditions';
+import DropdownMenu from '@/app/(main)/_components/DropdownMenu';
 
 const RenderCondition = ({ condition }) => {
-  if (condition === 1) condition = '미사용';
-  else if (condition === 2) condition = '사용감 없음';
-  else if (condition === 3) condition = '사용감 적음';
-  else if (condition === 4) condition = '사용감 많음';
-  else if (condition === 5) condition = '고장 / 파손';
-
   return (
     <div className="flex space-x-2 justify-center items-center">
       <div className="flex  items-center space-x-2">
         <div className="w-2 h-2 rounded-full bg-slate-400"></div>
         <span>상품상태</span>
       </div>
-      <span>{condition}</span>
+      <span>{conditions[condition].option}</span>
     </div>
   );
 };
@@ -166,7 +162,7 @@ const RenderProfile = ({ user }) => {
 };
 
 const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) => {
-  const isBookmarked = session && bookmarked.includes(session.user.id);
+  const isBookmarked = session && bookmarked?.includes(session.user.id);
   const color = isBookmarked ? 'black' : 'white';
 
   const mutation = useMutation({
@@ -242,7 +238,7 @@ const IsWriter = ({ id, state, setSettingModal }) => {
 
   return (
     <>
-      <div className="flex space-x-2 flex-nowrap whitespace-nowrap">
+      <div className="flex space-x-2 flex-nowrap whitespace-nowrap items-center justify-center">
         <button
           className="align-text-top items-center p-2 rounded max-[480px]:hidden"
           onClick={e => {
@@ -251,7 +247,9 @@ const IsWriter = ({ id, state, setSettingModal }) => {
         >
           <img className="min-w-6" src="/product/more.svg" width={24} height={24} alt="MORE" />
         </button>
-        <div className="space-x-1 bg-slate-200 p-1 rounded-sm max-[480px]:text-sm">
+        {/* <div className="w-85 h-8 bg-gray-400"></div> */}
+        <DropdownMenu id={id} state={state} />
+        {/* <div className="space-x-1 bg-slate-200 p-1 rounded-sm max-[480px]:text-sm">
           <button
             onClick={() => onClickSelling(id, state)}
             className={`${state === 1 ? 'bg-white' : 'opacity-30'} p-1 rounded-s-sm`}
@@ -264,7 +262,7 @@ const IsWriter = ({ id, state, setSettingModal }) => {
           >
             판매완료
           </button>
-        </div>
+        </div> */}
       </div>
     </>
   );

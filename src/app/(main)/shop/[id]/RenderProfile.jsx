@@ -12,7 +12,7 @@ const UserProfile = React.memo(({ data }) => {
     <div className="flex h-24 border border-gray-300 rounded-md items-center px-4 space-x-4 max-md:px-3 max-md:h-34 max-md:space-x-3  max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
       <div className="flex flex-1 items-center space-x-5">
         {data && data.image ? (
-          <div className="flex rounded-full w-20 aspect-square relative justify-center items-center border max-md:w-16 ">
+          <div className="flex rounded-full w-20 aspect-square relative justify-center items-center border ">
             <Image
               className="rounded-full object-cover"
               src={data.image}

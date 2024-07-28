@@ -11,6 +11,7 @@ import Link from 'next/link';
 import fetchHotProducts from '../_lib/fetchHotProducts';
 import Skeletons from './Skeletons';
 import Skeleton from '../../_components/Skeleton';
+import conditions from '../../_constants/conditions';
 
 const categories = [
   {
@@ -61,14 +62,6 @@ const prices = [
   { id: 4, option: '30 - 50만원' },
   { id: 5, option: '50만원 이상' },
 ];
-
-const conditions = {
-  1: { option: '미사용' },
-  2: { option: '사용감 없음' },
-  3: { option: '사용감 적음' },
-  4: { option: '사용감 많음' },
-  5: { option: '고장 / 파손' },
-};
 
 const RecentSearch = React.memo(
   ({ recentSearches, setSearchText, setRecentSearches, inputRef, searchFlag, setIsFocused }) => {
@@ -1148,23 +1141,17 @@ export default function RenderShop() {
                 >
                   <p className="font-semibold ">카테고리</p>
                   {categoryOpen ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="1em"
-                      height="1em"
-                      viewBox="0 0 1024 1024"
-                      transform="rotate(180)"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
                       <path
                         fill="lightgray"
-                        d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                        d="M104.704 685.248a64 64 0 0 0 90.496 0l316.8-316.8l316.8 316.8a64 64 0 0 0 90.496-90.496L557.248 232.704a64 64 0 0 0-90.496 0L104.704 594.752a64 64 0 0 0 0 90.496"
                       />
                     </svg>
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
                       <path
                         fill="lightgray"
-                        d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                        d="M104.704 338.752a64 64 0 0 1 90.496 0l316.8 316.8l316.8-316.8a64 64 0 0 1 90.496 90.496L557.248 791.296a64 64 0 0 1-90.496 0L104.704 429.248a64 64 0 0 1 0-90.496"
                       />
                     </svg>
                   )}
@@ -1215,23 +1202,17 @@ export default function RenderShop() {
                 >
                   <p className="font-semibold">가격</p>
                   {priceOpen ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="1em"
-                      height="1em"
-                      viewBox="0 0 1024 1024"
-                      transform="rotate(180)"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
                       <path
                         fill="lightgray"
-                        d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                        d="M104.704 685.248a64 64 0 0 0 90.496 0l316.8-316.8l316.8 316.8a64 64 0 0 0 90.496-90.496L557.248 232.704a64 64 0 0 0-90.496 0L104.704 594.752a64 64 0 0 0 0 90.496"
                       />
                     </svg>
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
                       <path
                         fill="lightgray"
-                        d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
+                        d="M104.704 338.752a64 64 0 0 1 90.496 0l316.8 316.8l316.8-316.8a64 64 0 0 1 90.496 90.496L557.248 791.296a64 64 0 0 1-90.496 0L104.704 429.248a64 64 0 0 1 0-90.496"
                       />
                     </svg>
                   )}

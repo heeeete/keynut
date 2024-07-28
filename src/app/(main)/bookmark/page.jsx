@@ -5,14 +5,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getBookmarkedProducts from './_lib/getBookmarkedProducts';
 import Link from 'next/link';
 import { Fragment } from 'react';
-
-const conditions = {
-  1: { option: '미사용' },
-  2: { option: '사용감 없음' },
-  3: { option: '사용감 적음' },
-  4: { option: '사용감 많음' },
-  5: { option: '고장 / 파손' },
-};
+import conditions from '../_constants/conditions';
+import timeAgo from '@/utils/timeAgo';
 
 const HandleBookMark = ({ productId }) => {
   const { data: session, status } = useSession();
@@ -110,7 +104,7 @@ export default function Bookmark() {
       {data.length ? (
         <div className="flex flex-col max-w-screen-xl mx-auto px-10 space-y-2 max-md:px-2 max-md:mt-3 max-md:pb-3">
           <p className="text-gray-500 max-md:text-sm">전체 {data.length}</p>
-          <div className="grid grid-cols-2 gap-2  max-md:grid-cols-1">
+          <div className="grid grid-cols-2 gap-3  max-md:grid-cols-1">
             {data.map((item, index) => (
               <Link
                 href={`/shop/product/${item._id}`}
@@ -120,6 +114,9 @@ export default function Bookmark() {
                 <div className="flex">
                   <div className="flex w-28 min-w-28 aspect-square mr-4 relative">
                     <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="200px" />
+                    <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white">
+                      {conditions[item.condition].option}
+                    </div>
                     {item.state === 0 ? (
                       <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
                         <p className="font-semibold text-white text-lg">판매 완료</p>
@@ -136,9 +133,26 @@ export default function Bookmark() {
                         <span className="text-sm">원</span>
                       </div>
                     </div>
-                    <p className="break-all line-clamp-1 rounded text-xs font-medium  text-gray-500">
-                      {conditions[item.condition].option}
-                    </p>
+
+                    <div className="flex space-x-1 text-sm">
+                      <p className="text-gray-400">{timeAgo(item.createdAt)}</p>
+                      <div className="flex justify-center items-center">
+                        <svg
+                          className=""
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14px"
+                          height="14px"
+                          viewBox="0 0 32 32"
+                        >
+                          <path
+                            stroke="lightgray"
+                            fill="lightgray"
+                            d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
+                          />
+                        </svg>
+                        <p className=" text-gray-400">{item.bookmarked ? item.bookmarked.length : 0}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <HandleBookMark productId={item._id} />

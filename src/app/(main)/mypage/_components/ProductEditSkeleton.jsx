@@ -32,15 +32,15 @@ const ProductSkeleton = () => {
 
 export default function ProductEditSkeleton() {
   return (
-    <div className="flex flex-col relative bg-red-700">
-      {/* {Array.from({ length: 10 }).map((_, idx) => (
+    <div className="flex flex-col relative">
+      {Array.from({ length: 10 }).map((_, idx) => (
         <Fragment key={idx}>
           <ProductSkeleton />
         </Fragment>
       ))}
       <div className="absolute top-0 h-full left-0 w-full animate-loading">
         <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
-      </div> */}
+      </div>
     </div>
   );
 }

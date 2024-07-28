@@ -13,7 +13,9 @@ export default function Nav() {
   const pathname = usePathname();
   const router = useRouter();
   const border =
-    (!pathname.startsWith('/gallery') && !pathname.startsWith('/shop')) ||
+    (!pathname.startsWith('/gallery') &&
+      !pathname.startsWith('/shop') &&
+      !pathname.startsWith('/mypage/product-edit')) ||
     pathname.startsWith('/shop/') ||
     pathname.startsWith('/gallery/post');
   const navRender = pathname === '/shop' || pathname === '/gallery' || pathname === '/bookmark';

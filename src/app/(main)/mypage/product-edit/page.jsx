@@ -14,6 +14,7 @@ import Link from 'next/link';
 import deleteProduct from '@/lib/deleteProduct';
 import ProductEditSkeleton from '../_components/ProductEditSkeleton';
 import timeAgo from '@/utils/timeAgo';
+import DropdownMenu from '../../_components/DropdownMenu';
 
 const UpButton = ({ id, state, router, invalidateFilters }) => {
   const [raiseCount, setRaiseCount] = useState(0);
@@ -54,57 +55,6 @@ const UpButton = ({ id, state, router, invalidateFilters }) => {
         />
       )}
     </>
-  );
-};
-
-const DropdownMenu = ({ product, router }) => {
-  const [dropMenu, setDropMenu] = useState(false);
-
-  const { onClickSelling, onClickSellCompleted } = useProductStateMutation();
-  return (
-    <button
-      id="dropDown"
-      className="flex w-85 h-8 justify-between px-2 font-medium border border-gray-300 rounded flex-nowrap whitespace-nowrap items-center relative max-md:text-gray-600"
-      onClick={() => {
-        setDropMenu(!dropMenu);
-      }}
-    >
-      <p>{product.state === 1 ? '판매중' : '판매완료'}</p>
-      {dropMenu ? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="0.8em"
-          height="0.8em"
-          viewBox="0 0 1024 1024"
-          transform="rotate(180)"
-        >
-          <path
-            fill="black"
-            d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
-          />
-        </svg>
-      ) : (
-        <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
-          <path
-            fill="black"
-            d="M831.872 340.864L512 652.672L192.128 340.864a30.59 30.59 0 0 0-42.752 0a29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728a30.59 30.59 0 0 0-42.752 0z"
-          />
-        </svg>
-      )}
-
-      <div
-        className={`absolute -bottom-8 border left-0 w-full h-full px-2 items-center rounded shadow bg-white text-gray-400 ${
-          dropMenu ? 'flex' : 'hidden'
-        }`}
-        onClick={() => {
-          if (product.state === 1) {
-            onClickSellCompleted(product._id, product.state);
-          } else onClickSelling(product._id, product.state);
-        }}
-      >
-        {product.state ? '판매완료' : '판매중'}
-      </div>
-    </button>
   );
 };
 
@@ -215,12 +165,9 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
             />
           </Link>
           {product.state === 0 ? (
-            <Link
-              href={`/shop/product/${product._id}`}
-              className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center"
-            >
+            <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
               <p className="font-semibold text-white text-lg">판매 완료</p>
-            </Link>
+            </div>
           ) : (
             ''
           )}
@@ -240,9 +187,9 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
             <span>{product.price.toLocaleString()}</span>
             <span className="text-sm">원</span>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-end">
             <div className="flex space-x-2 text-sm max-md:space-x-1">
-              <DropdownMenu product={product} />
+              <DropdownMenu state={product.state} id={product._id} />
               <UpButton id={product._id} state={product.state} router={router} invalidateFilters={invalidateFilters} />
               <div className="flex  space-x-2 max-md:hidden">
                 <ModifyButton id={product._id} />
@@ -257,13 +204,15 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
             <div className="flex items-center space-x-2 max-md:space-x-1">
               <p className="text-gray-400 text-sm max-md:text-xs">{timeAgo(product.createdAt)}</p>
               <div className="flex justify-center items-center">
-                <svg className="" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 32 32">
-                  <path
-                    stroke="lightgray"
-                    fill="lightgray"
-                    d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
-                  />
-                </svg>
+                <div className="md:w-4 max-md:w-3">
+                  <svg className="" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32">
+                    <path
+                      stroke="lightgray"
+                      fill="lightgray"
+                      d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
+                    />
+                  </svg>
+                </div>
                 <p className=" text-gray-400 text-sm max-md:text-xs">
                   {product.bookmarked ? product.bookmarked.length : 0}
                 </p>
