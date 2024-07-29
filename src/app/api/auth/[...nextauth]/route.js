@@ -157,57 +157,18 @@ async function addUserNickname(user, db) {
   return { ...user, nickname };
 }
 
-async function initRaiseCount(user, db) {
+async function initRaiseCountAndCreatedAt(user, db) {
   await db.collection('users').updateOne(
     { _id: new ObjectId(user.id) },
     {
       $set: {
         raiseCount: 5,
         lastRaiseReset: new Date(),
+        createdAt: new Date(),
       },
     },
   );
 }
-
-// async function refreshAccessToken(token) {
-//   try {
-//     console.log('토큰 만료돼서 리프레쉬 토큰으로 어세스 토큰 재발급');
-//     const url = 'https://oauth2.googleapis.com/token';
-//     const params = new URLSearchParams();
-//     params.append('client_id', process.env.GOOGLE_CLIENT_ID);
-//     params.append('client_secret', process.env.GOOGLE_CLIENT_SECRET);
-//     params.append('refresh_token', token.refreshToken);
-//     params.append('grant_type', 'refresh_token');
-
-//     const response = await fetch(url, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded',
-//       },
-//       body: params.toString(),
-//     });
-
-//     const refreshedTokens = await response.json();
-
-//     if (!response.ok) {
-//       throw refreshedTokens;
-//     }
-
-//     return {
-//       ...token,
-//       accessToken: refreshedTokens.access_token,
-//       accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
-//       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
-//     };
-//   } catch (error) {
-//     console.error('Error refreshing access token:', error);
-
-//     return {
-//       ...token,
-//       error: 'RefreshAccessTokenError',
-//     };
-//   }
-// }
 
 export const authOptions = {
   providers: [
@@ -298,7 +259,7 @@ export const authOptions = {
       const db = client.db(process.env.MONGODB_NAME);
       try {
         await addUserNickname(message.user, db);
-        await initRaiseCount(message.user, db);
+        await initRaiseCountAndCreatedAt(message.user, db);
       } catch (error) {
         console.error('Error during user creation:', error);
       }
