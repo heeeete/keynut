@@ -64,7 +64,7 @@ export default function Nav() {
           <li>
             <Link
               href={'/admin/complaint-products'}
-              className={`${pathname === '/admincomplaint-products' ? 'font-semibold' : 'text-gray-600'}`}
+              className={`${pathname === '/admin/complaint-products' ? 'font-semibold' : 'text-gray-600'}`}
             >
               신고 게시물
             </Link>

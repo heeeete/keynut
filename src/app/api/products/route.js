@@ -157,6 +157,7 @@ export async function POST(req) {
       price: Number(formData.get('price')),
       images: uploadedUrls,
       bookmarked: [],
+      complain: [],
       openChatUrl: formData.get('openChatUrl'),
       tags: formData.get('tags'),
       views: 0, // 초기 조회수는 0
