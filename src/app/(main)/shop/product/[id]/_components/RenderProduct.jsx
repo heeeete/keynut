@@ -19,6 +19,7 @@ import raiseProduct from '@/lib/raiseProduct';
 import deleteProduct from '@/lib/deleteProduct';
 import conditions from '@/app/(main)/_constants/conditions';
 import DropdownMenu from '@/app/(main)/_components/DropdownMenu';
+import CustomDropdownMenu from '@/app/(main)/_components/CustomDropDownMenu';
 
 const RenderCondition = ({ condition }) => {
   return (
@@ -67,7 +68,7 @@ const RenderCategory = ({ category }) => {
   else mainCategory = '기타';
 
   return (
-    <div className="flex w-full justify-between">
+    <div className="flex flex-1">
       <span className="flex items-center text-gray-400 text-sm">
         <Link href={`/shop?categories=${~~(category / 10) ? ~~(category / 10) : 9}`}>{mainCategory}</Link>
         {category !== 9 && (
@@ -234,8 +235,6 @@ const RenderDescriptor = ({ product }) => {
 };
 
 const IsWriter = ({ id, state, setSettingModal }) => {
-  const { onClickSelling, onClickSellCompleted } = useProductStateMutation();
-
   return (
     <>
       <div className="flex space-x-2 flex-nowrap whitespace-nowrap items-center justify-center">
@@ -247,22 +246,7 @@ const IsWriter = ({ id, state, setSettingModal }) => {
         >
           <img className="min-w-6" src="/product/more.svg" width={24} height={24} alt="MORE" />
         </button>
-        {/* <div className="w-85 h-8 bg-gray-400"></div> */}
         <DropdownMenu id={id} state={state} />
-        {/* <div className="space-x-1 bg-slate-200 p-1 rounded-sm max-[480px]:text-sm">
-          <button
-            onClick={() => onClickSelling(id, state)}
-            className={`${state === 1 ? 'bg-white' : 'opacity-30'} p-1 rounded-s-sm`}
-          >
-            판매중
-          </button>
-          <button
-            onClick={() => onClickSellCompleted(id, state)}
-            className={`${state === 0 ? 'bg-white' : 'opacity-30'} p-1 rounded-e-sm`}
-          >
-            판매완료
-          </button>
-        </div> */}
       </div>
     </>
   );
@@ -290,14 +274,12 @@ const SettingModal = ({ id, setSettingModal, setDeleteModal, setRaiseCount, setU
           href={`/shop/product/${id}/edit`}
         >
           <p>수정</p>
-          {/* <img src="/product/modify.svg" width={19} height={19} alt="MODIFY" /> */}
         </Link>
         <button
           className="flex items-center justify-center w-full py-4 font-semibold border-b"
           onClick={() => openUpModal()}
         >
           <p>UP</p>
-          {/* <img src="/product/up.svg" width={24} height={24} alt="UP" /> */}
         </button>
         <button
           className="flex items-center justify-center w-full py-4 font-semibold text-red-500"
@@ -307,8 +289,95 @@ const SettingModal = ({ id, setSettingModal, setDeleteModal, setRaiseCount, setU
           }}
         >
           <p>삭제</p>
-          {/* <img src="/product/delete.svg" width={19} height={19} alt="DELETE" /> */}
         </button>
+      </div>
+    </div>
+  );
+};
+
+const MobileSettingModal = ({ writer, session, setSettingModal }) => {
+  if (writer || session?.admin)
+    return (
+      <button
+        onClick={() => {
+          setSettingModal(true);
+        }}
+      >
+        <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-[480px]:flex" />
+      </button>
+    );
+};
+
+const ComplainModal = ({ setComplainModal, productId }) => {
+  const [state, setState] = useState(0);
+  const [text, setText] = useState('');
+  const placeholder = '신고 유형을 선택해주세요.';
+  const values = ['외부 채널 유도', '광고성 컨텐츠', '전문 업자 의심', '기타'];
+
+  const descriptions = [
+    '사용자가 거래를 위해 외부 채널(카카오톡, 텔레그램 등)로 유도하는 경우',
+    '상품 내용과 관련 없는 광고성 컨텐츠인 경우',
+    '일반 사용자가 아닌 전문 업자로 의심되는 경우',
+    '기타 다른 이유로 신고하고 싶은 경우',
+  ];
+
+  const postComplain = async () => {
+    try {
+      const data = {
+        category: values[state - 1],
+        text: text,
+      };
+      const res = await fetch(`/api/products/${productId}/complain`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        if (res.status === 401) signIn();
+        else alert('잠시 후 다시 시도해 주세요.');
+      } else setComplainModal(false);
+    } catch (error) {
+      console.error(error);
+      alert('에러가 발생했습니다. 나중에 다시 시도해 주세요.');
+    }
+  };
+
+  return (
+    <div
+      className="flex flex-col fixed w-screen custom-dvh top-0 left-0 z-50 px-5 justify-center items-center bg-black bg-opacity-50"
+      onClick={e => {
+        if (e.currentTarget === e.target) setComplainModal(false);
+      }}
+    >
+      <div className="flex flex-col space-y-2 justify-around max-w-lg w-full bg-white rounded px-4 py-2">
+        <div>
+          <img src="/product/complain-red.svg" width={35} height={35} alt="" />
+          <CustomDropdownMenu placeholder={placeholder} values={values} onChange={e => setState(e)} />
+        </div>
+        <div className="bg-gray-100 border rounded">
+          <textarea
+            className={`${
+              state === 0 && 'cursor-not-allowed'
+            } w-full scrollbar-hide p-2 resize-none bg-gray-100 outline-none`}
+            placeholder={state > 0 ? descriptions[state - 1] : placeholder}
+            rows={10}
+            maxLength={1000}
+            onChange={e => setText(e.target.value)}
+            disabled={state === 0}
+          ></textarea>
+          <p className=" text-end text-sm text-gray-300">{`${text.length} / 1000`}</p>
+        </div>
+        <div className="flex justify-end">
+          <button
+            className="disabled:opacity-40 disabled:cursor-not-allowed border rounded px-2 py-1"
+            onClick={postComplain}
+            disabled={state === 0}
+          >
+            신고하기
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -326,6 +395,7 @@ export default function RenderProduct({ id }) {
   const [deleteModal, setDeleteModal] = useState(false);
   const [settingModal, setSettingModal] = useState(null);
   const [upModal, setUpModal] = useState(false);
+  const [complainModal, setComplainModal] = useState(false);
   const [raiseCount, setRaiseCount] = useState(0);
   const posY = useRef(0);
   const router = useRouter();
@@ -399,6 +469,11 @@ export default function RenderProduct({ id }) {
     });
   };
 
+  const onClickComplain = async () => {
+    if (!(await getSession())) return signIn();
+    setComplainModal(true);
+  };
+
   if (!data && isLoading === false) return router.replace('/');
   if (error) return <div>Error loading product</div>;
   if (!data) return <div>데이터를 가져오고 있습니다...</div>;
@@ -406,17 +481,13 @@ export default function RenderProduct({ id }) {
     <div className="max-w-screen-xl mx-auto max-md:main-768">
       <div className="flex px-10 max-md:pb-3 max-md:px-4">
         <RenderCategory category={Number(product.category)} />
-        {writer || session?.admin ? (
-          <button
-            onClick={() => {
-              setSettingModal(true);
-            }}
-          >
-            <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-[480px]:flex" />
-          </button>
-        ) : (
-          ''
-        )}
+        {/* 글쓴이 || 어드민 계정 */}
+        <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
+
+        <button onClick={onClickComplain} className="flex items-center h-6 space-x-1">
+          <img src="/product/complain.svg" width={20} height={20} alt="complain" />
+          <p className="flex flex-nowrap whitespace-nowrap h-5 text-gray-500 max-md:hidden">신고하기</p>
+        </button>
       </div>
       <ImageSlider images={product.images} state={product.state} />
       <div className="p-10 space-y-6 max-md:px-4">
@@ -473,6 +544,7 @@ export default function RenderProduct({ id }) {
           setUpModal={setUpModal}
         />
       )}
+      {complainModal && <ComplainModal setComplainModal={setComplainModal} productId={id} />}
     </div>
   );
 }

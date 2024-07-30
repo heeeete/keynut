@@ -6,6 +6,7 @@ import renderEmptyRows from '../_utils/renderEmptyRows';
 import Loading from '@/app/(main)/_components/Loading';
 import useProducts from '../_hooks/useProducts';
 import useURLSearchParams from '@/hooks/useURLSearchParams';
+import useComplaintProductsQuery from '../_hooks/useComplaintProductsQuery';
 
 const PAGE_SIZE = 100;
 const PAGE_RANGE = 10;
@@ -124,37 +125,6 @@ const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }) =>
   );
 };
 
-const SearchInput = ({ param }) => {
-  const router = useRouter();
-  const params = useURLSearchParams();
-  const searchParams = useSearchParams();
-  const [value, setValue] = useState(params.get(param) || '');
-
-  useEffect(() => {
-    const query = params.get(param);
-    if (!query) setValue('');
-    else setValue(query);
-  }, [searchParams]);
-
-  const onSubmit = e => {
-    if (e.key === 'Enter') {
-      if (value === '') params.delete(param);
-      else params.set(param, value);
-      router.push(`/admin/products?` + params.toString());
-    }
-  };
-
-  return (
-    <input
-      type="text"
-      value={value}
-      onChange={e => setValue(e.target.value)}
-      onKeyDown={onSubmit}
-      className="border outline-none rounded"
-    />
-  );
-};
-
 const Table = ({ data, selectAll, setSelectAll, selectedProducts, setSelectedProducts }) => {
   const handleSelectAll = useCallback(() => {
     if (selectAll) {
@@ -191,6 +161,7 @@ const Table = ({ data, selectAll, setSelectAll, selectedProducts, setSelectedPro
     [selectedProducts],
   );
 
+  console.log(data);
   return (
     <table className="w-full bg-slate-50 table-auto border-x border-separate border-spacing-0">
       <thead className=" bg-slate-50 sticky top-32 text-lg h-10">
@@ -200,21 +171,18 @@ const Table = ({ data, selectAll, setSelectAll, selectedProducts, setSelectedPro
           </th>
           <th className="border-b-2 border-r" style={{ width: '19%' }}>
             <div>Nickname</div>
-            <SearchInput param={'nickname'} />
           </th>
           <th className="border-b-2 border-r" style={{ width: '19%' }}>
             <div>Title</div>
-            <SearchInput param={'keyword'} />
           </th>
           <th className="border-b-2 border-r" style={{ width: '19%' }}>
             <div>Price</div>
-            <SearchInput param={'price'} />
           </th>
           <th className="border-b-2 border-r" style={{ width: '19%' }}>
             <div>Views</div>
           </th>
           <th className="border-b-2" style={{ width: '19%' }}>
-            <div>Bookmarked</div>
+            <div>ComplaintsCount</div>
           </th>
         </tr>
       </thead>
@@ -233,12 +201,14 @@ const Table = ({ data, selectAll, setSelectAll, selectedProducts, setSelectedPro
                   </div>
                 </td>
                 <td className="border-b">
-                  <button className="text-blue-700  underline">{product.nickname}</button>
+                  <button className="text-blue-700 underline">{product.nickname}</button>
                 </td>
-                <td className="border-b">{product.title}</td>
+                <td className="border-b">
+                  <button className="text-blue-700 underline">{product.title}</button>
+                </td>
                 <td className="border-b">{product.price.toLocaleString()} 원</td>
                 <td className="border-b">{product.views}</td>
-                <td className="border-b">{product.bookmarked ? product.bookmarked.length : 0}</td>
+                <td className="border-b">{product.complain.length}</td>
               </tr>
             ))
           : renderEmptyRows()}
@@ -259,7 +229,7 @@ const AllProductsCnt = ({ userCnt }) => {
 
   return (
     <div className="flex text-lg">
-      <p className="font-semibold whitespace-nowrap">전체 게시물&nbsp;</p>
+      <p className="font-semibold whitespace-nowrap">신고 게시물&nbsp;</p>
       <p className="text-gray-600">({total})</p>
     </div>
   );
@@ -268,19 +238,17 @@ const AllProductsCnt = ({ userCnt }) => {
 export default function Products() {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get('page')) || 1;
-  const nickname = searchParams.get('nickname') || '';
-  const keyword = searchParams.get('keyword') || '';
-  const price = searchParams.get('price') || '';
-  const { data, error, refetch } = useProducts(page, nickname, keyword, price, PAGE_SIZE);
+  const { data, error, refetch } = useComplaintProductsQuery(page, PAGE_SIZE);
   const [selectedProducts, setSelectedProducts] = useState({});
   const [selectAll, setSelectAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const { navStatus, setNavStatus } = useNav();
 
   useEffect(() => {
     setSelectAll(false);
     setSelectedProducts({});
-  }, [page, keyword]);
+  }, [page]);
 
   const dataRefetch = () => {
     setSelectAll(false);
