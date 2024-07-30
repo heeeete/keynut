@@ -42,7 +42,7 @@ const UpButton = ({ id, state, router, invalidateFilters }) => {
         onClick={() => {
           setUpModal(true);
         }}
-        disabled={state === 0}
+        disabled={state === 0 || state === 2}
       >
         up
       </button>
@@ -164,9 +164,9 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
               sizes="(max-width:768px) 200px,(max-width:1280px) 20vw, (max-width:1500px) 20vw, 250px"
             />
           </Link>
-          {product.state === 0 ? (
+          {product.state !== 1 ? (
             <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-              <p className="font-semibold text-white text-lg">판매 완료</p>
+              <p className="font-semibold text-white text-lg">{product.state === 0 ? '판매 완료' : '예약 중'}</p>
             </div>
           ) : (
             ''
@@ -228,7 +228,7 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
 
 export default function ProductEdit() {
   const { data: session, status } = useSession();
-  const [productState, setProductState] = useState(2);
+  const [productState, setProductState] = useState(3);
   const router = useRouter();
   const invalidateFilters = useInvalidateFiltersQuery();
   const { data, isLoading, error, refetch } = useQuery({
@@ -243,9 +243,9 @@ export default function ProductEdit() {
     <div className="flex justify-start flex-col max-w-screen-lg mx-auto px-10 max-md:px-0 max-md:mt-12 md:min-h-70vh">
       <div className="sticky top-16 z-40 flex space-x-2 pb-2 pt-3 bg-white mb-2 max-md:text-sm max-md:px-3 max-md:top-0 max-md:mb-0 max-md:border-b">
         <button
-          className={`px-2 py-1 border border-black ${productState === 2 ? 'bg-black text-white ' : ''} rounded`}
+          className={`px-2 py-1 border border-black ${productState === 3 ? 'bg-black text-white ' : ''} rounded`}
           onClick={() => {
-            if (productState !== 2) setProductState(2);
+            if (productState !== 3) setProductState(3);
           }}
         >
           전체 {data?.userProducts.length}
@@ -257,6 +257,14 @@ export default function ProductEdit() {
           }}
         >
           판매중 {data?.userProducts.filter(a => a.state === 1).length}
+        </button>
+        <button
+          className={`px-2 py-1 border border-black rounded ${productState === 2 ? 'bg-black text-white ' : ''}`}
+          onClick={() => {
+            if (productState !== 2) setProductState(2);
+          }}
+        >
+          예약 중 {data?.userProducts.filter(a => a.state === 2).length}
         </button>
         <button
           className={`px-2 py-1 border border-black rounded ${productState === 0 ? 'bg-black text-white ' : ''}`}
@@ -273,7 +281,7 @@ export default function ProductEdit() {
         <ProductEditSkeleton />
       ) : (
         <div className="flex flex-col max-md:text-sm">
-          {productState === 2 ? (
+          {productState === 3 ? (
             data.userProducts.length ? (
               data.userProducts.map((product, idx) => (
                 <Fragment key={idx}>
@@ -308,7 +316,11 @@ export default function ProductEdit() {
                 />
               </svg>
               <p className="text-gray-300 font-medium">
-                {productState === 1 ? '판매 중인 상품이 없습니다' : '판매 완료된 상품이 없습니다'}
+                {productState === 1
+                  ? '판매 중인 상품이 없습니다'
+                  : productState === 0
+                  ? '판매 완료된 상품이 없습니다'
+                  : '예약 중인 상품이 없습니다'}
               </p>
             </div>
           )}

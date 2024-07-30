@@ -24,10 +24,12 @@ const Product = ({ product, productOption }) => {
           <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white">
             {conditions[product.condition].option}
           </div>
-          {!productOption && (
+          {product.state !== 1 ? (
             <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-              <p className="font-semibold text-white text-lg max-md:text-base">판매 완료</p>
+              <p className="font-semibold text-white text-lg">{product.state === 0 ? '판매 완료' : '예약 중'}</p>
             </div>
+          ) : (
+            ''
           )}
         </div>
         <div className="flex flex-col justify-center w-full">
@@ -61,10 +63,10 @@ export default function ProfileProducts({ data }) {
       <section className="space-y-2">
         <h2 className="text-xl max-md:text-lg max-md:px-3">상품</h2>
         <nav className="mb-2">
-          <ul className="grid grid-cols-2 items-center bg-gray-100 border-gray-100 border-t border-l border-r">
+          <ul className="grid grid-cols-3 items-center bg-gray-100 border-gray-200 border-t border-r border-l">
             <button>
               <li
-                className={`flex justify-center py-2 text-lg space-x-2 max-md:text-base ${
+                className={`flex justify-center py-2 text-lg space-x-2 max-md:text-base border-gray-200 border-r ${
                   productOption == 1 ? 'bg-white text-black' : 'text-gray-400'
                 }`}
                 onClick={() => {
@@ -77,7 +79,20 @@ export default function ProfileProducts({ data }) {
             </button>
             <button>
               <li
-                className={`flex justify-center py-2 text-lg space-x-2  max-md:text-base ${
+                className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 border-r max-md:text-base ${
+                  productOption == 2 ? 'bg-white text-black' : 'text-gray-400'
+                }`}
+                onClick={() => {
+                  productOption !== 2 && setProductOption(2);
+                }}
+              >
+                <p>예약 중</p>
+                <p>{data?.filter(a => a.state === 2).length}</p>
+              </li>
+            </button>
+            <button>
+              <li
+                className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 max-md:text-base ${
                   productOption == 0 ? 'bg-white text-black' : 'text-gray-400'
                 }`}
                 onClick={() => {
@@ -113,7 +128,11 @@ export default function ProfileProducts({ data }) {
                   />
                 </svg>
                 <p className="text-gray-300 font-medium">
-                  {productOption === 1 ? '판매 중인 상품이 없습니다' : '판매 완료된 상품이 없습니다'}
+                  {productOption === 1
+                    ? '판매 중인 상품이 없습니다'
+                    : productOption === 0
+                    ? '판매 완료된 상품이 없습니다'
+                    : '예약 중인 상품이 없습니다'}
                 </p>
               </div>
             )

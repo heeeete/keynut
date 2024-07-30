@@ -403,7 +403,7 @@ export default function RenderProduct({ id }) {
   if (error) return <div>Error loading product</div>;
   if (!data) return <div>데이터를 가져오고 있습니다...</div>;
   return (
-    <div className="max-w-screen-xl mx-auto max-md:main-768">
+    <div className="max-w-screen-lg mx-auto max-md:main-768">
       <div className="flex px-10 max-md:pb-3 max-md:px-4">
         <RenderCategory category={Number(product.category)} />
         {writer || session?.admin ? (
@@ -422,7 +422,7 @@ export default function RenderProduct({ id }) {
       <div className="p-10 space-y-6 max-md:px-4">
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold break-all mr-4">{product.title}</p>
-          <div className="flex">
+          <div className="flex self-end">
             {writer || session?.admin ? (
               <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
             ) : (

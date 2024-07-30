@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import getUserProducts from '@/lib/getUserProducts';
 import { useQuery } from '@tanstack/react-query';
 import ProfileProducts from '../../_components/ProfileProducts';
+import formatDate from '../../_lib/formatDate';
 
 const UserProfile = React.memo(({ data }) => {
   return (
@@ -22,7 +23,7 @@ const UserProfile = React.memo(({ data }) => {
             />
           </div>
         ) : (
-          <div className="w-20 h-20 defualt-profile max-md:w-16 max-md:h-16">
+          <div className="w-20 h-20 defualt-profile">
             <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
               <path
                 fill="rgba(0,0,0,0.2)"
@@ -31,15 +32,28 @@ const UserProfile = React.memo(({ data }) => {
             </svg>
           </div>
         )}
-        {data && data.nickname ? (
-          <div className="text-lg max-md:text-base">{data.nickname} </div>
-        ) : (
-          <div className="h-6 w-32 bg-gray-100 relative rounded-sm">
-            <div className="absolute top-0 left-0 h-full w-full animate-loading">
-              <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
-            </div>
+        <div className="flex flex-1 max-md:flex-col max-md:space-y-1">
+          <div className="flex flex-1">
+            {data && data.nickname ? (
+              <div className="text-lg max-md:text-base">{data.nickname} </div>
+            ) : (
+              <div className="h-6 w-32 bg-gray-100 relative rounded-sm">
+                <div className="absolute top-0 left-0 h-full w-full animate-loading">
+                  <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+          <div className="flex items-center space-x-1 text-sm text-gray-400 max-md:text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+              <path
+                fill="currentColor"
+                d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
+              />
+            </svg>
+            <div>{data?.createdAt ? `${formatDate(data.createdAt)}에 가입` : ''}</div>
+          </div>
+        </div>
       </div>
     </div>
   );

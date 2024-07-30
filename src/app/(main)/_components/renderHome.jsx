@@ -33,7 +33,15 @@ const JustIn = () => {
               fill
               className="rounded object-cover"
             />
+            {product.state === 2 ? (
+              <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
+                <p className="font-semibold text-white text-xl max-md:text-lg">예약 중</p>
+              </div>
+            ) : (
+              ''
+            )}
           </div>
+
           <div className="mt-2 w-full">
             <div className="break-all line-clamp-1">{product.title}</div>
             <div className="space-x-1 font-semibold break-before-all line-clamp-1">

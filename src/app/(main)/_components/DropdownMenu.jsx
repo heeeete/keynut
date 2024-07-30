@@ -4,7 +4,8 @@ import { useState } from 'react';
 
 const DropdownMenu = ({ state, id }) => {
   const [dropMenu, setDropMenu] = useState(false);
-  const { onClickSelling, onClickSellCompleted } = useProductStateMutation();
+  const { onClickSelling, onClickSellCompleted, onClickBooked } = useProductStateMutation();
+  // console.log('-------', state);
   return (
     <button
       id="dropDown"
@@ -13,7 +14,7 @@ const DropdownMenu = ({ state, id }) => {
         setDropMenu(!dropMenu);
       }}
     >
-      <p className="pl-2">{state === 1 ? '판매중' : '판매완료'}</p>
+      <p className="pl-2">{state === 1 ? '판매중' : state === 0 ? '판매완료' : '예약 중'}</p>
       <div className="flex h-full px-1 items-center justify-center border-l">
         {dropMenu ? (
           <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
@@ -32,16 +33,31 @@ const DropdownMenu = ({ state, id }) => {
         )}
       </div>
       <div
-        className={`absolute -bottom-8 border left-0 w-full h-full px-2 items-center rounded shadow bg-white text-gray-400 ${
+        className={`absolute -bottom-1 translate-y-full border left-0 w-full rounded shadow bg-white text-gray-400 flex flex-col z-60 ${
           dropMenu ? 'flex' : 'hidden'
         }`}
-        onClick={() => {
-          if (state === 1) {
-            onClickSellCompleted(id, state);
-          } else onClickSelling(id, state);
-        }}
       >
-        {state ? '판매완료' : '판매중'}
+        <button
+          className="flex items-center px-2 h-8 border-b"
+          onClick={() => {
+            if (state === 1) {
+              onClickBooked(id, state);
+            } else onClickSelling(id, state);
+          }}
+        >
+          {state == 1 ? '예약중' : '판매중'}
+        </button>
+        <button
+          className="flex items-center h-8 px-2"
+          onClick={() => {
+            if (state === 0) {
+              onClickBooked(id, state);
+            } else onClickSellCompleted(id, state);
+          }}
+        >
+          {state == 0 ? '예약중' : '판매완료'}
+        </button>
+        {/* {state ? '판매완료' : '판매중'} */}
       </div>
     </button>
   );

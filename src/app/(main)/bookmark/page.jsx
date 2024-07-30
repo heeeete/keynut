@@ -57,6 +57,64 @@ const HandleBookMark = ({ productId }) => {
   );
 };
 
+const ABookMark = ({ item }) => {
+  return (
+    <Link
+      href={`/shop/product/${item._id}`}
+      className="flex p-2 items-center cursor-pointer border border-gray-300 rounded-sm justify-between"
+    >
+      <div className="flex">
+        <div className="flex w-28 min-w-28 aspect-square mr-4 relative">
+          <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="200px" />
+          {item.state === 2 ? (
+            <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
+              <p className="font-semibold text-white text-xl max-md:text-lg">예약 중</p>
+            </div>
+          ) : (
+            ''
+          )}
+          <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white">
+            {conditions[item.condition].option}
+          </div>
+          {item.state === 0 ? (
+            <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
+              <p className="font-semibold text-white text-lg">판매 완료</p>
+            </div>
+          ) : (
+            ''
+          )}
+        </div>
+        <div className="flex flex-col items-start justify-center space-y-1">
+          <div className="flex flex-col mr-5">
+            <p className="break-all line-clamp-1">{item.title}</p>
+            <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
+              <span>{item.price.toLocaleString()}</span>
+              <span className="text-sm">원</span>
+            </div>
+          </div>
+
+          <div className="flex space-x-1 text-sm  max-md:text-xs items-center'">
+            <p className="text-gray-400">{timeAgo(item.createdAt)}</p>
+            <div className="flex justify-center items-center">
+              <div className="w-4 max-md:w-3">
+                <svg className="" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32">
+                  <path
+                    stroke="lightgray"
+                    fill="lightgray"
+                    d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
+                  />
+                </svg>
+              </div>
+              <p className=" text-gray-400">{item.bookmarked ? item.bookmarked.length : 0}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <HandleBookMark productId={item._id} />
+    </Link>
+  );
+};
+
 export default function Bookmark() {
   const { data: user } = useSession();
   const { data, error, isLoading } = useQuery({
@@ -66,35 +124,33 @@ export default function Bookmark() {
 
   if (isLoading || !data) {
     return (
-      <div className="relative flex flex-col max-w-screen-xl mx-auto px-10 max-md:px-2 max-md:mt-3 overflow-x-hidden">
+      <div className="relative flex flex-col max-w-screen-lg mx-auto px-10 max-md:px-2 max-md:mt-3 overflow-x-hidden">
         <div className="h-6 w-24 bg-gray-100 rounded-sm mb-2"></div>
         <div className="grid grid-cols-2 gap-2 max-md:grid-cols-1">
           {Array.from({ length: 20 }).map((_, index) => (
-            <Fragment key={index}>
-              <div className="flex p-2 items-center border border-gray-300 rounded-sm justify-between" key={index}>
-                <div className="flex">
-                  <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100"></div>
-                  <div className="flex flex-col justify-center pr-5 space-y-1">
-                    <div className="h-5 w-28 bg-gray-100"></div>
-                    <div className="h-5 w-32 bg-gray-100"></div>
-                    <div className="h-5 w-20 bg-gray-100"></div>
-                  </div>
+            <div className="flex p-2 items-center border border-gray-300 rounded-sm justify-between" key={index}>
+              <div className="flex">
+                <div className="flex w-28 min-w-28 aspect-square mr-4 relative bg-gray-100"></div>
+                <div className="flex flex-col justify-center pr-5 space-y-1">
+                  <div className="h-5 w-28 bg-gray-100"></div>
+                  <div className="h-5 w-32 bg-gray-100"></div>
+                  <div className="h-5 w-20 bg-gray-100"></div>
                 </div>
-                <svg
-                  className="min-w-7"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="28px"
-                  height="28px"
-                  viewBox="0 0 32 32"
-                >
-                  <path stroke="#f3f4f6" fill="#f3f4f6" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
-                </svg>
               </div>
-            </Fragment>
+              <svg
+                className="min-w-7"
+                xmlns="http://www.w3.org/2000/svg"
+                width="28px"
+                height="28px"
+                viewBox="0 0 32 32"
+              >
+                <path stroke="#f3f4f6" fill="#f3f4f6" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
+              </svg>
+            </div>
           ))}
         </div>
         <div className="absolute top-0 left-0 h-full w-full animate-loading overflow-hidden">
-          <div className="w-20 blur-xl h-full bg-white bg-gradient-to-r from-white  "></div>
+          <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
         </div>
       </div>
     );
@@ -103,61 +159,13 @@ export default function Bookmark() {
   return (
     <>
       {data.length ? (
-        <div className="flex flex-col max-w-screen-xl mx-auto px-10 space-y-2 max-md:px-2 max-md:mt-3 max-md:pb-3">
+        <div className="flex flex-col max-w-screen-lg mx-auto px-10 space-y-2 max-md:px-2 max-md:mt-3 max-md:pb-3">
           <p className="text-gray-500 max-md:text-sm">전체 {data.length}</p>
           <div className="grid grid-cols-2 gap-3  max-md:grid-cols-1">
             {data.map((item, index) => (
-              <Link
-                href={`/shop/product/${item._id}`}
-                className="flex p-2 items-center cursor-pointer border border-gray-300 rounded-sm justify-between"
-                key={index}
-              >
-                <div className="flex">
-                  <div className="flex w-28 min-w-28 aspect-square mr-4 relative">
-                    <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="200px" />
-                    <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white">
-                      {conditions[item.condition].option}
-                    </div>
-                    {item.state === 0 ? (
-                      <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-                        <p className="font-semibold text-white text-lg">판매 완료</p>
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </div>
-                  <div className="flex flex-col items-start justify-center space-y-1">
-                    <div className="flex flex-col mr-5">
-                      <p className="break-all line-clamp-1">{item.title}</p>
-                      <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
-                        <span>{item.price.toLocaleString()}</span>
-                        <span className="text-sm">원</span>
-                      </div>
-                    </div>
-
-                    <div className="flex space-x-1 text-sm">
-                      <p className="text-gray-400">{timeAgo(item.createdAt)}</p>
-                      <div className="flex justify-center items-center">
-                        <svg
-                          className=""
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14px"
-                          height="14px"
-                          viewBox="0 0 32 32"
-                        >
-                          <path
-                            stroke="lightgray"
-                            fill="lightgray"
-                            d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
-                          />
-                        </svg>
-                        <p className=" text-gray-400">{item.bookmarked ? item.bookmarked.length : 0}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <HandleBookMark productId={item._id} />
-              </Link>
+              <Fragment key={index}>
+                <ABookMark item={item} />
+              </Fragment>
             ))}
           </div>
         </div>
