@@ -32,7 +32,7 @@ const ProductSkeleton = () => {
 
 export default function ProductEditSkeleton() {
   return (
-    <div className="flex flex-col relative">
+    <div className="flex flex-col relative overflow-x-hidden">
       {Array.from({ length: 10 }).map((_, idx) => (
         <Fragment key={idx}>
           <ProductSkeleton />

@@ -29,7 +29,7 @@ export async function GET(req) {
 
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
-    let query = { state: 1 };
+    let query = { $or: [{ state: 1 }, { state: 2 }] };
 
     if (keywordParam) {
       if (keywordParam[0] == '#') {

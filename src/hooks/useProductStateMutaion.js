@@ -51,9 +51,16 @@ const useProductStateMutation = () => {
     mutation.mutate({ productId: id, state: 0 });
   };
 
+  const onClickBooked = async (id, state) => {
+    if (!(await getSession())) return signIn();
+    if (state === 2) return;
+    mutation.mutate({ productId: id, state: 2 });
+  };
+
   return {
     onClickSelling,
     onClickSellCompleted,
+    onClickBooked,
   };
 };
 

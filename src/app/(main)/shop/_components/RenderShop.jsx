@@ -202,6 +202,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
               id="searchInput"
               ref={inputRef}
               type="text"
+              autoComplete="off"
               placeholder="상품명, #태그 입력"
               value={tempSearchText}
               onFocus={() => {
@@ -439,6 +440,13 @@ const RenderProducts = React.memo(
                           fill
                           sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
                         />
+                        {product.state === 2 ? (
+                          <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
+                            <p className="font-semibold text-white text-xl max-md:text-lg">예약 중</p>
+                          </div>
+                        ) : (
+                          ''
+                        )}
                         <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
                           {conditions[product.condition].option}
                         </div>
@@ -472,7 +480,7 @@ const RenderProducts = React.memo(
             {isFetching && <Skeletons />}
           </>
         ) : (
-          <div className="flex flex-col items-center h-72 justify-center space-y-1 max-md:h-44">
+          <div className="flex flex-col items-center justify-center space-y-1 h-52">
             <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 256 256">
               <path
                 fill="lightgray"
@@ -540,6 +548,13 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
                       fill
                       sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"
                     />
+                    {product.state === 2 ? (
+                      <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
+                        <p className="font-semibold text-white text-xl max-md:text-lg">예약 중</p>
+                      </div>
+                    ) : (
+                      ''
+                    )}
                     <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
                       {conditions[product.condition].option}
                     </div>
@@ -1061,7 +1076,7 @@ export default function RenderShop() {
           )}
         </div>
 
-        <div className="flex items-start w-full md:max-w-screen-xl md:mx-auto md:px-10 max-md:flex-col">
+        <div className="flex items-start w-full min-h-60vh md:max-w-screen-xl md:mx-auto md:px-10 max-md:flex-col max-md:min-h-96">
           <div
             className={`sticky flex bg-white md:mt-5 md:w-48 md:z-30 md:top-34 md:flex-col md:h-full max-md:z-50 max-md:top-14 max-md:w-full max-md:border-b max-md:p-3 max-md:items-center`}
           >
