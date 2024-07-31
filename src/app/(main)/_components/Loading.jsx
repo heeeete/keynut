@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="flex fixed left-0 top-0 w-d-screen custom-dvh items-center justify-center bg-black z-50 opacity-40">
+    <div className="flex fixed left-0 top-0 w-screen custom-dvh items-center justify-center bg-black z-50 opacity-40">
       <svg xmlns="http://www.w3.org/2000/svg" width="5rem" height="5rem" viewBox="0 0 24 24">
         <path
           fill="#a599ff"

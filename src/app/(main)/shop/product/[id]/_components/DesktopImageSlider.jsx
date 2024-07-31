@@ -37,6 +37,11 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
             <p className="text-white font-semibold text-3xl">판매완료</p>
           </div>
         )}
+        {state === 2 && (
+          <div className="absolute left-0 top-0 z-10 rounded-br px-3 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
+            <p className="font-semibold text-white max-md:text-sm">예약중</p>
+          </div>
+        )}
         {images && images.length > 1 && (
           <button
             className="absolute hidden group-hover:flex left-1 z-50 p-4 cursor-pointer max-md:flex max-md:p-2"
@@ -65,7 +70,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
         ))}
         {images && images.length > 1 && (
           <button
-            className="absolute hidden group-hover:flex right-1 z-10 p-4 cursor-pointer max-md:flex max-md:p-2"
+            className="absolute hidden group-hover:flex right-1 z-50 p-4 cursor-pointer max-md:flex max-md:p-2"
             onClick={handleNextImage}
           >
             <div className="flex justify-center items-center opacity-55 bg-black rounded-full w-10 h-10">

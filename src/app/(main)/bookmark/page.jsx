@@ -66,26 +66,21 @@ const ABookMark = ({ item }) => {
       <div className="flex">
         <div className="flex w-28 min-w-28 aspect-square mr-4 relative">
           <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="200px" />
-          {item.state === 2 ? (
+          {item.state === 0 || item.state === 2 ? (
             <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-              <p className="font-semibold text-white text-xl max-md:text-lg">예약 중</p>
+              <p className="font-semibold text-white text-lg max-md:text-base">
+                {item.state === 0 ? '판매 완료' : '예약 중'}
+              </p>
             </div>
           ) : (
             ''
           )}
-          <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white">
+          <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
             {conditions[item.condition].option}
           </div>
-          {item.state === 0 ? (
-            <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-              <p className="font-semibold text-white text-lg">판매 완료</p>
-            </div>
-          ) : (
-            ''
-          )}
         </div>
         <div className="flex flex-col items-start justify-center space-y-1">
-          <div className="flex flex-col mr-5">
+          <div className="flex flex-col mr-5 max-md:text-sm">
             <p className="break-all line-clamp-1">{item.title}</p>
             <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
               <span>{item.price.toLocaleString()}</span>

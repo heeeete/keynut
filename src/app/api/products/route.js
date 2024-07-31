@@ -73,11 +73,10 @@ export async function GET(req) {
       });
     }
 
-    const total = await db.collection('products').countDocuments(query);
     const products = await db.collection('products').find(query).sort({ createdAt: -1, _id: -1 }).limit(48).toArray();
 
     if (products) {
-      return NextResponse.json({ products, total }, { status: 200 });
+      return NextResponse.json(products, { status: 200 });
     } else {
       return NextResponse.json({ message: 'No products found' }, { status: 404 });
     }

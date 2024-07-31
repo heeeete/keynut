@@ -37,7 +37,7 @@ const UpButton = ({ id, state, router, invalidateFilters }) => {
     <>
       <button
         className={`px-2 font-medium border border-gray-300 rounded flex-nowrap whitespace-nowrap ${
-          state === 0 ? 'text-gray-300' : 'max-md:text-gray-600'
+          state !== 1 ? 'text-gray-300' : 'max-md:text-gray-600'
         } `}
         onClick={() => {
           setUpModal(true);
@@ -164,9 +164,11 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
               sizes="(max-width:768px) 200px,(max-width:1280px) 20vw, (max-width:1500px) 20vw, 250px"
             />
           </Link>
-          {product.state !== 1 ? (
+          {product.state === 0 || product === 2 ? (
             <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-              <p className="font-semibold text-white text-lg">{product.state === 0 ? '판매 완료' : '예약 중'}</p>
+              <p className="font-semibold text-white text-lg max-md:text-base">
+                {product.state === 0 ? '판매 완료' : '예약 중'}
+              </p>
             </div>
           ) : (
             ''

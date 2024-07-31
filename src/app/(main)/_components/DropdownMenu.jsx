@@ -1,14 +1,29 @@
 'use client';
 import useProductStateMutation from '@/hooks/useProductStateMutaion';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const DropdownMenu = ({ state, id }) => {
   const [dropMenu, setDropMenu] = useState(false);
   const { onClickSelling, onClickSellCompleted, onClickBooked } = useProductStateMutation();
-  // console.log('-------', state);
+  const menuRef = useRef(null);
+
+  const handleClickOutside = event => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setDropMenu(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <button
-      id="dropDown"
+    <div
+      ref={menuRef}
+      // id="dropDown"
       className="flex w-85 h-8 justify-between font-medium border text-sm border-gray-300 rounded flex-nowrap whitespace-nowrap items-center relative max-md:text-gray-600"
       onClick={() => {
         setDropMenu(!dropMenu);
@@ -57,9 +72,8 @@ const DropdownMenu = ({ state, id }) => {
         >
           {state == 0 ? '예약중' : '판매완료'}
         </button>
-        {/* {state ? '판매완료' : '판매중'} */}
       </div>
-    </button>
+    </div>
   );
 };
 

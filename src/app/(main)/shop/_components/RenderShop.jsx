@@ -338,10 +338,15 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
   );
 };
 
-const RenderProductsNum = ({ total }) => {
+const RenderProductsNum = ({ data, includeBooked }) => {
+  const totalCount = data
+    ? includeBooked
+      ? data.pages.reduce((acc, page) => acc + page.length, 0)
+      : data.pages.reduce((acc, page) => acc + page.filter(a => a.state === 1).length, 0)
+    : 0;
   return (
     <>
-      {total === undefined ? (
+      {data === undefined ? (
         <div className="flex h-5 w-32 my-4 max-md:my-2 max-md:mx-3 bg-gray-100 relative rounded-sm">
           <div className="absolute top-0 left-0 h-full w-full animate-loading">
             <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
@@ -349,15 +354,69 @@ const RenderProductsNum = ({ total }) => {
         </div>
       ) : (
         <div className="flex py-4 text-sm max-md:py-2 max-md:px-3">
-          <p className="font-semibold">{total}</p>개의 검색 결과
+          <p className="font-semibold">{totalCount}</p>개의 검색 결과
         </div>
       )}
     </>
   );
 };
 
+const Product = ({ product }) => {
+  return (
+    <Link
+      href={`/shop/product/${product._id}`}
+      className="flex flex-col cursor-pointer relative rounded"
+      // key={product._id}
+      onClick={() => {
+        sessionStorage.setItem('scrollPos', window.scrollY);
+      }}
+    >
+      <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
+        <Image
+          className="rounded object-cover"
+          src={product.images.length ? product.images[0] : '/키보드1.webp'}
+          alt={product.title}
+          fill
+          sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
+        />
+        {product.state === 2 ? (
+          <div className="absolute left-0 top-0 z-10 rounded-tl rounded-br px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
+            <p className="font-semibold text-white text-sm max-md:text-xs">예약중</p>
+          </div>
+        ) : (
+          ''
+        )}
+        <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
+          {conditions[product.condition].option}
+        </div>
+        {product.images.length !== 1 && (
+          <svg
+            className="absolute right-1 top-1 opacity-90 max-md:w-7"
+            xmlns="http://www.w3.org/2000/svg"
+            width="2em"
+            height="2em"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill="white"
+              d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
+            />
+          </svg>
+        )}
+      </div>
+      <div className=" flex flex-col py-1 max-md:text-sm justify-center h-14">
+        <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>
+        <div className="space-x-1 font-semibold break-all line-clamp-1">
+          <span className="">{product.price.toLocaleString()}</span>
+          <span className="text-sm">원</span>
+        </div>
+      </div>
+    </Link>
+  );
+};
+
 const RenderProducts = React.memo(
-  ({ params, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxmd }) => {
+  ({ params, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxmd, includeBooked }) => {
     const initPageRef = useRef(true);
     const createQueryString = useCallback(() => {
       const queryParams = new URLSearchParams();
@@ -375,8 +434,8 @@ const RenderProducts = React.memo(
         queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
         initialPageParam: 0, //[1,2,3,4,5] [6,7,8,9,10] [11,12,13,14,15] -> 데이터를 페이지별로 관리 , 이차원 배열
         getNextPageParam: (lastPage, allPages) => {
-          if (lastPage.products.length === 0) return undefined;
-          const lastProduct = lastPage.products[lastPage.products.length - 1];
+          if (lastPage.length === 0) return undefined;
+          const lastProduct = lastPage[lastPage.length - 1];
           return { lastId: lastProduct._id, lastCreatedAt: lastProduct.createdAt };
         },
         staleTime: 60 * 1000,
@@ -386,9 +445,9 @@ const RenderProducts = React.memo(
     const { ref, inView } = useInView({ threshold: 0, delay: 0, rootMargin: '500px' });
     const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(queryString);
 
-    const hasProducts = data?.pages.some(page => page.products.length > 0);
-
-    const total = data?.pages[0]?.total;
+    // console.log(includeBooked);
+    // console.log(data ? data : '');
+    const hasProducts = data?.pages.some(page => page.length > 0);
 
     useEffect(() => {
       if (inView && !isFetching && hasNextPage) {
@@ -406,7 +465,7 @@ const RenderProducts = React.memo(
 
     return (
       <div className="flex-col w-full">
-        <RenderProductsNum total={total} />
+        <RenderProductsNum data={data} includeBooked={includeBooked} />
         {!isMaxmd && (
           <SelectedFilters
             categoriesState={categoriesState}
@@ -421,61 +480,27 @@ const RenderProducts = React.memo(
         ) : hasProducts ? (
           <>
             <div className="grid grid-cols-4 md:gap-3 max-md:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-md:px-3">
-              {data?.pages.map((page, i) => (
-                <Fragment key={i}>
-                  {page.products.map((product, idx) => (
-                    <Link
-                      href={`/shop/product/${product._id}`}
-                      className="flex flex-col cursor-pointer relative rounded"
-                      key={product._id}
-                      onClick={() => {
-                        sessionStorage.setItem('scrollPos', window.scrollY);
-                      }}
-                    >
-                      <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
-                        <Image
-                          className="rounded object-cover"
-                          src={product.images.length ? product.images[0] : '/키보드1.webp'}
-                          alt={product.title}
-                          fill
-                          sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
-                        />
-                        {product.state === 2 ? (
-                          <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-                            <p className="font-semibold text-white text-xl max-md:text-lg">예약 중</p>
-                          </div>
-                        ) : (
-                          ''
-                        )}
-                        <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
-                          {conditions[product.condition].option}
-                        </div>
-                        {product.images.length !== 1 && (
-                          <svg
-                            className="absolute right-1 top-1 opacity-90 max-md:w-7"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="2em"
-                            height="2em"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fill="white"
-                              d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
-                            />
-                          </svg>
-                        )}
-                      </div>
-                      <div className=" flex flex-col py-1 max-md:text-sm justify-center h-14">
-                        <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>
-                        <div className="space-x-1 font-semibold break-all line-clamp-1">
-                          <span className="">{product.price.toLocaleString()}</span>
-                          <span className="text-sm">원</span>
-                        </div>
-                      </div>
-                    </Link>
+              {includeBooked
+                ? data?.pages.map((page, i) => (
+                    <Fragment key={i}>
+                      {page.map((product, idx) => (
+                        <Fragment key={idx}>
+                          <Product product={product} />
+                        </Fragment>
+                      ))}
+                    </Fragment>
+                  ))
+                : data?.pages.map((page, i) => (
+                    <Fragment key={i}>
+                      {page
+                        .filter(a => a.state === 1)
+                        .map((product, idx) => (
+                          <Fragment key={idx}>
+                            <Product product={product} />
+                          </Fragment>
+                        ))}
+                    </Fragment>
                   ))}
-                </Fragment>
-              ))}
             </div>
             {isFetching && <Skeletons />}
           </>
@@ -549,8 +574,8 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
                       sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"
                     />
                     {product.state === 2 ? (
-                      <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-                        <p className="font-semibold text-white text-xl max-md:text-lg">예약 중</p>
+                      <div className="absolute left-0 top-0 z-10 rounded-tl rounded-br px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
+                        <p className="font-semibold text-white text-sm max-md:text-xxs">예약중</p>
                       </div>
                     ) : (
                       ''
@@ -589,6 +614,8 @@ const RenderMdFilter = ({
   paramsCategories,
   paramsPrices,
   params,
+  includeBooked,
+  setIncludeBooked,
 }) => {
   const [showCategory, setShowCategory] = useState(paramsCategories.length ? true : false);
   const [showPrice, setShowPrice] = useState(paramsPrices.length ? true : false);
@@ -599,10 +626,10 @@ const RenderMdFilter = ({
   }, [params]);
 
   return (
-    <div className="flex flex-col space-y-4 overflow-y-auto scrollbar-hide text-sm h-full max-md:hidden">
-      <div className="w-full pr-8 flex items-center justify-end">
+    <div className="flex flex-col space-y-3 overflow-y-auto scrollbar-hide text-sm h-full max-md:hidden">
+      <div className="flex flex-col items-end space-y-2 pr-8">
         <button
-          className="flex text-xs space-x-1 items-center border px-1 rounded "
+          className="flex text-xs space-x-1 items-center border px-1 rounded flex-nowrap whitespace-nowrap w-auto"
           onClick={() => {
             resetFilter();
           }}
@@ -734,6 +761,24 @@ const RenderMdFilter = ({
           </div>
         </div>
       </div>
+      <div className="flex items-start">
+        <button
+          className={`flex text-xs space-x-1 items-center border px-1 rounded flex-nowrap whitespace-nowrap ${
+            includeBooked ? 'text-black border-black' : 'text-gray-400 border-gray-300'
+          }`}
+          onClick={() => {
+            setIncludeBooked(!includeBooked);
+          }}
+        >
+          <p>예약 포함</p>
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
+            <path
+              fill="currentColor"
+              d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06a.733.733 0 0 1 1.047 0l3.052 3.093l5.4-6.425z"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 };
@@ -746,6 +791,8 @@ const FilterBar = ({
   setPriceOpen,
   setCategoryOpen,
   setFilterActive,
+  includeBooked,
+  setIncludeBooked,
 }) => {
   return (
     <>
@@ -778,7 +825,7 @@ const FilterBar = ({
           )}
         </button>
         <button
-          className={`flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1 flex-nowrap whitespace-nowrap           ${
+          className={`flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1 flex-nowrap whitespace-nowrap       ${
             paramsCategories.length ? 'border-black border-1.5 font-semibold' : 'border-gray-300 text-gray-500'
           }`}
           onClick={() => {
@@ -815,6 +862,15 @@ const FilterBar = ({
             />
           </svg>
         </button>
+        <button
+          className={`flex py-1 px-2 border rounded-2xl text-sm items-center space-x-1 flex-nowrap whitespace-nowrap
+          ${includeBooked ? 'border-black border-1.5 font-semibold' : 'border-gray-300 text-gray-500'}`}
+          onClick={() => {
+            setIncludeBooked(!includeBooked);
+          }}
+        >
+          예약 포함
+        </button>
       </div>
       <button onClick={e => resetFilter()} className="p-1 md:hidden">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 21 21">
@@ -841,6 +897,7 @@ export default function RenderShop() {
   const [isMaxmd, setIsMaxmd] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const pageRef = useRef(null);
+  const [includeBooked, setIncludeBooked] = useState(true);
   const [categoriesState, setCategoriesState] = useState({
     1: { option: '키보드', checked: false, childId: [10, 11, 12, 13, 14, 15, 16, 19] },
     10: { option: '커스텀', checked: false, parentId: 1 },
@@ -1055,7 +1112,6 @@ export default function RenderShop() {
     });
   };
   const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
-
   return (
     <div className="flex items-start justify-start z-60" ref={pageRef}>
       <div className="flex flex-col w-full">
@@ -1088,6 +1144,8 @@ export default function RenderShop() {
               setPriceOpen={setPriceOpen}
               setCategoryOpen={setCategoryOpen}
               setFilterActive={setFilterActive}
+              includeBooked={includeBooked}
+              setIncludeBooked={setIncludeBooked}
             />
             <RenderMdFilter
               categoriesState={categoriesState}
@@ -1098,6 +1156,8 @@ export default function RenderShop() {
               paramsCategories={paramsCategories}
               paramsPrices={paramsPrices}
               params={params}
+              includeBooked={includeBooked}
+              setIncludeBooked={setIncludeBooked}
             />
           </div>
           <div className="flex flex-col w-full">
@@ -1108,6 +1168,7 @@ export default function RenderShop() {
               handleCategoryChange={handleCategoryChange}
               handlePriceChange={handlePriceChange}
               isMaxmd={isMaxmd}
+              includeBooked={includeBooked}
             />
           </div>
         </div>
@@ -1154,7 +1215,7 @@ export default function RenderShop() {
                   `}
                   onClick={() => setCategoryOpen(!categoryOpen)}
                 >
-                  <p className="font-semibold ">카테고리</p>
+                  <p className="font-semibold  ">카테고리</p>
                   {categoryOpen ? (
                     <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 1024 1024">
                       <path
