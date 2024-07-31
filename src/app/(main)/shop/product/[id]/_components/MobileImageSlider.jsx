@@ -82,6 +82,11 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
               <p className="text-white font-semibold text-3xl">판매완료</p>
             </div>
           )}
+          {state === 2 && (
+            <div className="absolute left-0 top-0 z-10 rounded-br px-3 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center text-center">
+              <p className="font-semibold text-white max-md:text-sm">예약중</p>
+            </div>
+          )}
           <div
             id="imageShow"
             className="flex bg-gray-50"

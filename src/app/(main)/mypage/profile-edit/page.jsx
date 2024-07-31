@@ -51,39 +51,42 @@ const ProfileName = ({ session, status, update }) => {
   };
 
   return (
-    <div className="flex flex-col space-y-1">
-      <div className="flex items-center space-x-3">
-        {isEditing ? (
-          <input
-            maxLength={10}
-            className="border w-40 h-7 px-1 rounded outline-none"
-            type="text"
-            value={tempNickname}
-            onChange={e => setTempNickname(e.target.value)}
-            autoFocus
-          />
-        ) : (
-          <div className="border px-1 h-7 rounded w-40">{nickname}</div>
-        )}
-        <button
-          className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500 active:bg-gray-100"
-          onClick={async e => {
-            if (!(await getSession())) return signIn();
-            if (isEditing && nickname !== tempNickname) handleNickname();
-            setIsEditing(!isEditing);
-          }}
-        >
-          {isEditing ? '완료' : '수정'}
-        </button>
-      </div>
-      {isEditing ? (
-        <div className="flex flex-col text-xs text-gray-400 h-12 max-md:h-14">
-          <p>띄어쓰기 없이 2~10자의 한글, 영어, 숫자 조합으로 입력해주세요</p>
-          <p>(변경 후 30일 내에는 변경이 불가합니다)</p>
+    <div className="flex space-y-3 flex-col">
+      <div className="w-full rounded-none text-gray-500 max-md:text-sm">프로필 이름</div>
+      <div className="flex flex-col px-2">
+        <div className="flex items-center space-x-3">
+          {isEditing ? (
+            <input
+              maxLength={10}
+              className="flex border h-8 rounded px-1 outline-none items-center flex-1 max-md:text-sm"
+              type="text"
+              value={tempNickname}
+              onChange={e => setTempNickname(e.target.value)}
+              autoFocus
+            />
+          ) : (
+            <div className="flex border rounded px-1 h-8 flex-1 items-center max-md:text-sm">{nickname}</div>
+          )}
+          <button
+            className="px-3 py-1 border h-8 outline-none rounded-lg text-sm text-gray-500 active:bg-gray-100"
+            onClick={async e => {
+              if (!(await getSession())) return signIn();
+              if (isEditing && nickname !== tempNickname) handleNickname();
+              setIsEditing(!isEditing);
+            }}
+          >
+            {isEditing ? '완료' : '수정'}
+          </button>
         </div>
-      ) : (
-        <div className="h-10 py-1"></div>
-      )}
+        {isEditing ? (
+          <div className="flex flex-col text-sm text-gray-400 h-12 max-md:h-12 py-1 max-md:text-xs">
+            <p>띄어쓰기 없이 2~10자의 한글, 영어, 숫자 조합으로 입력해주세요</p>
+            <p>(변경 후 30일 내에는 변경이 불가합니다)</p>
+          </div>
+        ) : (
+          <div className="h-6 py-1"></div>
+        )}
+      </div>
     </div>
   );
 };
@@ -130,18 +133,21 @@ const ProfileImage = ({ session, status, update }) => {
   };
 
   return (
-    <div className="flex flex-col space-y-5 ">
-      <div className="text-lg w-full border-b rounded-none">프로필 사진</div>
-      <div className="flex items-end">
+    <div className="flex-col space-y-3 mb-6">
+      <div className=" rounded-none text-gray-500 max-md:text-sm">프로필 사진</div>
+      <div className="flex space-x-5 px-2">
         <div>
           {profileImg ? (
-            <Image
-              className="rounded-full aspect-square object-cover"
-              src={profileImg}
-              alt="profileImg"
-              width={130}
-              height={130}
-            />
+            <div className="relative w-32 aspect-square max-md:w-24">
+              <Image
+                className="absolute rounded-full aspect-square object-cover"
+                src={profileImg}
+                alt="profileImg"
+                fill
+                // width={100}
+                // height={100}
+              />
+            </div>
           ) : (
             <div className="w-130 h-130 defualt-profile">
               <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
@@ -153,7 +159,7 @@ const ProfileImage = ({ session, status, update }) => {
             </div>
           )}
         </div>
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 items-end">
           <button
             className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
             onClick={e => {
@@ -168,7 +174,7 @@ const ProfileImage = ({ session, status, update }) => {
               onChange={handleImageSelect}
               hidden
             />
-            변경
+            <p className="flex-nowrap whitespace-nowrap">변경</p>
           </button>
           <button
             className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
@@ -177,7 +183,7 @@ const ProfileImage = ({ session, status, update }) => {
               handleImageDelete();
             }}
           >
-            삭제
+            <p className="flex-nowrap whitespace-nowrap">삭제</p>
           </button>
         </div>
       </div>
@@ -213,19 +219,52 @@ export default function ProfileEdit() {
     setIsLoading(false);
   };
 
+  console.log(session?.user ? session.user : '');
   return (
-    <div className="flex flex-col items-center max-w-screen-lg mx-auto px-10 max-md:px-2 max-md:justify-center max-md:main-768">
-      <div className="flex flex-col w-350 py-10 max-md:py-0 max-md:w-64">
-        <section className="flex flex-col rounded-none space-y-10 ">
+    <div className="flex flex-col max-w-screen-sm mx-auto px-10 md:items-center max-md:px-6 max-md:justify-center">
+      <button className="h-12 w-auto md:hidden" onClick={() => router.back()}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
+          <path
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.5"
+            d="M20 12H4m0 0l6-6m-6 6l6 6"
+          />
+        </svg>
+      </button>
+      <div className="flex flex-col w-full py-10 max-md:py-0 max-md:w-full">
+        <section className="flex flex-col rounded-none">
+          <p className="font-medium mb-4 border-b border-black md:text-lg max-md:mb-2">프로필 정보</p>
           <ProfileImage session={session} status={status} update={update} />
-          <div className="flex space-y-5 flex-col">
-            <div className="text-lg w-full border-b rounded-none">프로필 이름</div>
-            <ProfileName session={session} status={status} update={update} />
+          <ProfileName session={session} status={status} update={update} />
+        </section>
+        <section className="flex flex-col space-y-2 mb-6">
+          <p className="font-medium border-b border-black md:text-lg md:mb-2">가입 정보</p>
+          <div className="flex flex-col space-y-1">
+            <p className="text-gray-500 max-md:text-sm">연결 서비스</p>
+            <p className="text-gray-400 px-2 max-md:text-sm">KAKAO</p>
+          </div>
+          <div className="flex flex-col space-y-1">
+            <p className="text-gray-500 max-md:text-sm">가입일</p>
+            <div className="flex items-center space-x-1 px-2 text-gray-400 max-md:text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+                <path
+                  fill="currentColor"
+                  d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
+                />
+              </svg>
+              <div>2024년 7월 31일</div>
+            </div>
+          </div>
+          <div className="flex flex-col space-y-1">
+            <p className="text-gray-500 max-md:text-sm">이메일</p>
+            <p className="text-gray-400 px-2 no-underline max-md:text-sm">{session?.user.email}</p>
           </div>
         </section>
-        <section className="flex flex-col space-y-5">
-          <div className="text-lg w-full border-b rounded-none">계정</div>
-          <div className="space-y-4">
+        <section className="flex flex-col">
+          <div className="flex space-x-4">
             <button
               className="flex text-gray-500 underline"
               onClick={e => {

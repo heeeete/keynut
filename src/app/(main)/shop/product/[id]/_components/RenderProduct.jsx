@@ -252,7 +252,7 @@ const IsWriter = ({ id, state, setSettingModal }) => {
   );
 };
 
-const SettingModal = ({ id, setSettingModal, setDeleteModal, setRaiseCount, setUpModal }) => {
+const SettingModal = ({ id, setSettingModal, setDeleteModal, setRaiseCount, setUpModal, state }) => {
   const { data: session } = useSession();
 
   const openUpModal = () => {
@@ -276,8 +276,11 @@ const SettingModal = ({ id, setSettingModal, setDeleteModal, setRaiseCount, setU
           <p>수정</p>
         </Link>
         <button
-          className="flex items-center justify-center w-full py-4 font-semibold border-b"
+          className={`flex items-center justify-center w-full py-4 font-semibold border-b ${
+            state !== 1 ? 'text-gray-300' : 'text-black'
+          }`}
           onClick={() => openUpModal()}
+          disabled={state === 0 || state === 2}
         >
           <p>UP</p>
         </button>
@@ -483,11 +486,12 @@ export default function RenderProduct({ id }) {
         <RenderCategory category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
         <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
-
-        <button onClick={onClickComplain} className="flex items-center h-6 space-x-1">
-          <img src="/product/complain.svg" width={20} height={20} alt="complain" />
-          <p className="flex flex-nowrap whitespace-nowrap h-5 text-gray-500 max-md:hidden">신고하기</p>
-        </button>
+        {!writer && (
+          <button onClick={onClickComplain} className="flex items-center h-6 space-x-1">
+            <img src="/product/complain.svg" width={20} height={20} alt="complain" />
+            <p className="flex flex-nowrap whitespace-nowrap h-5 text-gray-500 max-md:hidden">신고하기</p>
+          </button>
+        )}
       </div>
       <ImageSlider images={product.images} state={product.state} />
       <div className="p-10 space-y-6 max-md:px-4">
@@ -542,6 +546,7 @@ export default function RenderProduct({ id }) {
           setRaiseCount={setRaiseCount}
           setDeleteModal={setDeleteModal}
           setUpModal={setUpModal}
+          state={product.state}
         />
       )}
       {complainModal && <ComplainModal setComplainModal={setComplainModal} productId={id} />}

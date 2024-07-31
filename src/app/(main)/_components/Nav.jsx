@@ -16,7 +16,8 @@ export default function Nav() {
     (!pathname.startsWith('/gallery') && !pathname.startsWith('/shop')) ||
     pathname.startsWith('/shop/') ||
     pathname.startsWith('/gallery/post');
-  const navRender = pathname === '/shop' || pathname === '/gallery' || pathname === '/bookmark';
+  const navRender =
+    pathname === '/shop' || pathname === '/gallery' || pathname === '/bookmark' || pathname === '/mypage/profile-edit';
 
   const maxMdBorder = pathname.startsWith('/mypage/product-edit');
 
