@@ -534,7 +534,7 @@ export default function Sell() {
   const isInitialRender = useRef(true); // 첫 번째 렌더링인지 확인하는 ref
 
   useEffect(() => {
-    if (status !== 'loading' && status === 'unauthenticated') return router.push('/signin');
+    if (status !== 'loading' && status === 'unauthenticated') return signIn();
     if (status === 'authenticated') {
       const fetchUserProfile = async () => {
         const user = await getUserProfile(session.user.id);
@@ -630,6 +630,8 @@ export default function Sell() {
       } else if (res.status === 401) {
         alert('로그인이 만료되었습니다. 다시 로그인해 주세요.');
         signIn();
+      } else if (res.status === 403 && data.error === 'Your account has been banned.') {
+        return router.push(`/auth/error?error=${encodeURIComponent(data.error)}`);
       } else {
         console.error(data.error);
         alert('상품 업로드를 실패했습니다. 나중에 다시 시도해주세요.');

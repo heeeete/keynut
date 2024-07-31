@@ -165,6 +165,7 @@ async function initRaiseCountAndCreatedAt(user, db) {
         raiseCount: 5,
         lastRaiseReset: new Date(),
         createdAt: new Date(),
+        state: 1,
       },
     },
   );
@@ -200,6 +201,17 @@ export const authOptions = {
     // maxAge: 8,
   },
   callbacks: {
+    // async signIn({ user, account, profile }) {
+    //   const client = await connectDB;
+    //   const db = client.db(process.env.MONGODB_NAME);
+
+    //   const isBanned = await checkBannedEmail(user.email, db);
+    //   if (isBanned) {
+    //     throw new Error('Your account has been banned.');
+    //   }
+
+    //   return true;
+    // },
     async jwt({ token, user, account, trigger, session }) {
       const client = await connectDB;
       const db = client.db(process.env.MONGODB_NAME);
@@ -220,8 +232,10 @@ export const authOptions = {
       }
 
       if (account) {
+        // console.log('===========', account);/
         const userDoc = await db.collection('users').findOne({ _id: new ObjectId(user.id) });
         token.user.nickname = userDoc.nickname;
+        token.user.provider = account.provider;
         // token.user.lastRaiseReset = userDoc.lastRaiseReset;
         // token.user.raiseCount = userDoc.raiseCount;
         await db.collection('accounts').updateOne(
@@ -266,7 +280,8 @@ export const authOptions = {
     },
   },
   pages: {
-    signIn: '/signin',
+    signIn: '/auth/signin',
+    error: '/auth/error', // 커스텀 오류 페이지 경로 설정
   },
 };
 

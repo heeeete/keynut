@@ -6,6 +6,7 @@ import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import checkBannedEmail from '@/lib/checkBannedEmail';
 
 const priceRanges = [
   { id: 1, min: 0, max: 50000 },
@@ -21,7 +22,7 @@ export async function GET(req) {
     const db = client.db(process.env.MONGODB_NAME);
 
     const { searchParams } = new URL(req.url, `${process.env.NEXT_PUBLIC_BASE_URL}`);
-    const keywordParam = searchParams.get('keyword');
+    let keywordParam = searchParams.get('keyword');
     const categoriesParam = searchParams.get('categories');
     const pricesParam = searchParams.get('prices');
     const lastProductId = searchParams.get('lastId');
@@ -33,6 +34,7 @@ export async function GET(req) {
 
     if (keywordParam) {
       if (keywordParam[0] == '#') {
+        keywordParam = keywordParam.replaceAll(' ', '');
         const hashTag = keywordParam.split(' ')[0];
         query.tags = { $elemMatch: { $eq: hashTag } };
       } else {
@@ -93,6 +95,8 @@ export async function POST(req) {
     }
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
+    if (await checkBannedEmail(session.user.email, db))
+      return NextResponse.json({ error: 'Your account has been banned.' }, { status: 403 });
     const products = db.collection('products');
     const users = db.collection('users');
 
@@ -186,13 +190,15 @@ export async function POST(req) {
 
 export async function PUT(req) {
   try {
+    const session = await getUserSession();
+    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
+    if (await checkBannedEmail(session.user.email, db))
+      return NextResponse.json({ error: 'Your account has been banned.' }, { status: 403 });
     const products = db.collection('products');
     const users = db.collection('users');
 
-    const { user: session } = await getUserSession();
-    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const formData = await req.formData();
     const deleteFiles = formData.getAll('deleteFiles');
     const uploadFiles = formData.getAll('uploadFiles');

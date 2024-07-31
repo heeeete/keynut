@@ -1,15 +1,18 @@
-const deleteProduct = async (id, callback) => {
+const deleteProduct = async (id, callback = () => {}) => {
+  let res;
   try {
-    const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+    res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
     if (res.ok) {
       callback();
-      return;
+      return 200;
     } else {
       const { error } = await res.json();
+      res = res.status;
       throw new Error(error);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res ? res : 500;
   }
 };
 

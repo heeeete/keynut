@@ -516,11 +516,8 @@ export default function Edit() {
     queryFn: () => getProductWithUser(id),
   });
 
-  console.log(data ? data : 'NO', uploadImages, status);
-
   useEffect(() => {
     const originalDataInit = () => {
-      console.log('INTI~~~~~~~~~~~~~~~~~~~~~');
       if ((session && data.userId !== session.user.id) || status === 'unauthenticated') {
         alert('비정상적인 접근입니다.');
         return router.push('/');
@@ -599,6 +596,9 @@ export default function Edit() {
         router.push(`/shop/product/${id}`);
         router.refresh();
       } else {
+        const data = await res.json();
+        if (res.status === 403 && data.error === 'Your account has been banned.')
+          return router.push(`/auth/error?error=${encodeURIComponent(data.error)}`);
         const errorData = await res.json();
         console.error(errorData.error);
         alert('상품 수정을 실패했습니다. 나중에 다시 시도해주세요.');
