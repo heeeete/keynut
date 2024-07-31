@@ -4,9 +4,11 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
 import Loading from '@/app/(main)/_components/Loading';
-import useProducts from '../_hooks/useProducts';
-import useURLSearchParams from '@/hooks/useURLSearchParams';
 import useComplaintProductsQuery from '../_hooks/useComplaintProductsQuery';
+import userBanHandler from '../_lib/userBanHandler';
+import productStateHandler from '@/lib/productStateHandler';
+import deleteProduct from '@/lib/deleteProduct';
+import Link from 'next/link';
 
 const PAGE_SIZE = 100;
 const PAGE_RANGE = 10;
@@ -125,7 +127,15 @@ const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }) =>
   );
 };
 
-const Table = ({ data, selectAll, setSelectAll, selectedProducts, setSelectedProducts }) => {
+const Table = ({
+  data,
+  selectAll,
+  setSelectAll,
+  selectedProducts,
+  setSelectedProducts,
+  setDetailProduct,
+  setIsDetailModal,
+}) => {
   const handleSelectAll = useCallback(() => {
     if (selectAll) {
       setSelectedProducts({});
@@ -161,7 +171,11 @@ const Table = ({ data, selectAll, setSelectAll, selectedProducts, setSelectedPro
     [selectedProducts],
   );
 
-  console.log(data);
+  const onClickProduct = (e, product) => {
+    setDetailProduct(product);
+    setIsDetailModal(true);
+  };
+
   return (
     <table className="w-full bg-slate-50 table-auto border-x border-separate border-spacing-0">
       <thead className=" bg-slate-50 sticky top-32 text-lg h-10">
@@ -201,10 +215,14 @@ const Table = ({ data, selectAll, setSelectAll, selectedProducts, setSelectedPro
                   </div>
                 </td>
                 <td className="border-b">
-                  <button className="text-blue-700 underline">{product.nickname}</button>
+                  <button className="text-blue-700 underline" onClick={e => onClickProduct(e, product)}>
+                    {product.userInfo.nickname}
+                  </button>
                 </td>
                 <td className="border-b">
-                  <button className="text-blue-700 underline">{product.title}</button>
+                  <button className="text-blue-700 underline" onClick={e => onClickProduct(e, product)}>
+                    {product.title}
+                  </button>
                 </td>
                 <td className="border-b">{product.price.toLocaleString()} 원</td>
                 <td className="border-b">{product.views}</td>
@@ -235,6 +253,63 @@ const AllProductsCnt = ({ userCnt }) => {
   );
 };
 
+const DetailModal = ({ setIsDetailModal, detailProduct }) => {
+  console.log(detailProduct);
+  return (
+    <div
+      className="fixed left-0 top-0 flex justify-center items-center w-d-screen custom-dvh bg-black bg-opacity-50 z-90"
+      onClick={e => {
+        if (e.target === e.currentTarget) setIsDetailModal(false);
+      }}
+    >
+      <div className="max-w-70vh w-full h-70vh bg-white overflow-auto space-y-3">
+        <p>상품명: {detailProduct.title}</p>
+        <p>상품설명: {detailProduct.description}</p>
+        <div>
+          <h3 className="text-center">신고사항</h3>
+          <div className="space-y-3">
+            {detailProduct.complain.map((data, idx) => {
+              return (
+                <div key={idx}>
+                  <p>{data.category}</p>
+                  <p>{data.text}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div>
+          <button
+            className="border"
+            onClick={async () => {
+              const { email } = detailProduct.userInfo;
+              const status = await userBanHandler(email, 0);
+              if (status === 200) alert('성공');
+              else alert('실패');
+            }}
+          >
+            회원정지
+          </button>
+          <button
+            className="border"
+            onClick={async () => {
+              const { _id } = detailProduct;
+              const status = await deleteProduct(_id);
+              if (status === 200) alert('성공');
+              else alert('실패');
+            }}
+          >
+            게시물 삭제
+          </button>
+          <Link href={`/shop/product/${detailProduct._id}`} className="border">
+            게시물 바로가기
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function Products() {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get('page')) || 1;
@@ -242,7 +317,8 @@ export default function Products() {
   const [selectedProducts, setSelectedProducts] = useState({});
   const [selectAll, setSelectAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [detailProduct, setDetailProduct] = useState(null);
+  const [isDetailModal, setIsDetailModal] = useState(false);
   const { navStatus, setNavStatus } = useNav();
 
   useEffect(() => {
@@ -273,10 +349,13 @@ export default function Products() {
             selectedProducts={selectedProducts}
             setSelectAll={setSelectAll}
             setSelectedProducts={setSelectedProducts}
+            setDetailProduct={setDetailProduct}
+            setIsDetailModal={setIsDetailModal}
           />
         </article>
       </div>
       {isLoading && <Loading />}
+      {isDetailModal && <DetailModal setIsDetailModal={setIsDetailModal} detailProduct={detailProduct} />}
     </div>
   );
 }

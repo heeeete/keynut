@@ -5,6 +5,7 @@ const s = process.env.NEXTAUTH_SECRET;
 
 export async function middleware(req) {
   const session = await getToken({ req, s });
+  // console.log('--------------------', session);
 
   const { pathname } = req.nextUrl;
 
@@ -17,7 +18,7 @@ export async function middleware(req) {
   } else {
     // For other paths, just check if the user is authenticated
     if (!session) {
-      return NextResponse.redirect(new URL('/signin', req.url));
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
     }
   }
 

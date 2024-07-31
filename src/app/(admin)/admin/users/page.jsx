@@ -6,7 +6,9 @@ import Image from 'next/image';
 import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
 import Loading from '@/app/(main)/_components/Loading';
-import { revalidateTag } from 'next/cache';
+import handleKakaoWithdrawal from '../_lib/handleKakaoWithdrawal';
+import handleGoogleWithdrawal from '../_lib/handleGoogleWithdrawal';
+import userBanHandler from '../_lib/userBanHandler';
 
 const PAGE_SIZE = 100;
 const PAGE_RANGE = 10;
@@ -111,58 +113,6 @@ const SearchBar = () => {
 };
 
 const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
-  const onClickWithdrawal = async () => {
-    setIsLoading(true);
-    const selectedUsersKeys = Object.keys(selectedUsers);
-    try {
-      for (let key of selectedUsersKeys) {
-        const { _id, access_token, provider, providerAccountId } = selectedUsers[key];
-
-        if (provider === 'kakao') {
-          await handleKakaoWithdrawal(_id, access_token, providerAccountId);
-        } else if (provider === 'google') {
-          await handleGoogleWithdrawal(_id, access_token);
-        } else {
-          await handleOtherProviderWithdrawal(_id);
-        }
-        revalidateTag('products');
-      }
-    } catch (error) {
-      console.error(error);
-      alert('처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-    } finally {
-      dataRefetch();
-      setIsLoading(false);
-    }
-  };
-
-  const handleKakaoWithdrawal = async (_id, access_token, providerAccountId) => {
-    try {
-      const res = await fetch('/api/admin/kakao/unlink', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ providerAccountId, _id }),
-      });
-
-      if (!res.ok) throw new Error(await res.json());
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handleGoogleWithdrawal = async (_id, access_token) => {
-    try {
-      const res1 = await fetch(`/api/user/${_id}`, { method: 'DELETE' });
-      if (!res1.ok) throw new Error('Google user deletion error');
-      const res2 = await fetch(`https://accounts.google.com/o/oauth2/revoke?token=${access_token}`);
-      if (!res2.ok) throw new Error('Google token revocation error');
-    } catch (error) {
-      throw error;
-    }
-  };
-
   const handleOtherProviderWithdrawal = async _id => {
     try {
       const res = await fetch(`/api/user/${_id}`, { method: 'DELETE' });
@@ -174,6 +124,78 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
       throw error;
     }
   };
+
+  const onClickWithdrawal = async () => {
+    setIsLoading(true);
+    const selectedUsersKeys = Object.keys(selectedUsers);
+    try {
+      for (let key of selectedUsersKeys) {
+        const { _id, access_token, provider, providerAccountId } = selectedUsers[key];
+
+        if (provider === 'kakao') {
+          await handleKakaoWithdrawal(_id, providerAccountId);
+        } else if (provider === 'google') {
+          await handleGoogleWithdrawal(_id, access_token);
+        } else {
+          await handleOtherProviderWithdrawal(_id);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      alert('처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      dataRefetch();
+      setIsLoading(false);
+    }
+  };
+
+  const banHandler = async state => {
+    setIsLoading(true);
+    const selectedUsersKeys = Object.keys(selectedUsers);
+    let status;
+    try {
+      for (let key of selectedUsersKeys) {
+        const { email } = selectedUsers[key];
+        console.log(selectedUsers[key]);
+        status = await userBanHandler(email, state);
+        if (status !== 200) throw '수정중 에러 발생';
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      if (status === 200) alert('성공');
+      else alert('실패');
+      dataRefetch();
+      setIsLoading(false);
+    }
+  };
+
+  // const handleKakaoWithdrawal = async (_id, access_token, providerAccountId) => {
+  //   try {
+  //     const res = await fetch('/api/admin/kakao/unlink', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ providerAccountId, _id }),
+  //     });
+
+  //     if (!res.ok) throw new Error(await res.json());
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
+
+  // const handleGoogleWithdrawal = async (_id, access_token) => {
+  //   try {
+  //     const res1 = await fetch(`/api/user/${_id}`, { method: 'DELETE' });
+  //     if (!res1.ok) throw new Error('Google user deletion error');
+  //     const res2 = await fetch(`https://accounts.google.com/o/oauth2/revoke?token=${access_token}`);
+  //     if (!res2.ok) throw new Error('Google token revocation error');
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
 
   return (
     <div className="flex flex-col sticky top-10 space-y-2 justify-center border-x px-4 py-2 bg-slate-100">
@@ -194,10 +216,16 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
           >
             탈퇴
           </button>
-          <button className="px-2 py-1 border border-black rounded bg-white text-gray-700 font-semibold line-clamp-1">
+          <button
+            onClick={() => banHandler(0)}
+            className="px-2 py-1 border border-black rounded bg-white text-gray-700 font-semibold line-clamp-1"
+          >
             정지
           </button>
-          <button className="px-2 py-1 border border-black rounded bg-white text-gray-700 font-semibold line-clamp-1">
+          <button
+            onClick={() => banHandler(1)}
+            className="px-2 py-1 border border-black rounded bg-white text-gray-700 font-semibold line-clamp-1"
+          >
             정지 해제
           </button>
         </div>
@@ -217,11 +245,12 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
     } else {
       const obj = {};
       let i = 0;
-      for (let { _id, access_token, provider } of data.users) {
+      for (let { _id, access_token, provider, email } of data.users) {
         obj[i++] = {
           _id: _id,
           access_token: access_token,
           provider: provider,
+          email: email,
         };
       }
       setSelectedUsers(obj);
@@ -242,6 +271,7 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
           access_token: user.access_token,
           provider: user.provider,
           providerAccountId: user.providerAccountId,
+          email: user.email,
         };
         setSelectedUsers(newObj);
       }
@@ -266,10 +296,10 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
             Products
           </th>
           <th className="border-b-2 border-r" style={{ width: '19%' }}>
-            Bookmarked
+            Provider
           </th>
           <th className="border-b-2" style={{ width: '19%' }}>
-            Provider
+            state
           </th>
         </tr>
       </thead>
@@ -292,8 +322,8 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
                 </td>
                 <td className="border-b">{user.email}</td>
                 <td className="border-b">{user.products ? user.products.length : 0}</td>
-                <td className="border-b">{user.bookmarked ? user.bookmarked.length : 0}</td>
                 <td className="border-b">{user.provider}</td>
+                <td className="border-b">{user.state === 1 ? '활성화' : '비활성화'}</td>
               </tr>
             ))
           : renderEmptyRows()}

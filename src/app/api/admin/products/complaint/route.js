@@ -27,13 +27,21 @@ export async function GET(req) {
         },
       },
       {
-        $addFields: {
-          nickname: { $arrayElemAt: ['$userInfo.nickname', 0] },
+        $lookup: {
+          from: 'accounts',
+          localField: 'userId',
+          foreignField: 'userId',
+          as: 'userAccount',
         },
       },
       {
-        $project: {
-          userInfo: 0,
+        $addFields: {
+          userInfo: { $arrayElemAt: ['$userInfo', 0] },
+        },
+      },
+      {
+        $addFields: {
+          userAccount: { $arrayElemAt: ['$userAccount', 0] },
         },
       },
       { $skip: offset },
