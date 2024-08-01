@@ -91,7 +91,7 @@ const Categories = () => {
         </li>
         <li className="flex flex-col items-center space-y-1">
           <Link href={'/shop?categories=3'}>
-            <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-black bg-opacity-5 justify-center items-center max-md:w-24">
+            <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24">
               <svg width="60" height="50" viewBox="0 0 496 265" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="0.5" y="0.5" width="494.042" height="264" rx="19.5" fill="#EBEBEB" stroke="black" />
                 <rect x="17.5" y="14.5" width="461" height="236" rx="19.5" fill="#A3A3A3" stroke="black" />
@@ -101,8 +101,35 @@ const Categories = () => {
           <p className="text-gray-600">패드</p>
         </li>
         <li className="flex flex-col items-center space-y-1">
+          <Link href={'/shop?categories=4'}>
+            <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-slate-100 justify-center items-center max-md:w-24">
+              <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24">
+                <path fill="white" d="M3 4h18v12H3z" opacity="0.3" />
+                <path
+                  fill="#797979"
+                  d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2m0 14H3V4h18z"
+                />
+              </svg>
+            </div>
+          </Link>
+          <p className="text-gray-600">모니터</p>
+        </li>
+        <li className="flex flex-col items-center space-y-1">
+          <Link href={'/shop?categories=5'}>
+            <div className="flex w-28 aspect-square min-h-16 min-w-16 rounded  bg-gray-100 justify-center items-center max-md:w-24">
+              <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 20 20">
+                <g fill="gray">
+                  <path d="M17.88 15.069a1 1 0 0 1-1.898-.63a10.4 10.4 0 0 0 .518-3.273c0-4.456-2.756-7.412-6.5-7.412S3.5 6.71 3.5 11.166c0 1.14.178 2.247.518 3.273a1 1 0 0 1-1.898.63a12.4 12.4 0 0 1-.62-3.903c0-5.53 3.619-9.412 8.5-9.412s8.5 3.882 8.5 9.412c0 1.354-.212 2.673-.62 3.903" />
+                  <path d="M5.977 17.034a3 3 0 0 1-2.942-3.04v-.022a2.978 2.978 0 0 1 3.035-2.937a1 1 0 0 1 .98 1.013l-.054 4a1 1 0 0 1-1.019.986M14.089 11a3 3 0 0 1 2.942 3.04v.022A2.978 2.978 0 0 1 14.013 17h-.016a1 1 0 0 1-.981-1.014l.054-4A1 1 0 0 1 14.089 11" />
+                </g>
+              </svg>
+            </div>
+          </Link>
+          <p className="text-gray-600">헤드셋</p>
+        </li>
+        <li className="flex flex-col items-center space-y-1">
           <Link href={'/shop?categories=9'}>
-            <div className="flex w-28 aspect-square min-h-16 min-w-16 bg-black bg-opacity-10 rounded justify-center items-center max-md:w-24">
+            <div className="flex w-28 aspect-square min-h-16 min-w-16 bg-slate-100 rounded justify-center items-center max-md:w-24">
               <svg
                 className="max-md:w-10"
                 xmlns="http://www.w3.org/2000/svg"
@@ -111,7 +138,7 @@ const Categories = () => {
                 viewBox="0 0 24 24"
               >
                 <path
-                  fill="white"
+                  fill="darkgray"
                   d="M7.673 21.02L11.712 14L4 13.096L15.25 2.981h1.116l-4.135 7.038l7.769.885L8.75 21.019z"
                 />
               </svg>
