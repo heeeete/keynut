@@ -3,12 +3,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { getSession, signIn, signOut, useSession } from 'next-auth/react';
-import getUserProfile from '@/lib/getUserProfile';
 import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
-import Script from 'next/script';
 import Modal from '../../_components/Modal';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
+import formatDate from '../../_lib/formatDate';
 
 const ProfileName = ({ session, status, update }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -51,7 +50,7 @@ const ProfileName = ({ session, status, update }) => {
   };
 
   return (
-    <div className="flex space-y-3 flex-col">
+    <div className="flex space-y-1 flex-col md:px-2">
       <div className="w-full rounded-none text-gray-500 max-md:text-sm">프로필 이름</div>
       <div className="flex flex-col px-2">
         <div className="flex items-center space-x-3">
@@ -84,7 +83,7 @@ const ProfileName = ({ session, status, update }) => {
             <p>(변경 후 30일 내에는 변경이 불가합니다)</p>
           </div>
         ) : (
-          <div className="h-6 py-1"></div>
+          <div className="h-7 py-1 max-md:h-6"></div>
         )}
       </div>
     </div>
@@ -133,7 +132,7 @@ const ProfileImage = ({ session, status, update }) => {
   };
 
   return (
-    <div className="flex-col space-y-3 mb-6">
+    <div className="flex-col space-y-1 pb-1 md:px-2">
       <div className=" rounded-none text-gray-500 max-md:text-sm">프로필 사진</div>
       <div className="flex space-x-5 px-2">
         <div>
@@ -144,12 +143,11 @@ const ProfileImage = ({ session, status, update }) => {
                 src={profileImg}
                 alt="profileImg"
                 fill
-                // width={100}
-                // height={100}
+                sizes="(max-width:200px), 300px"
               />
             </div>
           ) : (
-            <div className="w-130 h-130 defualt-profile">
+            <div className="w-32 aspect-square defualt-profile max-md:w-24">
               <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
                 <path
                   fill="rgba(0,0,0,0.2)"
@@ -191,6 +189,44 @@ const ProfileImage = ({ session, status, update }) => {
   );
 };
 
+const ProfileInfo = ({ session, status, update }) => {
+  return (
+    <section className="flex flex-col rounded-none space-y-4">
+      <p className="font-medium border-b border-black md:text-lg">프로필 정보</p>
+      <ProfileImage session={session} status={status} update={update} />
+      <ProfileName session={session} status={status} update={update} />
+    </section>
+  );
+};
+
+const SignInInfo = ({ session }) => {
+  return (
+    <section className="flex flex-col space-y-4 mb-6">
+      <p className="font-medium border-b border-black md:text-lg">가입 정보</p>
+      <div className="flex flex-col md:px-2">
+        <p className="text-gray-500 max-md:text-sm">연결 서비스</p>
+        <p className="text-gray-400 px-2 max-md:text-sm">{session?.user?.provider}</p>
+      </div>
+      <div className="flex flex-col md:px-2">
+        <p className="text-gray-500 max-md:text-sm">가입일</p>
+        <div className="flex items-center space-x-1 px-2 text-gray-400 max-md:text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+            <path
+              fill="currentColor"
+              d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
+            />
+          </svg>
+          <div>{session?.user?.createdAt ? `${formatDate(session.user.createdAt)}` : ''}</div>
+        </div>
+      </div>
+      <div className="flex flex-col md:px-2">
+        <p className="text-gray-500 max-md:text-sm">이메일</p>
+        <p className="text-gray-400 px-2 no-underline max-md:text-sm">{session?.user.email}</p>
+      </div>
+    </section>
+  );
+};
+
 export default function ProfileEdit() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
@@ -219,7 +255,6 @@ export default function ProfileEdit() {
     setIsLoading(false);
   };
 
-  console.log(session?.user ? session.user : '');
   return (
     <div className="flex flex-col max-w-screen-sm mx-auto px-10 md:items-center max-md:px-6 max-md:justify-center">
       <button className="h-12 w-auto md:hidden" onClick={() => router.back()}>
@@ -234,36 +269,10 @@ export default function ProfileEdit() {
           />
         </svg>
       </button>
-      <div className="flex flex-col w-full py-10 max-md:py-0 max-md:w-full">
-        <section className="flex flex-col rounded-none">
-          <p className="font-medium mb-4 border-b border-black md:text-lg max-md:mb-2">프로필 정보</p>
-          <ProfileImage session={session} status={status} update={update} />
-          <ProfileName session={session} status={status} update={update} />
-        </section>
-        <section className="flex flex-col space-y-2 mb-6">
-          <p className="font-medium border-b border-black md:text-lg md:mb-2">가입 정보</p>
-          <div className="flex flex-col space-y-1">
-            <p className="text-gray-500 max-md:text-sm">연결 서비스</p>
-            <p className="text-gray-400 px-2 max-md:text-sm">KAKAO</p>
-          </div>
-          <div className="flex flex-col space-y-1">
-            <p className="text-gray-500 max-md:text-sm">가입일</p>
-            <div className="flex items-center space-x-1 px-2 text-gray-400 max-md:text-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
-                <path
-                  fill="currentColor"
-                  d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
-                />
-              </svg>
-              <div>2024년 7월 31일</div>
-            </div>
-          </div>
-          <div className="flex flex-col space-y-1">
-            <p className="text-gray-500 max-md:text-sm">이메일</p>
-            <p className="text-gray-400 px-2 no-underline max-md:text-sm">{session?.user.email}</p>
-          </div>
-        </section>
-        <section className="flex flex-col">
+      <div className="flex flex-col w-full md:py-5 max-md:py-0 max-md:w-full">
+        <ProfileInfo session={session} status={status} update={update} />
+        <SignInInfo session={session} />
+        <section className="flex md:justify-end">
           <div className="flex space-x-4">
             <button
               className="flex text-gray-500 underline"

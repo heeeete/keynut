@@ -68,8 +68,8 @@ const RenderCategory = ({ category }) => {
   else mainCategory = '기타';
 
   return (
-    <div className="flex flex-1">
-      <span className="flex items-center text-gray-400 text-sm">
+    <div className="flex flex-1 items-end">
+      <span className="flex items-center text-gray-400 text-sm font-medium">
         <Link href={`/shop?categories=${~~(category / 10) ? ~~(category / 10) : 9}`}>{mainCategory}</Link>
         {category !== 9 && (
           <>
@@ -481,8 +481,8 @@ export default function RenderProduct({ id }) {
   if (error) return <div>Error loading product</div>;
   if (!data) return <div>데이터를 가져오고 있습니다...</div>;
   return (
-    <div className="max-w-screen-lg mx-auto max-md:main-768">
-      <div className="flex px-10 max-md:pb-3 max-md:px-4">
+    <div className="max-w-screen-lg mx-auto max-md:mt-12">
+      <div className="flex px-10 max-md:py-3 max-md:px-3">
         <RenderCategory category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
         <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
@@ -494,7 +494,7 @@ export default function RenderProduct({ id }) {
         )}
       </div>
       <ImageSlider images={product.images} state={product.state} />
-      <div className="p-10 space-y-6 max-md:px-4">
+      <div className="p-10 space-y-6 max-md:px-3">
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold break-all mr-4">{product.title}</p>
           <div className="flex self-end">
