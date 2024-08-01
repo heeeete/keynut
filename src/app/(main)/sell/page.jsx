@@ -75,8 +75,12 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
           </li>
         </>
       );
-    case 9:
-      return null; // 기타 카테고리는 서브카테고리가 없으므로 null 반환
+    case 4: // 모니터
+      return null;
+    case 5: // 헤드셋
+      return null;
+    case 9: // 기타
+      return null;
     default:
       return null;
   }
@@ -252,8 +256,8 @@ const RenderTitle = React.memo(({ title, setTitle }) => {
 const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }) => {
   const handleMainCategoryClick = useCallback(id => {
     setMainCategory(id);
-    if (id !== 9) setSubCategory(id * 10);
-    else setSubCategory(9);
+    if (id !== 9 && id !== 4 && id !== 5) setSubCategory(id * 10);
+    else setSubCategory(id);
   }, []);
 
   const handleSubCategoryClick = useCallback(id => {
@@ -274,6 +278,12 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
             </li>
             <li className={`p-3 ${mainCategory === 3 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(3)}>
               패드
+            </li>
+            <li className={`p-3 ${mainCategory === 4 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(4)}>
+              모니터
+            </li>
+            <li className={`p-3 ${mainCategory === 5 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(5)}>
+              헤드셋
             </li>
             <li className={`p-3 ${mainCategory === 9 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(9)}>
               기타
