@@ -1,7 +1,8 @@
 'use client';
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function Error() {
+function ErrorComponent() {
   const params = useSearchParams();
   const error = params.get('error');
 
@@ -17,4 +18,12 @@ export default function Error() {
         <p className="font-bold text-white bg-black px-2">ERROR</p>
       </div>
     );
+}
+
+export default function Error() {
+  return (
+    <Suspense>
+      <ErrorComponent />
+    </Suspense>
+  );
 }

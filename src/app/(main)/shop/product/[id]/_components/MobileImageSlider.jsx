@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { touchInit } from '../utils/touch';
 
 export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -12,8 +11,9 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
   const [clientWidth, setClientWidth] = useState(0);
   const imageShowRef = useRef(null);
   const travelRatio = useRef(0);
-  const initDragPos = useRef(0);
+  const initDragPos = useRef({ x: 0, y: 0 });
   const originOffset = useRef(0);
+  const isScrolling = useRef(undefined);
   const pathname = usePathname();
   const totalChildren = images.length;
 
@@ -25,17 +25,23 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
 
   const end = useCallback(() => {
     setIsTransitioning(false);
+    isScrolling.current = undefined;
     if (Math.abs(travelRatio.current) >= 0.2) {
       const newIdx =
         travelRatio.current > 0
           ? Math.max(currentImageIndex - 1, 0)
           : Math.min(currentImageIndex + 1, totalChildren - 1);
       setCurrentImageIndex(newIdx);
-      if (imageShowRef.current) imageShowRef.current.style.transform = `translateX(${newIdx * -clientWidth}px)`;
+      if (imageShowRef.current)
+        requestAnimationFrame(() => {
+          imageShowRef.current.style.transform = `translateX(${newIdx * -clientWidth}px)`;
+        });
       setOffset(newIdx * -clientWidth);
     } else {
       if (imageShowRef.current)
-        imageShowRef.current.style.transform = `translateX(${currentImageIndex * -clientWidth}px)`;
+        requestAnimationFrame(() => {
+          imageShowRef.current.style.transform = `translateX(${currentImageIndex * -clientWidth}px)`;
+        });
     }
     document.removeEventListener('touchmove', move);
     document.removeEventListener('touchend', end);
@@ -43,11 +49,21 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
 
   const move = useCallback(
     e => {
-      if (Math.abs(travelRatio.current) < 0.8) {
-        const travel = e.touches[0].clientX - initDragPos.current;
-        travelRatio.current = travel / clientWidth;
-        if (imageShowRef.current)
-          imageShowRef.current.style.transform = `translateX(${originOffset.current + travel}px)`;
+      const travelX = e.touches[0].clientX - initDragPos.current.x;
+      const travelY = e.touches[0].clientY - initDragPos.current.y;
+      if (isScrolling.current === undefined) isScrolling.current = Math.abs(travelY) > Math.abs(travelX);
+
+      if (isScrolling.current === false) {
+        if ((travelX > 0 && currentImageIndex === 0) || (travelX < 0 && currentImageIndex === images.length - 1))
+          return;
+        e.preventDefault();
+        if (Math.abs(travelRatio.current) < 0.8) {
+          travelRatio.current = travelX / clientWidth;
+          if (imageShowRef.current)
+            requestAnimationFrame(() => {
+              imageShowRef.current.style.transform = `translateX(${originOffset.current + travelX}px)`;
+            });
+        }
       }
     },
     [clientWidth, totalChildren, offset],
@@ -55,18 +71,19 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
 
   const startTouch = useCallback(
     e => {
+      isScrolling.current = undefined;
       setIsTransitioning(true);
       travelRatio.current = 0;
-      initDragPos.current = e.touches[0].clientX;
+      initDragPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       originOffset.current = offset;
-      document.addEventListener('touchmove', move);
+      document.addEventListener('touchmove', move, { passive: false }); // passive: false 설정
       document.addEventListener('touchend', end);
     },
     [clientWidth, totalChildren, offset],
   );
 
   useEffect(() => {
-    imageShowRef.current?.addEventListener('touchstart', startTouch);
+    imageShowRef.current?.addEventListener('touchstart', startTouch, { passive: false });
 
     return () => {
       imageShowRef.current?.removeEventListener('touchstart', startTouch);
