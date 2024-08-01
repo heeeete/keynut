@@ -49,6 +49,14 @@ const categories = [
     ],
   },
   {
+    id: 4,
+    option: '모니터',
+  },
+  {
+    id: 5,
+    option: '헤드셋',
+  },
+  {
     id: 9,
     option: '기타',
     subCategories: [],
@@ -531,6 +539,10 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
       ? '마우스'
       : category === 3
       ? '패드'
+      : category === 4
+      ? '모니터'
+      : category === 5
+      ? '헤드셋'
       : category === 9
       ? '기타'
       : '';
@@ -918,6 +930,8 @@ export default function RenderShop() {
     30: { option: '마우스패드', checked: false, parentId: 3 },
     31: { option: '장패드', checked: false, parentId: 3 },
     39: { option: '패드-기타', checked: false, parentId: 3 },
+    4: { option: '모니터', checked: false },
+    5: { option: '헤드셋', checked: false },
     9: { option: '기타', checked: false },
   });
   const [pricesState, setPricesState] = useState({
@@ -1107,7 +1121,14 @@ export default function RenderShop() {
       queryKey: ['topProducts', category],
       queryFn: () => fetchHotProducts(category),
       enabled:
-        !paramsKeyword && (category === 1 || category === 2 || category === 9 || category === 3 || category === 0),
+        !paramsKeyword &&
+        (category === 1 ||
+          category === 2 ||
+          category === 3 ||
+          category === 4 ||
+          category === 5 ||
+          category === 9 ||
+          category === 0),
       staleTime: Infinity,
     });
   };

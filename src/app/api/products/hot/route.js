@@ -19,6 +19,10 @@ export async function GET(req) {
       categories.push(20, 21, 22, 23, 29);
     } else if (categoryNum === 3) {
       categories.push(30, 31, 39);
+    } else if (categoryNum === 4) {
+      categories.push(4);
+    } else if (categoryNum === 5) {
+      categories.push(5);
     } else if (categoryNum === 9) {
       categories.push(9);
     }
