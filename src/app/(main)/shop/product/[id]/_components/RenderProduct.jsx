@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useState, useCallback, useReducer, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import ImageSlider from '@/app/(main)/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/utils/timeAgo';
@@ -13,7 +13,6 @@ import { getSession, signIn, useSession } from 'next-auth/react';
 import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
-import useProductStateMutation from '@/hooks/useProductStateMutaion';
 import initRaiseCount from '@/lib/initRaiseCount';
 import raiseProduct from '@/lib/raiseProduct';
 import deleteProduct from '@/lib/deleteProduct';
@@ -25,7 +24,7 @@ const RenderCondition = ({ condition }) => {
   return (
     <div className="flex space-x-2 justify-center items-center">
       <div className="flex  items-center space-x-2">
-        <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+        <div className="w-2 h-2 rounded-full bg-gray-400"></div>
         <span>상품상태</span>
       </div>
       <span>{conditions[condition].option}</span>
@@ -57,21 +56,28 @@ const RenderCategory = ({ category }) => {
     31: '장패드',
     39: '기타',
 
+    // 아래는 지금 필요없음 sub 카테고리 없어서
+    // 모니터
+    4: '모니터',
+    // 헤드셋
+    5: '헤드셋',
     // 기타
-    99: '기타',
+    9: '기타',
   };
-  let mainCategory = '';
+  let mainCategory = {};
 
-  if (category >= 10 && category <= 19) mainCategory = '키보드';
-  else if (category >= 20 && category <= 29) mainCategory = '마우스';
-  else if (category >= 30 && category <= 39) mainCategory = '패드';
-  else mainCategory = '기타';
+  if (category >= 10 && category <= 19) mainCategory = { key: 1, value: '키보드' };
+  else if (category >= 20 && category <= 29) mainCategory = { key: 2, value: '마우스' };
+  else if (category >= 30 && category <= 39) mainCategory = { key: 3, value: '패드' };
+  else if (category === 4) mainCategory = { key: 4, value: '모니터' };
+  else if (category === 5) mainCategory = { key: 5, value: '헤드셋' };
+  else mainCategory = { key: 9, value: '키보드' };
 
   return (
     <div className="flex flex-1 items-end">
       <span className="flex items-center text-gray-400 text-sm font-medium">
-        <Link href={`/shop?categories=${~~(category / 10) ? ~~(category / 10) : 9}`}>{mainCategory}</Link>
-        {category !== 9 && (
+        <Link href={`/shop?categories=${mainCategory.key}`}>{mainCategory.value}</Link>
+        {category !== 9 && category !== 4 && category !== 5 && (
           <>
             <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24">
               <g fill="none" fillRule="evenodd">
@@ -518,7 +524,7 @@ export default function RenderProduct({ id }) {
           <span className="text-2xl font-bold">{Number(product.price).toLocaleString()}</span>
           <span className="text-xl">원</span>
         </p>
-        <div className="flex w-full justify-between text-sm text-slate-500 font-semibold">
+        <div className="flex w-full justify-between text-sm text-gray-500 font-semibold">
           <RenderCondition condition={Number(product.condition)} />
           <div className="flex space-x-2 font-normal text-gray-400">
             <RenderTimeAgo date={product.createdAt} />
