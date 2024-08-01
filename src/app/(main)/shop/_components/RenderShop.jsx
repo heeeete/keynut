@@ -1269,7 +1269,7 @@ export default function RenderShop() {
                           >
                             <li>전체</li>
                           </button>
-                          {category.subCategories.map(sub => (
+                          {category.subCategories?.map(sub => (
                             <button
                               key={sub.id}
                               className={`filter-button ${
