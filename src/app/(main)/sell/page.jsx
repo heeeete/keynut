@@ -313,7 +313,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
       <div className="flex flex-col h-64 justify-around text-lg max-[480px]:text-base">
         <label className="flex items-center space-x-2 ">
           <input
-            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            className="relative md:hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
             type="radio"
             name="condition"
             id="1"
@@ -324,7 +324,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
         </label>
         <label className="flex items-center space-x-2">
           <input
-            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            className="relative md:hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
             type="radio"
             name="condition"
             id="2"
@@ -335,7 +335,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
         </label>
         <label className="flex items-center space-x-2">
           <input
-            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            className="relative md:hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
             type="radio"
             name="condition"
             id="3"
@@ -346,7 +346,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
         </label>
         <label className="flex items-center space-x-2">
           <input
-            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            className="relative md:hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
             type="radio"
             name="condition"
             id="4"
@@ -357,7 +357,7 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
         </label>
         <label className="flex items-center space-x-2">
           <input
-            className="relative hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
+            className="relative md:hover:radio-hover checked:radio-checked-before  appearance-none w-5 h-5  border rounded-full"
             type="radio"
             name="condition"
             id="5"
