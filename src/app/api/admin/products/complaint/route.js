@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
-import { ObjectId } from 'mongodb';
+
+export const dynamic = 'force-dynamic'; // 동적 생성 모드 설정
 
 export async function GET(req) {
   try {
