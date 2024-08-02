@@ -180,6 +180,7 @@ export async function POST(req) {
       },
     );
     revalidateTag('products');
+    revalidateTag('recentProducts');
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
     console.log(error);
@@ -256,6 +257,7 @@ export async function PUT(req) {
     const productId = formData.get('id');
     revalidateTag(productId);
     revalidateTag('products');
+    revalidateTag('recentProducts');
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.log(error);

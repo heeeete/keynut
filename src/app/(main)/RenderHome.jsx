@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import getRecentProducts from '../_lib/getRecentProducts';
+import getRecentProducts from './_lib/getRecentProducts';
 
 import { Gowun_Dodum } from 'next/font/google';
 

@@ -72,6 +72,7 @@ export async function DELETE(req, { params }) {
 
     await Promise.all(deleteUserPromises);
     revalidateTag('products');
+    revalidateTag('recentProducts');
     return NextResponse.json({ message: 'User deleted successfully' }, { status: 200 });
   } catch (error) {
     console.error('Error deleting user:', error);

@@ -13,6 +13,7 @@ export async function PUT(req, { params }) {
     await db.collection('products').updateOne({ _id: new ObjectId(id) }, { $set: { state: state } });
     revalidateTag(id);
     revalidateTag('products');
+    revalidateTag('recentProducts');
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error }, { status: 500 });
