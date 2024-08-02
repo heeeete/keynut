@@ -7,7 +7,7 @@ import getUserProducts from '@/lib/getUserProducts';
 import { useQuery } from '@tanstack/react-query';
 import ProfileProducts from '../../_components/ProfileProducts';
 import formatDate from '../../_lib/formatDate';
-import Waring from '../../_components/Waring';
+import Warning from '../../_components/Warning';
 
 const ProfileImage = ({ image }) => {
   return (
@@ -114,7 +114,7 @@ const UserProfile = React.memo(({ data, provider }) => {
 
 export default function RenderProfile() {
   const { id } = useParams();
-  if (id.length !== 24) return <Waring message={'사용자를 찾을 수 없습니다'} />;
+  if (id.length !== 24) return <Warning message={'사용자를 찾을 수 없습니다'} />;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['userProducts', id],
@@ -123,7 +123,7 @@ export default function RenderProfile() {
   });
 
   if (!isLoading && !data) {
-    return <Waring message={'사용자를 찾을 수 없습니다'} />;
+    return <Warning message={'사용자를 찾을 수 없습니다'} />;
   }
 
   return (
