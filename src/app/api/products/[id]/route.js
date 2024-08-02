@@ -124,7 +124,10 @@ export async function DELETE(req, { params }) {
     await db.collection('users').updateOne({ _id: target.userId }, { $pull: { products: new ObjectId(id) } });
     db.collection('users').updateMany({ bookmarked: new ObjectId(id) }, { $pull: { bookmarked: new ObjectId(id) } });
     db.collection('viewHistory').deleteMany({ productId: new ObjectId(id) });
+    console.log('REVALIDATE!!!!!!!!!!!!!!!!!!!!');
     revalidateTag('products');
+    revalidateTag('recentProducts');
+    console.log('REVALIDATE!!!!!!!!!!!!!!!!!!!!END');
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.log(error);
