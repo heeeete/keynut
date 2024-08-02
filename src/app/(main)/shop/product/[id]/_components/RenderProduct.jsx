@@ -19,6 +19,7 @@ import deleteProduct from '@/lib/deleteProduct';
 import conditions from '@/app/(main)/_constants/conditions';
 import DropdownMenu from '@/app/(main)/_components/DropdownMenu';
 import CustomDropdownMenu from '@/app/(main)/_components/CustomDropDownMenu';
+import Warning from '@/app/(main)/_components/Warning';
 
 const RenderCondition = ({ condition }) => {
   return (
@@ -483,7 +484,9 @@ export default function RenderProduct({ id }) {
     setComplainModal(true);
   };
 
-  if (!data && isLoading === false) return router.replace('/');
+  if (!data && isLoading === false) {
+    return <Warning message={'삭제되었거나 존재하지 않는 상품입니다.'} />;
+  }
   if (error) return <div>Error loading product</div>;
   if (!data) return <div>데이터를 가져오고 있습니다...</div>;
   return (

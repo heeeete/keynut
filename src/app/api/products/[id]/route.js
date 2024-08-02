@@ -41,6 +41,7 @@ export async function GET(req, { params }) {
     if (productWithUser[0]) return NextResponse.json(productWithUser[0], { status: '200' });
     else return NextResponse.json({ message: 'Product not found' }, { status: 404 });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ message: 'Failed to fetch product', error: error.message }, { status: 500 });
   }
 }

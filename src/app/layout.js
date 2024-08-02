@@ -1,11 +1,7 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Nav from './(main)/_components/Nav';
-import BottomNav from './(main)/_components/BottomNav/BottomNav';
-import Footer from './(main)/_components/Footer';
 import AuthProvider from '@/lib/next-auth';
 import RQProvider from './(main)/_components/RQProvider';
-import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 
