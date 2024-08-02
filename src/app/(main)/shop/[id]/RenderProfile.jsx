@@ -7,6 +7,7 @@ import getUserProducts from '@/lib/getUserProducts';
 import { useQuery } from '@tanstack/react-query';
 import ProfileProducts from '../../_components/ProfileProducts';
 import formatDate from '../../_lib/formatDate';
+import Waring from '../../_components/Waring';
 
 const ProfileImage = ({ image }) => {
   return (
@@ -60,7 +61,11 @@ const LoginDate = ({ createdAt }) => {
           d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
         />
       </svg>
-      <div>{createdAt ? `${formatDate(createdAt)}에 가입` : ''}</div>
+      {createdAt ? (
+        <div>{formatDate(createdAt)}에 가입</div>
+      ) : (
+        <div className="flex h-5 w-32 bg-gray-100 max-md:h-4"></div>
+      )}
     </div>
   );
 };
@@ -84,7 +89,7 @@ const Provider = ({ provider }) => {
           <p className="flex items-end leading-tight">로그인</p>
         </div>
       ) : (
-        ''
+        <div className="flex h-5 w-20 bg-gray-100 mt-1 max-md:h-4"></div>
       )}
     </div>
   );
@@ -109,12 +114,17 @@ const UserProfile = React.memo(({ data, provider }) => {
 
 export default function RenderProfile() {
   const { id } = useParams();
+  if (id.length !== 24) return <Waring message={'사용자를 찾을 수 없습니다'} />;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['userProducts', id],
     queryFn: () => getUserProducts(id),
     enabled: !!id,
   });
+
+  if (!isLoading && !data) {
+    return <Waring message={'사용자를 찾을 수 없습니다'} />;
+  }
 
   return (
     <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3">

@@ -78,9 +78,9 @@ const ProfileName = ({ session, status, update }) => {
           </button>
         </div>
         {isEditing ? (
-          <div className="flex flex-col text-sm text-gray-400 h-12 max-md:h-12 py-1 max-md:text-xs">
-            <p>띄어쓰기 없이 2~10자의 한글, 영어, 숫자 조합으로 입력해주세요</p>
-            <p>(변경 후 30일 내에는 변경이 불가합니다)</p>
+          <div className="flex flex-col text-sm text-gray-400 h-12 py-1 md:mb-2 max-md:text-xs">
+            <p>한글, 영어, 숫자만 사용 가능합니다 (2~10자)</p>
+            <p className="text-red-300">*변경 후 30일 내에는 변경이 불가합니다</p>
           </div>
         ) : (
           <div className="h-7 py-1 max-md:h-6"></div>
@@ -205,7 +205,11 @@ const SignInInfo = ({ session }) => {
       <p className="font-medium border-b border-black md:text-lg">가입 정보</p>
       <div className="flex flex-col md:px-2">
         <p className="text-gray-500 max-md:text-sm">연결 서비스</p>
-        <p className="text-gray-400 px-2 max-md:text-sm">{session?.user?.provider}</p>
+        {session?.user?.provider ? (
+          <p className="text-gray-400 px-2 max-md:text-sm">{session?.user?.provider}</p>
+        ) : (
+          <div className="h-5 mt-1 ml-2 w-16 bg-gray-100 max-md:h-4"></div>
+        )}
       </div>
       <div className="flex flex-col md:px-2">
         <p className="text-gray-500 max-md:text-sm">가입일</p>
@@ -216,12 +220,21 @@ const SignInInfo = ({ session }) => {
               d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
             />
           </svg>
-          <div>{session?.user?.createdAt ? `${formatDate(session.user.createdAt)}` : ''}</div>
+
+          {session?.user?.createdAt ? (
+            <div>{formatDate(session.user.createdAt)}</div>
+          ) : (
+            <div className="h-5 mt-1 w-28 bg-gray-100 max-md:h-4"></div>
+          )}
         </div>
       </div>
       <div className="flex flex-col md:px-2">
         <p className="text-gray-500 max-md:text-sm">이메일</p>
-        <p className="text-gray-400 px-2 no-underline max-md:text-sm">{session?.user.email}</p>
+        {session?.user?.email ? (
+          <p className="text-gray-400 px-2 no-underline max-md:text-sm">{session.user.email}</p>
+        ) : (
+          <div className="h-5 mt-1 ml-2 w-36 bg-gray-100 max-md:h-4"></div>
+        )}
       </div>
     </section>
   );

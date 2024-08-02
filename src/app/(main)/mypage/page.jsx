@@ -56,11 +56,7 @@ const MyProfile = React.memo(({ session, update, status }) => {
             <div className="flex flex-1 text-lg max-md:text-base">{session.user.nickname}</div>
           ) : (
             <div className="flex flex-1">
-              <div className="h-6 w-32 bg-gray-100 relative rounded-sm">
-                <div className="absolute top-0 left-0 h-full w-full animate-loading">
-                  <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
-                </div>
-              </div>
+              <div className="h-5 mb-2 w-32 bg-gray-100 relative rounded-sm max-md:mb-1"></div>
             </div>
           )}
           <div className="flex items-center space-x-1 text-sm text-gray-400 max-md:text-xs">
@@ -70,7 +66,11 @@ const MyProfile = React.memo(({ session, update, status }) => {
                 d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
               />
             </svg>
-            <div>{session?.user?.createdAt ? `${formatDate(session?.user?.createdAt)}에 가입` : ''}</div>
+            {session?.user?.createdAt ? (
+              <div>{formatDate(session?.user?.createdAt)}에 가입</div>
+            ) : (
+              <div className="flex h-4 w-32 bg-gray-100"></div>
+            )}
           </div>
         </div>
         <div className="flex space-x-2">

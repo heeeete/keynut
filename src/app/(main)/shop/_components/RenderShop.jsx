@@ -388,7 +388,7 @@ const Product = ({ product }) => {
           sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
         />
         {product.state === 2 ? (
-          <div className="absolute left-0 top-0 z-10 rounded-tl rounded-br px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
+          <div className="absolute left-1 top-1 z-10 rounded px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
             <p className="font-semibold text-white text-sm max-md:text-xs">예약중</p>
           </div>
         ) : (
@@ -586,8 +586,8 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
                       sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"
                     />
                     {product.state === 2 ? (
-                      <div className="absolute left-0 top-0 z-10 rounded-tl rounded-br px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
-                        <p className="font-semibold text-white text-sm max-md:text-xxs">예약중</p>
+                      <div className="absolute left-1 top-1 z-10 rounded px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
+                        <p className="font-semibold text-white text-xs max-md:text-xxs">예약중</p>
                       </div>
                     ) : (
                       ''
@@ -1003,13 +1003,13 @@ export default function RenderShop() {
       });
       if (paramsCategories.length > 0) {
         paramsCategories.forEach(e => {
-          newCategoriesState[e].checked = true;
+          if (newCategoriesState[e]) newCategoriesState[e].checked = true;
         });
       }
 
       if (paramsPrices.length > 0) {
         paramsPrices.forEach(e => {
-          newPricesState[e].checked = true;
+          if (newPricesState[e]) newPricesState[e].checked = true;
         });
       }
       setCategoriesState(newCategoriesState);

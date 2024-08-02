@@ -164,7 +164,7 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
               sizes="(max-width:768px) 200px,(max-width:1280px) 20vw, (max-width:1500px) 20vw, 250px"
             />
           </Link>
-          {product.state === 0 || product === 2 ? (
+          {product.state === 0 || product.state === 2 ? (
             <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
               <p className="font-semibold text-white text-lg max-md:text-base">
                 {product.state === 0 ? '판매 완료' : '예약 중'}

@@ -3,6 +3,7 @@ const getUserProducts = async id => {
     method: 'GET',
   });
   if (!res.ok) {
+    if (res.status === 404) return null;
     console.error('API 요청 실패:', res.status, res.statusText);
     throw new Error('Failed to fetch products');
   }
