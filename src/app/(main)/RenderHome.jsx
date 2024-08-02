@@ -14,7 +14,7 @@ const JustIn = () => {
   const { data, error, isLoading } = useQuery({
     queryKey: ['recentProducts'],
     queryFn: getRecentProducts,
-    staleTime: Infinity,
+    staleTime: 1000 * 30,
   });
 
   return (

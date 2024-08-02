@@ -3,7 +3,7 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { Suspense } from 'react';
 import getRecentProducts from './_lib/getRecentProducts';
 
-export default async function Home() {
+export default async function Page() {
   const queryClient = new QueryClient();
   try {
     await queryClient.prefetchQuery({ queryKey: ['recentProducts'], queryFn: getRecentProducts });
