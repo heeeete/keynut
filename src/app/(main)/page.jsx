@@ -1,4 +1,4 @@
-import RenderHome from './_components/renderHome';
+import RenderHome from './_components/RenderHome';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import getRecentProducts from './_lib/getRecentProducts';
