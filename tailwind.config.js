@@ -206,7 +206,7 @@ module.exports = {
         '.search-bar-md': {
           display: 'flex',
           borderRadius: '0',
-          borderBottom: '1px solid black',
+          borderBottom: '2px solid black',
           width: '450px',
           padding: '4px',
           // backgroundColor: 'blue',

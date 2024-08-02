@@ -1,13 +1,14 @@
 import RenderProfile from './RenderProfile';
 import { Metadata } from 'next';
 import getUserProfile from '@/lib/getUserProfile';
+import Waring from '../../_components/Waring';
 
 export async function generateMetadata({ params }) {
   const { id } = params;
   const data = await getUserProfile(id);
-  console.log(data);
+  // console.log(data);
   return {
-    title: `${data.nickname}ㅣKEYNUT`,
+    title: data ? `${data.nickname}ㅣKEYNUT` : 'KEYNUT',
     // openGraph: {
     //   title: `${data.nickname}ㅣKEYNUT`,
     //   images: [

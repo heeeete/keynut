@@ -44,7 +44,7 @@ const JustIn = () => {
                 className="rounded object-cover"
               />
               {product.state === 2 ? (
-                <div className="absolute left-0 top-0 z-10 rounded-tl rounded-br px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
+                <div className="absolute left-1 top-1 z-10 rounded px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
                   <p className="font-semibold text-white text-sm max-md:text-xs">예약중</p>
                 </div>
               ) : (
