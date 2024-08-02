@@ -15,10 +15,10 @@ export async function generateMetadata({ params }) {
     description: product ? `${product.description}` : '다양한 전자기기를 한눈에',
     openGraph: {
       title: product ? `${product.title}ㅣKEYNUT` : 'KEYNUT',
-      description: product ? `${product.description}` : '다양한 전자기기를 한눈에',
+      description: product ? `${product.description}` : '상품을 찾을 수 없습니다.',
       images: [
         {
-          url: product ? product.images[0] : '/keynut.png',
+          url: product ? product.images[0] : `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`,
           width: 400,
           height: 400,
         },
