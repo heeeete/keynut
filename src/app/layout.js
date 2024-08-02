@@ -8,6 +8,18 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata = {
   title: 'KEYNUT',
   description: '키보드, 마우스, 헤드셋, 모니터등 다양한 전자기기를 한눈에',
+  openGraph: {
+    title: 'KEYNUT',
+    description: '키보드, 마우스, 헤드셋, 모니터등 다양한 전자기기를 한눈에',
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`, // 이미지의 절대 URL
+        width: 100,
+        height: 100,
+        alt: 'KEYNUT Logo',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }) {
