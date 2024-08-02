@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverActions: true,
-  },
   reactStrictMode: false,
   images: {
     domains: ['keynut-bucket.s3.ap-northeast-2.amazonaws.com'],
