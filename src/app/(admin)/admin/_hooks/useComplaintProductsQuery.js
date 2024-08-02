@@ -1,4 +1,3 @@
-import getProducts from '../_lib/getProducts';
 import { useQuery } from '@tanstack/react-query';
 
 const useComplaintProductsQuery = (page = 1, PAGE_SIZE) => {
