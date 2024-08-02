@@ -7,7 +7,7 @@ export async function GET(req) {
   try {
     // const session = await getUserSession();
     // if (!session.admin) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
-    const { searchParams } = new URL(req.url, process.env.NEXTAUTH_URL);
+    const { searchParams } = new URL(req.url, process.env.NEXT_PUBLIC_BASE_URL);
     const offset = parseInt(searchParams.get('offset')) || 0;
     const limit = parseInt(searchParams.get('limit')) || 10;
     const keyword = searchParams.get('keyword');
