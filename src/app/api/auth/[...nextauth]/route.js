@@ -178,7 +178,7 @@ export const authOptions = {
       clientSecret: process.env.KAKAO_CLIENT_SECRET,
       authorization: {
         params: {
-          redirect_uri: process.env.NEXT_PUBLIC_BASE_URL + '/api/auth/callback/kakao',
+          redirect_uri: process.env.NEXTAUTH_URL + '/api/auth/callback/kakao',
         },
       },
     }),
