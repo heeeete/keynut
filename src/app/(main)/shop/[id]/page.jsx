@@ -1,7 +1,6 @@
 import RenderProfile from './RenderProfile';
 import { Metadata } from 'next';
 import getUserProfile from '@/lib/getUserProfile';
-import Waring from '../../_components/Waring';
 
 export async function generateMetadata({ params }) {
   const { id } = params;
