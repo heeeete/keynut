@@ -2,7 +2,7 @@ const getRecentProducts = async () => {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const res = await fetch(`${baseUrl}/api/products/recent`, {
-      next: { tags: ['products'] },
+      next: { tags: ['recentProducts'] },
     });
     if (!res.ok) {
       console.error('API 요청 실패:', res.status, res.statusText);
