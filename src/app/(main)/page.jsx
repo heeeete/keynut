@@ -6,7 +6,7 @@ import getRecentProducts from './_lib/getRecentProducts';
 export default async function Home() {
   const queryClient = new QueryClient();
   try {
-    await queryClient.prefetchQuery({ queryKey: ['recentProducts'], queryFn: getRecentProducts, staleTime: 60 * 1000 });
+    await queryClient.prefetchQuery({ queryKey: ['recentProducts'], queryFn: getRecentProducts });
     console.log('recent Products prefetchQuery 실행');
   } catch (error) {
     console.error('recent Products prefetchQuery 실행 중 에러 발생:', error);
