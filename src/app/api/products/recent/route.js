@@ -1,13 +1,13 @@
 import { connectDB } from '@/lib/mongodb';
-import { create } from 'domain';
 import { NextResponse } from 'next/server';
 
-const client = await connectDB;
-const db = client.db(process.env.MONGODB_NAME);
-const products = db.collection('products');
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const client = await connectDB;
+    const db = client.db(process.env.MONGODB_NAME);
+    const products = db.collection('products');
     const recentProducts = await products
       .find({ $or: [{ state: 1 }, { state: 2 }] })
       .sort({ createdAt: -1 })

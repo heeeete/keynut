@@ -9,6 +9,7 @@ const getRecentProducts = async () => {
       throw new Error('Failed to fetch products');
     }
     const data = await res.json();
+    console.log('HELLO = ', data);
     return data;
   } catch (error) {
     console.error('getRecentProducts 함수 실행 중 에러 발생:', error);
