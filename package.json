@@ -9,7 +9,7 @@
     "hyunjki": "next dev --hostname 10.18.225.54",
     "tt": "next dev --hostname 172.30.1.9",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --hostname 172.30.1.32",
     "lint": "next lint"
   },
   "dependencies": {
@@ -18,7 +18,7 @@
     "@next-auth/mongodb-adapter": "^1.1.3",
     "@tanstack/react-query": "^5.45.0",
     "mongodb": "^5.9.2",
-    "next": "14.2.3",
+    "next": "^14.2.5",
     "next-auth": "^4.24.7",
     "photoswipe": "^5.4.4",
     "plaiceholder": "^3.0.0",
