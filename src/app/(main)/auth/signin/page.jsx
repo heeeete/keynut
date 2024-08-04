@@ -38,7 +38,7 @@ export default function SignIn() {
   const isProvidersLoaded = Object.keys(providers).length > 0;
 
   return (
-    <div className=" bg-white flex flex-col items-center justify-center h-70vh max-md:fixed max-md:top-0 max-md:left-0 max-md:z-50 max-md:w-100vw max-md:h-100vh ">
+    <div className=" bg-white flex flex-co min-h-70vh items-center justify-center max-md:fixed max-md:w-d-screen max-md:top-0 max-md:left-0 max-md:z-50 ">
       <button className="fixed top-4 left-4 md:hidden" onClick={() => router.back()}>
         <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
           <path
@@ -51,11 +51,11 @@ export default function SignIn() {
           />
         </svg>
       </button>
-      <div className="max-md:fixed max-md:top-1/2 max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2 flex flex-col gap-y-3 p-2">
+      <div className=" max-md:flex max-md:items-center max-md:fixed max-md:top-1/2 max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2 flex flex-col gap-y-3 p-2">
         <Link
           href={'/'}
           onClick={e => {}}
-          className={`${title.className} flex text-3xl justify-center cursor-pointer mb-4 md:hidden`}
+          className={`${title.className} absolute -top-14 flex text-3xl justify-center cursor-pointer mb-4 md:hidden`}
         >
           KEYNUT
         </Link>

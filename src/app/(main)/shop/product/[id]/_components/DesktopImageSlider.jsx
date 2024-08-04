@@ -27,7 +27,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
   };
 
   return (
-    <div className="flex max-w-screen-xl mx-auto flex-col items-center justify-center">
+    <div className="relative flex max-w-screen-xl mx-auto flex-col items-center justify-center">
       <div
         onClick={() => initPhotoSwipe(currentImageIndex)}
         className="flex relative w-full max-w-lg aspect-square items-center group bg-gray-500 rounded"
@@ -82,7 +82,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
         )}
       </div>
       {images && images.length > 1 && (
-        <div className="flex space-x-3 mt-3">
+        <div className="absolute bottom-3  flex space-x-3">
           {images.map((_, idx) => (
             <button
               className={`w-3 h-3 rounded-full border ${currentImageIndex === idx ? 'bg-gray-400' : 'bg-white'}`}

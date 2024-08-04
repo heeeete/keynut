@@ -4,7 +4,7 @@ const fetchHotProducts = async category => {
     : `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/hot`;
   const res = await fetch(url, {
     next: {
-      revalidate: 5 * 60,
+      revalidate: 60,
     },
   });
   if (!res.ok) {

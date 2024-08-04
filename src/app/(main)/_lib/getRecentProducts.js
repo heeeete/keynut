@@ -1,5 +1,6 @@
 const getRecentProducts = async () => {
   try {
+    console.log('recent Products prefetchQuery 실행');
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const res = await fetch(`${baseUrl}/api/products/recent`, {
       next: { tags: ['products'] },
@@ -9,10 +10,9 @@ const getRecentProducts = async () => {
       throw new Error('Failed to fetch products');
     }
     const data = await res.json();
-    console.log('HELLO = ', data);
     return data;
   } catch (error) {
-    console.error('getRecentProducts 함수 실행 중 에러 발생:', error);
+    console.error('recent Products prefetchQuery 실행 중 에러 발생:', error);
     throw error;
   }
 };

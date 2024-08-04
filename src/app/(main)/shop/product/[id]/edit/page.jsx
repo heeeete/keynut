@@ -7,6 +7,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
+import Loading from '@/app/(main)/_components/Loading';
+import Link from 'next/link';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   switch (mainCategory) {
@@ -420,22 +422,56 @@ const RenderPriceInput = React.memo(({ price, setPrice }) => {
   );
 });
 
-const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl }) => {
+const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isValidOpenChat, setIsValidOpenChat }) => {
+  const onChangeHandler = value => {
+    setOpenChatUrl(value);
+    if (value && !value.startsWith('https://open.kakao.com/')) setIsValidOpenChat(false);
+    else setIsValidOpenChat(true);
+  };
+
   return (
-    <div className="mt-10 max-w-96 border-b">
-      <div className="flex items-end my-3">
-        <div className="font-medium text-xl">오픈채팅방</div>
-        <div className="text-sm">(선택)</div>
+    <>
+      <div className="mt-10 max-w-lg border-b">
+        <div className="flex items-end my-3 justify-between">
+          <div className="flex items-end">
+            <div className="font-medium text-xl max-[480px]:text-base">오픈채팅방</div>
+            <div className="text-sm">(선택)</div>
+          </div>
+          <Link
+            href="/notices/open-chat-guide"
+            target="_blank"
+            className="flex justify-center items-center px-1 rounded border bg-gray-100 text-gray-400 text-sm font-semibold"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+              <path
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m5 12l5 5L20 7"
+              />
+            </svg>
+            가이드
+          </Link>
+        </div>
+        <input
+          type="text"
+          value={openChatUrl}
+          maxLength={50}
+          onChange={e => onChangeHandler(e.target.value)}
+          className="w-full outline-none no-underline text-xl max-[480px]:text-base"
+          placeholder="카카오톡의 오픈 채팅방을 개설하여 주소를 입력해주세요."
+        />
       </div>
-      <input
-        type="text"
-        value={openChatUrl}
-        maxLength={50}
-        onChange={e => setOpenChatUrl(e.target.value)}
-        className="w-full outline-none no-underline text-xl "
-        placeholder="카카오톡의 오픈채팅방을 개설하여 주소를 입력해주세요."
-      />
-    </div>
+      {!isValidOpenChat && (
+        <div className="text-xs text-gray-400">
+          <p>올바르지 않은 오픈 채팅방 주소입니다. 올바른 주소를 입력해주세요.</p>
+          <p>예: https://open.kakao.com/o/sBsuGODg</p>
+          <p className="text-red-400 font-semibold">사용하지 않을 경우, 입력란을 비워주세요.</p>
+        </div>
+      )}
+    </>
   );
 });
 
@@ -514,6 +550,7 @@ export default function Edit() {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [openChatUrl, setOpenChatUrl] = useState('');
   const [tags, setTags] = useState([]);
+  const [isValidOpenChat, setIsValidOpenChat] = useState(true);
   const fileInputRef = useRef(null);
   const router = useRouter();
   const { data: session, update, status } = useSession();
@@ -621,6 +658,7 @@ export default function Edit() {
 
   return (
     <div className="max-w-screen-xl px-10 mx-auto max-md:px-2 max-md:main-768">
+      {uploadLoading && <Loading />}
       <RenderImageUploadButton
         fileInputRef={fileInputRef}
         uploadImages={uploadImages}
@@ -645,7 +683,12 @@ export default function Edit() {
       </div>
 
       <RenderDescriptionInput description={description} setDescription={setDescription} />
-      <RenderOpenChatUrlInput openChatUrl={openChatUrl} setOpenChatUrl={setOpenChatUrl} />
+      <RenderOpenChatUrlInput
+        openChatUrl={openChatUrl}
+        setOpenChatUrl={setOpenChatUrl}
+        isValidOpenChat={isValidOpenChat}
+        setIsValidOpenChat={setIsValidOpenChat}
+      />
       <RenderPriceInput price={price} setPrice={setPrice} />
 
       <div className="w-full flex justify-end">
