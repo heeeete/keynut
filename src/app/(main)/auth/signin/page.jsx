@@ -59,7 +59,7 @@ export default function SignIn() {
         >
           KEYNUT
         </Link>
-        {['kakao', 'google'].map(providerId => (
+        {['kakao', 'naver'].map(providerId => (
           <button
             key={providerId}
             onClick={isProvidersLoaded ? () => signIn(providerId, { callbackUrl }) : null}
