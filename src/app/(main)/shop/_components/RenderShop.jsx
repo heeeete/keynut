@@ -202,7 +202,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
     localStorage.setItem('recentSearches', JSON.stringify([]));
   };
   return (
-    <div ref={searchContainerRef} className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col">
+    <div ref={searchContainerRef} className="search-bar-container-md  max-md:search-bar-container-maxmd flex-col ">
       <div className="max-md:search-bar-maxmd max-md:px">
         <div className="search-bar-md max-md:search-bar-maxmd">
           <form className="flex w-450 max-md:w-full items-center" onSubmit={handleSearch}>
@@ -1153,7 +1153,11 @@ export default function RenderShop() {
           )}
         </div>
 
-        <div className="flex items-start w-full min-h-60vh md:max-w-screen-xl md:mx-auto md:px-10 max-md:flex-col max-md:min-h-96">
+        <div
+          className={`flex items-start w-full min-h-60vh md:max-w-screen-xl md:mx-auto md:px-10 max-md:flex-col ${
+            top?.length ? 'max-md:min-h-96' : 'max-md:min-h-70vh'
+          }`}
+        >
           <div
             className={`sticky flex bg-white md:mt-5 md:w-48 md:z-30 md:top-34 md:flex-col md:h-full max-md:z-50 max-md:top-14 max-md:w-full max-md:border-b max-md:p-3 max-md:items-center`}
           >
