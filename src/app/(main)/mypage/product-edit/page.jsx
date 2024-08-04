@@ -16,23 +16,7 @@ import ProductEditSkeleton from '../_components/ProductEditSkeleton';
 import timeAgo from '@/utils/timeAgo';
 import DropdownMenu from '../../_components/DropdownMenu';
 
-const UpButton = ({ id, state, router, invalidateFilters }) => {
-  const [raiseCount, setRaiseCount] = useState(0);
-  const [upModal, setUpModal] = useState(false);
-  const fetchRaiseCount = initRaiseCount(setRaiseCount);
-  const raiseHandler = async () => {
-    await raiseProduct(id, () => {
-      router.refresh();
-      invalidateFilters();
-      fetchRaiseCount();
-      alert(`최상단으로 UP!\n${raiseCount - 1}회 사용가능`);
-      setUpModal(false);
-    });
-  };
-  useEffect(() => {
-    fetchRaiseCount();
-  }, []);
-
+const UpButton = ({ state, setUpModal }) => {
   return (
     <>
       <button
@@ -46,14 +30,6 @@ const UpButton = ({ id, state, router, invalidateFilters }) => {
       >
         up
       </button>
-      {upModal && (
-        <Modal
-          message={raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.'}
-          subMessage={raiseCount ? `사용 시 1회 차감됩니다.` : ''}
-          modalSet={setUpModal}
-          yesCallback={raiseCount ? raiseHandler : null}
-        />
-      )}
     </>
   );
 };
@@ -141,8 +117,19 @@ const SettingButton = ({ id, router, invalidateFilters, refetch, setShowModal })
   );
 };
 
-const Product = ({ product, router, invalidateFilters, refetch }) => {
+const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount, raiseCount }) => {
   const [showModal, setShowModal] = useState(false);
+  const [upModal, setUpModal] = useState(false);
+
+  const raiseHandler = async () => {
+    await raiseProduct(product._id, () => {
+      router.refresh();
+      invalidateFilters();
+      fetchRaiseCount();
+      alert(`최상단으로 UP!\n${raiseCount - 1}회 사용가능`);
+      setUpModal(false);
+    });
+  };
 
   const deleteHandler = useCallback(async () => {
     await deleteProduct(product._id, () => {
@@ -155,28 +142,30 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
     <>
       <div className="flex space-x-3 border p-3 rounded relative mb-3 max-md:border-0 max-md:border-b max-md:border-gray-100 max-md:mb-0 max-md:py-4">
         <div className="w-28 aspect-square relative bg-gray-100 max-md:w-24">
-          <Link href={`/shop/product/${product._id}`}>
+          <Link href={`/shop/product/${product._id}`} className="after_selling">
             <Image
-              className="rounded object-cover"
+              className="rounded object-cover relative"
               src={product.images[0]}
               alt={product._id}
               fill
               sizes="(max-width:768px) 200px,(max-width:1280px) 20vw, (max-width:1500px) 20vw, 250px"
             />
+            {product.state === 0 || product.state === 2 ? (
+              <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
+                <p className="font-semibold text-white text-lg max-md:text-base">
+                  {product.state === 0 ? '판매 완료' : '예약 중'}
+                </p>
+              </div>
+            ) : (
+              ''
+            )}
           </Link>
-          {product.state === 0 || product.state === 2 ? (
-            <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-              <p className="font-semibold text-white text-lg max-md:text-base">
-                {product.state === 0 ? '판매 완료' : '예약 중'}
-              </p>
-            </div>
-          ) : (
-            ''
-          )}
         </div>
         <div className="flex flex-col justify-center flex-1">
           <div className="flex justify-between gap-4">
-            <p className="break-all line-clamp-1">{product.title}</p>
+            <Link href={`/shop/product/${product._id}`} className="break-all line-clamp-1">
+              {product.title}
+            </Link>
             <SettingButton
               id={product._id}
               router={router}
@@ -192,7 +181,7 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
           <div className="flex justify-between items-end">
             <div className="flex space-x-2 text-sm max-md:space-x-1">
               <DropdownMenu state={product.state} id={product._id} />
-              <UpButton id={product._id} state={product.state} router={router} invalidateFilters={invalidateFilters} />
+              <UpButton state={product.state} setUpModal={setUpModal} />
               <div className="flex  space-x-2 max-md:hidden">
                 <ModifyButton id={product._id} />
                 <DeleteButton
@@ -224,6 +213,14 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
         </div>
       </div>
       {showModal ? <Modal message={'삭제하시겠습니까?'} yesCallback={deleteHandler} modalSet={setShowModal} /> : ''}
+      {upModal && (
+        <Modal
+          message={raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.'}
+          subMessage={raiseCount ? `사용 시 1회 차감됩니다.` : ''}
+          modalSet={setUpModal}
+          yesCallback={raiseCount ? raiseHandler : null}
+        />
+      )}
     </>
   );
 };
@@ -231,6 +228,9 @@ const Product = ({ product, router, invalidateFilters, refetch }) => {
 export default function ProductEdit() {
   const { data: session, status } = useSession();
   const [productState, setProductState] = useState(3);
+
+  const [raiseCount, setRaiseCount] = useState(0);
+  const fetchRaiseCount = initRaiseCount(setRaiseCount);
   const router = useRouter();
   const invalidateFilters = useInvalidateFiltersQuery();
   const { data, isLoading, error, refetch } = useQuery({
@@ -239,7 +239,9 @@ export default function ProductEdit() {
     enabled: status === 'authenticated' && !!session?.user?.id,
   });
 
-  // console.log(isLoading);
+  useEffect(() => {
+    fetchRaiseCount();
+  }, []);
 
   return (
     <div className="flex justify-start flex-col max-w-screen-lg mx-auto px-10 max-md:px-0 max-md:mt-12 md:min-h-70vh">
@@ -287,7 +289,14 @@ export default function ProductEdit() {
             data.userProducts.length ? (
               data.userProducts.map((product, idx) => (
                 <Fragment key={idx}>
-                  <Product product={product} router={router} invalidateFilters={invalidateFilters} refetch={refetch} />
+                  <Product
+                    product={product}
+                    router={router}
+                    invalidateFilters={invalidateFilters}
+                    refetch={refetch}
+                    raiseCount={raiseCount}
+                    fetchRaiseCount={fetchRaiseCount}
+                  />
                 </Fragment>
               ))
             ) : (
@@ -306,7 +315,14 @@ export default function ProductEdit() {
               .filter(a => a.state === productState)
               .map((product, idx) => (
                 <Fragment key={idx}>
-                  <Product product={product} router={router} invalidateFilters={invalidateFilters} refetch={refetch} />
+                  <Product
+                    product={product}
+                    router={router}
+                    invalidateFilters={invalidateFilters}
+                    refetch={refetch}
+                    raiseCount={raiseCount}
+                    fetchRaiseCount={fetchRaiseCount}
+                  />
                 </Fragment>
               ))
           ) : (
