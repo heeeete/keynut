@@ -28,7 +28,7 @@ const RenderCondition = ({ condition }) => {
         <div className="w-2 h-2 rounded-full bg-gray-400"></div>
         <span>상품상태</span>
       </div>
-      <span>{conditions[condition].option}</span>
+      <span>{conditions[condition]?.option}</span>
     </div>
   );
 };
@@ -107,7 +107,7 @@ const RenderBookMark = ({ bookmarked }) => {
       <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 32 32">
         <path fill="currentColor" d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
-      <p>{bookmarked.length}</p>
+      <p>{bookmarked?.length}</p>
     </div>
   );
 };
@@ -224,7 +224,7 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
 const RenderHashTag = ({ product }) => {
   return (
     <div className="flex text-gray-500 flex-wrap">
-      {product.tags.map((e, idx) => (
+      {product.tags?.map((e, idx) => (
         <Link href={`/shop?keyword=${encodeURIComponent(e)}`} key={idx} className="flex items-center mr-3">
           <span>{e}</span>
         </Link>
@@ -246,7 +246,7 @@ const IsWriter = ({ id, state, setSettingModal }) => {
     <>
       <div className="flex space-x-2 flex-nowrap whitespace-nowrap items-center justify-center">
         <button
-          className="align-text-top items-center p-2 rounded max-[480px]:hidden"
+          className="align-text-top items-center rounded max-[480px]:hidden"
           onClick={e => {
             setSettingModal(true);
           }}
@@ -259,7 +259,7 @@ const IsWriter = ({ id, state, setSettingModal }) => {
   );
 };
 
-const SettingModal = ({ id, setSettingModal, setDeleteModal, setRaiseCount, setUpModal, state }) => {
+const SettingModal = ({ id, setSettingModal, setDeleteModal, setUpModal, state }) => {
   const { data: session } = useSession();
 
   const openUpModal = () => {
@@ -487,15 +487,16 @@ export default function RenderProduct({ id }) {
   if (!data && isLoading === false) {
     return <Warning message={'삭제되었거나 존재하지 않는 상품입니다.'} />;
   }
+  // if (status === 'loading') return;
   if (error) return <div>Error loading product</div>;
-  if (!data) return <div>데이터를 가져오고 있습니다...</div>;
+  if (!data || !product) return <div>데이터를 가져오고 있습니다...</div>;
   return (
     <div className="max-w-screen-lg mx-auto max-md:mt-12">
-      <div className="flex px-10 max-md:py-3 max-md:px-3">
+      <div className="flex px-10 h-6 max-md:py-3 max-md:px-3">
         <RenderCategory category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
         <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
-        {!writer && (
+        {!writer && status !== 'loading' && (
           <button onClick={onClickComplain} className="flex items-center h-6 space-x-1">
             <img src="/product/complain.svg" width={20} height={20} alt="complain" />
             <p className="flex flex-nowrap whitespace-nowrap h-5 text-gray-500 max-md:hidden">신고하기</p>
@@ -506,20 +507,22 @@ export default function RenderProduct({ id }) {
       <div className="p-10 space-y-6 max-md:px-3">
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold break-all mr-4">{product.title}</p>
-          <div className="flex self-end">
-            {writer || session?.admin ? (
-              <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
-            ) : (
-              <>
-                <OpenChatLink url={product.openChatUrl} />
-                <RenderBookmarkButton
-                  productId={id}
-                  bookmarked={product.bookmarked}
-                  session={session}
-                  queryClient={queryClient}
-                />
-              </>
-            )}
+          <div className="flex self-end h-8">
+            {status !== 'loading' ? (
+              writer || session?.admin ? (
+                <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
+              ) : (
+                <>
+                  <OpenChatLink url={product.openChatUrl} />
+                  <RenderBookmarkButton
+                    productId={id}
+                    bookmarked={product.bookmarked}
+                    session={session}
+                    queryClient={queryClient}
+                  />
+                </>
+              )
+            ) : null}
           </div>
         </div>
         <RenderHashTag product={product} />
@@ -552,7 +555,6 @@ export default function RenderProduct({ id }) {
           id={id}
           session={session}
           setSettingModal={setSettingModal}
-          setRaiseCount={setRaiseCount}
           setDeleteModal={setDeleteModal}
           setUpModal={setUpModal}
           state={product.state}

@@ -1,5 +1,3 @@
-import { signIn } from 'next-auth/react';
-
 const getUserProfile = async id => {
   if (id.length !== 24) return null;
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/${id}/profile`, {
