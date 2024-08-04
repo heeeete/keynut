@@ -3,7 +3,7 @@ import { connectDB } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 
-async function kakaoUnlink(access_token) {
+async function kakaoUnlink(access_token, refresh_token) {
   const res = await fetch('https://kapi.kakao.com/v1/user/unlink', {
     method: 'POST',
     headers: {
@@ -18,13 +18,15 @@ async function kakaoUnlink(access_token) {
   }
 }
 
-async function naverUnlink(access_token) {
+async function naverUnlink(access_token, refresh_token) {
   const res = await fetch(
     `https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=${process.env.NAVER_CLIENT_ID}&client_secret=${process.env.NAVER_CLIENT_SECRET}&access_token=${access_token}`,
     {
       method: 'POST',
     },
   );
+  if (res.status === 401) {
+  }
 
   const data = await res.json();
 
@@ -35,22 +37,21 @@ async function naverUnlink(access_token) {
   console.log(data);
 }
 
-export async function POST() {
+export async function POST(req) {
   try {
-    const session = await getUserSession();
-    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
+    const { userId } = await req.json();
 
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
-    const { provider, access_token } = await db
+    const { provider, access_token, refresh_token } = await db
       .collection('accounts')
-      .findOne({ userId: new ObjectId(session.user.id) });
+      .findOne({ userId: new ObjectId(userId) });
 
-    if (provider === 'kakao') await kakaoUnlink(access_token);
-    else if (provider === 'naver') await naverUnlink(access_token);
+    if (provider === 'kakao') await kakaoUnlink(access_token, refresh_token);
+    else if (provider === 'naver') await naverUnlink(access_tokenm, refresh_token);
     // else if (provider === 'google') await googleUnlink(access_token);
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/${session.user.id}`, { method: 'DELETE' });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/${userId}`, { method: 'DELETE' });
     if (!res.ok) {
       const error = await res.json();
       return NextResponse.json(error, { status: res.status });

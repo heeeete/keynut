@@ -315,6 +315,7 @@ export default function ProfileEdit() {
   const [isLoading, setIsLoading] = useState(false);
   const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
   const invalidateFilters = useInvalidateFiltersQuery();
+  console.log(session);
 
   const onClickWithdrawal = async () => {
     setWithdrawalModalStatus(false);
@@ -322,7 +323,12 @@ export default function ProfileEdit() {
 
     const res = await fetch('/api/unlink', {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: session.user.id }),
     });
+
     if (!res.ok) {
       console.log(await res.json());
       alert('회원 탈퇴 처리에 실패했습니다. 다시 로그인 후 시도합니다.');
