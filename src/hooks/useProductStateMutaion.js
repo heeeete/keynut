@@ -28,6 +28,7 @@ const useProductStateMutation = () => {
         ...old,
         state: state,
       }));
+      console.log('MUTAION');
       return { previousProduct };
     },
     onError: (err, variables, context) => {

@@ -38,7 +38,7 @@ export default function SignIn() {
   const isProvidersLoaded = Object.keys(providers).length > 0;
 
   return (
-    <div className=" bg-white flex flex-co min-h-70vh items-center justify-center max-md:fixed max-md:w-d-screen max-md:top-0 max-md:left-0 max-md:z-50 ">
+    <div className=" bg-white flex flex-co min-h-70vh items-center justify-center max-md:fixed max-md:w-screen max-md:top-0 max-md:left-0 max-md:z-50 ">
       <button className="fixed top-4 left-4 md:hidden" onClick={() => router.back()}>
         <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
           <path
