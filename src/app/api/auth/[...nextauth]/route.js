@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import KakaoProvider from 'next-auth/providers/kakao';
-import GoogleProvider from 'next-auth/providers/google';
+// import GoogleProvider from 'next-auth/providers/google';
+import NaverProvider from 'next-auth/providers/naver';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import { connectDB } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
@@ -182,17 +183,26 @@ export const authOptions = {
         },
       },
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    NaverProvider({
+      clientId: process.env.NAVER_CLIENT_ID,
+      clientSecret: process.env.NAVER_CLIENT_SECRET,
       authorization: {
         params: {
-          scope: 'email', // 'profile' 범위를 제거하고 'email' 범위만 사용
-          access_type: 'offline',
-          prompt: 'consent',
+          redirect_uri: process.env.NEXTAUTH_URL + '/api/auth/callback/naver',
         },
       },
     }),
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    //   authorization: {
+    //     params: {
+    //       scope: 'email', // 'profile' 범위를 제거하고 'email' 범위만 사용
+    //       access_type: 'offline',
+    //       prompt: 'consent',
+    //     },
+    //   },
+    // }),
   ],
   session: {
     strategy: 'jwt',
@@ -217,6 +227,7 @@ export const authOptions = {
       const db = client.db(process.env.MONGODB_NAME);
 
       if (user) {
+        console.log('===========', user);
         delete user.products;
         token.user = user;
         if (user.email === process.env.ADMIN_EMAIL) token.admin = true;
@@ -232,9 +243,10 @@ export const authOptions = {
       }
 
       if (account) {
-        // console.log('===========', account);/
+        // console.log('===========', account);
         const userDoc = await db.collection('users').findOne({ _id: new ObjectId(user.id) });
         token.user.nickname = userDoc.nickname;
+        token.user.createdAt = userDoc.createdAt;
         token.user.provider = account.provider;
         // token.user.lastRaiseReset = userDoc.lastRaiseReset;
         // token.user.raiseCount = userDoc.raiseCount;
