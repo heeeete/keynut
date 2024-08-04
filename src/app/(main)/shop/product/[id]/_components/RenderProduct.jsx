@@ -492,7 +492,7 @@ export default function RenderProduct({ id }) {
   if (!data || !product) return <div>데이터를 가져오고 있습니다...</div>;
   return (
     <div className="max-w-screen-lg mx-auto max-md:mt-12">
-      <div className="flex px-10 h-6 max-md:py-3 max-md:px-3">
+      <div className="flex px-10 items-end md:h-6 max-md:py-3 max-md:px-3 max-md:h-12">
         <RenderCategory category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
         <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
@@ -507,7 +507,7 @@ export default function RenderProduct({ id }) {
       <div className="p-10 space-y-6 max-md:px-3">
         <div className="flex justify-between items-center">
           <p className="text-xl font-bold break-all mr-4">{product.title}</p>
-          <div className="flex self-end h-8">
+          <div className="flex self-end h-8 items-center">
             {status !== 'loading' ? (
               writer || session?.admin ? (
                 <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />

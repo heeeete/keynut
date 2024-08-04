@@ -91,14 +91,19 @@ const ProfileName = ({ session, status, update }) => {
 };
 
 const ProfileImage = ({ session, status, update }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [profileImg, setProfileImg] = useState(null);
   const fileInputRef = useRef(null);
   useEffect(() => {
-    if (status === 'authenticated') setProfileImg(session.user.image);
+    if (status === 'authenticated') {
+      setProfileImg(session.user.image);
+      setIsLoading(false);
+    }
   }, [status]);
 
   const handleImageSelect = async e => {
     if (!e.target.files.length) return;
+    setIsLoading(true);
     const formData = new FormData();
     formData.append('oldImage', JSON.stringify(profileImg));
     formData.append('newImage', e.target.files[0]);
@@ -111,6 +116,7 @@ const ProfileImage = ({ session, status, update }) => {
     } else {
       const data = await res.json();
       update({ image: data.url });
+      console.log('done');
     }
   };
 
@@ -145,6 +151,69 @@ const ProfileImage = ({ session, status, update }) => {
                 fill
                 sizes="(max-width:200px), 300px"
               />
+              {isLoading && (
+                <div className="absolute top-0 left-0 w-full h-full rounded-full bg-black bg-opacity-25 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24">
+                    <g>
+                      <rect width="2" height="5" x="11" y="1" fill="white" opacity="0.14" />
+                      <rect
+                        width="2"
+                        height="5"
+                        x="11"
+                        y="1"
+                        fill="white"
+                        opacity="0.29"
+                        transform="rotate(30 12 12)"
+                      />
+                      <rect
+                        width="2"
+                        height="5"
+                        x="11"
+                        y="1"
+                        fill="white"
+                        opacity="0.43"
+                        transform="rotate(60 12 12)"
+                      />
+                      <rect
+                        width="2"
+                        height="5"
+                        x="11"
+                        y="1"
+                        fill="white"
+                        opacity="0.57"
+                        transform="rotate(90 12 12)"
+                      />
+                      <rect
+                        width="2"
+                        height="5"
+                        x="11"
+                        y="1"
+                        fill="white"
+                        opacity="0.71"
+                        transform="rotate(120 12 12)"
+                      />
+                      <rect
+                        width="2"
+                        height="5"
+                        x="11"
+                        y="1"
+                        fill="white"
+                        opacity="0.86"
+                        transform="rotate(150 12 12)"
+                      />
+                      <rect width="2" height="5" x="11" y="1" fill="white" transform="rotate(180 12 12)" />
+                      <animateTransform
+                        attributeName="transform"
+                        calcMode="discrete"
+                        dur="1.5s"
+                        repeatCount="indefinite"
+                        type="rotate"
+                        values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              )}
             </div>
           ) : (
             <div className="w-32 aspect-square defualt-profile max-md:w-24">
