@@ -13,8 +13,8 @@ export async function generateMetadata({ params }) {
       images: [
         {
           url: data ? data.image : `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`,
-          width: 100,
-          height: 100,
+          width: 500,
+          height: 500,
           alt: 'KEYNUT Logo',
         },
       ],
