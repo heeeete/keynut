@@ -371,14 +371,51 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
   );
 });
 
-const RenderDescriptionInput = React.memo(({ description, setDescription }) => {
+const RenderDescriptionInput = React.memo(({ description, setDescription, subCategory }) => {
+  const [template, setTemplate] = useState(false);
+  const isTyping = useRef(false);
+
+  const onClickTemplate = () => {
+    let res = true;
+    if ((!template && description.length) || (template && isTyping.current))
+      res = confirm(`작성 중인 글이 초기화됩니다.\n계속 진행하시겠습니까?`);
+    if (!res) return;
+
+    if (template) setDescription('');
+    else {
+      isTyping.current = false;
+      setDescription(`하우징 - \n스위치 - \n보강판 - \n기판 - \n키캡 - \n스테빌라이저 - \n`);
+    }
+    setTemplate(!template);
+  };
+
+  useEffect(() => {
+    if (!isTyping.current) {
+      setTemplate(false);
+      setDescription('');
+    }
+  }, [subCategory]);
+
   return (
     <>
-      <p className="mt-10 mb-3 font-medium text-xl max-[480px]:text-base">상품 설명</p>
+      <div className="flex items-end mt-10 mb-3 space-x-3 max-md:justify-between">
+        <p className=" font-medium text-xl max-[480px]:text-base leading-snug">상품 설명</p>
+        {subCategory === 10 && (
+          <button
+            className={`${
+              template ? ' text-gray-500 border-gray-500' : 'text-gray-300 border-gray-200'
+            }  rounded px-2 py-0.5 text-sm border`}
+            onClick={onClickTemplate}
+          >
+            {template ? '템플릿 끄기' : '템플릿 사용'}
+          </button>
+        )}
+      </div>
       <div className="flex ">
         <textarea
           value={description}
           onChange={e => {
+            isTyping.current = true;
             setDescription(e.target.value);
           }}
           maxLength={1000}
@@ -494,7 +531,7 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
           placeholder="상품 태그 최대 10개"
           className="bg-gray-100 rounded p-1 max-w-md outline-none no-underline text-sm"
         />
-        <p className="flex text-xs ml-2 text-gray-400 items-center">{`(${tempTag.length}/10)`}</p>
+        <p className="flex text-xs ml-2 text-gray-400 items-center">{`(${tags.length}/10)`}</p>
       </div>
       <div className="flex text-gray-500 flex-wrap py-1">
         {tags.map((e, idx) => (
@@ -675,7 +712,7 @@ export default function Sell() {
         <RenderCondition condition={condition} setCondition={setCondition} />
       </div>
 
-      <RenderDescriptionInput description={description} setDescription={setDescription} />
+      <RenderDescriptionInput description={description} setDescription={setDescription} subCategory={subCategory} />
       <RenderOpenChatUrlInput openChatUrl={openChatUrl} setOpenChatUrl={setOpenChatUrl} />
       <RenderPriceInput price={price} setPrice={setPrice} />
 
