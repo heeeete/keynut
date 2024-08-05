@@ -513,7 +513,7 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
           placeholder="상품 태그 최대 10개"
           className="bg-gray-100 rounded p-1 max-w-md outline-none no-underline text-sm"
         />
-        <p className="flex text-xs ml-2 text-gray-400 items-center">{`(${tempTag.length}/10)`}</p>
+        <p className="flex text-xs ml-2 text-gray-400 items-center">{`(${tags.length}/10)`}</p>
       </div>
       <div className="flex text-gray-500 flex-wrap h-4">
         {tags.map((e, idx) => (
