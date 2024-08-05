@@ -13,16 +13,16 @@ export default function Footer() {
       {footer ? (
         <div
           id="footer"
-          className={`flex flex-col h-32 w-full border-t px-10 pt-6 mt-6 items-center justify-center space-y-4  max-md:px-5 ${
+          className={`flex flex-col   w-full border-t px-10 py-2 mt-6 items-center justify-center space-y-3  max-md:px-5 ${
             footerRender ? 'max-md:hidden' : ''
           }`}
         >
           <p className="font-bold">KEYNUT</p>
-          <div className="flex flex-col items-center max-w-screen-xl w-full px-10 ">
+          <div className="flex flex-col items-center max-w-screen-xl w-full px-10 space-y-2">
             <p className="flex text-sm text-gray-600">
               <a href="mailto:helloword@na.com">keynut65@gmail.com</a>
             </p>
-            <div className="flex flex-1">
+            <div className="flex">
               <Link href="https://www.instagram.com/keynut_official/">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
                   <g
