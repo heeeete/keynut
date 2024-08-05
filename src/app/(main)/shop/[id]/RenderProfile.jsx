@@ -1,13 +1,15 @@
 'use client';
 import Image from 'next/image';
-import React from 'react';
-import { useParams } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 
 import getUserProducts from '@/lib/getUserProducts';
 import { useQuery } from '@tanstack/react-query';
 import ProfileProducts from '../../_components/ProfileProducts';
 import formatDate from '../../_lib/formatDate';
 import Warning from '../../_components/Warning';
+import { useSession } from 'next-auth/react';
+import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 
 const ProfileImage = ({ image }) => {
   return (
@@ -95,13 +97,87 @@ const Provider = ({ provider }) => {
   );
 };
 
+const uploadMemo = async (userId, tempMemo, resetQuery) => {
+  const memo = {
+    userId: userId,
+    tempMemo: tempMemo,
+  };
+  const res = await fetch('/api/user/memo', {
+    method: 'PUT',
+    body: JSON.stringify({ memo }),
+  });
+  if (!res.ok) {
+    console.log('error', res.statusText);
+    return;
+  }
+
+  const data = await res.json();
+};
+
 const UserProfile = React.memo(({ data, provider }) => {
+  const router = useRouter();
+  const { data: session, status, update } = useSession();
+  const [memo, setMemo] = useState('');
+  const [tempMemo, setTempMemo] = useState('');
+  const memoRef = useRef(null);
+  const [isFocused, setIsFocused] = useState(false);
+  useEffect(() => {
+    if (status === 'authenticated' && data) {
+      if (data.memo && session.user.id && data.memo[session.user.id]) {
+        setMemo(data.memo[session.user.id]);
+        setTempMemo(data.memo[session.user.id]);
+      }
+    }
+  }, [status, data]);
+  const resetQuery = useInvalidateFiltersQuery();
+
   return (
     <div className="flex h-28 border border-gray-300 rounded-md px-6 space-x-4 max-md:px-3 max-md:h-34 max-md:space-x-3  max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
       <div className="flex flex-1 items-center space-x-5">
         <ProfileImage image={data?.image} />
         <div className="flex flex-1 md:items-center max-md:flex-col max-md:space-y-1">
-          <ProfileName name={data?.nickname} />
+          <div className="flex flex-1 flex-col">
+            <ProfileName name={data?.nickname} />
+            <form
+              className="flex items-end text-gray-400"
+              onSubmit={e => {
+                e.preventDefault();
+                memoRef.current.blur();
+              }}
+            >
+              <input
+                ref={memoRef}
+                className="border-b border-gray-400 max-md:border-gray-300 rounded-none outline-none max-md:text-sm"
+                placeholder="사용자 메모하기"
+                value={tempMemo}
+                type="text"
+                maxLength={10}
+                autoComplete="off"
+                onBlur={() => {
+                  if (isFocused === true) {
+                    setIsFocused(false);
+                    if (memo !== tempMemo) {
+                      uploadMemo(data._id, tempMemo, resetQuery);
+                      setMemo(tempMemo);
+                      router.refresh();
+                    }
+                  }
+                }}
+                onFocus={() => {
+                  setIsFocused(true);
+                }}
+                onChange={e => setTempMemo(e.target.value)}
+              ></input>
+              <div className="w-5 aspect-square max-md:w-4 max-md:text-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M21 6.879L17.121 3A1.497 1.497 0 0 0 15 3L4.061 13.939c-.293.293-.558.727-.75 1.188C3.119 15.59 3 16.086 3 16.5V21h4.5c.414 0 .908-.119 1.371-.311s.896-.457 1.189-.75L21 9a1.497 1.497 0 0 0 0-2.121M5.768 15.061l8.293-8.293L15.293 8L7 16.293zM7.5 19H6l-1-1v-1.5c0-.077.033-.305.158-.605c.01-.02 2.967 2.938 2.967 2.938c-.322.134-.548.167-.625.167m1.439-.768L7.707 17L16 8.707l1.232 1.232zm9-9L14.767 6.06l1.293-1.293l3.17 3.172z"
+                  />
+                </svg>
+              </div>
+            </form>
+          </div>
           <div className="flex flex-col">
             <LoginDate createdAt={data?.createdAt} />
             <Provider provider={provider} />
@@ -127,7 +203,7 @@ export default function RenderProfile() {
   }
 
   return (
-    <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3">
+    <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 md:mb-5 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3">
       <UserProfile data={data?.userProfile} provider={data?.provider} />
       <ProfileProducts data={data?.userProducts} />
     </div>
