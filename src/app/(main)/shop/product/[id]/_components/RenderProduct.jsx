@@ -126,7 +126,7 @@ const RenderViews = ({ views }) => {
   );
 };
 
-const RenderProfile = ({ user }) => {
+const RenderProfile = ({ user, id }) => {
   if (!user) return;
 
   return (
@@ -152,9 +152,12 @@ const RenderProfile = ({ user }) => {
               </div>
             )}
           </Link>
-          <Link href={`/shop/${user._id}`} className="text-lg max-md:text-base line-clamp-1">
-            {user.nickname}
-          </Link>
+          <div className="flex flex-col">
+            <Link href={`/shop/${user._id}`} className="text-lg max-md:text-base line-clamp-1">
+              {user.nickname}
+            </Link>
+            {user.memo && user.memo[id] ? <p className="text-sm text-gray-400">{user.memo[id]}</p> : ''}
+          </div>
         </div>
         <Link className="flex items-center rounded" href={`/shop/${user._id}`}>
           <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" viewBox="0 0 24 24">
@@ -538,7 +541,7 @@ export default function RenderProduct({ id }) {
             <RenderViews views={product.views} />
           </div>
         </div>
-        {!writer && <RenderProfile user={user} />}
+        {!writer && <RenderProfile user={user} id={session?.user?.id} />}
         <RenderDescriptor product={product} />
       </div>
       {deleteModal && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteHandler} modalSet={setDeleteModal} />}
