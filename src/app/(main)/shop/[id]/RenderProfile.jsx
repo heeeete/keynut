@@ -132,14 +132,14 @@ const UserProfile = React.memo(({ data, provider }) => {
   const resetQuery = useInvalidateFiltersQuery();
 
   return (
-    <div className="flex h-28 border border-gray-300 rounded-md px-6 space-x-4 max-md:px-3 max-md:h-34 max-md:space-x-3  max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
+    <div className="flex h-28 border border-gray-300 rounded-md px-6 space-x-4 max-md:px-3 max-md:h-36 max-md:space-x-3  max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
       <div className="flex flex-1 items-center space-x-5">
         <ProfileImage image={data?.image} />
         <div className="flex flex-1 md:items-center max-md:flex-col max-md:space-y-1">
           <div className="flex flex-1 flex-col">
             <ProfileName name={data?.nickname} />
             <form
-              className="flex items-end text-gray-400"
+              className="flex items-end text-gray-400 max-md:mb-1"
               onSubmit={e => {
                 e.preventDefault();
                 memoRef.current.blur();
