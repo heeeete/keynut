@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, fect } from 'react';
+import { useState, useEffect, useRef, useCallback, fect } from 'react';
 import Image from 'next/image';
 import { getSession, signIn, signOut, useSession } from 'next-auth/react';
 import Loading from '@/app/(main)/_components/Loading';
