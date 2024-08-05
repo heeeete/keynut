@@ -9,6 +9,8 @@ import { useSession } from 'next-auth/react';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import Loading from '@/app/(main)/_components/Loading';
 import Link from 'next/link';
+import Modal from '@/app/(main)/_components/Modal';
+import { useModal } from '@/app/(main)/_components/ModalProvider';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   switch (mainCategory) {
@@ -555,6 +557,7 @@ export default function Edit() {
   const router = useRouter();
   const { data: session, update, status } = useSession();
   const invalidateFilters = useInvalidateFiltersQuery();
+  const { isModalOpen, openModal } = useModal();
 
   const { data, error, isLoading } = useQuery({
     queryKey: ['product', id],
@@ -595,21 +598,20 @@ export default function Edit() {
       (mainCategory !== 9 && !subCategory) ||
       !price.length ||
       !condition ||
-      !description.trim().length
+      !description.trim().length ||
+      !isValidOpenChat
     );
   };
 
   const handleUpload = async () => {
     if (!openChatUrl) {
-      const proceed = confirm(
-        '오픈 채팅방 주소가 없습니다. 계속 진행하시겠습니까?\n오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
-      );
-      if (!proceed) return;
-    } else {
-      if (!openChatUrl.startsWith('https://open.kakao.com/'))
-        return alert(
-          '올바르지 않은 오픈 채팅방 주소입니다. 올바른 주소를 입력해주세요.\n예: https://open.kakao.com/o/sBsuGODg\n사용하지 않을 경우, 입력란을 비워주세요.',
-        );
+      const result = await openModal({
+        message: '오픈 채팅방 주소가 없습니다. 계속 진행하시겠습니까?',
+        subMessage: '오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
+        isSelect: true,
+      });
+
+      if (!result) return;
     }
 
     setUploadLoading(true);
@@ -700,6 +702,7 @@ export default function Edit() {
           <p>수정</p>
         </button>
       </div>
+      <Modal />
     </div>
   );
 }
