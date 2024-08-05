@@ -3,7 +3,7 @@ import { connectDB } from '@/lib/mongodb';
 
 export async function POST(req) {
   try {
-    const { email, state } = await req.json();
+    const { email, state, expires_at } = await req.json();
 
     if (!email || (state !== 0 && state !== 1))
       return NextResponse.json({ error: 'Invalid email or state' }, { status: 400 });
@@ -15,10 +15,10 @@ export async function POST(req) {
       // 이미 정지된 이메일인지 확인
       const existingBan = await db.collection('bannedEmails').findOne({ email });
       if (existingBan) return NextResponse.json({ error: 'Email is already banned' }, { status: 400 });
-      await db.collection('bannedEmails').insertOne({ email });
+      await db.collection('bannedEmails').insertOne({ email, expires_at: expires_at ? expires_at : null });
       return NextResponse.json({ message: 'User banned successfully' }, { status: 200 });
     } else if (state === 1) {
-      const deleteResult = await db.collection('bannedEmails').deleteOne({ email });
+      await db.collection('bannedEmails').deleteOne({ email });
       return NextResponse.json({ message: 'User unbanned successfully' }, { status: 200 });
     }
 

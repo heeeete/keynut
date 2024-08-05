@@ -65,7 +65,6 @@ export async function DELETE(req, { params }) {
     const deleteUserPromises = [
       userCollection.deleteOne({ _id: userId }),
       db.collection('accounts').deleteMany({ userId: userId }),
-      db.collection('sessions').deleteMany({ userId: userId }),
       db.collection('products').deleteMany({ userId: userId }),
       db.collection('viewHistory').deleteMany({ userId: userId }),
     ];

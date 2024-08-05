@@ -1,5 +1,4 @@
-const userBanHandler = async (email, state) => {
-  console.log(email, state);
+const userBanHandler = async (email, state, expires_at) => {
   if (state !== 0 && state !== 1) {
     console.error('state는 0 또는 1만 가능합니다');
     return 500;
@@ -8,12 +7,12 @@ const userBanHandler = async (email, state) => {
   let res;
 
   try {
-    res = await fetch(`/api/admin/users/ban`, {
+    res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/ban`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, state }),
+      body: JSON.stringify({ email, state, expires_at }),
     });
 
     if (res.ok) {

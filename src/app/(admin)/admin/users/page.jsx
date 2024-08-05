@@ -129,16 +129,24 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
   const onClickWithdrawal = async () => {
     setIsLoading(true);
     const selectedUsersKeys = Object.keys(selectedUsers);
-    console.log(selectedUsers);
     try {
       for (let key of selectedUsersKeys) {
-        const { _id, access_token, refresh_token, provider, providerAccountId } = selectedUsers[key];
+        const { _id, provider, providerAccountId } = selectedUsers[key];
 
         if (provider === 'kakao') {
-          // await handleKakaoWithdrawal(_id, providerAccountId);
-          await refreshAccessToken('kakao', refresh_token);
+          await handleKakaoWithdrawal(_id, providerAccountId);
         } else if (provider === 'naver') {
-          await refreshAccessToken('naver', refresh_token);
+          const res = await fetch('/api/unlink', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: _id }),
+          });
+          if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error);
+          }
         } else {
           await handleOtherProviderWithdrawal(_id);
         }
@@ -220,11 +228,9 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
     } else {
       const obj = {};
       let i = 0;
-      for (let { _id, access_token, refresh_token, provider, email } of data.users) {
+      for (let { _id, provider, email } of data.users) {
         obj[i++] = {
           _id: _id,
-          access_token: access_token,
-          refresh_token: refresh_token,
           provider: provider,
           email: email,
         };
@@ -244,8 +250,6 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
         const newObj = { ...selectedUsers };
         newObj[idx] = {
           _id: user._id,
-          access_token: user.access_token,
-          refresh_token: user.refresh_token,
           provider: user.provider,
           providerAccountId: user.providerAccountId,
           email: user.email,

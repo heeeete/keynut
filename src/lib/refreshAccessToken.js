@@ -26,13 +26,11 @@ async function refreshAccessToken(provider, refreshToken) {
       throw refreshedTokens;
     }
 
-    console.log(refreshedTokens);
-
     return {
-      accessToken: refreshedTokens.access_token,
-      refreshToken: refreshedTokens.refresh_token, // 갱신된 리프레시 토큰이 있는 경우
-      expiresIn: refreshedTokens.expires_in,
-      refreshTokenExpiresIn: refreshedTokens.refresh_token_expires_in,
+      access_token: refreshedTokens.access_token,
+      refresh_token: refreshedTokens.refresh_token, // 갱신된 리프레시 토큰이 있는 경우
+      expires_in: refreshedTokens.expires_in,
+      refresh_token_expires_in: refreshedTokens.refresh_token_expires_in,
     };
   } catch (error) {
     console.error('Error refreshing access token', error);

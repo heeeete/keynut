@@ -12,7 +12,22 @@ function ErrorComponent() {
         <p className="font-bold text-white bg-black px-2">Your account has been banned.</p>
       </div>
     );
-  else
+  else if (error.startsWith('Your account is banned until:')) {
+    const [msg, expires_at] = error.split(': ');
+    const date = new Date(Number(expires_at));
+
+    // 한국 시간대의 날짜와 시간으로 변환
+    let krTimeString = date.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+    krTimeString = krTimeString.replace('.', '년');
+    krTimeString = krTimeString.replace('.', '월');
+    krTimeString = krTimeString.replace('.', '일');
+
+    return (
+      <div className="flex justify-center items-center min-h-70vh">
+        <p className="font-bold text-white bg-black px-2">{krTimeString} 이후 이용이 가능합니다.</p>
+      </div>
+    );
+  } else
     return (
       <div className="flex justify-center items-center min-h-70vh">
         <p className="font-bold text-white bg-black px-2">ERROR</p>

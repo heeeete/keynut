@@ -9,7 +9,7 @@ export default function Modal({ message, subMessage = '', yesCallback, modalSet 
       <div className="w-72 rounded space-y-4 py-3 bg-white flex flex-col  justify-center items-center border-solid border">
         <div>
           <p className=" font-semibold text-lg text-center break-all">{message}</p>
-          {subMessage && <p>{subMessage}</p>}
+          {subMessage && <p className="text-center text-gray-400 text-sm">{subMessage}</p>}
         </div>
         <div className="flex justify-center space-x-2 h-10 font-semibold">
           <button
