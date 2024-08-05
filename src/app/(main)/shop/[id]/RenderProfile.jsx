@@ -16,13 +16,7 @@ const ProfileImage = ({ image }) => {
     <>
       {image ? (
         <div className="flex rounded-full w-20 aspect-square relative justify-center items-center border ">
-          <Image
-            className="rounded-full object-cover"
-            src={image}
-            alt="myprofile"
-            fill
-            sizes="(max-width:768px) 80px,100px"
-          />
+          <Image className="rounded-full object-cover" src={image} alt="myprofile" fill sizes="150px" />
         </div>
       ) : (
         <div className="w-20 h-20 defualt-profile">

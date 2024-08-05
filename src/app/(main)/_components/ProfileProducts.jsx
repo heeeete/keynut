@@ -19,7 +19,7 @@ const Product = ({ product, productOption }) => {
             src={product.images[0]}
             alt={product._id}
             fill
-            sizes="(max-width:768px) 200px,(max-width:1280px) 20vw, (max-width: 1500px) 20vw, 250px"
+            sizes="(max-width:768px) 280px, 220px"
           ></Image>
           <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
             {conditions[product.condition].option}
