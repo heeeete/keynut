@@ -5,6 +5,8 @@ import NaverProvider from 'next-auth/providers/naver';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import { connectDB } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import userBanHandler from '@/app/(admin)/admin/_lib/userBanHandler';
+import checkBannedEmail from '@/lib/checkBannedEmail';
 
 function getRandomKoreanWord() {
   const firstWords = [
@@ -211,23 +213,26 @@ export const authOptions = {
     // maxAge: 8,
   },
   callbacks: {
-    // async signIn({ user, account, profile }) {
-    //   const client = await connectDB;
-    //   const db = client.db(process.env.MONGODB_NAME);
+    async signIn({ user, account, profile }) {
+      const client = await connectDB;
+      const db = client.db(process.env.MONGODB_NAME);
 
-    //   const isBanned = await checkBannedEmail(user.email, db);
-    //   if (isBanned) {
-    //     throw new Error('Your account has been banned.');
-    //   }
-
-    //   return true;
-    // },
+      const isBanned = await checkBannedEmail(user.email, db);
+      console.log(isBanned);
+      if (isBanned) {
+        const { email, expires_at } = isBanned;
+        if (expires_at && new Date(expires_at * 1000) <= new Date()) userBanHandler(email, 1);
+        else if (expires_at) return `/api/auth/error?error=Your account is banned until: ${expires_at * 1000}`;
+        else throw new Error('Your account has been banned.');
+      }
+      return true;
+    },
     async jwt({ token, user, account, trigger, session }) {
       const client = await connectDB;
       const db = client.db(process.env.MONGODB_NAME);
 
       if (user) {
-        console.log('===========', user);
+        // console.log('===========', user);
         delete user.products;
         token.user = user;
         if (user.email === process.env.ADMIN_EMAIL) token.admin = true;

@@ -42,7 +42,6 @@ export async function GET(req) {
       {
         $addFields: {
           provider: { $arrayElemAt: ['$accountInfo.provider', 0] },
-          access_token: { $arrayElemAt: ['$accountInfo.access_token', 0] },
           providerAccountId: { $arrayElemAt: ['$accountInfo.providerAccountId', 0] },
           state: {
             $cond: {

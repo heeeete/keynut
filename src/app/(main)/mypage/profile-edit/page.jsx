@@ -315,14 +315,23 @@ export default function ProfileEdit() {
   const [isLoading, setIsLoading] = useState(false);
   const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
   const invalidateFilters = useInvalidateFiltersQuery();
+  console.log(session);
 
   const onClickWithdrawal = async () => {
     setWithdrawalModalStatus(false);
     setIsLoading(true);
 
+    const date = new Date();
+    date.setMonth(date.getMonth() + 3);
+
     const res = await fetch('/api/unlink', {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: session.user.id, expires_at: Math.floor(date.getTime() / 1000) }),
     });
+
     if (!res.ok) {
       console.log(await res.json());
       alert('회원 탈퇴 처리에 실패했습니다. 다시 로그인 후 시도합니다.');
@@ -377,7 +386,12 @@ export default function ProfileEdit() {
       </div>
       {isLoading && <Loading />}
       {withdrawalModalStatus && (
-        <Modal message={'회원탈퇴 하시겠습니까?'} yesCallback={onClickWithdrawal} modalSet={setWithdrawalModalStatus} />
+        <Modal
+          message={'회원탈퇴 하시겠습니까?'}
+          subMessage="탈퇴 후 3개월간 서비스 이용 불가"
+          yesCallback={onClickWithdrawal}
+          modalSet={setWithdrawalModalStatus}
+        />
       )}
     </div>
   );

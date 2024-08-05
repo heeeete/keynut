@@ -9,6 +9,7 @@ import Loading from '@/app/(main)/_components/Loading';
 import handleKakaoWithdrawal from '../_lib/handleKakaoWithdrawal';
 import handleGoogleWithdrawal from '../_lib/handleGoogleWithdrawal';
 import userBanHandler from '../_lib/userBanHandler';
+import refreshAccessToken from '@/lib/refreshAccessToken';
 
 const PAGE_SIZE = 100;
 const PAGE_RANGE = 10;
@@ -130,12 +131,22 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
     const selectedUsersKeys = Object.keys(selectedUsers);
     try {
       for (let key of selectedUsersKeys) {
-        const { _id, access_token, provider, providerAccountId } = selectedUsers[key];
+        const { _id, provider, providerAccountId } = selectedUsers[key];
 
         if (provider === 'kakao') {
           await handleKakaoWithdrawal(_id, providerAccountId);
-        } else if (provider === 'google') {
-          await handleGoogleWithdrawal(_id, access_token);
+        } else if (provider === 'naver') {
+          const res = await fetch('/api/unlink', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: _id }),
+          });
+          if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error);
+          }
         } else {
           await handleOtherProviderWithdrawal(_id);
         }
@@ -156,7 +167,6 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
     try {
       for (let key of selectedUsersKeys) {
         const { email } = selectedUsers[key];
-        console.log(selectedUsers[key]);
         status = await userBanHandler(email, state);
         if (status !== 200) throw '수정중 에러 발생';
       }
@@ -169,33 +179,6 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
       setIsLoading(false);
     }
   };
-
-  // const handleKakaoWithdrawal = async (_id, access_token, providerAccountId) => {
-  //   try {
-  //     const res = await fetch('/api/admin/kakao/unlink', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ providerAccountId, _id }),
-  //     });
-
-  //     if (!res.ok) throw new Error(await res.json());
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
-
-  // const handleGoogleWithdrawal = async (_id, access_token) => {
-  //   try {
-  //     const res1 = await fetch(`/api/user/${_id}`, { method: 'DELETE' });
-  //     if (!res1.ok) throw new Error('Google user deletion error');
-  //     const res2 = await fetch(`https://accounts.google.com/o/oauth2/revoke?token=${access_token}`);
-  //     if (!res2.ok) throw new Error('Google token revocation error');
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
 
   return (
     <div className="flex flex-col sticky top-10 space-y-2 justify-center border-x px-4 py-2 bg-slate-100">
@@ -245,10 +228,9 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
     } else {
       const obj = {};
       let i = 0;
-      for (let { _id, access_token, provider, email } of data.users) {
+      for (let { _id, provider, email } of data.users) {
         obj[i++] = {
           _id: _id,
-          access_token: access_token,
           provider: provider,
           email: email,
         };
@@ -268,7 +250,6 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
         const newObj = { ...selectedUsers };
         newObj[idx] = {
           _id: user._id,
-          access_token: user.access_token,
           provider: user.provider,
           providerAccountId: user.providerAccountId,
           email: user.email,
