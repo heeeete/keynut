@@ -382,10 +382,10 @@ const Product = ({ product }) => {
       <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
         <Image
           className="rounded object-cover"
-          src={product.images.length ? product.images[0] : '/키보드1.webp'}
+          src={product.images.length ? product.images[0] : '/noImage.svg'}
           alt={product.title}
           fill
-          sizes="(max-width:768px) 60vw, (max-width:1300px) 20vw , 500px"
+          sizes="(max-width:768px) 60vw, (max-width:1300px) 0vw , 500px"
         />
         {product.state === 2 ? (
           <div className="absolute left-1 top-1 z-10 rounded px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
@@ -453,8 +453,6 @@ const RenderProducts = React.memo(
     const { ref, inView } = useInView({ threshold: 0, delay: 0, rootMargin: '500px' });
     const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(queryString);
 
-    // console.log(includeBooked);
-    // console.log(data ? data : '');
     const hasProducts = data?.pages.some(page => page.length > 0);
 
     useEffect(() => {
@@ -580,7 +578,7 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
                   <div className="w-full aspect-square relative min-h-20 min-w-20 bg-gray-100">
                     <Image
                       className="rounded object-cover"
-                      src={product.images.length ? product.images[0] : '/키보드4.png'}
+                      src={product.images.length ? product.images[0] : '/noImage.svg'}
                       alt={product.title}
                       fill
                       sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"

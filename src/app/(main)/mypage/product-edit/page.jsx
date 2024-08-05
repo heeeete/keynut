@@ -148,7 +148,7 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
               src={product.images[0]}
               alt={product._id}
               fill
-              sizes="(max-width:768px) 200px,(max-width:1280px) 20vw, (max-width:1500px) 20vw, 250px"
+              sizes="(max-width:768px) 200px, 250px"
             />
             {product.state === 0 || product.state === 2 ? (
               <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
@@ -281,7 +281,6 @@ export default function ProductEdit() {
       </div>
 
       {!data ? (
-        // <></>
         <ProductEditSkeleton />
       ) : (
         <div className="flex flex-col max-md:text-sm">

@@ -6,41 +6,37 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
-const info = {
-  nickname: 'huipark',
-  profile: '/키보드1.webp',
-  images: ['/img-1.jpeg', '/img-2.jpeg', '/키보드1.webp', '/키보드3.jpeg', '/키보드4.png'],
-  title: '갤러리 들어오면 이렇게 뜸',
-  tags: ['해시태그', '최대 10개', '어떰', '괜찮??'],
-  date: 1717564205998,
-  heart: 14,
-  comment_cnt: 5,
-  comments: [
-    { nickname: 'hyunjki', profile: '/키보드4.png', text: '오오오오 키보드 이쁘당', date: 1717564205998 },
-    { nickname: 'hyunjki', profile: '/키보드4.png', text: '오오오오 키보드 이쁘당', date: 1717564205998 },
-    { nickname: 'hyunjki', profile: '/키보드4.png', text: '오오오오 키보드 이쁘당', date: 1717564205998 },
-    {
-      nickname: 'hyunjki',
-      profile: '/키보드4.png',
-      text: `오오오오 키보드 멋졍
+// const info = {
+//   nickname: 'huipark',
+//   profile: '/키보드1.webp',
+//   images: ['/img-1.jpeg', '/img-2.jpeg', '/키보드1.webp', '/키보드3.jpeg', '/키보드4.png'],
+//   title: '갤러리 들어오면 이렇게 뜸',
+//   tags: ['해시태그', '최대 10개', '어떰', '괜찮??'],
+//   date: 1717564205998,
+//   heart: 14,
+//   comment_cnt: 5,
+//   comments: [
+//     { nickname: 'hyunjki', profile: '/키보드4.png', text: '오오오오 키보드 이쁘당', date: 1717564205998 },
+//     { nickname: 'hyunjki', profile: '/키보드4.png', text: '오오오오 키보드 이쁘당', date: 1717564205998 },
+//     { nickname: 'hyunjki', profile: '/키보드4.png', text: '오오오오 키보드 이쁘당', date: 1717564205998 },
+//     {
+//       nickname: 'hyunjki',
+//       profile: '/키보드4.png',
+//       text: `오오오오 키보드 멋졍
 
+// 진짜 멋졍
 
-
-진짜 멋졍
-
-
-
-너무 멋졍`,
-      date: 1717564205998,
-    },
-    {
-      nickname: 'hyunjki',
-      profile: '/키보드4.png',
-      text: `오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당`,
-      date: 1717564205998,
-    },
-  ],
-};
+// 너무 멋졍`,
+//       date: 1717564205998,
+//     },
+//     {
+//       nickname: 'hyunjki',
+//       profile: '/키보드4.png',
+//       text: `오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당오오오오 키보드 이쁘당`,
+//       date: 1717564205998,
+//     },
+//   ],
+// };
 
 function RenderHeart() {
   return (
