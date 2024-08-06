@@ -604,7 +604,7 @@ export default function Sell() {
     if (status === 'authenticated') {
       const fetchUserProfile = async () => {
         const user = await getUserProfile(session.user.id);
-        if (session.user.openChatUrl !== user.openChatUrl) update({ openChatUrl: user.openChatUrl });
+        if (session.user.openChatUrl !== user?.openChatUrl) update({ openChatUrl: user.openChatUrl });
       };
       fetchUserProfile();
       setOpenChatUrl(session.user.openChatUrl || '');
@@ -711,7 +711,7 @@ export default function Sell() {
   };
 
   return (
-    <div className="max-w-screen-xl px-10 mx-auto max-md:px-2 max-md:main-768">
+    <div className="max-w-screen-lg px-10 mx-auto max-md:px-2 max-md:main-768">
       {isLoading && <Loading />}
       <RenderImageUploadButton
         fileInputRef={fileInputRef}

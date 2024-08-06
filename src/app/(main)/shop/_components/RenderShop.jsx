@@ -385,7 +385,7 @@ const Product = ({ product }) => {
           src={product.images.length ? product.images[0] : '/noImage.svg'}
           alt={product.title}
           fill
-          sizes="(max-width:768px) 60vw, (max-width:1300px) 0vw , 500px"
+          sizes="(max-width:768px) 60vw, (max-width:1300px) 30vw , 500px"
         />
         {product.state === 2 ? (
           <div className="absolute left-1 top-1 z-10 rounded px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
