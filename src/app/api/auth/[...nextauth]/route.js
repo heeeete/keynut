@@ -243,7 +243,6 @@ export const authOptions = {
         if (openChatUrl !== undefined || openChatUrl !== null) token.user.openChatUrl = openChatUrl;
         if (image !== undefined) token.user.image = image;
         if (nickname) token.user.nickname = nickname;
-        if (nicknameChangedAt) token.user.nicknameChangedAt = nicknameChangedAt;
         if (recentSearches) token.user.recentSearches = recentSearches;
         if (memo) token.user.memo = memo;
       }

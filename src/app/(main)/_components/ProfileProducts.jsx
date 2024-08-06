@@ -33,8 +33,22 @@ const Product = ({ product, productOption }) => {
           ) : (
             ''
           )}
+          {product.images.length !== 1 && (
+            <svg
+              className="absolute right-1 top-1 opacity-90 max-md:w-7"
+              xmlns="http://www.w3.org/2000/svg"
+              width="1.5em"
+              height="1.5em"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill="white"
+                d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
+              />
+            </svg>
+          )}
         </div>
-        <div className="flex flex-col justify-center w-full max-md:text-sm">
+        <div className="flex flex-col justify-center w-full">
           <div className="break-all line-clamp-1 mr-5">{product.title}</div>
           <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
             <span>{product.price.toLocaleString()}</span>

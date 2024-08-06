@@ -16,10 +16,9 @@ import ProductEditSkeleton from '../_components/ProductEditSkeleton';
 import timeAgo from '@/utils/timeAgo';
 import DropdownMenu from '../../_components/DropdownMenu';
 import { useModal } from '../../_components/ModalProvider';
+import conditions from '../../_constants/conditions';
 
-const UpButton = ({ state, raiseCount, raiseHandler }) => {
-  const { openModal } = useModal();
-
+const UpButton = ({ state, raiseCount, raiseHandler, openModal }) => {
   const openUpModal = async () => {
     const res = await openModal({
       message: raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.',
@@ -128,17 +127,15 @@ const SettingButton = ({ id, router, invalidateFilters, refetch, setShowModal })
   );
 };
 
-const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount, raiseCount }) => {
+const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount, raiseCount, openModal }) => {
   const [showModal, setShowModal] = useState(false);
-  const [upModal, setUpModal] = useState(false);
 
   const raiseHandler = async () => {
     await raiseProduct(product._id, () => {
       router.refresh();
       invalidateFilters();
       fetchRaiseCount();
-      alert(`최상단으로 UP!\n${raiseCount - 1}회 사용가능`);
-      setUpModal(false);
+      openModal({ message: '최상단으로 UP!', subMessage: `${raiseCount - 1}회 사용가능` });
     });
   };
 
@@ -170,10 +167,24 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
             ) : (
               ''
             )}
+            {product.images.length !== 1 && (
+              <svg
+                className="absolute right-1 top-1 opacity-90 max-md:w-7"
+                xmlns="http://www.w3.org/2000/svg"
+                width="1.5em"
+                height="1.5em"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill="white"
+                  d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
+                />
+              </svg>
+            )}
           </Link>
         </div>
         <div className="flex flex-col justify-center flex-1">
-          <div className="flex justify-between gap-4">
+          <div className="flex justify-between gap-4 mb-2">
             <Link href={`/shop/product/${product._id}`} className="break-all line-clamp-1">
               {product.title}
             </Link>
@@ -185,14 +196,24 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
               setShowModal={setShowModal}
             />
           </div>
-          <div className="space-x-1 font-semibold items-center line-clamp-1 break-all mb-2">
-            <span>{product.price.toLocaleString()}</span>
-            <span className="text-sm">원</span>
+          <div className="flex items-end space-x-2 mb-2">
+            <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
+              <span>{product.price.toLocaleString()}</span>
+              <span className="text-sm">원</span>
+            </div>
+            <p className="text-gray-500 text-sm flex items-center leading-normal max-md:text-xs  max-md:leading-relaxed max-md:font-medium">
+              {conditions[product.condition].option}
+            </p>
           </div>
           <div className="flex justify-between items-end">
             <div className="flex space-x-2 text-sm max-md:space-x-1">
               <DropdownMenu state={product.state} id={product._id} />
-              <UpButton state={product.state} raiseCount={raiseCount} raiseHandler={raiseHandler} />
+              <UpButton
+                state={product.state}
+                raiseCount={raiseCount}
+                raiseHandler={raiseHandler}
+                openModal={openModal}
+              />
               <div className="flex  space-x-2 max-md:hidden">
                 <ModifyButton id={product._id} />
                 <DeleteButton
@@ -239,7 +260,7 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
 export default function ProductEdit() {
   const { data: session, status } = useSession();
   const [productState, setProductState] = useState(3);
-
+  const { openModal } = useModal();
   const [raiseCount, setRaiseCount] = useState(0);
   const fetchRaiseCount = initRaiseCount(setRaiseCount);
   const router = useRouter();
@@ -306,6 +327,7 @@ export default function ProductEdit() {
                     refetch={refetch}
                     raiseCount={raiseCount}
                     fetchRaiseCount={fetchRaiseCount}
+                    openModal={openModal}
                   />
                 </Fragment>
               ))
@@ -332,6 +354,7 @@ export default function ProductEdit() {
                     refetch={refetch}
                     raiseCount={raiseCount}
                     fetchRaiseCount={fetchRaiseCount}
+                    openModal={openModal}
                   />
                 </Fragment>
               ))
