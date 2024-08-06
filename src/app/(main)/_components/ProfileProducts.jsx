@@ -106,7 +106,7 @@ export default function ProfileProducts({ data }) {
             </button>
           </ul>
         </nav>
-        <div className="md:min-h-50vh">
+        <div className="">
           {data ? (
             data.filter(a => a.state === productOption).length ? (
               <div className="grid grid-cols-3 gap-3 max-md:grid-cols-1 max-md:gap-0">

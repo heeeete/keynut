@@ -217,7 +217,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
                 setIsFocused(true);
               }}
               onChange={e => setTempSearchText(e.target.value)}
-              className="outline-none w-full  pr-2  max-md:bg-transparent"
+              className="outline-none w-full md:placeholder:text-lg  pr-2  max-md:bg-transparent"
             />
           </form>
           {tempSearchText.length ? (
@@ -565,7 +565,7 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
   return (
     <>
       {data?.length ? (
-        <div className="px-2 max-md:border-0 max-md:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto md:px-10">
+        <div className="px-10 max-w-screen-xl md:py-1 max-md:border-0 max-md:border-b-8 max-md:px-3 md:mx-auto">
           <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
           <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
             {data?.length ? (

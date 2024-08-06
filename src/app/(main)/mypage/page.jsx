@@ -9,33 +9,30 @@ import Link from 'next/link';
 import getUserProducts from '@/lib/getUserProducts';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import getUserProfile from '@/lib/getUserProfile';
 import ProfileProducts from '../_components/ProfileProducts';
 import formatDate from '../_lib/formatDate';
 
-const MyProfile = React.memo(({ session, update, status }) => {
+const MyProfile = React.memo(({ session, update, status, userProfile }) => {
   const router = useRouter();
-
   useEffect(() => {
-    const fetchProfile = async () => {
-      const profile = await getUserProfile(session.user.id);
-      if (profile.nickname !== session.user.nickname) update({ nickname: profile.nickname });
-      if (profile.image !== session.user.image) update({ image: profile.image });
+    const checkProfile = async () => {
+      if (userProfile.nickname !== session.user.nickname) update({ nickname: userProfile.nickname });
+      if (userProfile.image !== session.user.image) update({ image: userProfile.image });
     };
 
-    if (status === 'authenticated') {
-      fetchProfile();
+    if (status === 'authenticated' && userProfile) {
+      checkProfile();
     }
-  }, [status]);
+  }, [status, userProfile]);
 
   return (
     <div className="flex h-28 border border-gray-300 rounded-md items-center px-4 space-x-4 max-md:px-3 max-md:h-36  max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
       {session && session.user.image ? (
-        <div className="flex rounded-full w-20 aspect-square relative justify-center items-center border">
-          <Image className="rounded-full object-cover" src={session.user.image} alt="myprofile" fill sizes="160px" />
+        <div className="flex rounded-full w-85 aspect-square relative justify-center items-center border">
+          <Image className="rounded-full object-cover" src={session.user.image} alt="myprofile" fill sizes="150px" />
         </div>
       ) : (
-        <div className="w-20 h-20 aspect-square defualt-profile">
+        <div className="w-85 aspect-square defualt-profile">
           <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
             <path
               fill="rgba(0,0,0,0.2)"
@@ -54,9 +51,9 @@ const MyProfile = React.memo(({ session, update, status }) => {
             </div>
           )}
           <div className="flex items-center space-x-1 text-sm text-gray-400 max-md:text-xs">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 1024 1024">
               <path
-                fill="currentColor"
+                fill="#afb2b6"
                 d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
               />
             </svg>
@@ -145,10 +142,9 @@ export default function MyPage() {
     enabled: status === 'authenticated' && !!session?.user?.id,
   });
 
-  console.log(data?.userProfile);
   return (
-    <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3">
-      <MyProfile session={session} update={update} status={status} />
+    <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3 md:min-h-70vh">
+      <MyProfile session={session} update={update} status={status} userProfile={data?.userProfile} />
       {/* <UserSupport /> */}
       <ProfileProducts data={data?.userProducts} />
     </div>
