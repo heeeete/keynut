@@ -4,7 +4,6 @@ import { ObjectId } from 'mongodb';
 
 export async function GET(req, { params }) {
   const { userId } = params;
-  // console.log('userId', userId);
   if (!ObjectId.isValid(userId)) {
     return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
   }

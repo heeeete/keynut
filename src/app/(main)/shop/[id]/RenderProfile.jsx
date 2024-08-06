@@ -15,11 +15,11 @@ const ProfileImage = ({ image }) => {
   return (
     <>
       {image ? (
-        <div className="flex rounded-full w-20 aspect-square relative justify-center items-center border ">
+        <div className="flex rounded-full w-85 aspect-square relative justify-center items-center border ">
           <Image className="rounded-full object-cover" src={image} alt="myprofile" fill sizes="150px" />
         </div>
       ) : (
-        <div className="w-20 h-20 defualt-profile">
+        <div className="w-85 aspect-square defualt-profile">
           <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
             <path
               fill="rgba(0,0,0,0.2)"
@@ -51,14 +51,14 @@ const ProfileName = ({ name }) => {
 const LoginDate = ({ createdAt }) => {
   return (
     <div className="flex items-center space-x-1 text-sm text-gray-400 max-md:text-xs">
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024">
+      <svg className="" xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 1024 1024">
         <path
-          fill="currentColor"
+          fill="#afb2b6"
           d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
         />
       </svg>
       {createdAt ? (
-        <div>{formatDate(createdAt)}에 가입</div>
+        <div className="">{formatDate(createdAt)}에 가입</div>
       ) : (
         <div className="flex h-5 w-32 bg-gray-100 max-md:h-4"></div>
       )}
@@ -70,7 +70,7 @@ const Provider = ({ provider }) => {
   return (
     <div className="flex text-gray-400 items-center space-x-1 text-sm max-md:text-xs">
       <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
-        <g fill="currentColor">
+        <g fill="#afb2b6">
           <path d="M10.243 16.314L6 12.07l1.414-1.414l2.829 2.828l5.656-5.657l1.415 1.415z" />
           <path
             fillRule="evenodd"
@@ -108,9 +108,8 @@ const uploadMemo = async (userId, tempMemo, resetQuery) => {
   const data = await res.json();
 };
 
-const UserProfile = React.memo(({ data, provider }) => {
+const Memo = ({ status, data, session }) => {
   const router = useRouter();
-  const { data: session, status, update } = useSession();
   const [memo, setMemo] = useState('');
   const [tempMemo, setTempMemo] = useState('');
   const memoRef = useRef(null);
@@ -124,6 +123,43 @@ const UserProfile = React.memo(({ data, provider }) => {
     }
   }, [status, data]);
   const resetQuery = useInvalidateFiltersQuery();
+  return (
+    <form
+      className="flex items-end text-gray-400 max-md:mb-1"
+      onSubmit={e => {
+        e.preventDefault();
+        memoRef.current.blur();
+      }}
+    >
+      <input
+        ref={memoRef}
+        className="border-b border-gray-400 max-md:border-gray-300 rounded-none outline-none max-md:text-sm"
+        placeholder="사용자 메모하기"
+        value={tempMemo}
+        type="text"
+        maxLength={10}
+        autoComplete="off"
+        onBlur={() => {
+          if (isFocused === true) {
+            setIsFocused(false);
+            if (memo !== tempMemo) {
+              uploadMemo(data._id, tempMemo, resetQuery);
+              setMemo(tempMemo);
+              router.refresh();
+            }
+          }
+        }}
+        onFocus={() => {
+          setIsFocused(true);
+        }}
+        onChange={e => setTempMemo(e.target.value)}
+      ></input>
+    </form>
+  );
+};
+
+const UserProfile = React.memo(({ data, provider }) => {
+  const { data: session, status, update } = useSession();
 
   return (
     <div className="flex h-28 border border-gray-300 rounded-md px-6 space-x-4 max-md:px-3 max-md:h-36 max-md:space-x-3  max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
@@ -132,37 +168,7 @@ const UserProfile = React.memo(({ data, provider }) => {
         <div className="flex flex-1 md:items-center max-md:flex-col max-md:space-y-1">
           <div className="flex flex-1 flex-col">
             <ProfileName name={data?.nickname} />
-            <form
-              className="flex items-end text-gray-400 max-md:mb-1"
-              onSubmit={e => {
-                e.preventDefault();
-                memoRef.current.blur();
-              }}
-            >
-              <input
-                ref={memoRef}
-                className="border-b border-gray-400 max-md:border-gray-300 rounded-none outline-none max-md:text-sm"
-                placeholder="사용자 메모하기"
-                value={tempMemo}
-                type="text"
-                maxLength={10}
-                autoComplete="off"
-                onBlur={() => {
-                  if (isFocused === true) {
-                    setIsFocused(false);
-                    if (memo !== tempMemo) {
-                      uploadMemo(data._id, tempMemo, resetQuery);
-                      setMemo(tempMemo);
-                      router.refresh();
-                    }
-                  }
-                }}
-                onFocus={() => {
-                  setIsFocused(true);
-                }}
-                onChange={e => setTempMemo(e.target.value)}
-              ></input>
-            </form>
+            <Memo status={status} data={data} session={session} />
           </div>
           <div className="flex flex-col">
             <LoginDate createdAt={data?.createdAt} />
@@ -189,7 +195,7 @@ export default function RenderProfile() {
   }
 
   return (
-    <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 md:mb-5 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3">
+    <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 md:mb-5 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3 md:min-h-70vh">
       <UserProfile data={data?.userProfile} provider={data?.provider} />
       <ProfileProducts data={data?.userProducts} />
     </div>

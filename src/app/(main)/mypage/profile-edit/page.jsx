@@ -315,7 +315,6 @@ export default function ProfileEdit() {
   const [isLoading, setIsLoading] = useState(false);
   const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
   const invalidateFilters = useInvalidateFiltersQuery();
-  console.log(session);
 
   const onClickWithdrawal = async () => {
     setWithdrawalModalStatus(false);
@@ -347,7 +346,7 @@ export default function ProfileEdit() {
   };
 
   return (
-    <div className="flex flex-col max-w-screen-sm mx-auto px-10 md:items-center max-md:px-6 max-md:justify-center">
+    <div className="flex flex-col max-w-screen-sm mx-auto px-10 md:items-center max-md:px-6 max-md:justify-center md:min-h-70vh">
       <button className="h-12 w-auto md:hidden" onClick={() => router.back()}>
         <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
           <path
