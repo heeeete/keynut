@@ -10,7 +10,7 @@
     "tt": "next dev --hostname 172.30.1.9",
     "build": "next build",
     "start": "next start --hostname 172.30.1.32",
-    "start2": "next start --hostname 172.30.1.9",
+    "start2": "next start --hostname 10.18.225.54",
     "lint": "next lint"
   },
   "dependencies": {
