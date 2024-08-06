@@ -1,5 +1,4 @@
 const raiseProduct = async (id, callback) => {
-  // console.log('id------', id);
   try {
     const res = await fetch(`/api/products/${id}/raise`, { method: 'PATCH' });
     if (res.ok) {
