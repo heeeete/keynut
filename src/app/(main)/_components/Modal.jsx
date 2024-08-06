@@ -16,8 +16,10 @@ export default function Modal() {
     >
       <div className="w-72 rounded space-y-4 p-3 bg-white flex flex-col justify-center items-center border-solid border">
         <div>
-          <p className="font-semibold text-lg text-center break-all">{modalMessage}</p>
-          {modalSubMessage && <p className="text-center text-gray-400 text-sm">{modalSubMessage}</p>}
+          <p className="font-semibold text-lg text-center break-all whitespace-pre-line">{modalMessage}</p>
+          {modalSubMessage && (
+            <p className="text-center text-gray-400 text-sm whitespace-pre-line">{modalSubMessage}</p>
+          )}
         </div>
         <div className="flex justify-center space-x-2 h-10 font-semibold">
           <button
