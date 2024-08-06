@@ -47,7 +47,7 @@ export default function CustomDropdownMenu({ placeholder, values, onChange = () 
               key={idx}
               className={`${state === idx + 1 ? 'text-black bg-gray-100' : 'text-gray-400'} ${
                 values.length === idx + 1 && 'rounded-b-xl'
-              } p-2 border hover:bg-gray-100 `}
+              } ${idx === 0 && 'border-t'} p-2 border-x border-b hover:bg-gray-100 `}
               onClick={() => {
                 setState(idx + 1);
                 onChange(idx + 1);
