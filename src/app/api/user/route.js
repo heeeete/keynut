@@ -80,9 +80,11 @@ export async function PUT(req) {
       });
       return NextResponse.json(resUrl, { status: 200 });
     }
+
     if (nickname) {
       const now = new Date();
-      const lastChanged = session.user.nicknameChangedAt ? new Date(session.user.nicknameChangedAt) : null;
+      const user = await users.findOne({ _id: new ObjectId(session.user.id) });
+      const lastChanged = user.nicknameChangedAt ? new Date(user.nicknameChangedAt) : null;
       if (lastChanged) {
         const period = Math.floor((now - lastChanged) / (1000 * 60 * 60 * 24));
         if (period < 30) return NextResponse.json({ state: 0 }, { status: 403 });

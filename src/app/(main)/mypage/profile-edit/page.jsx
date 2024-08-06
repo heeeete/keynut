@@ -8,8 +8,9 @@ import { useRouter } from 'next/navigation';
 import Modal from '../../_components/Modal';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import formatDate from '../../_lib/formatDate';
+import { useModal } from '../../_components/ModalProvider';
 
-const ProfileName = ({ session, status, update }) => {
+const ProfileName = ({ session, status, update, openModal }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempNickname, setTempNickname] = useState('');
   const [nickname, setNickname] = useState('');
@@ -31,21 +32,21 @@ const ProfileName = ({ session, status, update }) => {
     if (!res.ok) {
       if (res.status === 403) {
         setTempNickname(nickname);
-        alert('닉네임은 변경 후 30일이 지나야 다시 변경할 수 있습니다.');
+        openModal({ message: '닉네임은 변경 후 30일 내에는 변경할 수 없습니다.' });
       } else if (res.status === 409) {
         setTempNickname(nickname);
-        alert('이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해 주세요.');
+        openModal({ message: '이미 사용 중인 닉네임입니다.' });
       } else if (res.status === 402) {
         setTempNickname(nickname);
-        alert('사용하신 닉네임에는 허용되지 않는 단어가 포함되어 있습니다. 다시 입력해주세요');
+        openModal({ message: '허용되지 않는 단어가 포함되어 있습니다.' });
       } else if (res.status === 400) {
         setTempNickname(nickname);
-        alert('닉네임은 띄어쓰기 없이 2글자 이상 10글자 이내의 한글, 영어, 숫자로만 구성되어야 합니다.');
+        openModal({ message: '닉네임은 2글자 이상 10글자 이내의 한글, 영어, 숫자만 사용 가능합니다.' });
       } else console.error('API 요청 실패:', res.status, res.statusText);
     } else {
       const data = await res.json();
       setNickname(tempNickname);
-      update({ nickname: tempNickname, nicknameChangedAt: data.time });
+      update({ nickname: tempNickname });
     }
   };
 
@@ -258,12 +259,12 @@ const ProfileImage = ({ session, status, update }) => {
   );
 };
 
-const ProfileInfo = ({ session, status, update }) => {
+const ProfileInfo = ({ session, status, update, openModal }) => {
   return (
     <section className="flex flex-col rounded-none space-y-4">
       <p className="font-medium border-b border-black md:text-lg">프로필 정보</p>
       <ProfileImage session={session} status={status} update={update} />
-      <ProfileName session={session} status={status} update={update} />
+      <ProfileName session={session} status={status} update={update} openModal={openModal} />
     </section>
   );
 };
@@ -315,6 +316,7 @@ export default function ProfileEdit() {
   const [isLoading, setIsLoading] = useState(false);
   const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
   const invalidateFilters = useInvalidateFiltersQuery();
+  const { openModal } = useModal();
 
   const onClickWithdrawal = async () => {
     setWithdrawalModalStatus(false);
@@ -333,16 +335,27 @@ export default function ProfileEdit() {
 
     if (!res.ok) {
       console.log(await res.json());
-      alert('회원 탈퇴 처리에 실패했습니다. 다시 로그인 후 시도합니다.');
+      openModal({ message: '회원 탈퇴 처리에 실패했습니다. 다시 로그인 후 시도해주세요.' });
       await signIn();
     } else {
-      alert('회원 탈퇴가 정상적으로 처리되었습니다.');
+      openModal({ message: '회원 탈퇴가 정상적으로 처리되었습니다.' });
+
       invalidateFilters();
       router.refresh();
       signOut({ callbackUrl: '/' });
     }
 
     setIsLoading(false);
+  };
+
+  const openWithdrawal = async () => {
+    const res = await openModal({
+      message: '회원탈퇴 하시겠습니까?',
+      subMessage: '탈퇴 후 3개월간 서비스 이용 불가',
+      isSelect: true,
+    });
+    if (!res) return;
+    onClickWithdrawal();
   };
 
   return (
@@ -360,7 +373,7 @@ export default function ProfileEdit() {
         </svg>
       </button>
       <div className="flex flex-col w-full md:py-5 max-md:py-0 max-md:w-full">
-        <ProfileInfo session={session} status={status} update={update} />
+        <ProfileInfo session={session} status={status} update={update} openModal={openModal} />
         <SignInInfo session={session} />
         <section className="flex md:justify-end">
           <div className="flex space-x-4">
@@ -372,26 +385,13 @@ export default function ProfileEdit() {
             >
               로그아웃
             </button>
-            <button
-              className="flex text-gray-500 underline"
-              onClick={e => {
-                setWithdrawalModalStatus(true);
-              }}
-            >
+            <button className="flex text-gray-500 underline" onClick={openWithdrawal}>
               회원 탈퇴
             </button>
           </div>
         </section>
       </div>
       {isLoading && <Loading />}
-      {withdrawalModalStatus && (
-        <Modal
-          message={'회원탈퇴 하시겠습니까?'}
-          subMessage="탈퇴 후 3개월간 서비스 이용 불가"
-          yesCallback={onClickWithdrawal}
-          modalSet={setWithdrawalModalStatus}
-        />
-      )}
     </div>
   );
 }

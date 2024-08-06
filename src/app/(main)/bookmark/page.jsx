@@ -80,7 +80,7 @@ const ABookMark = ({ item }) => {
           </div>
         </div>
         <div className="flex flex-col items-start justify-center space-y-1">
-          <div className="flex flex-col mr-5 max-md:text-sm">
+          <div className="flex flex-col mr-5">
             <p className="break-all line-clamp-1">{item.title}</p>
             <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
               <span>{item.price.toLocaleString()}</span>
