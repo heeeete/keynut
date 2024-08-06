@@ -20,6 +20,7 @@ import conditions from '@/app/(main)/_constants/conditions';
 import DropdownMenu from '@/app/(main)/_components/DropdownMenu';
 import CustomDropdownMenu from '@/app/(main)/_components/CustomDropDownMenu';
 import Warning from '@/app/(main)/_components/Warning';
+import { useModal } from '@/app/(main)/_components/ModalProvider';
 
 const RenderCondition = ({ condition }) => {
   return (
@@ -262,13 +263,32 @@ const IsWriter = ({ id, state, setSettingModal }) => {
   );
 };
 
-const SettingModal = ({ id, setSettingModal, setDeleteModal, setUpModal, state }) => {
-  const { data: session } = useSession();
+const SettingModal = ({ id, setSettingModal, state, raiseHandler, raiseCount, deleteHandler }) => {
+  const { openModal } = useModal();
 
-  const openUpModal = () => {
+  const openUpModal = async () => {
+    if (!(await getSession())) return signIn();
     setSettingModal(false);
-    if (!session) signIn();
-    setUpModal(true);
+
+    const res = await openModal({
+      message: raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.',
+      subMessage: raiseCount ? `사용 시 1회 차감됩니다.` : '',
+      isSelect: true,
+    });
+    if (!res) return;
+    raiseHandler();
+  };
+
+  const openDeleteModal = async () => {
+    if (!(await getSession())) return signIn();
+    setSettingModal(false);
+
+    const res = await openModal({
+      message: '삭제하시겠습니까?',
+      isSelect: true,
+    });
+    if (!res) return;
+    deleteHandler();
   };
 
   return (
@@ -296,10 +316,7 @@ const SettingModal = ({ id, setSettingModal, setDeleteModal, setUpModal, state }
         </button>
         <button
           className="flex items-center justify-center w-full py-4 font-semibold text-red-500"
-          onClick={() => {
-            setSettingModal(false);
-            setDeleteModal(true);
-          }}
+          onClick={openDeleteModal}
         >
           <p>삭제</p>
         </button>
@@ -335,6 +352,7 @@ const ComplainModal = ({ setComplainModal, productId }) => {
   ];
 
   const postComplain = async () => {
+    const { openModal } = useModal();
     try {
       const data = {
         category: values[state - 1],
@@ -349,11 +367,11 @@ const ComplainModal = ({ setComplainModal, productId }) => {
       });
       if (!res.ok) {
         if (res.status === 401) signIn();
-        else alert('잠시 후 다시 시도해 주세요.');
+        else openModal({ message: '잠시 후 다시 시도해 주세요.' });
       } else setComplainModal(false);
     } catch (error) {
       console.error(error);
-      alert('에러가 발생했습니다. 나중에 다시 시도해 주세요.');
+      openModal({ message: '에러가 발생했습니다. 나중에 다시 시도해 주세요.' });
     }
   };
 
@@ -422,6 +440,7 @@ export default function RenderProduct({ id }) {
   const fetchRaiseCount = initRaiseCount(setRaiseCount);
   const { user = null, ...product } = data || {};
   const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
+  const { openModal } = useModal();
 
   useEffect(() => {
     if (settingModal || upModal || deleteModal) {
@@ -442,7 +461,7 @@ export default function RenderProduct({ id }) {
     const fetchUpdateViews = async () => {
       const data = await incrementViewCount(id);
       if (!data) {
-        alert('삭제된 상품입니다.');
+        await openModal({ message: '삭제된 상품입니다.' });
         invalidateFilters();
         router.back();
         setTimeout(() => {
@@ -473,12 +492,11 @@ export default function RenderProduct({ id }) {
   }, [router]);
 
   const raiseHandler = async () => {
-    await raiseProduct(id, () => {
+    await raiseProduct(id, async () => {
+      await openModal({ message: '최상단으로 UP!', subMessage: `${raiseCount - 1}회 사용가능` });
       router.refresh();
       invalidateFilters();
       fetchRaiseCount();
-      alert(`최상단으로 UP!\n${raiseCount - 1}회 사용가능`);
-      setUpModal(false);
     });
   };
 
@@ -545,22 +563,15 @@ export default function RenderProduct({ id }) {
         <RenderDescriptor product={product} />
       </div>
       {deleteModal && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteHandler} modalSet={setDeleteModal} />}
-      {upModal && (
-        <Modal
-          message={raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.'}
-          subMessage={raiseCount ? `사용 시 1회 차감됩니다.` : ''}
-          modalSet={setUpModal}
-          yesCallback={raiseCount ? raiseHandler : null}
-        />
-      )}
       {settingModal && (
         <SettingModal
           id={id}
           session={session}
           setSettingModal={setSettingModal}
-          setDeleteModal={setDeleteModal}
-          setUpModal={setUpModal}
           state={product.state}
+          raiseHandler={raiseHandler}
+          raiseCount={raiseCount}
+          deleteHandler={deleteHandler}
         />
       )}
       {complainModal && <ComplainModal setComplainModal={setComplainModal} productId={id} />}

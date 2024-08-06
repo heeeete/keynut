@@ -702,7 +702,7 @@ export default function Edit() {
   };
 
   return (
-    <div className="max-w-screen-xl px-10 mx-auto max-md:px-2 max-md:main-768">
+    <div className="max-w-screen-lg px-10 mx-auto max-md:px-2 max-md:main-768">
       {uploadLoading && <Loading />}
       <RenderImageUploadButton
         fileInputRef={fileInputRef}
