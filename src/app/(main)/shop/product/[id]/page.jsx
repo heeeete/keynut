@@ -2,8 +2,6 @@ import RenderProduct from './_components/RenderProduct';
 import React from 'react';
 import getProductWithUser from './_lib/getProductWithUser';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import Warning from '@/app/(main)/_components/Warning';
 
 export async function generateMetadata({ params }) {

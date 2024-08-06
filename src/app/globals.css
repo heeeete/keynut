@@ -34,3 +34,16 @@ button {
     text-wrap: balance;
   }
 }
+
+.custome-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .custom-body {
+    padding-bottom: calc(50px + 34px);
+  }
+}
