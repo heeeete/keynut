@@ -1,7 +1,7 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 const ModalContext = createContext();
 
@@ -31,6 +31,9 @@ export const ModalProvider = ({ children }) => {
     if (resolvePromise) {
       resolvePromise(false);
       setResolvePromise(null);
+      setModalMessage('');
+      setModalSubMessage('');
+      setIsSelect(false);
     }
   }, [resolvePromise]);
 
@@ -39,6 +42,9 @@ export const ModalProvider = ({ children }) => {
     if (resolvePromise) {
       resolvePromise(true);
       setResolvePromise(null);
+      setModalMessage('');
+      setModalSubMessage('');
+      setIsSelect(false);
     }
   }, [resolvePromise]);
 

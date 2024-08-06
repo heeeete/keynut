@@ -15,17 +15,28 @@ import deleteProduct from '@/lib/deleteProduct';
 import ProductEditSkeleton from '../_components/ProductEditSkeleton';
 import timeAgo from '@/utils/timeAgo';
 import DropdownMenu from '../../_components/DropdownMenu';
+import { useModal } from '../../_components/ModalProvider';
 
-const UpButton = ({ state, setUpModal }) => {
+const UpButton = ({ state, raiseCount, raiseHandler }) => {
+  const { openModal } = useModal();
+
+  const openUpModal = async () => {
+    const res = await openModal({
+      message: raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.',
+      subMessage: raiseCount ? `사용 시 1회 차감됩니다.` : '',
+      isSelect: true,
+    });
+    if (!res) return;
+    raiseHandler();
+  };
+
   return (
     <>
       <button
         className={`px-2 font-medium border border-gray-300 rounded flex-nowrap whitespace-nowrap ${
           state !== 1 ? 'text-gray-300' : 'max-md:text-gray-600'
         } `}
-        onClick={() => {
-          setUpModal(true);
-        }}
+        onClick={openUpModal}
         disabled={state === 0 || state === 2}
       >
         up
@@ -181,7 +192,7 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
           <div className="flex justify-between items-end">
             <div className="flex space-x-2 text-sm max-md:space-x-1">
               <DropdownMenu state={product.state} id={product._id} />
-              <UpButton state={product.state} setUpModal={setUpModal} />
+              <UpButton state={product.state} raiseCount={raiseCount} raiseHandler={raiseHandler} />
               <div className="flex  space-x-2 max-md:hidden">
                 <ModifyButton id={product._id} />
                 <DeleteButton
@@ -213,14 +224,14 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
         </div>
       </div>
       {showModal ? <Modal message={'삭제하시겠습니까?'} yesCallback={deleteHandler} modalSet={setShowModal} /> : ''}
-      {upModal && (
+      {/* {upModal && (
         <Modal
           message={raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.'}
           subMessage={raiseCount ? `사용 시 1회 차감됩니다.` : ''}
           modalSet={setUpModal}
           yesCallback={raiseCount ? raiseHandler : null}
         />
-      )}
+      )} */}
     </>
   );
 };

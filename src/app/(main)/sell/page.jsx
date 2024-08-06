@@ -9,7 +9,7 @@ import { signIn, useSession } from 'next-auth/react';
 import Loading from '../_components/Loading';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import getUserProfile from '@/lib/getUserProfile';
-import Modal from '../_components/Modal';
+// import Modal from '../_components/Modal';
 import { useModal } from '../_components/ModalProvider';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
@@ -89,21 +89,21 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
 });
 
 const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUploadImages }) => {
-  const handleImageUploadClick = useCallback(() => {
+  const { openModal } = useModal();
+
+  const handleImageUploadClick = useCallback(async () => {
     if (uploadImages.imageUrls.length < 5) {
       if (fileInputRef.current) {
         fileInputRef.current.click();
       }
-    } else {
-      window.alert('사진은 최대 5장까지 가능합니다.');
-    }
+    } else openModal({ message: '사진은 최대 5장까지 가능합니다.' });
   }, [uploadImages]);
 
   const handleImageUpload = useCallback(
     async e => {
       if (!e.target.files) return;
       if (uploadImages.imageUrls.length + e.target.files.length > 5)
-        return window.alert('사진은 최대 5장까지 가능합니다.');
+        return openModal({ message: '사진은 최대 5장까지 가능합니다.' });
       const files = e.target.files;
       const filesArray = Array.from(files);
 
@@ -376,11 +376,16 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
 const RenderDescriptionInput = React.memo(({ description, setDescription, subCategory }) => {
   const [template, setTemplate] = useState(false);
   const isTyping = useRef(false);
+  const { openModal } = useModal();
 
-  const onClickTemplate = () => {
+  const onClickTemplate = async () => {
     let res = true;
     if ((!template && description.length) || (template && isTyping.current))
-      res = confirm(`작성 중인 글이 초기화됩니다.\n계속 진행하시겠습니까?`);
+      res = await openModal({
+        message: '계속 진행하시겠습니까?',
+        subMessage: '작성 중인 글이 초기화됩니다.',
+        isSelect: true,
+      });
     if (!res) return;
 
     if (template) setDescription('');
@@ -597,9 +602,30 @@ export default function Sell() {
   const { data: session, status, update } = useSession();
   const invalidateFilters = useInvalidateFiltersQuery();
   const isInitialRender = useRef(true); // 첫 번째 렌더링인지 확인하는 ref
-  const { isModalOpen, openModal } = useModal();
+  const { openModal } = useModal();
 
   useEffect(() => {
+    const openDraftModal = async () => {
+      const draft = JSON.parse(sessionStorage.getItem('draft'));
+      if (!draft) return;
+
+      const proceed = await openModal({
+        message: '이전에 작성 중인 글이 있습니다.',
+        subMessage: '이어서 작성하시겠습니까?',
+        isSelect: true,
+      });
+      if (proceed) {
+        setTitle(draft.title);
+        setMainCategory(draft.mainCategory);
+        setSubCategory(draft.subCategory);
+        setCondition(draft.condition);
+        setDescription(draft.description);
+        setPrice(draft.price);
+        setOpenChatUrl(draft.openChatUrl);
+        setTags(draft.tags);
+      } else sessionStorage.removeItem('draft');
+    };
+
     if (status !== 'loading' && status === 'unauthenticated') return signIn();
     if (status === 'authenticated') {
       const fetchUserProfile = async () => {
@@ -608,20 +634,8 @@ export default function Sell() {
       };
       fetchUserProfile();
       setOpenChatUrl(session.user.openChatUrl || '');
-      const draft = JSON.parse(sessionStorage.getItem('draft'));
-      if (draft) {
-        const proceed = confirm('이전에 작성 중인 글이 있습니다. 이어서 작성하시겠습니까?');
-        if (proceed) {
-          setTitle(draft.title);
-          setMainCategory(draft.mainCategory);
-          setSubCategory(draft.subCategory);
-          setCondition(draft.condition);
-          setDescription(draft.description);
-          setPrice(draft.price);
-          setOpenChatUrl(draft.openChatUrl);
-          setTags(draft.tags);
-        } else sessionStorage.removeItem('draft');
-      }
+      openDraftModal();
+
       isInitialRender.current = false;
     }
   }, [status]);
@@ -694,18 +708,18 @@ export default function Sell() {
           router.refresh();
         }
       } else if (res.status === 401) {
-        alert('로그인이 만료되었습니다. 다시 로그인해 주세요.');
+        await openModal({ message: '로그인이 만료되었습니다. 다시 로그인해 주세요.' });
         signIn();
       } else if (res.status === 403 && data.error === 'Your account has been banned.') {
         return router.push(`/auth/error?error=${encodeURIComponent(data.error)}`);
       } else {
         console.error(data.error);
-        alert('상품 업로드를 실패했습니다. 나중에 다시 시도해주세요.');
+        await openModal({ message: '상품 업로드를 실패했습니다. 나중에 다시 시도해주세요.' });
         setIsLoading(false);
       }
     } catch (error) {
       console.error('Error uploading files:', error);
-      alert('상품을 업도를 하는 도중 에러가 발생했습니다. 나중에 다시 시도해 주세요.');
+      await openModal({ message: '상품 업로드를 실패했습니다. 나중에 다시 시도해주세요.' });
       setIsLoading(false);
     }
   };
@@ -749,7 +763,6 @@ export default function Sell() {
           <p>업로드</p>
         </button>
       </div>
-      {isModalOpen && <Modal />}
     </div>
   );
 }
