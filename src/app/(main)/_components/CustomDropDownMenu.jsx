@@ -41,7 +41,7 @@ export default function CustomDropdownMenu({ placeholder, values, onChange = () 
         )}
       </div>
       {isDropDown && (
-        <div className="absolute w-full top-11 left-0 bg-white">
+        <div className="absolute w-full top-11 left-0 bg-white z-10">
           {values.map((value, idx) => (
             <p
               key={idx}

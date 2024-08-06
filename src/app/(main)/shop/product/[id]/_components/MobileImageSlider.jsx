@@ -32,16 +32,12 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
           ? Math.max(currentImageIndex - 1, 0)
           : Math.min(currentImageIndex + 1, totalChildren - 1);
       setCurrentImageIndex(newIdx);
-      if (imageShowRef.current)
-        requestAnimationFrame(() => {
-          imageShowRef.current.style.transform = `translateX(${newIdx * -clientWidth}px)`;
-        });
+      if (imageShowRef.current) imageShowRef.current.style.transform = `translateX(${newIdx * -clientWidth}px)`;
+
       setOffset(newIdx * -clientWidth);
     } else {
       if (imageShowRef.current)
-        requestAnimationFrame(() => {
-          imageShowRef.current.style.transform = `translateX(${currentImageIndex * -clientWidth}px)`;
-        });
+        imageShowRef.current.style.transform = `translateX(${currentImageIndex * -clientWidth}px)`;
     }
     document.removeEventListener('touchmove', move);
     document.removeEventListener('touchend', end);
@@ -60,9 +56,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
         if (Math.abs(travelRatio.current) < 0.8) {
           travelRatio.current = travelX / clientWidth;
           if (imageShowRef.current)
-            requestAnimationFrame(() => {
-              imageShowRef.current.style.transform = `translateX(${originOffset.current + travelX}px)`;
-            });
+            imageShowRef.current.style.transform = `translateX(${originOffset.current + travelX}px)`;
         }
       }
     },
@@ -83,10 +77,10 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
   );
 
   useEffect(() => {
-    imageShowRef.current?.addEventListener('touchstart', startTouch, { passive: false });
+    if (imageShowRef.current) imageShowRef.current.addEventListener('touchstart', startTouch, { passive: false });
 
     return () => {
-      imageShowRef.current?.removeEventListener('touchstart', startTouch);
+      if (imageShowRef.current) imageShowRef.current.removeEventListener('touchstart', startTouch);
     };
   }, [clientWidth, totalChildren, offset]);
 

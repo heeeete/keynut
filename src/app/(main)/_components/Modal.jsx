@@ -9,14 +9,8 @@ export default function Modal() {
 
   return (
     <div
-      className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-black bg-opacity-50 z-50"
-      // onClick={e => {
-      //   if (e.currentTarget === e.target) closeModal();
-      // }}
-      onMouseDown={e => {
-        if (e.currentTarget === e.target) closeModal();
-      }}
-      onTouchStart={e => {
+      className="fixed top-0 left-0 w-screen custom-dvh flex justify-center items-center bg-black bg-opacity-50 z-50"
+      onClick={e => {
         if (e.currentTarget === e.target) closeModal();
       }}
     >
