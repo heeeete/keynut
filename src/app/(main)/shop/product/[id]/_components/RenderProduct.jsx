@@ -139,7 +139,7 @@ const RenderProfile = ({ user, id }) => {
             className="flex relative rounded-full  aspect-square justify-center items-center cursor-pointer"
           >
             {user.image ? (
-              <div className="relative w-10 h-10">
+              <div className="relative w-12 h-12">
                 <Image className="rounded-full object-cover" src={user.image} sizes="80px" alt="profile" fill />
               </div>
             ) : (
@@ -426,9 +426,7 @@ const incrementViewCount = async productId => {
 
 export default function RenderProduct({ id }) {
   const queryClient = useQueryClient();
-  const [deleteModal, setDeleteModal] = useState(false);
   const [settingModal, setSettingModal] = useState(null);
-  const [upModal, setUpModal] = useState(false);
   const [complainModal, setComplainModal] = useState(false);
   const [raiseCount, setRaiseCount] = useState(0);
   const posY = useRef(0);
@@ -446,7 +444,7 @@ export default function RenderProduct({ id }) {
   const { openModal } = useModal();
 
   useEffect(() => {
-    if (settingModal || upModal || deleteModal) {
+    if (settingModal) {
       if (posY.current === 0) posY.current = window.scrollY;
       document.documentElement.style.setProperty('--posY', `-${posY.current}px`);
       document.body.classList.add('fixed');
@@ -458,7 +456,7 @@ export default function RenderProduct({ id }) {
     return () => {
       document.body.classList.remove('fixed');
     };
-  }, [settingModal, upModal, deleteModal]);
+  }, [settingModal]);
 
   useEffect(() => {
     const fetchUpdateViews = async () => {
@@ -490,7 +488,7 @@ export default function RenderProduct({ id }) {
       router.back();
       setTimeout(() => {
         router.refresh();
-      }, 300);
+      }, 100);
     });
   }, [router]);
 
@@ -565,7 +563,6 @@ export default function RenderProduct({ id }) {
         {!writer && <RenderProfile user={user} id={session?.user?.id} />}
         <RenderDescriptor product={product} />
       </div>
-      {deleteModal && <Modal message={'삭제하시겠습니까?'} yesCallback={deleteHandler} modalSet={setDeleteModal} />}
       {settingModal && (
         <SettingModal
           id={id}
