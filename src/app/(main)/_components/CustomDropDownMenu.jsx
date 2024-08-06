@@ -41,13 +41,13 @@ export default function CustomDropdownMenu({ placeholder, values, onChange = () 
         )}
       </div>
       {isDropDown && (
-        <div className="absolute w-full top-11 left-0 bg-white z-10">
+        <div className="absolute w-full top-10 left-0 bg-white rounded-b-xl z-10 shadow-lg">
           {values.map((value, idx) => (
             <p
               key={idx}
-              className={`${
-                state === idx + 1 ? 'text-black bg-gray-100' : 'text-gray-400'
-              } p-2 border-b hover:bg-gray-100 `}
+              className={`${state === idx + 1 ? 'text-black bg-gray-100' : 'text-gray-400'} ${
+                values.length === idx + 1 && 'rounded-b-xl'
+              } p-2 border hover:bg-gray-100 `}
               onClick={() => {
                 setState(idx + 1);
                 onChange(idx + 1);
