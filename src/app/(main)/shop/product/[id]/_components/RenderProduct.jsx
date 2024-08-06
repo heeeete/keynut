@@ -240,7 +240,7 @@ const RenderHashTag = ({ product }) => {
 const RenderDescriptor = ({ product }) => {
   return (
     <div className="border px-2 py-1 rounded min-h-24 break-all">
-      <p className="whitespace-pre-wrap">{product.description}</p>
+      <p className="whitespace-pre-wrap p-2">{product.description}</p>
     </div>
   );
 };
@@ -343,6 +343,7 @@ const ComplainModal = ({ setComplainModal, productId }) => {
   const [text, setText] = useState('');
   const placeholder = '신고 유형을 선택해주세요.';
   const values = ['외부 채널 유도', '광고성 컨텐츠', '전문 업자 의심', '기타'];
+  const { openModal } = useModal();
 
   const descriptions = [
     '사용자가 거래를 위해 외부 채널(카카오톡, 텔레그램 등)로 유도하는 경우',
@@ -352,7 +353,6 @@ const ComplainModal = ({ setComplainModal, productId }) => {
   ];
 
   const postComplain = async () => {
-    const { openModal } = useModal();
     try {
       const data = {
         category: values[state - 1],
@@ -368,7 +368,10 @@ const ComplainModal = ({ setComplainModal, productId }) => {
       if (!res.ok) {
         if (res.status === 401) signIn();
         else openModal({ message: '잠시 후 다시 시도해 주세요.' });
-      } else setComplainModal(false);
+      } else {
+        openModal({ message: '정상적으로 처리되었습니다.' });
+        setComplainModal(false);
+      }
     } catch (error) {
       console.error(error);
       openModal({ message: '에러가 발생했습니다. 나중에 다시 시도해 주세요.' });
