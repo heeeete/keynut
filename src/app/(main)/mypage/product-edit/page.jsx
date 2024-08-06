@@ -44,14 +44,14 @@ const UpButton = ({ state, raiseCount, raiseHandler, openModal }) => {
   );
 };
 
-const DeleteButton = ({ id, router, invalidateFilters, refetch, setShowSetting, setShowModal }) => {
+const DeleteButton = ({ setShowSetting, openDeleteModal }) => {
   return (
     <>
       <button
         className="px-2 font-medium border border-gray-300 text-red-400 rounded flex-nowrap whitespace-nowrap max-md:border-0 max-md:flex-1 max-md:w-full max-md:text-base max-md:font-semibold"
         onClick={() => {
           if (setShowSetting) setShowSetting(false);
-          setShowModal(true);
+          openDeleteModal();
         }}
       >
         삭제
@@ -71,7 +71,7 @@ const ModifyButton = ({ id }) => {
   );
 };
 
-const SettingModal = ({ id, router, invalidateFilters, refetch, setShowSetting, setShowModal }) => {
+const SettingModal = ({ id, setShowSetting, openDeleteModal }) => {
   return (
     <div
       className="fixed w-screen custom-dvh top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
@@ -81,20 +81,13 @@ const SettingModal = ({ id, router, invalidateFilters, refetch, setShowSetting, 
     >
       <div className="flex flex-col items-center rounded-md border space-y-1 bg-white w-52 h-32">
         <ModifyButton id={id} />
-        <DeleteButton
-          id={id}
-          router={router}
-          invalidateFilters={invalidateFilters}
-          refetch={refetch}
-          setShowSetting={setShowSetting}
-          setShowModal={setShowModal}
-        />
+        <DeleteButton setShowSetting={setShowSetting} openDeleteModal={openDeleteModal} />
       </div>
     </div>
   );
 };
 
-const SettingButton = ({ id, router, invalidateFilters, refetch, setShowModal }) => {
+const SettingButton = ({ id, openDeleteModal }) => {
   const [showSetting, setShowSetting] = useState(false);
   return (
     <>
@@ -111,25 +104,12 @@ const SettingButton = ({ id, router, invalidateFilters, refetch, setShowModal })
           />
         </svg>
       </button>
-      {showSetting ? (
-        <SettingModal
-          id={id}
-          router={router}
-          invalidateFilters={invalidateFilters}
-          refetch={refetch}
-          setShowSetting={setShowSetting}
-          setShowModal={setShowModal}
-        />
-      ) : (
-        ''
-      )}
+      {showSetting ? <SettingModal id={id} setShowSetting={setShowSetting} openDeleteModal={openDeleteModal} /> : ''}
     </>
   );
 };
 
 const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount, raiseCount, openModal }) => {
-  const [showModal, setShowModal] = useState(false);
-
   const raiseHandler = async () => {
     await raiseProduct(product._id, () => {
       router.refresh();
@@ -139,7 +119,10 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
     });
   };
 
-  const deleteHandler = useCallback(async () => {
+  const openDeleteModal = useCallback(async () => {
+    const res = await openModal({ message: '삭제하시겠습니까', isSelect: true });
+    if (!res) return;
+
     await deleteProduct(product._id, () => {
       invalidateFilters();
       refetch();
@@ -147,113 +130,86 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
   }, [router, invalidateFilters, refetch]);
 
   return (
-    <>
-      <div className="flex space-x-3 border p-3 rounded relative mb-3 max-md:border-0 max-md:border-b max-md:border-gray-100 max-md:mb-0 max-md:py-4">
-        <div className="w-28 aspect-square relative bg-gray-100 max-md:w-24">
-          <Link href={`/shop/product/${product._id}`} className="after_selling">
-            <Image
-              className="rounded object-cover relative"
-              src={product.images[0]}
-              alt={product._id}
-              fill
-              sizes="(max-width:768px) 200px, 250px"
-            />
-            {product.state === 0 || product.state === 2 ? (
-              <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
-                <p className="font-semibold text-white text-lg max-md:text-base">
-                  {product.state === 0 ? '판매 완료' : '예약 중'}
-                </p>
-              </div>
-            ) : (
-              ''
-            )}
-            {product.images.length !== 1 && (
-              <svg
-                className="absolute right-1 top-1 opacity-90 max-md:w-7"
-                xmlns="http://www.w3.org/2000/svg"
-                width="1.5em"
-                height="1.5em"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill="white"
-                  d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
-                />
-              </svg>
-            )}
-          </Link>
-        </div>
-        <div className="flex flex-col justify-center flex-1">
-          <div className="flex justify-between gap-4 mb-2">
-            <Link href={`/shop/product/${product._id}`} className="break-all line-clamp-1">
-              {product.title}
-            </Link>
-            <SettingButton
-              id={product._id}
-              router={router}
-              invalidateFilters={invalidateFilters}
-              refetch={refetch}
-              setShowModal={setShowModal}
-            />
-          </div>
-          <div className="flex items-end space-x-2 mb-2">
-            <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
-              <span>{product.price.toLocaleString()}</span>
-              <span className="text-sm">원</span>
+    <div className="flex space-x-3 border p-3 rounded relative mb-3 max-md:border-0 max-md:border-b max-md:border-gray-100 max-md:mb-0 max-md:py-4">
+      <div className="w-28 aspect-square relative bg-gray-100 max-md:w-24">
+        <Link href={`/shop/product/${product._id}`} className="after_selling">
+          <Image
+            className="rounded object-cover relative"
+            src={product.images[0]}
+            alt={product._id}
+            fill
+            sizes="(max-width:768px) 200px, 250px"
+          />
+          {product.state === 0 || product.state === 2 ? (
+            <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
+              <p className="font-semibold text-white text-lg max-md:text-base">
+                {product.state === 0 ? '판매 완료' : '예약 중'}
+              </p>
             </div>
-            <p className="text-gray-500 text-sm flex items-center leading-normal max-md:text-xs  max-md:leading-relaxed max-md:font-medium">
-              {conditions[product.condition].option}
-            </p>
-          </div>
-          <div className="flex justify-between items-end">
-            <div className="flex space-x-2 text-sm max-md:space-x-1">
-              <DropdownMenu state={product.state} id={product._id} />
-              <UpButton
-                state={product.state}
-                raiseCount={raiseCount}
-                raiseHandler={raiseHandler}
-                openModal={openModal}
+          ) : (
+            ''
+          )}
+          {product.images.length !== 1 && (
+            <svg
+              className="absolute right-1 top-1 opacity-90 max-md:w-7"
+              xmlns="http://www.w3.org/2000/svg"
+              width="1.5em"
+              height="1.5em"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill="white"
+                d="M6.085 4H5.05A2.5 2.5 0 0 1 7.5 2H14a4 4 0 0 1 4 4v6.5a2.5 2.5 0 0 1-2 2.45v-1.035a1.5 1.5 0 0 0 1-1.415V6a3 3 0 0 0-3-3H7.5a1.5 1.5 0 0 0-1.415 1M2 7.5A2.5 2.5 0 0 1 4.5 5h8A2.5 2.5 0 0 1 15 7.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 2 15.5z"
               />
-              <div className="flex  space-x-2 max-md:hidden">
-                <ModifyButton id={product._id} />
-                <DeleteButton
-                  id={product._id}
-                  router={router}
-                  invalidateFilters={invalidateFilters}
-                  refetch={refetch}
-                />
-              </div>
+            </svg>
+          )}
+        </Link>
+      </div>
+      <div className="flex flex-col justify-center flex-1">
+        <div className="flex justify-between gap-4 mb-2">
+          <Link href={`/shop/product/${product._id}`} className="break-all line-clamp-1">
+            {product.title}
+          </Link>
+          <SettingButton id={product._id} openDeleteModal={openDeleteModal} />
+        </div>
+        <div className="flex items-end space-x-2 mb-2">
+          <div className="space-x-1 font-semibold items-center line-clamp-1 break-all">
+            <span>{product.price.toLocaleString()}</span>
+            <span className="text-sm">원</span>
+          </div>
+          <p className="text-gray-500 text-sm flex items-center leading-normal max-md:text-xs  max-md:leading-relaxed max-md:font-medium">
+            {conditions[product.condition].option}
+          </p>
+        </div>
+        <div className="flex justify-between items-end">
+          <div className="flex space-x-2 text-sm max-md:space-x-1">
+            <DropdownMenu state={product.state} id={product._id} />
+            <UpButton state={product.state} raiseCount={raiseCount} raiseHandler={raiseHandler} openModal={openModal} />
+            <div className="flex  space-x-2 max-md:hidden">
+              <ModifyButton id={product._id} />
+              <DeleteButton openDeleteModal={openDeleteModal} />
             </div>
-            <div className="flex items-center space-x-2 max-md:space-x-1">
-              <p className="text-gray-400 text-sm max-md:text-xs">{timeAgo(product.createdAt)}</p>
-              <div className="flex justify-center items-center">
-                <div className="md:w-4 max-md:w-3">
-                  <svg className="" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32">
-                    <path
-                      stroke="lightgray"
-                      fill="lightgray"
-                      d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
-                    />
-                  </svg>
-                </div>
-                <p className=" text-gray-400 text-sm max-md:text-xs">
-                  {product.bookmarked ? product.bookmarked.length : 0}
-                </p>
+          </div>
+          <div className="flex items-center space-x-2 max-md:space-x-1">
+            <p className="text-gray-400 text-sm max-md:text-xs">{timeAgo(product.createdAt)}</p>
+            <div className="flex justify-center items-center">
+              <div className="md:w-4 max-md:w-3">
+                <svg className="" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32">
+                  <path
+                    stroke="lightgray"
+                    fill="lightgray"
+                    d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2"
+                  />
+                </svg>
               </div>
+              <p className=" text-gray-400 text-sm max-md:text-xs">
+                {product.bookmarked ? product.bookmarked.length : 0}
+              </p>
             </div>
           </div>
         </div>
       </div>
-      {showModal ? <Modal message={'삭제하시겠습니까?'} yesCallback={deleteHandler} modalSet={setShowModal} /> : ''}
-      {/* {upModal && (
-        <Modal
-          message={raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.'}
-          subMessage={raiseCount ? `사용 시 1회 차감됩니다.` : ''}
-          modalSet={setUpModal}
-          yesCallback={raiseCount ? raiseHandler : null}
-        />
-      )} */}
-    </>
+    </div>
   );
 };
 
