@@ -1,10 +1,10 @@
 'use client';
 import getProductWithUser from '../_lib/getProductWithUser';
 import Image from 'next/image';
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useParams, useRouter } from 'next/navigation';
-import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import Loading from '@/app/(main)/_components/Loading';
@@ -87,21 +87,21 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
 });
 
 const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUploadImages }) => {
+  const { openModal } = useModal();
+
   const handleImageUploadClick = useCallback(() => {
     if (uploadImages.imageUrls.length < 5) {
       if (fileInputRef.current) {
         fileInputRef.current.click();
       }
-    } else {
-      window.alert('사진은 최대 5장까지 가능합니다.');
-    }
+    } else openModal({ message: '사진은 최대 5장까지 가능합니다.' });
   }, [uploadImages]);
 
   const handleImageUpload = useCallback(
     async e => {
       if (!e.target.files) return;
       if (uploadImages.imageUrls.length + e.target.files.length > 5)
-        return window.alert('사진은 최대 5장까지 가능합니다.');
+        return openModal({ message: '사진은 최대 5장까지 가능합니다.' });
       const files = e.target.files;
       const filesArray = Array.from(files);
 
@@ -143,7 +143,7 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
   );
 });
 
-const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, deleteImages, setDeleteImages }) => {
+const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteImages }) => {
   const removeImage = useCallback(
     idx => {
       if (uploadImages.imageUrls[idx].startsWith('https://keynut-bucket.s3.ap-northeast-2.amazonaws.com'))
@@ -156,14 +156,13 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, deleteImage
         imageUrls: newImageUrls,
       });
     },
-    [uploadImages],
+    [uploadImages.imageFiles, uploadImages.imageUrls, setDeleteImages, setUploadImages],
   );
 
   const onDragEnd = useCallback(
     result => {
-      if (!result.destination) {
-        return;
-      }
+      if (!result.destination) return;
+
       const newImageFiles = Array.from(uploadImages.imageFiles);
       const newImageUrls = Array.from(uploadImages.imageUrls);
 
@@ -178,56 +177,62 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, deleteImage
         imageUrls: newImageUrls,
       });
     },
-    [uploadImages],
+    [uploadImages.imageFiles, uploadImages.imageUrls, setUploadImages],
+  );
+
+  const draggableItems = useMemo(
+    () =>
+      uploadImages.imageUrls.map((url, idx) => (
+        <Draggable key={idx} draggableId={`draggable-${idx}`} index={idx}>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
+            >
+              <Image
+                src={url}
+                fill
+                alt={`item-${idx}`}
+                className="rounded border"
+                style={{ objectFit: 'cover' }}
+                sizes="(max-width: 768px) 256px, 384px"
+                placeholder="blur"
+                blurDataURL={url}
+              />
+              {idx === 0 && (
+                <div className="absolute bg-black left-1 top-1 p-1 rounded-xl bg-opacity-50 text-xxs text-white">
+                  대표이미지
+                </div>
+              )}
+              <button onClick={() => removeImage(idx)} title="remove-image-btn">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1.5rem"
+                  height="1.5rem"
+                  viewBox="0 0 24 24"
+                  className="absolute opacity-50 right-1 top-1"
+                >
+                  <path
+                    fill="black"
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41L8.41 7L12 10.59L15.59 7L17 8.41L13.41 12z"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+        </Draggable>
+      )),
+    [uploadImages.imageUrls, removeImage],
   );
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable" direction="horizontal">
         {(provided, snapshot) => (
-          <div ref={provided.innerRef} className="flex  overflow-auto  scrollbar-hide" {...provided.droppableProps}>
-            {uploadImages.imageUrls.map((url, idx) => (
-              <Draggable key={idx} draggableId={`draggable-${idx}`} index={idx}>
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
-                  >
-                    <Image
-                      src={url}
-                      fill
-                      alt={`item-${idx}`}
-                      className="rounded border"
-                      style={{ objectFit: 'cover' }}
-                      sizes="(max-width: 768px) 256px, 384px"
-                      placeholder="blur"
-                      blurDataURL={url}
-                    />
-                    {idx === 0 && (
-                      <div className="absolute bg-black left-1 top-1 p-1 rounded-xl bg-opacity-50 text-xxs text-white">
-                        대표이미지
-                      </div>
-                    )}
-                    <button onClick={() => removeImage(idx)} title="remove-image-btn">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="1.5rem"
-                        height="1.5rem"
-                        viewBox="0 0 24 24"
-                        className="absolute opacity-50 right-1 top-1"
-                      >
-                        <path
-                          fill="black"
-                          d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41L8.41 7L12 10.59L15.59 7L17 8.41L13.41 12z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                )}
-              </Draggable>
-            ))}
+          <div ref={provided.innerRef} className="flex overflow-auto scrollbar-hide" {...provided.droppableProps}>
+            {draggableItems}
             {provided.placeholder}
           </div>
         )}
@@ -377,19 +382,54 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
   );
 });
 
-const RenderDescriptionInput = React.memo(({ description, setDescription }) => {
+const RenderDescriptionInput = React.memo(({ description, setDescription, subCategory }) => {
+  const [template, setTemplate] = useState(false);
+  const isTyping = useRef(false);
+  const { openModal } = useModal();
+
+  const onClickTemplate = async () => {
+    let res = true;
+    if ((!template && description.length) || (template && isTyping.current))
+      res = await openModal({
+        message: '계속 진행하시겠습니까?',
+        subMessage: '작성 중인 글이 초기화됩니다.',
+        isSelect: true,
+      });
+    if (!res) return;
+
+    if (template) setDescription('');
+    else {
+      isTyping.current = false;
+      setDescription(`하우징 - \n스위치 - \n보강판 - \n기판 - \n키캡 - \n스테빌라이저 - \n`);
+    }
+    setTemplate(!template);
+  };
+
   return (
     <>
-      <p className="mt-10 mb-3 font-medium text-xl">상품 설명</p>
+      <div className="flex items-end mt-10 mb-3 space-x-3 max-md:justify-between">
+        <p className=" font-medium text-xl max-[480px]:text-base leading-snug">상품 설명</p>
+        {subCategory === 10 && (
+          <button
+            className={`${
+              template ? ' text-gray-500 border-gray-500' : 'text-gray-300 border-gray-200'
+            }  rounded px-2 py-0.5 text-sm border`}
+            onClick={onClickTemplate}
+          >
+            {template ? '템플릿 끄기' : '템플릿 사용'}
+          </button>
+        )}
+      </div>
       <div className="flex ">
         <textarea
           value={description}
           onChange={e => {
+            isTyping.current = true;
             setDescription(e.target.value);
           }}
           maxLength={1000}
           placeholder="상품 설명을 입력해주세요."
-          className="flex-1 outline-none no-underline text-xl  border scrollbar-hide resize-none"
+          className="flex-1 p-2 bg-gray-50 outline-none no-underline text-xl  scrollbar-hide resize-none max-[480px]:text-base"
           id="description"
           rows={8}
         />
@@ -557,7 +597,7 @@ export default function Edit() {
   const router = useRouter();
   const { data: session, update, status } = useSession();
   const invalidateFilters = useInvalidateFiltersQuery();
-  const { isModalOpen, openModal } = useModal();
+  const { openModal } = useModal();
 
   const { data, error, isLoading } = useQuery({
     queryKey: ['product', id],
@@ -565,9 +605,9 @@ export default function Edit() {
   });
 
   useEffect(() => {
-    const originalDataInit = () => {
+    const originalDataInit = async () => {
       if ((session && data.userId !== session.user.id) || status === 'unauthenticated') {
-        alert('비정상적인 접근입니다.');
+        await openModal({ message: '비정상적인 접근입니다.' });
         return router.push('/');
       } else {
         setTitle(data.title);
@@ -642,17 +682,20 @@ export default function Edit() {
         invalidateFilters();
         router.push(`/shop/product/${id}`);
         router.refresh();
+      } else if (res.status === 401) {
+        await openModal({ message: '로그인이 만료되었습니다. 다시 로그인해 주세요.' });
+        signIn();
       } else {
         const data = await res.json();
-        if (res.status === 403 && data.error === 'Your account has been banned.')
-          return router.push(`/auth/error?error=${encodeURIComponent(data.error)}`);
+        // if (res.status === 403 && data.error === 'Your account has been banned.')
+        // return router.push(`/auth/error?error=${encodeURIComponent(data.error)}`);
         const errorData = await res.json();
         console.error(errorData.error);
-        alert('상품 수정을 실패했습니다. 나중에 다시 시도해주세요.');
+        await openModal({ message: '상품 수정에 실패했습니다. 나중에 다시 시도해주세요.' });
       }
     } catch (error) {
       console.error('Error edit files:', error);
-      alert('상품을 수정하는 도중 에러가 발생했습니다. 나중에 다시 시도해 주세요.');
+      await openModal({ message: '상품을 수정하는 도중 에러가 발생했습니다. 나중에 다시 시도해 주세요.' });
     } finally {
       setUploadLoading(false);
     }
@@ -669,7 +712,6 @@ export default function Edit() {
       <RenderDNDImages
         uploadImages={uploadImages}
         setUploadImages={setUploadImages}
-        deleteImages={deleteImages}
         setDeleteImages={setDeleteImages}
       />
       <RenderTitle title={title} setTitle={setTitle} />
@@ -684,7 +726,7 @@ export default function Edit() {
         <RenderCondition condition={condition} setCondition={setCondition} />
       </div>
 
-      <RenderDescriptionInput description={description} setDescription={setDescription} />
+      <RenderDescriptionInput description={description} setDescription={setDescription} subCategory={subCategory} />
       <RenderOpenChatUrlInput
         openChatUrl={openChatUrl}
         setOpenChatUrl={setOpenChatUrl}
