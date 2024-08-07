@@ -9,7 +9,7 @@ export default function BookmarkLink({ router }) {
     <>
       {pathName === '/bookmark' ? (
         <div className="flex justify-center items-center w-full h-full">
-          <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 24 24">
+          <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
             <path
               fill="black"
               stroke="black"
@@ -26,7 +26,7 @@ export default function BookmarkLink({ router }) {
           onClick={e => handleLogin(e, router, '/bookmark')}
           className="flex justify-center items-center w-full h-full"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 24 24">
+          <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
             <path
               fill="none"
               stroke="black"

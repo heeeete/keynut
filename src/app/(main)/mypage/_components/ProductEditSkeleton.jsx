@@ -10,8 +10,8 @@ const ProductSkeleton = () => {
           <svg
             className="md:hidden"
             xmlns="http://www.w3.org/2000/svg"
-            width="1.2rem"
-            height="1.2rem"
+            width="1.2em"
+            height="1.2em"
             viewBox="0 0 1024 1024"
           >
             <path

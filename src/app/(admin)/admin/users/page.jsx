@@ -186,7 +186,7 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }) => {
         <AllUsersCnt userCnt={data?.total} />
         <div className="flex space-x-4">
           <button className="px-2 py-1 border border-black rounded bg-white" onClick={dataRefetch}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
               <g fill="none" stroke="rgb(55 65 81)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
                 <path d="M19.933 13.041a8 8 0 1 1-9.925-8.788c3.899-1 7.935 1.007 9.425 4.747" />
                 <path d="M20 4v5h-5" />
