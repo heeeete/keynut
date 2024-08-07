@@ -685,7 +685,6 @@ export default function Sell() {
         subMessage: '오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
         isSelect: true,
         size: 'w-80',
-        ㅅ,
       });
 
       if (!result) return;
@@ -720,18 +719,18 @@ export default function Sell() {
           // router.refresh();
         }
       } else if (res.status === 401) {
-        await openModal({ message: '로그인이 만료되었습니다. 다시 로그인해 주세요.' });
+        await openModal({ message: '로그인이 만료되었습니다.\n다시 로그인해 주세요.' });
         signIn();
       } else if (res.status === 403 && data.error === 'Your account has been banned.') {
         return router.push(`/auth/error?error=${encodeURIComponent(data.error)}`);
       } else {
         console.error(data.error);
-        await openModal({ message: '상품 업로드를 실패했습니다. 나중에 다시 시도해주세요.' });
+        await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
         setIsLoading(false);
       }
     } catch (error) {
       console.error('Error uploading files:', error);
-      await openModal({ message: '상품 업로드를 실패했습니다. 나중에 다시 시도해주세요.' });
+      await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
       setIsLoading(false);
     }
   };
