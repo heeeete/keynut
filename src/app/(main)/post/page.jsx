@@ -161,8 +161,8 @@ export default function Post() {
                       <button onClick={() => removeImage(idx)} title="remove-image-btn">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          width="1.5rem"
-                          height="1.5rem"
+                          width="1.5em"
+                          height="1.5em"
                           viewBox="0 0 24 24"
                           className="absolute opacity-50 right-1 top-1"
                         >
@@ -211,7 +211,7 @@ export default function Post() {
           <div key={idx} className="flex items-center space-x-1 mr-3">
             <span>#{e}</span>
             <button onClick={() => removeTag(idx)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="0.8rem" height="0.8rem" viewBox="0 0 2048 2048">
+              <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 2048 2048">
                 <path
                   fill="currentColor"
                   d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"

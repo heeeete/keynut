@@ -3,7 +3,7 @@
 import { useModal } from './ModalProvider';
 
 export default function Modal() {
-  const { isModalOpen, modalMessage, modalSubMessage, closeModal, confirmModal, isSelect } = useModal();
+  const { isModalOpen, modalMessage, modalSubMessage, closeModal, confirmModal, isSelect, size } = useModal();
 
   if (!isModalOpen) return null;
 
@@ -14,8 +14,10 @@ export default function Modal() {
         if (e.currentTarget === e.target) closeModal();
       }}
     >
-      <div className="w-72 rounded space-y-4 p-3 bg-white flex flex-col justify-center items-center border-solid border">
-        <div>
+      <div
+        className={`${size} rounded space-y-4 p-3 bg-white flex flex-col justify-center items-center border-solid border`}
+      >
+        <div className="space-y-2">
           <p className="font-semibold text-lg text-center break-all whitespace-pre-line">{modalMessage}</p>
           {modalSubMessage && (
             <p className="text-center text-gray-400 text-sm whitespace-pre-line">{modalSubMessage}</p>

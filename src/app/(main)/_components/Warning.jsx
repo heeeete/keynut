@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function Warning({ message }) {
   return (
     <div className="flex flex-col justify-center items-center min-h-70vh space-y-3">
-      <svg xmlns="http://www.w3.org/2000/svg" width="5rem" height="5rem" viewBox="0 0 24 24">
+      <svg xmlns="http://www.w3.org/2000/svg" width="5em" height="5em" viewBox="0 0 24 24">
         <g fill="none" stroke="orange" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
           <path strokeDasharray="60" strokeDashoffset="60" d="M12 3L21 20H3L12 3Z">
             <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0" />

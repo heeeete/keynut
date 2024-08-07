@@ -209,8 +209,8 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }) => {
                     <button onClick={() => removeImage(idx)} title="remove-image-btn">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="1.5rem"
-                        height="1.5rem"
+                        width="1.5em"
+                        height="1.5em"
                         viewBox="0 0 24 24"
                         className="absolute opacity-50 right-1 top-1"
                       >
@@ -239,7 +239,9 @@ const RenderTitle = React.memo(({ title, setTitle }) => {
 
   return (
     <>
-      <p className="mt-10 mb-3 font-medium text-xl max-[480px]:text-base">상품명</p>
+      <p className="mt-10 mb-3 font-medium text-xl max-[480px]:text-base">
+        상품명<span className="text-red-500">*</span>
+      </p>
       <div className="flex no-underline max-w-lg border-b">
         <input
           type="text"
@@ -269,7 +271,9 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
   return (
     <>
       <div className="flex flex-col flex-0.4 h-full  min-w-60">
-        <div className="flex font-medium text-xl my-3 max-[480px]:text-base">카테고리</div>
+        <div className="flex font-medium text-xl my-3 max-[480px]:text-base">
+          카테고리<span className="text-red-500">*</span>
+        </div>
         <div className="flex h-64 border ">
           <ul className="flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base">
             <li className={`p-3 ${mainCategory === 1 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(1)}>
@@ -311,7 +315,9 @@ const RenderCondition = React.memo(({ condition, setCondition }) => {
 
   return (
     <div className="flex-0.4 min-w-72 ">
-      <div className="flex font-medium text-xl my-3 max-[480px]:text-base">상품상태</div>
+      <div className="flex font-medium text-xl my-3 max-[480px]:text-base">
+        상품상태<span className="text-red-500">*</span>
+      </div>
       <div className="flex flex-col h-64 justify-around text-lg max-[480px]:text-base">
         <label className="flex items-center space-x-2 ">
           <input
@@ -406,7 +412,9 @@ const RenderDescriptionInput = React.memo(({ description, setDescription, subCat
   return (
     <>
       <div className="flex items-end mt-10 mb-3 space-x-3 max-md:justify-between">
-        <p className=" font-medium text-xl max-[480px]:text-base leading-snug">상품 설명</p>
+        <p className=" font-medium text-xl max-[480px]:text-base leading-snug">
+          상품 설명<span className="text-red-500">*</span>
+        </p>
         {subCategory === 10 && (
           <button
             className={`${
@@ -447,7 +455,9 @@ const RenderPriceInput = React.memo(({ price, setPrice }) => {
 
   return (
     <>
-      <p className="mt-10 mb-3 font-medium text-xl max-[480px]:text-base">상품 가격</p>
+      <p className="mt-10 mb-3 font-medium text-xl max-[480px]:text-base">
+        상품 가격<span className="text-red-500">*</span>
+      </p>
       <div className="flex no-underline max-w-36 border-b">
         <input
           type="text"
@@ -475,7 +485,6 @@ const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isVali
         <div className="flex items-end my-3 justify-between">
           <div className="flex items-end">
             <div className="font-medium text-xl max-[480px]:text-base">오픈채팅방</div>
-            <div className="text-sm">(선택)</div>
           </div>
           <Link
             href="/notices/open-chat-guide"
@@ -551,11 +560,12 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
           onKeyDown={activeEnter}
           maxLength={10}
           placeholder="상품 태그 최대 10개"
-          className="bg-gray-100 rounded p-1 max-w-md outline-none no-underline text-sm"
+          className="bg-gray-100 rounded p-1 max-w-md outline-none no-underline"
+          enterKeyHint="next"
         />
-        <p className="flex text-xs ml-2 text-gray-400 items-center">{`(${tags.length}/10)`}</p>
+        <p className="flex text-xs text-gray-400 items-center">{`(${tags.length}/10)`}</p>
       </div>
-      <div className="flex text-gray-500 flex-wrap py-1">
+      <div className="flex items-center text-gray-500 flex-wrap py-1 px-2">
         {tags.map((e, idx) => (
           <div key={idx} className="flex items-center space-x-1 mr-3 max-md:text-sm">
             <span>{e}</span>
@@ -674,6 +684,8 @@ export default function Sell() {
         message: `오픈 채팅방 주소가 없습니다.\n계속 진행하시겠습니까?`,
         subMessage: '오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
         isSelect: true,
+        size: 'w-80',
+        ㅅ,
       });
 
       if (!result) return;
@@ -703,9 +715,9 @@ export default function Sell() {
         update({ openChatUrl: openChatUrl });
         sessionStorage.removeItem('draft');
         if (data) {
-          invalidateFilters();
-          router.push(`/shop/product/${data.insertedId}`);
-          router.refresh();
+          // invalidateFilters();
+          // router.push(`/shop/product/${data.insertedId}`);
+          // router.refresh();
         }
       } else if (res.status === 401) {
         await openModal({ message: '로그인이 만료되었습니다. 다시 로그인해 주세요.' });
@@ -756,7 +768,7 @@ export default function Sell() {
 
       <div className="w-full flex justify-end">
         <button
-          className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
+          className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-30"
           disabled={handleDisabled()}
           onClick={handleUpload}
         >

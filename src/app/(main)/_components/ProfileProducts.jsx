@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
-import { Fragment, useState } from 'react';
+import { Fragment, useCallback } from 'react';
 import Image from 'next/image';
 import timeAgo from '@/utils/timeAgo';
 import ProfileSkeleton from './ProfileSkeleton';
 import conditions from '../_constants/conditions';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const Product = ({ product, productOption }) => {
   return (
@@ -72,7 +73,18 @@ const Product = ({ product, productOption }) => {
 };
 
 export default function ProfileProducts({ data }) {
-  const [productOption, setProductOption] = useState(1);
+  const router = useRouter();
+  const params = useSearchParams();
+  const productOption = params.get('state') === null ? 1 : Number(params.get('state'));
+
+  const updateURL = useCallback(state => {
+    if (state === 'all') return router.push(window.location.pathname);
+    const currentParams = new URLSearchParams(params.toString());
+    currentParams.set('state', state);
+    const newURL = `${window.location.pathname}?${currentParams.toString()}`;
+    router.push(newURL);
+  }, []);
+
   return (
     <div className="flex flex-col h-full space-y-8 overflow-x-hidden">
       <section className="space-y-2">
@@ -82,11 +94,9 @@ export default function ProfileProducts({ data }) {
             <button>
               <li
                 className={`flex justify-center py-2 text-lg space-x-2 max-md:text-sm border-gray-200 border-r ${
-                  productOption == 1 ? 'bg-white text-black' : 'text-gray-400'
+                  productOption === 1 ? 'bg-white text-black' : 'text-gray-400'
                 }`}
-                onClick={() => {
-                  productOption !== 1 && setProductOption(1);
-                }}
+                onClick={() => updateURL('all')}
               >
                 <p>판매 중</p>
                 <p className="font-medium">{data?.filter(a => a.state === 1).length}</p>
@@ -95,11 +105,9 @@ export default function ProfileProducts({ data }) {
             <button>
               <li
                 className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 border-r max-md:text-sm ${
-                  productOption == 2 ? 'bg-white text-black' : 'text-gray-400'
+                  productOption === 2 ? 'bg-white text-black' : 'text-gray-400'
                 }`}
-                onClick={() => {
-                  productOption !== 2 && setProductOption(2);
-                }}
+                onClick={() => updateURL(2)}
               >
                 <p>예약 중</p>
                 <p className="font-medium">{data?.filter(a => a.state === 2).length}</p>
@@ -108,11 +116,9 @@ export default function ProfileProducts({ data }) {
             <button>
               <li
                 className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 max-md:text-sm ${
-                  productOption == 0 ? 'bg-white text-black' : 'text-gray-400'
+                  productOption === 0 ? 'bg-white text-black' : 'text-gray-400'
                 }`}
-                onClick={() => {
-                  productOption !== 0 && setProductOption(0);
-                }}
+                onClick={() => updateURL(0)}
               >
                 <p>판매 완료 </p>
                 <p className="font-medium">{data?.filter(a => a.state === 0).length}</p>

@@ -7,7 +7,7 @@ import { Fragment, useCallback, useEffect, useState } from 'react';
 import useProductStateMutation from '@/hooks/useProductStateMutaion';
 import initRaiseCount from '@/lib/initRaiseCount';
 import raiseProduct from '@/lib/raiseProduct';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Modal from '../../_components/Modal';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import Link from 'next/link';
@@ -104,7 +104,7 @@ const SettingButton = ({ id, router, invalidateFilters, refetch, setShowModal })
           setShowSetting(true);
         }}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.2rem" height="1.2rem" viewBox="0 0 1024 1024">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 1024 1024">
           <path
             fill="gray"
             d="M176 416a112 112 0 1 1 0 224a112 112 0 0 1 0-224m336 0a112 112 0 1 1 0 224a112 112 0 0 1 0-224m336 0a112 112 0 1 1 0 224a112 112 0 0 1 0-224"
@@ -258,18 +258,27 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
 };
 
 export default function ProductEdit() {
+  const router = useRouter();
+  const params = useSearchParams();
   const { data: session, status } = useSession();
-  const [productState, setProductState] = useState(3);
   const { openModal } = useModal();
   const [raiseCount, setRaiseCount] = useState(0);
   const fetchRaiseCount = initRaiseCount(setRaiseCount);
-  const router = useRouter();
   const invalidateFilters = useInvalidateFiltersQuery();
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['userProducts', session?.user?.id],
     queryFn: () => getUserProducts(session?.user?.id),
     enabled: status === 'authenticated' && !!session?.user?.id,
   });
+  const productState = params.get('state') === null ? 3 : Number(params.get('state'));
+
+  const updateURL = useCallback(state => {
+    if (state === 'all') return router.push(window.location.pathname);
+    const currentParams = new URLSearchParams(params.toString());
+    currentParams.set('state', state);
+    const newURL = `${window.location.pathname}?${currentParams.toString()}`;
+    router.push(newURL);
+  }, []);
 
   useEffect(() => {
     fetchRaiseCount();
@@ -280,33 +289,25 @@ export default function ProductEdit() {
       <div className="sticky top-16 z-40 flex space-x-2 pb-2 pt-3 bg-white mb-2 max-md:text-sm max-md:px-3 max-md:top-0 max-md:mb-0 max-md:border-b">
         <button
           className={`px-2 py-1 border border-black ${productState === 3 ? 'bg-black text-white ' : ''} rounded`}
-          onClick={() => {
-            if (productState !== 3) setProductState(3);
-          }}
+          onClick={() => updateURL('all')}
         >
           전체 {data?.userProducts.length}
         </button>
         <button
           className={`px-2 py-1 border border-black rounded ${productState === 1 ? 'bg-black text-white ' : ''}`}
-          onClick={() => {
-            if (productState !== 1) setProductState(1);
-          }}
+          onClick={() => updateURL(1)}
         >
           판매중 {data?.userProducts.filter(a => a.state === 1).length}
         </button>
         <button
           className={`px-2 py-1 border border-black rounded ${productState === 2 ? 'bg-black text-white ' : ''}`}
-          onClick={() => {
-            if (productState !== 2) setProductState(2);
-          }}
+          onClick={() => updateURL(2)}
         >
           예약 중 {data?.userProducts.filter(a => a.state === 2).length}
         </button>
         <button
           className={`px-2 py-1 border border-black rounded ${productState === 0 ? 'bg-black text-white ' : ''}`}
-          onClick={() => {
-            if (productState !== 0) setProductState(0);
-          }}
+          onClick={() => updateURL(0)}
         >
           판매완료 {data?.userProducts.filter(a => a.state === 0).length}
         </button>

@@ -12,14 +12,16 @@ export const ModalProvider = ({ children }) => {
   const [modalMessage, setModalMessage] = useState('');
   const [modalSubMessage, setModalSubMessage] = useState('');
   const [isSelect, setIsSelect] = useState(false);
+  const [size, setSize] = useState('w-72');
   const [resolvePromise, setResolvePromise] = useState(null);
   const pathName = usePathname();
 
-  const openModal = useCallback(({ message, subMessage = '', isSelect }) => {
+  const openModal = useCallback(({ message, subMessage = '', isSelect, size }) => {
     setModalMessage(message);
     setModalSubMessage(subMessage);
     setIsSelect(isSelect);
     setIsModalOpen(true);
+    setSize(size);
 
     return new Promise(resolve => {
       setResolvePromise(() => resolve);
@@ -34,6 +36,7 @@ export const ModalProvider = ({ children }) => {
       setModalMessage('');
       setModalSubMessage('');
       setIsSelect(false);
+      setSize('w-72');
     }
   }, [resolvePromise]);
 
@@ -45,6 +48,7 @@ export const ModalProvider = ({ children }) => {
       setModalMessage('');
       setModalSubMessage('');
       setIsSelect(false);
+      setSize('w-72');
     }
   }, [resolvePromise]);
 
@@ -56,7 +60,7 @@ export const ModalProvider = ({ children }) => {
 
   return (
     <ModalContext.Provider
-      value={{ isModalOpen, modalMessage, modalSubMessage, openModal, closeModal, confirmModal, isSelect }}
+      value={{ isModalOpen, modalMessage, modalSubMessage, openModal, closeModal, confirmModal, isSelect, size }}
     >
       {children}
     </ModalContext.Provider>
