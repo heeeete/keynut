@@ -142,7 +142,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
       ([entry]) => {
         if (!entry.isIntersecting) {
           setIsFocused(false);
-          searchRef.current?.blur();
+          inputRef.current?.blur();
           $nav.style.borderBottom = '1px solid lightgray';
         } else {
           $nav.style.borderBottom = '';
@@ -391,7 +391,7 @@ const Product = ({ product }) => {
         />
         {product.state === 2 ? (
           <div className="absolute left-1 top-1 z-10 rounded px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
-            <p className="font-semibold text-white text-sm max-md:text-xxs">예약중</p>
+            <p className="font-semibold text-white text-sm max-[1024px]:text-xs max-md:text-xxs">예약중</p>
           </div>
         ) : (
           ''
@@ -551,11 +551,15 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
     return (
       <div className="px-2 max-md:border-0 max-md:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto md:px-10">
         <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
-        <div className="grid grid-cols-6 gap-2 pb-2 w-full relative max-md:flex">
+        <div className="grid grid-cols-6 gap-2 pb-2 w-full relative max-md:flex overflow-x-scroll scrollbar-hide">
           {Array.from({ length: 6 }).map((_, index) => (
-            <Fragment key={index}>
-              <Skeleton />
-            </Fragment>
+            <div className="flex flex-col rounded max-md:min-w-28 max-md:w-36" key={index}>
+              <div className="w-full aspect-square  min-h-20 min-w-20 bg-gray-100"></div>
+              <div className="flex flex-col py-1 justify-center h-14 space-y-1">
+                <div className="w-3/4  bg-gray-100 h-5 min-h-3"></div>
+                <div className="w-2/3 bg-gray-100 h-5 min-h-3"></div>
+              </div>
+            </div>
           ))}
           <div className="absolute top-0 left-0 h-full w-full animate-loading">
             <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
