@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, Suspense, useEffect, useState } from 'react';
 
 // import MyPost from './_components/MyPost';
 // import LikedPost from './_components/LikedPost';
@@ -143,10 +143,12 @@ export default function MyPage() {
   });
 
   return (
-    <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3 md:min-h-70vh">
-      <MyProfile session={session} update={update} status={status} userProfile={data?.userProfile} />
-      {/* <UserSupport /> */}
-      <ProfileProducts data={data?.userProducts} />
-    </div>
+    <Suspense>
+      <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3 md:min-h-70vh">
+        <MyProfile session={session} update={update} status={status} userProfile={data?.userProfile} />
+        {/* <UserSupport /> */}
+        <ProfileProducts data={data?.userProducts} />
+      </div>
+    </Suspense>
   );
 }

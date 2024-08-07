@@ -3,7 +3,7 @@ import getUserProducts from '@/lib/getUserProducts';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
 import useProductStateMutation from '@/hooks/useProductStateMutaion';
 import initRaiseCount from '@/lib/initRaiseCount';
 import raiseProduct from '@/lib/raiseProduct';
@@ -213,7 +213,7 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
   );
 };
 
-export default function ProductEdit() {
+function ProductEdit() {
   const router = useRouter();
   const params = useSearchParams();
   const { data: session, status } = useSession();
@@ -335,5 +335,13 @@ export default function ProductEdit() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <ProductEdit />
+    </Suspense>
   );
 }
