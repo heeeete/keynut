@@ -141,7 +141,7 @@ export default function ProfileProducts({ data }) {
                   })}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center space-y-1 md:h-50vh max-md:h-52">
+              <div className="flex flex-col items-center justify-center space-y-1 md:h-72 max-md:h-52">
                 <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 256 256">
                   <path
                     fill="lightgray"
