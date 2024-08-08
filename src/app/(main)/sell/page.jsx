@@ -11,6 +11,8 @@ import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import getUserProfile from '@/lib/getUserProfile';
 // import Modal from '../_components/Modal';
 import { useModal } from '../_components/ModalProvider';
+import getSignedUrls from '@/lib/getSignedUrls';
+import uploadToS3 from '@/lib/uploadToS3';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   switch (mainCategory) {
@@ -686,15 +688,26 @@ export default function Sell() {
         isSelect: true,
         size: 'w-80',
       });
-
       if (!result) return;
     }
 
     setIsLoading(true);
+    const names = uploadImages.imageFiles.map(file => file.name);
+    const { urls, status } = await getSignedUrls(names);
+    if (status !== 200) {
+      await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
+      setIsLoading(false);
+      return;
+    }
+    const uploadUrls = await Promise.all(
+      urls.map(async (url, idx) => {
+        const uploadUrl = await uploadToS3(url, uploadImages.imageFiles[idx]);
+        return uploadUrl;
+      }),
+    );
+
     const formData = new FormData();
-    uploadImages.imageFiles.forEach(file => {
-      formData.append('files', file);
-    });
+    formData.append('imageUrls', JSON.stringify(uploadUrls));
     formData.append('title', title.replace(/ +/g, ' ').trim());
     formData.append('subCategory', subCategory);
     formData.append('condition', condition);
@@ -714,9 +727,9 @@ export default function Sell() {
         update({ openChatUrl: openChatUrl });
         sessionStorage.removeItem('draft');
         if (data) {
-          // invalidateFilters();
-          // router.push(`/shop/product/${data.insertedId}`);
-          // router.refresh();
+          invalidateFilters();
+          router.push(`/shop/product/${data.insertedId}`);
+          router.refresh();
         }
       } else if (res.status === 401) {
         await openModal({ message: '로그인이 만료되었습니다.\n다시 로그인해 주세요.' });
