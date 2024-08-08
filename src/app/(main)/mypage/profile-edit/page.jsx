@@ -10,6 +10,8 @@ import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import formatDate from '../../_lib/formatDate';
 import { useModal } from '../../_components/ModalProvider';
 
+const IMAGE_MAX_SIZE = 4.5 * 1024 * 1024;
+
 const ProfileName = ({ session, status, update, openModal }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempNickname, setTempNickname] = useState('');
@@ -91,7 +93,7 @@ const ProfileName = ({ session, status, update, openModal }) => {
   );
 };
 
-const ProfileImage = ({ session, status, update }) => {
+const ProfileImage = ({ session, status, update, openModal }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [profileImg, setProfileImg] = useState(null);
   const fileInputRef = useRef(null);
@@ -104,6 +106,13 @@ const ProfileImage = ({ session, status, update }) => {
 
   const handleImageSelect = async e => {
     if (!e.target.files.length) return;
+    if (e.target.files[0].size > IMAGE_MAX_SIZE) {
+      console.log('max');
+      openModal({ message: '이미지 용량 초과', subMessage: '4.5MB 이하로 업로드해 주세요.' });
+      e.target.value = '';
+      return;
+    }
+
     setIsLoading(true);
     const formData = new FormData();
     formData.append('oldImage', JSON.stringify(profileImg));
@@ -263,7 +272,7 @@ const ProfileInfo = ({ session, status, update, openModal }) => {
   return (
     <section className="flex flex-col rounded-none space-y-4">
       <p className="font-medium border-b border-black md:text-lg">프로필 정보</p>
-      <ProfileImage session={session} status={status} update={update} />
+      <ProfileImage session={session} status={status} update={update} openModal={openModal} />
       <ProfileName session={session} status={status} update={update} openModal={openModal} />
     </section>
   );
