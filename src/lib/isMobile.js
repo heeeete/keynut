@@ -1,11 +1,12 @@
 export function isMobile() {
   if (typeof window !== 'undefined') {
     if (navigator.maxTouchPoints > 1) {
-      const isIPad = /Macintosh|iPad/.test(navigator.userAgent);
-      if (isIPad) return true;
+      const isMobile = /Macintosh|iPad|Mobi|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      );
+      if (isMobile) return true;
       return false;
     }
-    return /Mobi|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return false;
   }
-  return false;
 }
