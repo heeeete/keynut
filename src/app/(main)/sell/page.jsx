@@ -749,7 +749,7 @@ export default function Sell() {
   };
 
   return (
-    <div className="max-w-screen-lg px-10 mx-auto max-md:px-2 max-md:main-768">
+    <div className="max-w-screen-lg px-10 mx-auto max-md:px-2 max-md:main-768 max-md:mb-4">
       {isLoading && <Loading />}
       <RenderImageUploadButton
         fileInputRef={fileInputRef}
