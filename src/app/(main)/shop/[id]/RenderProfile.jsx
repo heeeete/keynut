@@ -163,10 +163,7 @@ const Memo = ({ status, data, session }) => {
             d="M12 4c4.411 0 8 3.589 8 8s-3.589 8-8 8s-8-3.589-8-8s3.589-8 8-8m0-2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2m1 13h-2v2h2zm-2-2h2l.5-6h-3z"
           />
         </svg>
-        <div
-          className="absolute border  rounded-lg z-80 bg-white p-2 text-gray-400 flex-nowrap whitespace-nowrap  max-md:-right-16  max-md:top-6 md:bottom-5 md:left-4 md:w-auto md:rounded-bl-none  hidden group-hover:block"
-          // className="text-gray-400  hidden group-hover:block"
-        >
+        <div className="absolute border  rounded-lg z-80 bg-white p-2 text-gray-400 flex-nowrap whitespace-nowrap  max-md:-right-16  max-md:top-6 md:bottom-5 md:left-4 md:w-auto md:rounded-bl-none  hidden group-hover:block">
           <p className="text-xs">나를 제외한 다른 사용자에게는 표시되지 않습니다.</p>
         </div>
       </div>
