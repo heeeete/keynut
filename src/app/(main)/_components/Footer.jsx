@@ -6,7 +6,9 @@ export default function Footer() {
   const pathname = usePathname();
   const footer = !pathname.startsWith('/bookmark') && !pathname.startsWith('/gallery');
   const footerRender =
-    pathname.startsWith('/mypage') || (pathname.startsWith('/shop/') && !pathname.startsWith('/shop/product/'));
+    pathname.startsWith('/mypage') ||
+    pathname === '/sell' ||
+    (pathname.startsWith('/shop/') && !pathname.startsWith('/shop/product/'));
   return (
     <>
       {footer ? (

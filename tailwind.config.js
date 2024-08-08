@@ -13,7 +13,7 @@ module.exports = {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        header: "url('/header3.png')",
+        header: "url('/header.png')",
       },
       aspectRatio: {
         '4/5': '4 / 5',
