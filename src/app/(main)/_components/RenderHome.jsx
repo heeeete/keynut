@@ -185,7 +185,7 @@ export default function RenderHome() {
     <div className="flex flex-col w-full md:-mt-4 max-md:pt-12">
       <Link
         href={'/shop'}
-        className={`${title.className} relative flex text-center bg-header h-72 items-center  justify-center max-md:h-40 max-md:text-lg max-md:px-4 bg-center bg-contain  max-md:translate-y-0 max-md:bg-cover`}
+        className={` relative flex text-center bg-header h-72 items-center  justify-center max-md:h-40 max-md:text-lg max-md:px-4 bg-center bg-contain  max-md:translate-y-0 max-md:bg-cover`}
       >
         <div
           style={{
@@ -195,11 +195,11 @@ export default function RenderHome() {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,1) 100%)',
+            background: 'radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,1) 70%)',
             zIndex: 1,
           }}
         />
-        <div className="flex items-center justify-center font-bold z-50 text-3xl text-gray-200  text-opacity-40 z-2 max-[1024px]:text-2xl max-md:text-lg max-md:text-opacity-15">
+        <div className="flex items-center justify-center font-bold z-50 text-3xl text-gray-200  text-opacity-40 z-2 max-[1024px]:text-2xl max-md:text-lg">
           키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요!
         </div>
       </Link>

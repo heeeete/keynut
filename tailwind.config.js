@@ -119,7 +119,6 @@ module.exports = {
       },
       filter: {
         none: 'none',
-        'pink-blur': 'url(#fuzzy-pink)',
       },
       minWidth: {
         600: '600px',
@@ -219,19 +218,16 @@ module.exports = {
           border: 'none',
           width: '100%',
           height: '100%',
-          // padding: '0px 12px',
           backgroundColor: 'rgb(243 244 246)',
         },
         '.defualt-profile': {
           display: 'flex',
           backgroundColor: 'rgb(243,244,246)',
-          // border: '2px solid rgb(243,244,246)',
           borderRadius: '50%',
           justifyContent: 'center',
           alignItems: 'flex-end',
           overflow: 'hidden',
         },
-        // flex gap-2 flex-wrap px-2
         '.filter-container': {
           display: 'flex',
           gap: '12px',
@@ -245,10 +241,8 @@ module.exports = {
           borderRadius: '16px',
           borderColor: '#e5e7eb',
           fontSize: '15px',
-          // color: '#6b7280',
         },
       };
-      //max-md:rounded max-md:px-3 max-md:bg-gray-100 max-md:w-full max-md:h-full
       addUtilities(newUtilities);
     },
     require('tailwind-scrollbar-hide'),
