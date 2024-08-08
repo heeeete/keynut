@@ -136,8 +136,6 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
   useEffect(() => {
     const $nav = document.getElementById('nav');
 
-    console.log(window.innerWidth);
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) {

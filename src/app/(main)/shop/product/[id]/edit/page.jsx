@@ -11,6 +11,8 @@ import Loading from '@/app/(main)/_components/Loading';
 import Link from 'next/link';
 import Modal from '@/app/(main)/_components/Modal';
 import { useModal } from '@/app/(main)/_components/ModalProvider';
+import uploadToS3 from '@/lib/uploadToS3';
+import getSignedUrls from '@/lib/getSignedUrls';
 
 const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
   switch (mainCategory) {
@@ -666,13 +668,37 @@ export default function Edit() {
     }
 
     setUploadLoading(true);
-    const formData = new FormData();
-    uploadImages.imageFiles.forEach(file => {
-      formData.append('uploadFiles', file);
+
+    const newImageIdx = [];
+    const names = [];
+
+    uploadImages.imageFiles.forEach((file, idx) => {
+      if (typeof file === 'object') {
+        newImageIdx.push(idx);
+        names.push(file.name);
+      }
     });
+
+    const { urls, status } = await getSignedUrls(names);
+    if (status !== 200) {
+      await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
+      setUploadImages(false);
+      return;
+    }
+
+    const uploadUrls = await Promise.all(
+      urls.map(async (url, idx) => {
+        const uploadUrl = await uploadToS3(url, uploadImages.imageFiles[newImageIdx[idx]]);
+        return uploadUrl;
+      }),
+    );
+    newImageIdx.forEach((idx, i) => (uploadImages.imageFiles[idx] = uploadUrls[i]));
+
+    const formData = new FormData();
     deleteImages.forEach(file => {
       formData.append('deleteFiles', file);
     });
+    formData.append('imageUrls', JSON.stringify(uploadImages.imageFiles));
     formData.append('title', title.replace(/ +/g, ' ').trim());
     formData.append('subCategory', subCategory);
     formData.append('condition', condition);
@@ -698,8 +724,6 @@ export default function Edit() {
         signIn();
       } else {
         const data = await res.json();
-        // if (res.status === 403 && data.error === 'Your account has been banned.')
-        // return router.push(`/auth/error?error=${encodeURIComponent(data.error)}`);
         const errorData = await res.json();
         console.error(errorData.error);
         await openModal({ message: '상품 수정에 실패했습니다. 나중에 다시 시도해주세요.' });
