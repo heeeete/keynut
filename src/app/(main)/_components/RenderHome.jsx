@@ -182,12 +182,13 @@ const Categories = () => {
 
 export default function RenderHome() {
   return (
-    <div className="flex flex-col w-full max-md:main-768 -translate-y-6">
+    <div className="flex flex-col w-full max-md:pt-12">
       <Link
         href={'/shop'}
-        className={`${title.className} flex flex-col text-center bg-black overflow-hidden h-48 text-2xl items-center relative justify-center max-md:h-36 text-gray-500 max-md:text-lg max-md:px-4  max-md:translate-y-0`}
+        className={`${title.className} flex flex-col text-center bg-header overflow-hidden h-72 items-center relative justify-center max-md:h-40 max-md:text-lg max-md:px-4  max-md:translate-y-0
+        after:block after:absolute after:top-0 after:left-0 after:w-full after:h-full after:bg-black after:bg-opacity-70 max-md:bg-cover`}
       >
-        <div className="flex items-center justify-center font-semibold text-gray-100 z-2">
+        <div className="flex items-center justify-center font-bold z-50 text-3xl text-gray-200 text-opacity-40 z-2 max-[1024px]:text-2xl max-md:text-lg max-md:text-opacity-20">
           키넛에서 다양한 전자제품을 쉽고 빠르게 거래해보세요!
         </div>
       </Link>

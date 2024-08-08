@@ -23,6 +23,11 @@ const forbiddenList = [
   '보지',
   '섹스',
   '개새끼',
+  '운영자',
+  '관리자',
+  'admin',
+  'keynut',
+  '키넛',
 ];
 
 export async function PUT(req) {
@@ -93,7 +98,7 @@ export async function PUT(req) {
       if (exisitingUser) {
         return NextResponse.json('dup', { status: 409 });
       }
-      if (forbiddenList.some(a => nickname.match(a))) {
+      if (forbiddenList.some(a => nickname.toLowerCase().includes(a))) {
         return NextResponse.json('forbidden', { status: 402 });
       }
 

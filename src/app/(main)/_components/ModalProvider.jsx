@@ -19,9 +19,9 @@ export const ModalProvider = ({ children }) => {
   const openModal = useCallback(({ message, subMessage = '', isSelect, size }) => {
     setModalMessage(message);
     setModalSubMessage(subMessage);
-    setIsSelect(isSelect);
+    if (isSelect) setIsSelect(isSelect);
     setIsModalOpen(true);
-    setSize(size);
+    if (size) setSize(size);
 
     return new Promise(resolve => {
       setResolvePromise(() => resolve);
