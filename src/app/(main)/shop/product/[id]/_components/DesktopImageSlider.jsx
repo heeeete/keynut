@@ -30,7 +30,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
     <div className="relative flex mx-auto flex-col items-center justify-center">
       <div
         onClick={() => initPhotoSwipe(currentImageIndex)}
-        className="flex relative w-full aspect-square items-center group"
+        className="flex relative w-full aspect-square items-center group "
       >
         {state === 0 && (
           <div className="absolute flex items-center justify-center z-40 top-0 left-0 w-full h-full bg-black opacity-70">

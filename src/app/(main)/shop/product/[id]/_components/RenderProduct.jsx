@@ -252,7 +252,11 @@ const RenderHashTag = ({ product }) => {
   return (
     <div className="flex text-gray-500 flex-wrap">
       {product.tags?.map((e, idx) => (
-        <Link href={`/shop?keyword=${encodeURIComponent(e)}`} key={idx} className="flex items-center mr-3">
+        <Link
+          href={`/shop?keyword=${encodeURIComponent(e)}`}
+          key={idx}
+          className="flex items-center mr-3 max-md:text-sm"
+        >
           <span>{e}</span>
         </Link>
       ))}
@@ -263,9 +267,9 @@ const RenderHashTag = ({ product }) => {
 const RenderDescriptor = ({ product }) => {
   return (
     <div className="md:mt-5 px-2 py-1 rounded min-h-24 break-all">
-      <p className="text-xl font-semibold">상품 설명</p>
-      <div className="w-full bg-gray-300 rounded-full my-4" style={{ height: '2px' }}></div>
-      <p className="whitespace-pre-wrap">{product.description}</p>
+      <p className="text-xl font-semibold  max-md:text-lg">상품 설명</p>
+      <div className="w-full bg-gray-300 rounded-full my-4 max-md:my-2" style={{ height: '2px' }}></div>
+      <p className="whitespace-pre-wrap min-h-28">{product.description}</p>
     </div>
   );
 };
@@ -539,7 +543,7 @@ export default function RenderProduct({ id }) {
   if (!data || !product) return <div>데이터를 가져오고 있습니다...</div>;
   return (
     <div className="md:mt-5 md:flex-1 md:px-10 max-w-screen-lg mx-auto min-h-80vh max-md:mt-12">
-      <div className="md:mb-4 flex items-end md:h-6 max-md:py-3 max-md:px-3 max-md:h-12">
+      <div className="flex items-end md:h-6 max-md:py-3 max-md:px-3 max-md:h-12">
         <RenderCategory category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
         <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
@@ -549,18 +553,19 @@ export default function RenderProduct({ id }) {
           </button>
         )}
       </div>
+      <div className="w-full mt-2 mb-6 bg-gray-300 max-md:hidden" style={{ height: '1px' }}></div>
       <div className="md:flex md:space-x-6">
         <div className="md:flex-1">
           <ImageSlider images={product.images} state={product.state} />
         </div>
         <div className="md:flex-1 flex flex-col max-md:px-3">
           <div className="w-full h-full flex flex-col space-y-6">
-            <div>
+            <div className="mt-6">
               <p className="text-2xl font-bold break-all max-md:text-lg">{product.title}</p>
               <RenderHashTag product={product} />
             </div>
             <div className="space-y-6">
-              <div className="flex justify-between space-x-2">
+              <div className="flex justify-between max-md:items-center space-x-2">
                 <div>
                   <span className="text-2xl font-bold">{Number(product.price).toLocaleString()}</span>
                   <span className="text-xl">원</span>
