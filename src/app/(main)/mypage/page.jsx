@@ -144,7 +144,7 @@ export default function MyPage() {
 
   return (
     <Suspense>
-      <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3 md:min-h-70vh">
+      <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3 md:min-h-80vh">
         <MyProfile session={session} update={update} status={status} userProfile={data?.userProfile} />
         {/* <UserSupport /> */}
         <ProfileProducts data={data?.userProducts} />

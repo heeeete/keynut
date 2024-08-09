@@ -241,7 +241,7 @@ function ProductEdit() {
   }, []);
 
   return (
-    <div className="flex justify-start flex-col max-w-screen-lg mx-auto px-10 max-md:px-0 max-md:mt-12 md:min-h-70vh">
+    <div className="flex justify-start flex-col max-w-screen-lg mx-auto px-10 max-md:px-0 max-md:mt-12 md:min-h-80vh">
       <div className="sticky top-16 z-40 flex space-x-2 pb-2 pt-3 bg-white mb-2 max-md:text-sm max-md:px-3 max-md:top-0 max-md:mb-0 max-md:border-b">
         <button
           className={`px-2 py-1 border border-black ${productState === 3 ? 'bg-black text-white ' : ''} rounded`}
