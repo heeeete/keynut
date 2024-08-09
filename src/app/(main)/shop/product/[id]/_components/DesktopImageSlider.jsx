@@ -62,7 +62,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
             alt="product-img"
             fill
             sizes="(max-width: 24rem) 100vw, 50rem"
-            className={`absolute bg-gray-50 transition-opacity duration-200 cursor-red rounded-xl max-md:rounded-none ${
+            className={`absolute bg-gray-50 transition-opacity duration-200 cursor-pointer rounded-xl max-md:rounded-none ${
               currentImageIndex === idx ? 'opacity-100' : 'opacity-0'
             }`}
             style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
