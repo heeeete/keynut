@@ -30,7 +30,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
     <div className="relative flex max-w-screen-xl mx-auto flex-col items-center justify-center">
       <div
         onClick={() => initPhotoSwipe(currentImageIndex)}
-        className="flex relative w-full max-w-lg aspect-square items-center group bg-gray-500 rounded"
+        className="flex relative w-full max-w-lg aspect-square items-center group bg-gray-500 rounded-xl"
       >
         {state === 0 && (
           <div className="absolute flex items-center justify-center z-40 top-0 left-0 w-full h-full bg-black opacity-70">
@@ -62,7 +62,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
             alt="product-img"
             fill
             sizes="(max-width: 24rem) 100vw, 50rem"
-            className={`absolute bg-gray-50 transition-opacity duration-200 cursor-pointer ${
+            className={`absolute bg-gray-50 transition-opacity duration-200 cursor-pointer rounded-xl ${
               currentImageIndex === idx ? 'opacity-100' : 'opacity-0'
             }`}
             style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
@@ -85,7 +85,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
         <div className="absolute bottom-3  flex space-x-3">
           {images.map((_, idx) => (
             <button
-              className={`w-3 h-3 rounded-full border ${currentImageIndex === idx ? 'bg-gray-400' : 'bg-white'}`}
+              className={`w-3 h-3 rounded-full border-0 ${currentImageIndex === idx ? 'bg-gray-400' : 'bg-white'}`}
               onClick={() => setCurrentImageIndex(idx)}
               key={idx}
             ></button>

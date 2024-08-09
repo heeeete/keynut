@@ -529,7 +529,7 @@ export default function RenderProduct({ id }) {
   if (error) return <div>Error loading product</div>;
   if (!data || !product) return <div>데이터를 가져오고 있습니다...</div>;
   return (
-    <div className="max-w-screen-lg mx-auto max-md:mt-12">
+    <div className="max-w-screen-lg mx-auto min-h-80vh max-md:mt-12">
       <div className="flex px-10 items-end md:h-6 max-md:py-3 max-md:px-3 max-md:h-12">
         <RenderCategory category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
