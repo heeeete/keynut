@@ -8,8 +8,11 @@ export default function SellLink({ router }) {
   return (
     <>
       {pathName === '/sell' ? (
-        <div className="flex justify-center items-center w-full h-full">
-          <div className="flex w-6.5 h-6.5 items-center justify-center rounded-full bg-black border-2 border-black">
+        <div className="flex flex-col justify-center items-center w-full h-full">
+          <div
+            className="flex items-center justify-center rounded-full bg-black border-2 border-black scale-90"
+            style={{ width: '2em', height: '2em' }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="1em"
@@ -24,14 +27,18 @@ export default function SellLink({ router }) {
               />
             </svg>
           </div>
+          <p className="text-xxs">SELL</p>
         </div>
       ) : (
         <Link
           href={'/sell'}
           onClick={e => handleLogin(e, router, '/sell')}
-          className="flex justify-center items-center w-full h-full"
+          className="flex flex-col justify-center items-center w-full h-full"
         >
-          <div className="flex w-6.5 h-6.5 items-center justify-center rounded-full border-2 border-black">
+          <div
+            className="flex items-center justify-center rounded-full border-2 border-black scale-90"
+            style={{ width: '2em', height: '2em' }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="1em"
@@ -46,6 +53,7 @@ export default function SellLink({ router }) {
               />
             </svg>
           </div>
+          <p className="text-xxs">SELL</p>
         </Link>
       )}
     </>
