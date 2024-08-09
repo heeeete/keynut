@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="flex fixed left-0 top-0 w-screen custom-dvh items-center justify-center bg-black z-50 opacity-40">
+    <div className="flex fixed left-0 top-0 w-screen custom-dvh items-center justify-center bg-black z-50 bg-opacity-40">
       <svg xmlns="http://www.w3.org/2000/svg" width="5em" height="5em" viewBox="0 0 24 24">
         <defs>
           <symbol id="lineMdCogFilledLoop0">
@@ -48,7 +48,7 @@ export default function Loading() {
             <circle cx="12" cy="12" r="3.5" />
           </mask>
         </defs>
-        <rect width="24" height="24" fill="#a599ff" mask="url(#lineMdCogFilledLoop1)" />
+        <rect width="24" height="24" fill="#000" mask="url(#lineMdCogFilledLoop1)" />
       </svg>
     </div>
   );
