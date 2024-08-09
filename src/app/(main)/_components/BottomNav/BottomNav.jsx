@@ -31,7 +31,7 @@ export default function BottomNav() {
         </li>
         <li className="flex flex-col justify-center items-center h-full flex-1">
           <MyPageLink router={router} />
-          <Link href="/mypage" onClick={e => handleLogin(e, router, '/mypage')} className="text-xxs">
+          <Link href="/mypage" onClick={e => handleLogin(e, router, '/mypage')} className="text-xxs -translate-y-1">
             MY
           </Link>
         </li>

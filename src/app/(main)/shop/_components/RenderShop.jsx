@@ -139,7 +139,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) {
-          setIsFocused(false);
+          // setIsFocused(false);
           inputRef.current?.blur();
           $nav.style.borderBottom = '1px solid lightgray';
         } else {
@@ -158,6 +158,21 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
 
     return () => {
       if (searchContainerRef.current) observer.unobserve(searchContainerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleTouchStart = event => {
+      if (document.activeElement === inputRef.current) {
+        // setIsFocused(false);
+        inputRef.current?.blur();
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
     };
   }, []);
 
@@ -215,6 +230,9 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
               value={tempSearchText}
               onFocus={() => {
                 setIsFocused(true);
+              }}
+              onBlur={() => {
+                if (isFocused) setIsFocused(false);
               }}
               onChange={e => setTempSearchText(e.target.value)}
               className="outline-none w-full md:placeholder:text-lg  pr-2  max-md:bg-transparent"
