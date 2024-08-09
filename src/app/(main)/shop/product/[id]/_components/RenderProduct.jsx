@@ -269,7 +269,7 @@ const RenderDescriptor = ({ product }) => {
     <div className="md:mt-5 px-2 py-1 rounded min-h-24 break-all">
       <p className="text-xl font-semibold  max-md:text-lg">상품 설명</p>
       <div className="w-full bg-gray-300 rounded-full my-4 max-md:my-2" style={{ height: '2px' }}></div>
-      <p className="whitespace-pre-wrap">{product.description}</p>
+      <p className="whitespace-pre-wrap min-h-28">{product.description}</p>
     </div>
   );
 };
@@ -599,25 +599,6 @@ export default function RenderProduct({ id }) {
                 </div>
               </div>
               {status !== 'loading' && !writer && <RenderProfile user={user} id={session?.user?.id} />}
-              {/* <div className="flex items-center space-x-2 max-md:hidden">
-                {status !== 'loading' ? (
-                  writer || session?.admin ? (
-                    <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
-                  ) : (
-                    <>
-                      <OpenChatLink
-                        url={session ? product.openChatUrl : `/auth/signin?callbackUrl=/shop/product/${id}`}
-                      />
-                      <RenderBookmarkButton
-                        productId={id}
-                        bookmarked={product.bookmarked}
-                        session={session}
-                        queryClient={queryClient}
-                      />
-                    </>
-                  )
-                ) : null}
-              </div> */}
             </div>
           </div>
         </div>
