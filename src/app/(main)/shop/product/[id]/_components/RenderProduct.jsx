@@ -551,7 +551,7 @@ export default function RenderProduct({ id }) {
                 <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
               ) : (
                 <>
-                  <OpenChatLink url={product.openChatUrl} />
+                  <OpenChatLink url={session ? product.openChatUrl : `/auth/signin?callbackUrl=/shop/product/${id}`} />
                   <RenderBookmarkButton
                     productId={id}
                     bookmarked={product.bookmarked}
