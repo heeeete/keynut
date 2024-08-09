@@ -7,7 +7,7 @@ export default function ShopLink() {
   return (
     <>
       {pathName === '/shop' ? (
-        <div className="flex justify-center items-center w-full h-full">
+        <div className="flex flex-col justify-center items-center w-full h-full">
           <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 20 20">
             <path
               fill="black"
@@ -16,9 +16,10 @@ export default function ShopLink() {
               clipRule="evenodd"
             />
           </svg>
+          <p className="text-xxs">SHOP</p>
         </div>
       ) : (
-        <Link href={'/shop'} className="flex justify-center items-center w-full h-full">
+        <Link href={'/shop'} className="flex flex-col justify-center items-center w-full h-full">
           <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
             <path
               fill="none"
@@ -29,6 +30,7 @@ export default function ShopLink() {
               d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4z"
             />
           </svg>
+          <p className="text-xxs">SHOP</p>
         </Link>
       )}
     </>

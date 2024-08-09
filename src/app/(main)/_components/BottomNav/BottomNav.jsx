@@ -15,25 +15,18 @@ export default function BottomNav() {
       <ul className="flex w-full justify-around items-center">
         <li className="flex flex-col justify-center items-center h-full flex-1">
           <HomeLink />
-          <p className="text-xxs -translate-y-1">HOME</p>
         </li>
         <li className="flex flex-col justify-center items-center h-full flex-1">
           <ShopLink />
-          <p className="text-xxs -translate-y-1">SHOP</p>
         </li>
         <li className="flex flex-col justify-center items-center h-full flex-1">
           <SellLink router={router} />
-          <p className="text-xxs -translate-y-1">SELL</p>
         </li>
         <li className="flex flex-col justify-center items-center h-full flex-1">
           <BookmarkLink router={router} />
-          <p className="text-xxs -translate-y-1">찜</p>
         </li>
         <li className="flex flex-col justify-center items-center h-full flex-1">
           <MyPageLink router={router} />
-          <Link href="/mypage" onClick={e => handleLogin(e, router, '/mypage')} className="text-xxs -translate-y-1">
-            MY
-          </Link>
         </li>
       </ul>
     </nav>
