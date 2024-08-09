@@ -30,7 +30,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
     <div className="relative flex mx-auto flex-col items-center justify-center">
       <div
         onClick={() => initPhotoSwipe(currentImageIndex)}
-        className="flex relative w-full aspect-square items-center group bg-gray-500 rounded-xl"
+        className="flex relative w-full aspect-square items-center group "
       >
         {state === 0 && (
           <div className="absolute flex items-center justify-center z-40 top-0 left-0 w-full h-full bg-black opacity-70">
@@ -62,7 +62,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
             alt="product-img"
             fill
             sizes="(max-width: 24rem) 100vw, 50rem"
-            className={`absolute bg-gray-50 transition-opacity duration-200 cursor-pointer rounded-xl ${
+            className={`absolute bg-gray-50 transition-opacity duration-200 cursor-red rounded-xl max-md:rounded-none ${
               currentImageIndex === idx ? 'opacity-100' : 'opacity-0'
             }`}
             style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}

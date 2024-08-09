@@ -101,6 +101,7 @@ module.exports = {
         'gray-5': '#D9D9D9',
         main: 'rgb(250 245 255)',
         'dark-main': 'rgb(216 180 254)',
+        openChat: '#FEE500',
       },
       margin: {
         '12vw': '12vw',
