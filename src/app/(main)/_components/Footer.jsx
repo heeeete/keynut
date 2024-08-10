@@ -14,8 +14,8 @@ export default function Footer() {
       {footer ? (
         <div
           id="footer"
-          className={`flex flex-col   w-full border-t px-10 py-2 mt-6 items-center justify-center space-y-3  max-md:px-5 ${
-            footerRender ? 'max-md:hidden' : ''
+          className={`flex flex-col   w-full border-t px-10 py-2 mt-6 items-center justify-center space-y-3  max-tb:px-5 ${
+            footerRender ? 'max-tb:hidden' : ''
           }`}
         >
           <p className="font-bold">KEYNUT</p>

@@ -187,7 +187,7 @@ const Categories = () => {
 
 export default function RenderHome() {
   return (
-    <div className="flex flex-col w-full min-h-80vh md:-mt-4 max-md:pt-12">
+    <div className="flex flex-col w-full min-h-80vh md:-mt-4 max-tb:pt-12">
       <Link
         href={'/shop'}
         className={`${title.className} relative flex text-center bg-header h-72 items-center  justify-center max-md:h-40 max-md:text-lg max-md:px-4 bg-center bg-contain  max-md:translate-y-0 max-md:bg-cover`}
