@@ -5,7 +5,7 @@ const getImageSize = url => {
       resolve({ width: img.width, height: img.height });
     };
     img.onerror = reject;
-    img.src = url;
+    img.src = `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url}`;
   });
 };
 

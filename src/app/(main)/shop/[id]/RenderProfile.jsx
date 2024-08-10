@@ -16,7 +16,13 @@ const ProfileImage = ({ image }) => {
     <>
       {image ? (
         <div className="flex rounded-full w-85 aspect-square relative justify-center items-center border ">
-          <Image className="rounded-full object-cover" src={image} alt="myprofile" fill sizes="150px" />
+          <Image
+            className="rounded-full object-cover"
+            src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${image}`}
+            alt="myprofile"
+            fill
+            sizes="150px"
+          />
         </div>
       ) : (
         <div className="w-85 aspect-square defualt-profile">

@@ -71,7 +71,7 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteIm
               className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
             >
               <Image
-                src={url}
+                src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url}`}
                 fill
                 alt={`item-${idx}`}
                 className="rounded border"

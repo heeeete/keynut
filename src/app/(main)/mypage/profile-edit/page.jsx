@@ -156,7 +156,7 @@ const ProfileImage = ({ session, status, update, openModal }) => {
             <div className="relative w-32 aspect-square max-md:w-24">
               <Image
                 className="absolute rounded-full aspect-square object-cover"
-                src={profileImg}
+                src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${profileImg}`}
                 alt="profileImg"
                 fill
                 sizes="(max-width:200px), 300px"

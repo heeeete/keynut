@@ -74,7 +74,7 @@ export default function ImageSlider({ images, state }) {
     const options = { showHideAnimationType: 'fade', errorMsg: '이미지를 찾을 수 없습니다.' };
     const imageDataPromise = images.map(async (url, idx) => {
       const { width, height } = await getImageSize(url);
-      return { src: url, width, height, alt: `image-${idx}` };
+      return { src: `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url}`, width, height, alt: `image-${idx}` };
     });
     const imageData = await Promise.all(imageDataPromise);
 
