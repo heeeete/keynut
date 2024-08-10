@@ -4,7 +4,6 @@ import getUserSession from '@/lib/getUserSession';
 import s3Client from '@/lib/s3Client';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId } from 'mongodb';
-import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 import { revalidateTag } from 'next/cache';
 
 //회원탈퇴
@@ -45,7 +44,7 @@ export async function DELETE(req, { params }) {
       const deleteS3ImagesPromises = product.images.map(async img => {
         const params = {
           Bucket: process.env.S3_BUCKET_NAME,
-          Key: extractionS3ImageKey(img),
+          Key: img,
         };
         try {
           await s3Client.send(new DeleteObjectCommand(params));
