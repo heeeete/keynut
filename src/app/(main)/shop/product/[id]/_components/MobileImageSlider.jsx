@@ -110,7 +110,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
             {images.map((img, idx) => (
               <div key={idx} className="flex relative max-w-lg w-screen aspect-square">
                 <Image
-                  src={img}
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img}`}
                   alt="product-img"
                   fill
                   style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}

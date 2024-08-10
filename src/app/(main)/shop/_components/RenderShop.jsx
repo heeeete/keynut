@@ -403,7 +403,7 @@ const Product = ({ product }) => {
       <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
         <Image
           className="rounded object-cover"
-          src={product.images.length ? product.images[0] : '/noImage.svg'}
+          src={product.images.length ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}` : '/noImage.svg'}
           alt={product.title}
           fill
           sizes="(max-width:768px) 60vw, (max-width:1300px) 30vw , 500px"
@@ -603,7 +603,11 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
                   <div className="w-full aspect-square relative min-h-20 min-w-20 bg-gray-100">
                     <Image
                       className="rounded object-cover"
-                      src={product.images.length ? product.images[0] : '/noImage.svg'}
+                      src={
+                        product.images.length
+                          ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}`
+                          : '/noImage.svg'
+                      }
                       alt={product.title}
                       fill
                       sizes="(max-width:768px) 50vw, (max-width:1300px) 20vw , 240px"

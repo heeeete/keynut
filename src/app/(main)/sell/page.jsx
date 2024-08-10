@@ -221,7 +221,7 @@ export default function Sell() {
     );
 
     const formData = new FormData();
-    formData.append('imageUrls', JSON.stringify(uploadUrls));
+    formData.append('imageUrls', JSON.stringify(names));
     formData.append('title', title.replace(/ +/g, ' ').trim());
     formData.append('subCategory', subCategory);
     formData.append('condition', condition);

@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
-import extractionS3ImageKey from '@/utils/extractionS3ImageKey';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import checkBannedEmail from '@/lib/checkBannedEmail';
 
@@ -155,7 +154,7 @@ export async function PUT(req) {
       deleteFiles.map(file => {
         const params = {
           Bucket: process.env.S3_BUCKET_NAME,
-          Key: extractionS3ImageKey(file),
+          Key: file,
         };
         return s3Client.send(new DeleteObjectCommand(params)); // Promise 반환
       }),
