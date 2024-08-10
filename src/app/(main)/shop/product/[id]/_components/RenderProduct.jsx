@@ -177,7 +177,13 @@ const RenderProfile = ({ user, id }) => {
           <div className="flex relative rounded-full  aspect-square justify-center items-center cursor-pointer">
             {user.image ? (
               <div className="relative w-20 h-20">
-                <Image className="rounded-full object-cover" src={user.image} sizes="80px" alt="profile" fill />
+                <Image
+                  className="rounded-full object-cover"
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${user.image}`}
+                  sizes="80px"
+                  alt="profile"
+                  fill
+                />
               </div>
             ) : (
               <div className="w-20 h-20 defualt-profile">

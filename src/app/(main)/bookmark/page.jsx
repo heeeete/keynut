@@ -65,7 +65,13 @@ const ABookMark = ({ item }) => {
     >
       <div className="flex">
         <div className="flex w-28 min-w-28 aspect-square mr-4 relative">
-          <Image className="rounded object-cover" src={item.images[0]} alt={item.title} fill sizes="200px" />
+          <Image
+            className="rounded object-cover"
+            src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${item.images[0]}`}
+            alt={item.title}
+            fill
+            sizes="200px"
+          />
           {item.state === 0 || item.state === 2 ? (
             <div className="absolute top-0 left-0 z-10 w-full h-full rounded bg-black opacity-70 flex items-center justify-center">
               <p className="font-semibold text-white text-lg max-md:text-base">
