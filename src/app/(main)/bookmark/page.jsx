@@ -119,7 +119,7 @@ export default function Bookmark() {
 
   if (isLoading || !data) {
     return (
-      <div className="relative flex flex-col max-w-screen-lg mx-auto px-10 max-md:px-2 max-md:mt-3 overflow-x-hidden">
+      <div className="relative flex flex-col max-w-screen-lg mx-auto px-10 max-md:px-2 max-[960px]:mt-3 overflow-x-hidden">
         <div className="h-6 w-24 bg-gray-100 rounded-sm mb-2"></div>
         <div className="grid grid-cols-2 gap-2 max-md:grid-cols-1">
           {Array.from({ length: 20 }).map((_, index) => (
@@ -154,7 +154,7 @@ export default function Bookmark() {
   return (
     <>
       {data.length ? (
-        <div className="flex flex-col max-w-screen-lg mx-auto px-10 space-y-2 max-md:px-2 max-md:mt-3 max-md:pb-3">
+        <div className="flex flex-col max-w-screen-lg mx-auto px-10 space-y-2 max-md:px-2 max-[960px]:mt-3 max-[960px]:pb-3">
           <p className="text-gray-500 max-md:text-sm">전체 {data.length}</p>
           <div className="grid grid-cols-2 gap-3  max-md:grid-cols-1">
             {data.map((item, index) => (
@@ -165,7 +165,7 @@ export default function Bookmark() {
           </div>
         </div>
       ) : (
-        <div className="flex max-w-screen-xl items-center mx-auto px-10 h-50vh justify-center text-gray-500 max-md:px-2 max-md:h-70vh">
+        <div className="flex max-w-screen-xl items-center mx-auto px-10 h-50vh justify-center text-gray-500 max-[960px]:px-2 max-[960px]:h-70vh">
           <div className="flex flex-col justify-center items-center space-y-1">
             <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 256 256">
               <path

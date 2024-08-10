@@ -266,10 +266,10 @@ const RenderHashTag = ({ product }) => {
 
 const RenderDescriptor = ({ product }) => {
   return (
-    <div className="min-[960px]:mt-5 px-2 py-1 rounded min-h-24 break-all">
+    <div className="min-[960px]:mt-5 px-0 py-1 rounded min-h-24 break-all">
       <p className="text-xl font-semibold  max-[960px]:text-lg">상품 설명</p>
       <div className="w-full bg-gray-300 rounded-full my-4 max-[960px]:my-2" style={{ height: '2px' }}></div>
-      <p className="whitespace-pre-wrap min-h-28">{product.description}</p>
+      <p className="whitespace-pre-wrap min-h-28 px-2">{product.description}</p>
     </div>
   );
 };
