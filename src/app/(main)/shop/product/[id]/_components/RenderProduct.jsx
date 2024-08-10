@@ -266,7 +266,7 @@ const RenderHashTag = ({ product }) => {
 
 const RenderDescriptor = ({ product }) => {
   return (
-    <div className="lg:mt-5 px-2 py-1 rounded min-h-24 break-all">
+    <div className="tb:mt-5 px-2 py-1 rounded min-h-24 break-all">
       <p className="text-xl font-semibold  max-tb:text-lg">상품 설명</p>
       <div className="w-full bg-gray-300 rounded-full my-4 max-tb:my-2" style={{ height: '2px' }}></div>
       <p className="whitespace-pre-wrap min-h-28">{product.description}</p>
@@ -279,7 +279,7 @@ const IsWriter = ({ id, state, setSettingModal }) => {
     <>
       <div className="flex space-x-2 flex-nowrap whitespace-nowrap items-center justify-center md:hidden">
         <button
-          className="align-text-top items-center rounded max-[480px]:hidden"
+          className="align-text-top items-center rounded max-xs:hidden"
           onClick={e => {
             setSettingModal(true);
           }}
@@ -376,6 +376,7 @@ const SettingModal = ({ id, setSettingModal, state, raiseHandler, raiseCount, de
 };
 
 const MobileSettingModal = ({ writer, session, setSettingModal }) => {
+  console.log(writer);
   if (writer || session?.admin)
     return (
       <button
@@ -383,7 +384,7 @@ const MobileSettingModal = ({ writer, session, setSettingModal }) => {
           setSettingModal(true);
         }}
       >
-        <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-[480px]:flex" />
+        <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-xs:flex" />
       </button>
     );
 };
@@ -563,8 +564,8 @@ export default function RenderProduct({ id }) {
   if (error) return <div>Error loading product</div>;
   if (!data || !product) return <div>데이터를 가져오고 있습니다...</div>;
   return (
-    <div className="lg:mt-5 lg:flex-1 lg:px-10 max-w-screen-lg mx-auto min-h-80vh max-tb:mt-12">
-      <div className="flex items-end lg:h-6 max-tb:py-3 max-tb:px-3 max-tb:h-12">
+    <div className="tb:mt-5 tb:flex-1 tb:px-10 max-w-screen-lg mx-auto min-h-80vh max-tb:mt-12">
+      <div className="flex items-end justify-between max-tb:py-3 max-tb:px-3">
         <RenderCategory category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
         <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
@@ -575,14 +576,14 @@ export default function RenderProduct({ id }) {
         )}
       </div>
       <div className="w-full mt-2 mb-6 bg-gray-300 max-tb:hidden" style={{ height: '1px' }}></div>
-      <div className="lg:flex lg:space-x-6">
-        <div className="lg:flex-1">
+      <div className="tb:flex tb:space-x-6">
+        <div className="tb:flex-1">
           <ImageSlider images={product.images} state={product.state} />
         </div>
-        <div className="lg:flex-1 flex flex-col max-tb:px-3">
+        <div className="tb:flex-1 flex flex-col max-tb:px-3">
           <div className="w-full h-full flex flex-col space-y-6">
             <div className="mt-6">
-              <p className="text-2xl font-bold break-all max-tb:text-lg">{product.title}</p>
+              <p className="text-2xl font-bold break-all max-tb:text-lg max-tb:mb-4">{product.title}</p>
               <RenderHashTag product={product} />
             </div>
             <div className="space-y-6">
