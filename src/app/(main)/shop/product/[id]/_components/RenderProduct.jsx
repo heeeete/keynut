@@ -277,7 +277,7 @@ const RenderDescriptor = ({ product }) => {
 const IsWriter = ({ id, state, setSettingModal }) => {
   return (
     <>
-      <div className="flex space-x-2 flex-nowrap whitespace-nowrap items-center justify-center">
+      <div className="flex space-x-2 flex-nowrap whitespace-nowrap items-center justify-center md:hidden">
         <button
           className="align-text-top items-center rounded max-[480px]:hidden"
           onClick={e => {
@@ -292,12 +292,10 @@ const IsWriter = ({ id, state, setSettingModal }) => {
   );
 };
 
-const SettingModal = ({ id, setSettingModal, state, raiseHandler, raiseCount, deleteHandler }) => {
-  const { openModal } = useModal();
-
+const UpButton = ({ setSettingModal, raiseCount, state, raiseHandler, openModal }) => {
   const openUpModal = async () => {
     if (!(await getSession())) return signIn();
-    setSettingModal(false);
+    if (setSettingModal) setSettingModal(false);
 
     const res = await openModal({
       message: raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.',
@@ -307,10 +305,23 @@ const SettingModal = ({ id, setSettingModal, state, raiseHandler, raiseCount, de
     if (!res) return;
     raiseHandler();
   };
+  return (
+    <button
+      className={`md:px-4 md:py-1 md:border md:rounded md:border-gray-300 flex items-center justify-center font-semibold flex-nowrap whitespace-nowrap  max-md:w-full max-md:py-4 max-md:border-b ${
+        state !== 1 ? 'text-gray-300' : 'text-black'
+      }`}
+      onClick={() => openUpModal()}
+      disabled={state === 0 || state === 2}
+    >
+      <p>UP</p>
+    </button>
+  );
+};
 
+const DeleteButton = ({ setSettingModal, openModal, deleteHandler }) => {
   const openDeleteModal = async () => {
     if (!(await getSession())) return signIn();
-    setSettingModal(false);
+    if (setSettingModal) setSettingModal(false);
 
     const res = await openModal({
       message: '삭제하시겠습니까?',
@@ -321,6 +332,28 @@ const SettingModal = ({ id, setSettingModal, state, raiseHandler, raiseCount, de
   };
 
   return (
+    <button
+      className="md:px-4 md:py-1 md:border md:rounded md:border-gray-300 flex items-center justify-center max-md:w-full max-md:py-4 font-semibold text-red-500"
+      onClick={openDeleteModal}
+    >
+      <p>삭제</p>
+    </button>
+  );
+};
+
+const ModifyButton = ({ id }) => {
+  return (
+    <Link
+      className="md:px-4 md:py-1 md:border md:rounded md:border-gray-300 flex items-center justify-center max-md:w-full max-md:py-4 font-semibold max-md:border-b"
+      href={`/shop/product/${id}/edit`}
+    >
+      <p>수정</p>
+    </Link>
+  );
+};
+
+const SettingModal = ({ id, setSettingModal, state, raiseHandler, raiseCount, deleteHandler, openModal }) => {
+  return (
     <div
       className="fixed w-screen custom-dvh top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
       onClick={e => {
@@ -328,27 +361,15 @@ const SettingModal = ({ id, setSettingModal, state, raiseHandler, raiseCount, de
       }}
     >
       <div className="flex flex-col justify-center items-center rounded-md border space-y-1 bg-white w-72">
-        <Link
-          className="flex items-center justify-center w-full py-4 text-center font-semibold border-b"
-          href={`/shop/product/${id}/edit`}
-        >
-          <p>수정</p>
-        </Link>
-        <button
-          className={`flex items-center justify-center w-full py-4 font-semibold border-b ${
-            state !== 1 ? 'text-gray-300' : 'text-black'
-          }`}
-          onClick={() => openUpModal()}
-          disabled={state === 0 || state === 2}
-        >
-          <p>UP</p>
-        </button>
-        <button
-          className="flex items-center justify-center w-full py-4 font-semibold text-red-500"
-          onClick={openDeleteModal}
-        >
-          <p>삭제</p>
-        </button>
+        <ModifyButton id={id} />
+        <UpButton
+          setSettingModal={setSettingModal}
+          raiseCount={raiseCount}
+          state={state}
+          raiseHandler={raiseHandler}
+          openModal={openModal}
+        />
+        <DeleteButton setSettingModal={setSettingModal} openModal={openModal} deleteHandler={deleteHandler} />
       </div>
     </div>
   );
@@ -600,6 +621,21 @@ export default function RenderProduct({ id }) {
               </div>
               {status !== 'loading' && !writer && <RenderProfile user={user} id={session?.user?.id} />}
             </div>
+            {status !== 'loading'
+              ? (writer || session?.admin) && (
+                  <div className="flex space-x-3 text-sm max-md:hidden">
+                    <DropdownMenu id={id} state={product.state} />
+                    <UpButton
+                      raiseCount={raiseCount}
+                      state={product.state}
+                      raiseHandler={raiseHandler}
+                      openModal={openModal}
+                    />
+                    <ModifyButton id={id} />
+                    <DeleteButton openModal={openModal} deleteHandler={deleteHandler} />
+                  </div>
+                )
+              : ''}
           </div>
         </div>
       </div>
@@ -608,6 +644,7 @@ export default function RenderProduct({ id }) {
       </div>
       {settingModal && (
         <SettingModal
+          openModal={openModal}
           id={id}
           session={session}
           setSettingModal={setSettingModal}
