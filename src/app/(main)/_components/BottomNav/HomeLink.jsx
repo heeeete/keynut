@@ -7,7 +7,7 @@ export default function HomeLink() {
   return (
     <>
       {pathName === '/' ? (
-        <div className="flex justify-center items-center w-full h-full">
+        <div className="flex flex-col justify-center items-center w-full h-full">
           <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 28 28">
             <path
               fill="black"

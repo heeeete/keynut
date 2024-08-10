@@ -85,7 +85,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
   }, [clientWidth, totalChildren, offset]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="relative flex flex-col items-center">
       <div className="flex justify-center w-full">
         <button className="flex relative overflow-hidden max-w-lg w-full">
           {state === 0 && (
@@ -121,12 +121,13 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
         </button>
       </div>
       {images.length > 1 && (
-        <div className="flex space-x-3 mt-3">
+        <div className=" absolute  bottom-4 flex space-x-3 mt-3">
           {images.map((_, idx) => (
             <button
               key={idx}
-              className={`w-3 h-3 rounded-full border ${currentImageIndex === idx ? 'bg-gray-400' : 'bg-white'}`}
+              className={`w-3 h-3 rounded-full ${currentImageIndex === idx ? 'bg-gray-400' : 'bg-white'}`}
               onClick={() => {
+                if (imageShowRef.current) imageShowRef.current.style.transform = `translateX(${idx * -clientWidth}px)`;
                 setOffset(idx * -clientWidth);
                 setCurrentImageIndex(idx);
               }}

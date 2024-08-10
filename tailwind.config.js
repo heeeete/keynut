@@ -10,6 +10,18 @@ module.exports = {
 
   theme: {
     extend: {
+      screens: {
+        sm: '640px',
+        md: '768px',
+        tb: '960px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1536px',
+        'max-md': { max: '768px' }, // 768px 이하
+        'max-tb': { max: '960px' },
+        'max-lg': { max: '1024px' }, // 1024px 이하
+        'max-xl': { max: '1280px' }, // 1280px 이하
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',

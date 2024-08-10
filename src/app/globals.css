@@ -44,7 +44,13 @@ button {
 
 @media (max-width: 768px) {
   .custom-body {
-    padding-bottom: calc(50px + 34px);
+    padding-bottom: 80px;
+  }
+}
+
+@media (max-width: 960px) {
+  .custom-body {
+    padding-bottom: 90px;
   }
 }
 

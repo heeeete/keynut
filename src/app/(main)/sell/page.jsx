@@ -68,7 +68,7 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }) => {
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-                    className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
+                    className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-tb:w-28"
                   >
                     <Image
                       src={url}
@@ -263,7 +263,7 @@ export default function Sell() {
   };
 
   return (
-    <div className="max-w-screen-lg px-10 mx-auto max-md:px-2 max-md:main-768 max-md:mb-4">
+    <div className="max-w-screen-lg px-10 mx-auto max-tb:px-2 max-tb:main-768 max-tb:mb-5">
       {isLoading && <Loading />}
       <RenderImageUploadButton
         fileInputRef={fileInputRef}
@@ -273,7 +273,7 @@ export default function Sell() {
       <RenderDNDImages uploadImages={uploadImages} setUploadImages={setUploadImages} />
       <RenderTitle title={title} setTitle={setTitle} />
       <RenderHashTagInputWithTag tags={tags} setTags={setTags} />
-      <div className="flex flex-1 justify-between my-3 max-md:flex-col">
+      <div className="flex flex-1 justify-between my-3 max-tb:flex-col">
         <RenderCategory
           mainCategory={mainCategory}
           subCategory={subCategory}
