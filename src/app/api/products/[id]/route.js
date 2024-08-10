@@ -113,6 +113,7 @@ export async function DELETE(req, { params }) {
     }
 
     const deletePromises = target.images.map(file => {
+      console.log(process.env.S3_BUCKET_NAME, extractionS3ImageKey(file));
       const params = {
         Bucket: process.env.S3_BUCKET_NAME,
         Key: extractionS3ImageKey(file),

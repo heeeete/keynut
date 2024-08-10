@@ -206,8 +206,7 @@ export default function Sell() {
     }
 
     setIsLoading(true);
-    const names = uploadImages.imageFiles.map(file => file.name);
-    const { urls, status } = await getSignedUrls(names);
+    const { urls, status } = await getSignedUrls(uploadImages.imageFiles);
     if (status !== 200) {
       await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
       setIsLoading(false);
@@ -220,6 +219,7 @@ export default function Sell() {
       }),
     );
 
+    console.log(uploadUrls);
     const formData = new FormData();
     formData.append('imageUrls', JSON.stringify(uploadUrls));
     formData.append('title', title.replace(/ +/g, ' ').trim());
