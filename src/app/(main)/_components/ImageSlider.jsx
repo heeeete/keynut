@@ -103,9 +103,10 @@ export default function ImageSlider({ images, state }) {
   if (isM === null)
     return (
       <div className="flex max-w-screen-xl mx-auto flex-col items-center justify-center">
-        <div className="flex relative w-full aspect-square items-center group bg-gray-100 rounded-xl max-md:rounded-none"></div>
+        <div className="flex relative max-w-lg w-full aspect-square items-center group bg-gray-100 rounded-xl max-md:rounded-none"></div>
       </div>
     );
+
   return (
     <div id="gallery">
       {isM ? (
