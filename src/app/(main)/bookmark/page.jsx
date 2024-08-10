@@ -119,7 +119,7 @@ export default function Bookmark() {
 
   if (isLoading || !data) {
     return (
-      <div className="relative flex flex-col max-w-screen-lg mx-auto px-10 max-[960px]:px-2 max-[960px]:mt-3 overflow-x-hidden">
+      <div className="relative flex flex-col max-w-screen-lg mx-auto px-10 max-md:px-2 max-[960px]:mt-3 overflow-x-hidden">
         <div className="h-6 w-24 bg-gray-100 rounded-sm mb-2"></div>
         <div className="grid grid-cols-2 gap-2 max-md:grid-cols-1">
           {Array.from({ length: 20 }).map((_, index) => (

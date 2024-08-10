@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 
 const ProductSkeleton = () => {
   return (
-    <div className="flex space-x-3 border p-3 rounded relative mb-3 max-md:border-0   max-md:border-gray-100  max-md:border-b max-md:mb-0 max-md:py-4">
+    <div className="flex space-x-3 border p-3 rounded relative mb-3 max-md:border-0   max-md:border-gray-100  max-md:border-b max-md:mb-0 max-md:py-4 ">
       <div className="w-28 aspect-square relative bg-gray-100 rounded max-md:w-24"></div>
       <div className="flex flex-col justify-center flex-1 space-y-1">
         <div className="flex justify-between gap-4">
@@ -32,7 +32,7 @@ const ProductSkeleton = () => {
 
 export default function ProductEditSkeleton() {
   return (
-    <div className="flex flex-col relative overflow-x-hidden">
+    <div className="flex flex-col relative overflow-x-hidden max-[960px]:px-10 max-md:px-0">
       {Array.from({ length: 10 }).map((_, idx) => (
         <Fragment key={idx}>
           <ProductSkeleton />
