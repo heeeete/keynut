@@ -3,7 +3,7 @@ import Skeleton from '../../_components/Skeleton';
 
 export default function Skeletons() {
   return (
-    <div className="relative grid grid-cols-4 md:gap-3 max-md:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-tb:grid-cols-3 max-tb:px-3 max-md:grid-cols-2">
+    <div className="relative grid grid-cols-4 tb:gap-3 max-tb:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-tb:px-3 max-md:grid-cols-2">
       {Array.from({ length: 48 }).map((_, index) => (
         <Fragment key={index}>
           <Skeleton />

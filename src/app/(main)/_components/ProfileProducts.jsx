@@ -129,7 +129,7 @@ export default function ProfileProducts({ data }) {
         <div className="">
           {data ? (
             data.filter(a => a.state === productOption).length ? (
-              <div className="grid grid-cols-3 gap-3 max-md:grid-cols-1 max-md:gap-0">
+              <div className="grid grid-cols-3 gap-3 max-tb:grid-cols-2 max-md:grid-cols-1 max-md:gap-0">
                 {data
                   .filter(a => a.state === productOption)
                   .map((product, index) => {
