@@ -4,9 +4,10 @@ import { getSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
 
 export default function OpenChatLink({ url }) {
+  if (!url) return;
   return (
     <Link
-      target={url.startsWith('/auth/signin') ? '_self' : '_blank'}
+      target={url?.startsWith('/auth/signin') ? '_self' : '_blank'}
       className="flex justify-center items-center rounded aspect-square w-10"
       style={url ? {} : { cursor: 'not-allowed', opacity: 0.1 }}
       href={url}
