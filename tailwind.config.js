@@ -95,6 +95,7 @@ module.exports = {
         52.5: '52.5px',
         130: '130px',
         500: '500px',
+        750: '750px',
         6.5: '1.65rem',
       },
       backgroundColor: {
@@ -204,6 +205,11 @@ module.exports = {
           minHeight: '56px',
           height: '56px',
           padding: '8px 12px',
+        },
+        '.search-bar-container-maxtb': {
+          minHeight: '56px',
+          height: '56px',
+          padding: '8px 40px',
         },
         '.search-bar-md': {
           display: 'flex',

@@ -89,7 +89,7 @@ const RecentSearch = React.memo(
       localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
     };
     return (
-      <ul className=" w-full flex-1">
+      <ul className="w-full flex-1">
         {recentSearches.length ? (
           recentSearches.map((search, index) => (
             <li
@@ -183,7 +183,6 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
     const storedSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
     setRecentSearches(storedSearches);
     const handleClickOutside = event => {
-      console.log('123123');
       if (
         inputRef.current &&
         searchRef.current &&
@@ -221,10 +220,13 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
     localStorage.setItem('recentSearches', JSON.stringify([]));
   };
   return (
-    <div ref={searchContainerRef} className="search-bar-container-md  max-tb:search-bar-container-maxmd flex-col ">
-      <div className="max-tb:search-bar-maxmd max-tb:px">
-        <div className="search-bar-md max-tb:search-bar-maxmd">
-          <form className="flex w-450 max-tb:w-full items-center" onSubmit={handleSearch}>
+    <div
+      ref={searchContainerRef}
+      className="search-bar-container-md  max-[960px]:search-bar-container-maxtb max-md:search-bar-container-maxmd flex-col "
+    >
+      <div className="max-[960px]:search-bar-maxmd">
+        <div className="search-bar-md max-[960px]:search-bar-maxmd ">
+          <form className="flex w-450 max-[960px]:w-full items-center" onSubmit={handleSearch}>
             <input
               id="searchInput"
               ref={inputRef}
@@ -236,7 +238,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
                 setIsFocused(true);
               }}
               onChange={e => setTempSearchText(e.target.value)}
-              className="outline-none w-full md:placeholder:text-lg  pr-2  max-tb:bg-transparent"
+              className="outline-none w-full md:placeholder:text-lg  pr-2  max-[960px]:bg-transparent"
             />
           </form>
           {tempSearchText.length ? (
@@ -247,7 +249,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
               }}
             >
               <svg
-                className="max-tb:mr-1"
+                className="max-[960px]:mr-1"
                 xmlns="http://www.w3.org/2000/svg"
                 width="0.7em"
                 height="0.7em"
@@ -265,7 +267,7 @@ const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocu
         </div>
         {isFocused && tempSearchText === '' ? (
           <div
-            className="flex flex-col absolute min-h-34 bg-white w-450  top-20 left-1/2 -translate-x-1/2 p-4 rounded-lg border max-tb:w-full max-tb:rounded-none max-tb:border-0 max-tb:border-b max-md:translate-x-0  max-tb:top-14 max-md:left-0"
+            className="flex flex-col absolute min-h-34 bg-white w-450  top-20 left-1/2 -translate-x-1/2 p-4 rounded-lg border max-[960px]:w-full max-[960px]:rounded-none max-[960px]:border-0 max-[960px]:border-b max-md:translate-x-0  max-[960px]:top-14 max-md:left-0 max-[960px]:px-10 max-md:px-4"
             ref={searchRef}
           >
             <p className=" border-b">최근 검색어</p>
@@ -310,15 +312,15 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
     <>
       {Object.keys(categoriesState).filter(key => categoriesState[key].checked).length +
       Object.keys(pricesState).filter(key => pricesState[key].checked).length ? (
-        <div className="flex flex-1 items-center gap-2 overflow-auto scrollbar-hide tb:flex-wrap tb:pb-4 max-tb:m-2">
+        <div className="flex flex-1 items-center gap-2 overflow-auto scrollbar-hide min-[960px]:flex-wrap min-[960px]:pb-4 max-[960px]:m-2">
           {Object.keys(categoriesState)
             .filter(key => categoriesState[key].checked)
             .map(key => (
               <div
-                className="flex space-x-1 items-center text-sm p-1 rounded tb:bg-blue-50 max-tb:flex-nowrap max-tb:whitespace-nowrap max-md:text-xs max-tb:bg-white"
+                className="flex space-x-1 items-center text-sm p-1 rounded min-[960px]:bg-blue-50 max-[960px]:flex-nowrap max-[960px]:whitespace-nowrap max-md:text-xs max-[960px]:bg-white"
                 key={key}
               >
-                <div className="flex tb:text-gray-500 max-tb:text-black max-tb:font-semibold">
+                <div className="flex min-[960px]:text-gray-500 max-[960px]:text-black max-[960px]:font-semibold">
                   {categoriesState[key]?.option}
                 </div>
                 <div className="cursor-pointer" onClick={() => handleCategoryChange(key, false)}>
@@ -335,10 +337,10 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
             .filter(key => pricesState[key].checked)
             .map(key => (
               <div
-                className="flex space-x-1 items-center text-sm p-1  rounded tb:bg-gray-100  max-md:text-xs max-tb:flex-nowrap max-tb:whitespace-nowrap max-tb:bg-white"
+                className="flex space-x-1 items-center text-sm p-1  rounded min-[960px]:bg-gray-100  max-md:text-xs max-[960px]:flex-nowrap max-[960px]:whitespace-nowrap max-[960px]:bg-white"
                 key={key}
               >
-                <div className="flex tb:text-gray-500  max-tb:text-black max-tb:font-semibold">
+                <div className="flex min-[960px]:text-gray-500  max-[960px]:text-black max-[960px]:font-semibold">
                   {pricesState[key].option}
                 </div>
 
@@ -374,13 +376,13 @@ const RenderProductsNum = ({ data, includeBooked }) => {
   return (
     <>
       {data === undefined ? (
-        <div className="flex h-5 w-32 my-4 max-tb:my-2 max-tb:mx-3 bg-gray-100 relative rounded-sm">
+        <div className="flex h-5 w-32 my-4 max-[960px]:my-2 max-[960px]:mx-10 max-md:mx-3 bg-gray-100 relative rounded-sm">
           <div className="absolute top-0 left-0 h-full w-full animate-loading">
             <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
           </div>
         </div>
       ) : (
-        <div className="flex py-4 text-sm max-tb:py-2 max-tb:px-3">
+        <div className="flex py-4 text-sm max-[960px]:py-2 max-[960px]:px-10 max-md:px-3">
           <p className="font-semibold">{totalCount}</p>개의 검색 결과
         </div>
       )}
@@ -443,7 +445,7 @@ const Product = ({ product }) => {
 };
 
 const RenderProducts = React.memo(
-  ({ params, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxmd, includeBooked }) => {
+  ({ params, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxtb, includeBooked }) => {
     const initPageRef = useRef(true);
     const createQueryString = useCallback(() => {
       const queryParams = new URLSearchParams();
@@ -491,7 +493,7 @@ const RenderProducts = React.memo(
     return (
       <div className="flex-col w-full">
         <RenderProductsNum data={data} includeBooked={includeBooked} />
-        {!isMaxmd && (
+        {!isMaxtb && (
           <SelectedFilters
             categoriesState={categoriesState}
             pricesState={pricesState}
@@ -504,7 +506,7 @@ const RenderProducts = React.memo(
           <Skeletons />
         ) : hasProducts ? (
           <>
-            <div className="grid grid-cols-4 md:gap-3 max-tb:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-tb:px-3">
+            <div className="grid grid-cols-4 md:gap-3 max-[960px]:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-[960px]:px-10 max-md:px-3">
               {includeBooked
                 ? data?.pages.map((page, i) => (
                     <Fragment key={i}>
@@ -566,7 +568,7 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
 
   if (isLoading) {
     return (
-      <div className="max-tb:border-0 max-tb:border-b-8 max-tb:px-3 md:max-w-screen-xl md:mx-auto md:px-10">
+      <div className="max-[960px]:border-0 max-[960px]:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto px-10">
         <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
         <div className="grid grid-cols-6 gap-2 pb-2 w-full relative max-md:flex overflow-x-scroll scrollbar-hide">
           {Array.from({ length: 6 }).map((_, index) => (
@@ -588,7 +590,7 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
   return (
     <>
       {data?.length ? (
-        <div className="md:px-10 max-w-screen-xl md:py-1 max-tb:border-0 max-tb:border-b-8 max-tb:px-3 md:mx-auto">
+        <div className="px-10 max-w-screen-xl md:py-1 max-[960px]:border-0 max-[960px]:border-b-8 max-md:px-3 md:mx-auto">
           <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
           <div className="grid grid-cols-6 gap-2 pb-2 w-full max-md:flex overflow-x-scroll scrollbar-hide">
             {data?.length ? (
@@ -659,7 +661,7 @@ const RenderMdFilter = ({
   }, [params]);
 
   return (
-    <div className="flex flex-col space-y-3 overflow-y-auto scrollbar-hide text-sm h-full max-tb:hidden">
+    <div className="flex flex-col space-y-3 overflow-y-auto scrollbar-hide text-sm h-full max-[960px]:hidden">
       <div className="flex flex-col items-end space-y-2 pr-8">
         <button
           className="flex text-xs space-x-1 items-center border px-1 rounded flex-nowrap whitespace-nowrap w-auto"
@@ -829,7 +831,7 @@ const FilterBar = ({
 }) => {
   return (
     <>
-      <div className="flex-1 space-x-2 hidden max-tb:flex">
+      <div className="flex-1 space-x-2 hidden max-[960px]:flex max-[960px]:mx-8 max-md:mx-0 ">
         <button
           className="flex items-center justify-center py-1 px-2 rounded-xl border border-gray-300 relative"
           onClick={() => {
@@ -927,7 +929,7 @@ export default function RenderShop() {
   const [searchText, setSearchText] = useState(paramsKeyword);
   const [categoryOpen, setCategoryOpen] = useState(true);
   const [priceOpen, setPriceOpen] = useState(true);
-  const [isMaxmd, setIsMaxmd] = useState(true);
+  const [isMaxtb, setIsMaxtb] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const pageRef = useRef(null);
   const [includeBooked, setIncludeBooked] = useState(true);
@@ -977,9 +979,10 @@ export default function RenderShop() {
   const obj = {};
 
   useLayoutEffect(() => {
-    if (window.innerWidth > 960) setIsMaxmd(false);
+    if (window.innerWidth > 960) setIsMaxtb(false);
   }, []);
 
+  console.log(isMaxtb);
   useEffect(() => {
     const footer = document.getElementById('footer');
     if (filterActive) {
@@ -1000,11 +1003,11 @@ export default function RenderShop() {
 
   useEffect(() => {
     const debounceViewResizing = debounce(e => {
-      if (e.target.innerWidth >= 768) {
-        setIsMaxmd(false);
+      if (e.target.innerWidth > 960) {
+        setIsMaxtb(false);
         setFilterActive(false);
       } else {
-        setIsMaxmd(true);
+        setIsMaxtb(true);
       }
     }, 100);
 
@@ -1076,7 +1079,7 @@ export default function RenderShop() {
 
   const debounceSetQueryString = useCallback(debounce(setQueryString, 1000), []);
   useEffect(() => {
-    if (searchFlag.current && !isMaxmd) debounceSetQueryString(createQueryString());
+    if (searchFlag.current && !isMaxtb) debounceSetQueryString(createQueryString());
     else if (!searchFlag.current) setQueryString(createQueryString());
   }, [debounceSetQueryString, createQueryString]);
   // ======================================================
@@ -1166,7 +1169,7 @@ export default function RenderShop() {
             setIsFocused={setIsFocused}
           />
         </div>
-        <div className="border-b max-tb:border-0">
+        <div className="border-b max-[960px]:border-0">
           {!paramsKeyword ? (
             <RenderPopularProducts isLoading={isLoading} data={top} category={hotProductFlag.current} />
           ) : (
@@ -1175,12 +1178,12 @@ export default function RenderShop() {
         </div>
 
         <div
-          className={`flex items-start w-full min-h-60vh md:max-w-screen-xl md:mx-auto md:px-10 max-tb:flex-col max-tb:px-0 ${
-            top?.length ? 'max-tb:min-h-96' : 'max-tb:min-h-70vh'
+          className={`flex items-start w-full min-h-60vh md:max-w-screen-xl md:mx-auto min-[960px]:px-10 max-[960px]:flex-col max-[960px]:px-0 ${
+            top?.length ? 'max-md:min-h-96' : 'max-md:min-h-70vh'
           }`}
         >
           <div
-            className={`sticky flex bg-white  tb:mt-5 md:w-48 md:z-30 md:top-34 md:flex-col md:h-full max-tb:z-50 max-tb:top-14 max-tb:w-full max-tb:border-b max-tb:p-3 max-tb:items-start`}
+            className={`sticky flex bg-white  min-[960px]:mt-5 min-[960px]:w-48 min-[960px]:z-30 min-[960px]:top-34 md:flex-col md:h-full max-[960px]:z-10 max-[960px]:top-14 max-[960px]:w-full max-[960px]:border-b max-[960px]:p-3 max-[960px]:items-start`}
           >
             <FilterBar
               paramsCategories={paramsCategories}
@@ -1213,7 +1216,7 @@ export default function RenderShop() {
               pricesState={pricesState}
               handleCategoryChange={handleCategoryChange}
               handlePriceChange={handlePriceChange}
-              isMaxmd={isMaxmd}
+              isMaxtb={isMaxtb}
               includeBooked={includeBooked}
             />
           </div>
@@ -1254,7 +1257,7 @@ export default function RenderShop() {
                 </svg>
               </div>
             </div>
-            <div className="py-3 h-500 overflow-auto scrollbar-hide">
+            <div className="py-3 overflow-auto scrollbar-hide max-md:h-500 max-[960px]:h-750">
               <div className="border-b">
                 <button
                   className={`flex justify-between items-center px-3 mb-2 w-full
@@ -1282,8 +1285,8 @@ export default function RenderShop() {
                   <ul className="">
                     {categories.map(category => (
                       <li key={category.id} className="">
-                        <p className="px-3 text-sm font-medium">{category.option}</p>
-                        <ul className="filter-container">
+                        <p className="px-3 text-sm font-medium max-[960px]:px-6 max-md:px-3">{category.option}</p>
+                        <ul className="filter-container max-[960px]:mx-10 max-md:mx-0">
                           <button
                             className={`filter-button ${
                               categoriesState[category.id].checked ? 'bg-black text-white' : 'bg-white text-black'
@@ -1340,7 +1343,7 @@ export default function RenderShop() {
                   )}
                 </button>
                 {priceOpen ? (
-                  <ul className="filter-container">
+                  <ul className="filter-container max-[960px]:mx-10 max-md:mx-0">
                     {prices.map(price => (
                       <button
                         key={price.id}

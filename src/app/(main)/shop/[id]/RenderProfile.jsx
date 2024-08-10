@@ -208,7 +208,7 @@ export default function RenderProfile() {
   }
 
   return (
-    <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 md:mb-5 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3 md:min-h-70vh">
+    <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 md:mb-5 max-[960px]:mt-16 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3 min-[960px]:min-h-70vh">
       <UserProfile data={data?.userProfile} provider={data?.provider} />
       <ProfileProducts data={data?.userProducts} />
     </div>
