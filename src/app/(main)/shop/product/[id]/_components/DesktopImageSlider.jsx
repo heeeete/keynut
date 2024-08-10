@@ -58,7 +58,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
           <Image
             id="image"
             key={idx}
-            src={img}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img}`}
             alt="product-img"
             fill
             sizes="(max-width: 24rem) 100vw, 50rem"
