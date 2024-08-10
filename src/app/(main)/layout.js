@@ -8,7 +8,7 @@ export default function MainLayout({ children }) {
   return (
     <ModalProvider>
       <Nav />
-      <div className="relative main-1280 max-tb:pt-0">{children}</div>
+      <div className="relative main-1280 max-[960px]:pt-0">{children}</div>
       <Footer />
       <BottomNav />
       <Modal />

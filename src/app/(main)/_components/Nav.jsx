@@ -24,12 +24,12 @@ export default function Nav() {
   return (
     <header
       id="nav"
-      className={`${border ? 'border-b' : ''} ${navRender ? 'max-tb:hidden' : ''} fixed w-full top-0 bg-white z-50 ${
-        maxMdBorder ? 'max-tb:border-0' : ''
-      }`}
+      className={`${border ? 'border-b' : ''} ${
+        navRender ? 'max-[960px]:hidden' : ''
+      } fixed w-full top-0 bg-white z-50 ${maxMdBorder ? 'max-[960px]:border-0' : ''}`}
     >
-      <nav className="flex flex-col w-full h-full  max-w-screen-xl mx-auto max-tb:space-y-0">
-        <ul className="flex justify-end pr-10 pt-2 max-tb:hidden">
+      <nav className="flex flex-col w-full h-full  max-w-screen-xl mx-auto max-[960px]:space-y-0">
+        <ul className="flex justify-end pr-10 pt-2 max-[960px]:hidden">
           <div className="flex justify-end space-x-2 text-xs">
             {/* <li>
               <Link href="/search?c=keyboard">고객센터</Link>
@@ -58,14 +58,14 @@ export default function Nav() {
             </li>
           </div>
         </ul>
-        <div className="flex flex-col pb-2 items-center space-y-5 max-tb:space-y-0 max-tb:py-2">
-          <div className="flex font-bold text-3xl items-center rounded justify-center max-tb:text-2xl max-tb:w-28">
+        <div className="flex flex-col pb-2 items-center space-y-5 max-[960px]:space-y-0 max-[960px]:py-2">
+          <div className="flex font-bold text-3xl items-center rounded justify-center max-[960px]:text-2xl max-[960px]:w-28">
             <Link className="flex w-full justify-center" href={'/'}>
               <p className={`${title.className}`}>KEYNUT</p>
             </Link>
           </div>
           <ul className="">
-            <div className="flex justify-end space-x-8 text-base max-tb:hidden">
+            <div className="flex justify-end space-x-8 text-base max-[960px]:hidden">
               <li>
                 <Link
                   href={'/gallery'}

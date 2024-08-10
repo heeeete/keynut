@@ -102,7 +102,7 @@ const RenderProfile = ({ user, id }) => {
 
   const LoginDate = ({ createdAt }) => {
     return (
-      <div className="flex items-center space-x-1 text-sm text-gray-400 max-tb:text-xs">
+      <div className="flex items-center space-x-1 text-sm text-gray-400 max-[960px]:text-xs">
         <svg className="" xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 1024 1024">
           <path
             fill="#afb2b6"
@@ -116,7 +116,7 @@ const RenderProfile = ({ user, id }) => {
 
   const Provider = ({ provider = 'kakao' }) => {
     return (
-      <div className="flex text-gray-400 items-center space-x-1 text-sm max-tb:text-xs">
+      <div className="flex text-gray-400 items-center space-x-1 text-sm max-[960px]:text-xs">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
           <g fill="#afb2b6">
             <path d="M10.243 16.314L6 12.07l1.414-1.414l2.829 2.828l5.656-5.657l1.415 1.415z" />
@@ -133,7 +133,7 @@ const RenderProfile = ({ user, id }) => {
             <p className="flex items-end leading-tight">로그인</p>
           </div>
         ) : (
-          <div className="flex h-5 w-20 bg-gray-100 mt-1 max-tb:h-4"></div>
+          <div className="flex h-5 w-20 bg-gray-100 mt-1 max-[960px]:h-4"></div>
         )}
       </div>
     );
@@ -166,7 +166,7 @@ const RenderProfile = ({ user, id }) => {
         <div className="flex justify-between">
           <div className=" items-center space-y-2">
             <div className="flex flex-col">
-              <p className="text-lg font-semibold max-tb:text-base line-clamp-1">{user.nickname}</p>
+              <p className="text-lg font-semibold max-[960px]:text-base line-clamp-1">{user.nickname}</p>
               {user.memo && user.memo[id] ? <p className="text-sm text-gray-400">{user.memo[id]}</p> : ''}
             </div>
             <div>
@@ -255,7 +255,7 @@ const RenderHashTag = ({ product }) => {
         <Link
           href={`/shop?keyword=${encodeURIComponent(e)}`}
           key={idx}
-          className="flex items-center mr-3 max-tb:text-sm"
+          className="flex items-center mr-3 max-[960px]:text-sm"
         >
           <span>{e}</span>
         </Link>
@@ -266,29 +266,11 @@ const RenderHashTag = ({ product }) => {
 
 const RenderDescriptor = ({ product }) => {
   return (
-    <div className="tb:mt-5 px-2 py-1 rounded min-h-24 break-all">
-      <p className="text-xl font-semibold  max-tb:text-lg">상품 설명</p>
-      <div className="w-full bg-gray-300 rounded-full my-4 max-tb:my-2" style={{ height: '2px' }}></div>
+    <div className="min-[960px]:mt-5 px-2 py-1 rounded min-h-24 break-all">
+      <p className="text-xl font-semibold  max-[960px]:text-lg">상품 설명</p>
+      <div className="w-full bg-gray-300 rounded-full my-4 max-[960px]:my-2" style={{ height: '2px' }}></div>
       <p className="whitespace-pre-wrap min-h-28">{product.description}</p>
     </div>
-  );
-};
-
-const IsWriter = ({ id, state, setSettingModal }) => {
-  return (
-    <>
-      <div className="flex space-x-2 flex-nowrap whitespace-nowrap items-center justify-center md:hidden">
-        <button
-          className="align-text-top items-center rounded max-xs:hidden"
-          onClick={e => {
-            setSettingModal(true);
-          }}
-        >
-          <img className="min-w-6" src="/product/more.svg" width={24} height={24} alt="MORE" />
-        </button>
-        <DropdownMenu id={id} state={state} />
-      </div>
-    </>
   );
 };
 
@@ -307,7 +289,7 @@ const UpButton = ({ setSettingModal, raiseCount, state, raiseHandler, openModal 
   };
   return (
     <button
-      className={`md:px-4 md:py-1 md:border md:rounded md:border-gray-300 flex items-center justify-center font-semibold flex-nowrap whitespace-nowrap  max-md:w-full max-md:py-4 max-md:border-b ${
+      className={`min-[480px]:flex-1 min-[480px]:max-w-44 min-[480px]:px-4 min-[480px]:py-1 min-[480px]:border min-[480px]:rounded min-[480px]:border-gray-300 flex items-center justify-center font-semibold flex-nowrap whitespace-nowrap  max-[480px]:w-full max-[480px]:py-4 max-[480px]:border-b  ${
         state !== 1 ? 'text-gray-300' : 'text-black'
       }`}
       onClick={() => openUpModal()}
@@ -333,7 +315,7 @@ const DeleteButton = ({ setSettingModal, openModal, deleteHandler }) => {
 
   return (
     <button
-      className="md:px-4 md:py-1 md:border md:rounded md:border-gray-300 flex items-center justify-center max-md:w-full max-md:py-4 font-semibold text-red-500"
+      className="min-[480px]:flex-1 min-[480px]:max-w-44 min-[480px]:px-4 min-[480px]:py-1 min-[480px]:border min-[480px]:rounded min-[480px]:border-gray-300 flex items-center justify-center max-[480px]:w-full max-[480px]:py-4 font-semibold text-red-500"
       onClick={openDeleteModal}
     >
       <p>삭제</p>
@@ -344,7 +326,7 @@ const DeleteButton = ({ setSettingModal, openModal, deleteHandler }) => {
 const ModifyButton = ({ id }) => {
   return (
     <Link
-      className="md:px-4 md:py-1 md:border md:rounded md:border-gray-300 flex items-center justify-center max-md:w-full max-md:py-4 font-semibold max-md:border-b"
+      className="min-[480px]:flex-1 min-[480px]:max-w-44 min-[480px]:px-4 min-[480px]:py-1 min-[480px]:border min-[480px]:rounded min-[480px]:border-gray-300 flex items-center justify-center w-full max-[480px]:py-4 max-[480px]:border-b font-semibold"
       href={`/shop/product/${id}/edit`}
     >
       <p>수정</p>
@@ -376,7 +358,6 @@ const SettingModal = ({ id, setSettingModal, state, raiseHandler, raiseCount, de
 };
 
 const MobileSettingModal = ({ writer, session, setSettingModal }) => {
-  console.log(writer);
   if (writer || session?.admin)
     return (
       <button
@@ -384,7 +365,7 @@ const MobileSettingModal = ({ writer, session, setSettingModal }) => {
           setSettingModal(true);
         }}
       >
-        <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-xs:flex" />
+        <img src="/product/more.svg" width={24} height={24} alt="MORE" className="hidden max-[480px]:flex" />
       </button>
     );
 };
@@ -564,8 +545,8 @@ export default function RenderProduct({ id }) {
   if (error) return <div>Error loading product</div>;
   if (!data || !product) return <div>데이터를 가져오고 있습니다...</div>;
   return (
-    <div className="tb:mt-5 tb:flex-1 tb:px-10 max-w-screen-lg mx-auto min-h-80vh max-tb:mt-12">
-      <div className="flex items-end justify-between max-tb:py-3 max-tb:px-3">
+    <div className="min-[960px]:mt-5 min-[960px]:flex-1 min-[960px]:px-10 max-w-screen-lg mx-auto min-h-80vh max-[960px]:mt-12">
+      <div className="flex items-end justify-between max-[960px]:py-3 max-[960px]:px-3">
         <RenderCategory category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
         <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
@@ -575,19 +556,19 @@ export default function RenderProduct({ id }) {
           </button>
         )}
       </div>
-      <div className="w-full mt-2 mb-6 bg-gray-300 max-tb:hidden" style={{ height: '1px' }}></div>
-      <div className="tb:flex tb:space-x-6">
-        <div className="tb:flex-1">
+      <div className="w-full mt-2 mb-6 bg-gray-300 max-[960px]:hidden" style={{ height: '1px' }}></div>
+      <div className="min-[960px]:flex min-[960px]:space-x-6">
+        <div className="min-[960px]:flex-1">
           <ImageSlider images={product.images} state={product.state} />
         </div>
-        <div className="tb:flex-1 flex flex-col max-tb:px-3">
+        <div className="min-[960px]:flex-1 flex flex-col max-[960px]:px-3">
           <div className="w-full h-full flex flex-col space-y-6">
             <div className="mt-6">
-              <p className="text-2xl font-bold break-all max-tb:text-lg max-tb:mb-4">{product.title}</p>
+              <p className="text-2xl font-bold break-all max-[960px]:text-lg max-[960px]:mb-4">{product.title}</p>
               <RenderHashTag product={product} />
             </div>
             <div className="space-y-6">
-              <div className="flex justify-between max-tb:items-center space-x-2">
+              <div className="flex justify-between max-[960px]:items-center space-x-2">
                 <div>
                   <span className="text-2xl font-bold">{Number(product.price).toLocaleString()}</span>
                   <span className="text-xl">원</span>
@@ -595,7 +576,8 @@ export default function RenderProduct({ id }) {
                 <div className="flex self-end h-8 items-center">
                   {status !== 'loading' ? (
                     writer || session?.admin ? (
-                      <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
+                      // <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
+                      <></>
                     ) : (
                       <>
                         <OpenChatLink
@@ -624,23 +606,25 @@ export default function RenderProduct({ id }) {
             </div>
             {status !== 'loading'
               ? (writer || session?.admin) && (
-                  <div className="flex space-x-3 text-sm max-md:hidden">
+                  <div className="flex space-x-4 text-sm max-[480px]:hidden">
                     <DropdownMenu id={id} state={product.state} />
-                    <UpButton
-                      raiseCount={raiseCount}
-                      state={product.state}
-                      raiseHandler={raiseHandler}
-                      openModal={openModal}
-                    />
-                    <ModifyButton id={id} />
-                    <DeleteButton openModal={openModal} deleteHandler={deleteHandler} />
+                    <div className="flex flex-1 space-x-4">
+                      <UpButton
+                        raiseCount={raiseCount}
+                        state={product.state}
+                        raiseHandler={raiseHandler}
+                        openModal={openModal}
+                      />
+                      <ModifyButton id={id} />
+                      <DeleteButton openModal={openModal} deleteHandler={deleteHandler} />
+                    </div>
                   </div>
                 )
               : ''}
           </div>
         </div>
       </div>
-      <div className="max-tb:px-3 mt-3">
+      <div className="max-[960px]:px-3 mt-3">
         <RenderDescriptor product={product} />
       </div>
       {settingModal && (
