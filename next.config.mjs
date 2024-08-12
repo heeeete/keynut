@@ -8,15 +8,9 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'keynut-bucket.s3.ap-northeast-2.amazonaws.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'image.keynut.co.kr',
-        port: '', // 생략 가능
-        pathname: '**', // 이 부분은 모든 경로를 허용하도록 설정합니다.
+        port: '',
+        pathname: '**',
       },
     ],
   },
