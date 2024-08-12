@@ -291,9 +291,9 @@ const UpButton = ({ setSettingModal, raiseCount, state, raiseHandler, openModal 
     if (setSettingModal) setSettingModal(false);
 
     const res = await openModal({
-      message: raiseCount ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.',
-      subMessage: raiseCount ? `사용 시 1회 차감됩니다.` : '',
-      isSelect: true,
+      message: raiseCount > 0 ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.',
+      subMessage: raiseCount > 0 ? `사용 시 1회 차감됩니다.` : '',
+      isSelect: raiseCount > 0 ? true : false,
     });
     if (!res) return;
     raiseHandler();
