@@ -25,7 +25,9 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
         <div className=" h-72 border rounded">
           <div className="flex bg-gray-100 text-gray-500 rounded-t justify-center font-semibold max-[480px]:text-sm">
             <p>{baseCategory[mainCategory]}</p>
-            {mainCategory !== 4 && mainCategory !== 5 && mainCategory !== 9 && <p>- {baseCategory[subCategory]}</p>}
+            {mainCategory !== 4 && mainCategory !== 5 && mainCategory !== 9 && (
+              <p>&nbsp;-&nbsp;{baseCategory[subCategory]}</p>
+            )}
           </div>
           <div className="flex h-64">
             <ul className="scroll-bar flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base  ">
