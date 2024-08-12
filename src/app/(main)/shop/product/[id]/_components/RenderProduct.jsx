@@ -487,6 +487,16 @@ export default function RenderProduct({ id }) {
   const { openModal } = useModal();
 
   useEffect(() => {
+    const errorHandler = async () => {
+      if (error?.message === 'Not Found') {
+        await openModal({ message: '삭제된 상품입니다.' });
+        router.back();
+      }
+    };
+    errorHandler();
+  }, [error, router]);
+
+  useEffect(() => {
     if (settingModal) {
       if (posY.current === 0) posY.current = window.scrollY;
       document.documentElement.style.setProperty('--posY', `-${posY.current}px`);
@@ -527,7 +537,7 @@ export default function RenderProduct({ id }) {
 
   const deleteHandler = useCallback(async () => {
     await deleteProduct(id, () => {
-      invalidateFilters();
+      invalidateFilters(['product', id]);
       router.back();
       setTimeout(() => {
         router.refresh();
@@ -552,8 +562,6 @@ export default function RenderProduct({ id }) {
   if (!data && isLoading === false) {
     return <Warning message={'삭제되었거나 존재하지 않는 상품입니다.'} />;
   }
-  // if (status === 'loading') return;
-  if (error) return <div>Error loading product</div>;
   if (!data || !product) return <div>데이터를 가져오고 있습니다...</div>;
   return (
     <div className="min-[960px]:mt-5 min-[960px]:flex-1 min-[960px]:px-10 max-w-screen-lg mx-auto min-h-80vh max-[960px]:max-w-screen-md max-[960px]:max-w- max-[960px]:mt-12">

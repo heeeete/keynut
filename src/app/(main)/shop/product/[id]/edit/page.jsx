@@ -150,6 +150,7 @@ export default function Edit() {
   const { data, error, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: () => getProductWithUser(id),
+    staleTime: Infinity,
   });
 
   useEffect(() => {
@@ -262,7 +263,7 @@ export default function Edit() {
 
       if (res.ok) {
         update({ openChatUrl: openChatUrl });
-        invalidateFilters();
+        invalidateFilters(['product', id]);
         router.push(`/shop/product/${id}`);
         router.refresh();
       } else if (res.status === 401) {
