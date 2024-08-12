@@ -10,7 +10,6 @@ import { useQuery } from '@tanstack/react-query';
 import getProductWithUser from '../_lib/getProductWithUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getSession, signIn, useSession } from 'next-auth/react';
-import Modal from '@/app/(main)/_components/Modal';
 import { useRouter } from 'next/navigation';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import initRaiseCount from '@/lib/initRaiseCount';
@@ -69,7 +68,13 @@ const RenderCategory = ({ category }) => {
 };
 
 const RenderTimeAgo = ({ date }) => {
-  return <p>{timeAgo(date)}</p>;
+  const [clientTime, setClientTime] = useState(null);
+
+  useEffect(() => {
+    setClientTime(timeAgo(date)); // 클라이언트 측에서만 시간이 업데이트되도록 함
+  }, [date]);
+
+  return <p>{clientTime || timeAgo(date)}</p>; // 초기 렌더링 시 서버 시간 사용
 };
 
 const RenderBookMark = ({ bookmarked }) => {

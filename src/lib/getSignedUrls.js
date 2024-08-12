@@ -13,7 +13,6 @@ export default async function getSignedUrls(names) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
-    console.log(data);
     return { urls: data.urls, status: res.status };
   } catch (error) {
     console.error(error.message);

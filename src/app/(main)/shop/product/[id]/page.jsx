@@ -8,15 +8,19 @@ export async function generateMetadata({ params }) {
   const { id } = params;
   const product = await getProductWithUser(id);
 
+  const title = product ? `${product.title}ㅣKEYNUT` : 'KEYNUT';
+  const description = product ? product.description : '상품을 찾을 수 없습니다.';
+  const imageUrl = product ? product.images[0] : `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`;
+
   return {
-    title: product ? `${product.title}ㅣKEYNUT` : 'KEYNUT',
-    description: product ? `${product.description}` : '다양한 전자기기를 한눈에',
+    title,
+    description,
     openGraph: {
-      title: product ? `${product.title}ㅣKEYNUT` : 'KEYNUT',
-      description: product ? `${product.description}` : '상품을 찾을 수 없습니다.',
+      title,
+      description,
       images: [
         {
-          url: product ? product.images[0] : `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`,
+          url: imageUrl,
           width: 500,
           height: 500,
           alt: 'KEYNUT Logo',

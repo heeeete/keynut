@@ -195,7 +195,21 @@ export default function Sell() {
   };
 
   const handleUpload = async () => {
-    if (!openChatUrl) {
+    if (
+      !uploadImages.imageUrls.length ||
+      !title.trim().length ||
+      !mainCategory ||
+      (mainCategory !== 9 && !subCategory) ||
+      !price.length ||
+      !condition ||
+      !description.trim().length ||
+      !isValidOpenChat
+    ) {
+      openModal({
+        message: `필수 항목을 입력해주세요.`,
+      });
+      return;
+    } else if (!openChatUrl) {
       const result = await openModal({
         message: `오픈 채팅방 주소가 없습니다.\n계속 진행하시겠습니까?`,
         subMessage: '오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
@@ -206,17 +220,16 @@ export default function Sell() {
     }
 
     setIsLoading(true);
-    const names = uploadImages.imageFiles.map(file => file.name);
+    const names = uploadImages.imageFiles.map(file => `product_${new Date().getTime()}_${file.name}`);
     const { urls, status } = await getSignedUrls(names);
     if (status !== 200) {
       await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
       setIsLoading(false);
       return;
     }
-    const uploadUrls = await Promise.all(
+    await Promise.all(
       urls.map(async (url, idx) => {
-        const uploadUrl = await uploadToS3(url, uploadImages.imageFiles[idx]);
-        return uploadUrl;
+        await uploadToS3(url, uploadImages.imageFiles[idx]);
       }),
     );
 
@@ -265,6 +278,9 @@ export default function Sell() {
   return (
     <div className="max-w-screen-lg px-10 mx-auto max-[960px]:px-10 max-md:px-2 max-[960px]:main-768 max-[960px]:mb-5">
       {isLoading && <Loading />}
+      <p className="mt-10 font-medium text-xl max-[480px]:text-base">
+        사진<span className="text-red-500">*</span>
+      </p>
       <RenderImageUploadButton
         fileInputRef={fileInputRef}
         uploadImages={uploadImages}
@@ -293,11 +309,7 @@ export default function Sell() {
       <RenderPriceInput price={price} setPrice={setPrice} />
 
       <div className="w-full flex justify-end">
-        <button
-          className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-30"
-          disabled={handleDisabled()}
-          onClick={handleUpload}
-        >
+        <button className="bg-black text-white font-extrabold px-7 py-4 rounded ml-auto" onClick={handleUpload}>
           <p>업로드</p>
         </button>
       </div>

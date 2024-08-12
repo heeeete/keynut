@@ -37,7 +37,6 @@ export async function PUT(req) {
     const products = db.collection('products');
     const session = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
-    let uploadedUrl = null;
     const formData = await req.formData();
     const oldImage = JSON.parse(formData.get('oldImage'));
     const newImage = formData.get('newImage');
@@ -51,19 +50,19 @@ export async function PUT(req) {
       await s3Client.send(new DeleteObjectCommand(params));
     };
 
+    let Key;
     const uploadImage = async () => {
+      Key = `profile_${Date.now()}_${newImage.name}`;
       const arrayBuffer = await newImage.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       const uploadParams = {
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: `profile_${Date.now()}_${newImage.name}`,
+        Key,
         Body: buffer,
         ContentType: newImage.type,
       };
       const command = new PutObjectCommand(uploadParams);
       await s3Client.send(command);
-      const url = `${process.env.AWS_S3_BASE_URL}/${uploadParams.Key}`;
-      uploadedUrl = url;
     };
 
     if (oldImage || newImage) {
@@ -73,11 +72,11 @@ export async function PUT(req) {
         { _id: new ObjectId(session.user.id) },
         {
           $set: {
-            image: uploadedUrl,
+            image: Key,
           },
         },
       );
-      const resUrl = { url: uploadedUrl };
+      const resUrl = { url: Key };
       const userProducts = await products.find({ userId: new ObjectId(session.user.id) }).toArray();
       userProducts.map(({ _id }) => {
         revalidateTag(_id.toString());
