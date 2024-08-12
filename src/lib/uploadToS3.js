@@ -14,6 +14,6 @@ export default async function uploadToS3(url, file) {
     return url.split('?')[0]; // 업로드된 파일의 URL 반환
   } catch (error) {
     console.error(error.message);
-    return { status: res.status };
+    return { status: res ? res.status : 500 };
   }
 }
