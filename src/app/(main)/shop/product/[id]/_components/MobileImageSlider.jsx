@@ -15,7 +15,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
   const originOffset = useRef(0);
   const isScrolling = useRef(undefined);
   const pathname = usePathname();
-  const totalChildren = images.length;
+  const totalChildren = images?.length;
 
   useEffect(() => {
     if (imageShowRef.current) {
@@ -107,7 +107,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
               transition: isTransitioning ? 'none' : 'transform 0.3s ',
             }}
           >
-            {images.map((img, idx) => (
+            {images?.map((img, idx) => (
               <div key={idx} className="flex relative max-w-lg w-screen aspect-square">
                 <Image
                   src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img}`}
@@ -120,9 +120,9 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
           </div>
         </button>
       </div>
-      {images.length > 1 && (
+      {images?.length > 1 && (
         <div className=" absolute  bottom-4 flex space-x-3 mt-3">
-          {images.map((_, idx) => (
+          {images?.map((_, idx) => (
             <button
               key={idx}
               className={`w-3 h-3 rounded-full ${currentImageIndex === idx ? 'bg-gray-400' : 'bg-white'}`}

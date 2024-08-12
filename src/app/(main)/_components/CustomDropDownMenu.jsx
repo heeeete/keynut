@@ -17,7 +17,7 @@ export default function CustomDropdownMenu({ placeholder, values, onChange = () 
 
   return (
     <div
-      className="relative flex border justify-between items-center p-2 rounded cursor-pointer"
+      className="relative flex border justify-between items-center p-2 pr-0 rounded cursor-pointer"
       onClick={() => setIsDropDown(!isDropDown)}
     >
       <p className={`${state === 0 ? 'text-gray-400' : 'font-semibold'}`}>
