@@ -54,7 +54,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
             </div>
           </button>
         )}
-        {images.map((img, idx) => (
+        {images?.map((img, idx) => (
           <Image
             id="image"
             key={idx}
