@@ -1,12 +1,25 @@
-.a::-webkit-scrollbar {
+.scroll-bar::-webkit-scrollbar {
   width: 5px;
   border-radius: 3px;
-  overflow: hidden;
   background-color: rgb(240, 240, 240);
 }
-.a::-webkit-scrollbar-thumb {
-  background-color: rgb(85, 85, 85);
+.scroll-bar::-webkit-scrollbar-thumb {
+  background-color: rgb(148, 148, 148);
   border-radius: 5px;
   /* background-clip: padding-box; */
   border: 2px solid transparent;
+}
+
+.scroll-bar li {
+  position: relative;
+}
+
+.scroll-bar li:not(:last-child)::before {
+  content: ""; /* 각 li 앞에 줄을 추가 */
+  position: absolute;
+  top: 0;
+  left: 25%;
+  border-bottom: 1px solid rgb(226, 226, 226);
+  width: 50%;
+  height: 100%;
 }
