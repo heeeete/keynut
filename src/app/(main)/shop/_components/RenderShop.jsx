@@ -835,7 +835,7 @@ const FilterBar = ({
 }) => {
   return (
     <>
-      <div className="flex-1 space-x-2 hidden max-[960px]:flex max-[960px]:mx-8 max-md:mx-0 ">
+      <div className="flex-1 space-x-2 hidden max-[960px]:flex max-[960px]:mx-8 max-md:mx-0">
         <button
           className="flex items-center justify-center py-1 px-2 rounded-xl border border-gray-300 relative"
           onClick={() => {
@@ -1186,7 +1186,7 @@ export default function RenderShop() {
           }`}
         >
           <div
-            className={`sticky flex bg-white  min-[960px]:mt-5 min-[960px]:w-48 min-[960px]:z-30 min-[960px]:top-34 md:flex-col md:h-full max-[960px]:z-10 max-[960px]:top-14 max-[960px]:w-full max-[960px]:border-b max-[960px]:p-3 max-[960px]:items-start`}
+            className={`sticky flex bg-white min-[960px]:mt-5 min-[960px]:w-48 min-[960px]:z-30 min-[960px]:top-34 md:flex-col md:h-full max-[960px]:z-50 max-[960px]:top-14 max-[960px]:w-full max-[960px]:border-b max-[960px]:p-3 max-[960px]:items-start`}
           >
             <FilterBar
               paramsCategories={paramsCategories}

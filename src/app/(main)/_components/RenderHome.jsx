@@ -46,7 +46,7 @@ const JustIn = () => {
               />
               {product.state === 2 ? (
                 <div className="absolute left-1 top-1 z-10 rounded px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
-                  <p className="font-semibold text-white text-sm max-md:text-xxs">예약중</p>
+                  <p className="font-semibold text-white text-sm max-[960px]:text-xs max-md:text-xxs">예약중</p>
                 </div>
               ) : (
                 ''
