@@ -15,6 +15,9 @@ const priceRanges = [
   { id: 5, min: 500000, max: Infinity },
 ];
 
+const escapeRegExp = string => {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
 export async function GET(req) {
   try {
     const client = await connectDB;
@@ -37,7 +40,8 @@ export async function GET(req) {
         const hashTag = keywordParam.split(' ')[0];
         query.tags = { $elemMatch: { $eq: hashTag } };
       } else {
-        query.title = { $regex: keywordParam, $options: 'i' };
+        const escapedKeyword = escapeRegExp(keywordParam);
+        query.title = { $regex: escapedKeyword, $options: 'i' };
       }
     }
 
