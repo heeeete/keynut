@@ -21,6 +21,7 @@ import CustomDropdownMenu from '@/app/(main)/_components/CustomDropDownMenu';
 import Warning from '@/app/(main)/_components/Warning';
 import { useModal } from '@/app/(main)/_components/ModalProvider';
 import baseCategory from '@/app/(main)/_constants/productPage/baseCategories';
+import formatDate from '@/app/(main)/_lib/formatDate';
 
 const RenderCondition = ({ condition }) => {
   return (
@@ -114,7 +115,7 @@ const RenderProfile = ({ user, id }) => {
             d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64m0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64"
           />
         </svg>
-        <div className="">{'2012년 1월 12일'}에 가입</div>
+        {createdAt ? <div>{formatDate(createdAt)}에 가입</div> : <div className="flex h-4 w-32 bg-gray-100"></div>}
       </div>
     );
   };
@@ -175,7 +176,7 @@ const RenderProfile = ({ user, id }) => {
               {user.memo && user.memo[id] ? <p className="text-sm text-gray-400">{user.memo[id]}</p> : ''}
             </div>
             <div>
-              <LoginDate />
+              <LoginDate createdAt={user.createdAt} />
               <Provider />
             </div>
           </div>
