@@ -126,7 +126,6 @@ const ProfileImage = ({ session, status, update, openModal }) => {
     } else {
       const data = await res.json();
       update({ image: data.url });
-      console.log('done');
     }
   };
 
@@ -164,61 +163,33 @@ const ProfileImage = ({ session, status, update, openModal }) => {
               {isLoading && (
                 <div className="absolute top-0 left-0 w-full h-full rounded-full bg-black bg-opacity-25 flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24">
-                    <g>
-                      <rect width="2" height="5" x="11" y="1" fill="white" opacity="0.14" />
-                      <rect
-                        width="2"
-                        height="5"
-                        x="11"
-                        y="1"
-                        fill="white"
-                        opacity="0.29"
-                        transform="rotate(30 12 12)"
-                      />
-                      <rect
-                        width="2"
-                        height="5"
-                        x="11"
-                        y="1"
-                        fill="white"
-                        opacity="0.43"
-                        transform="rotate(60 12 12)"
-                      />
-                      <rect
-                        width="2"
-                        height="5"
-                        x="11"
-                        y="1"
-                        fill="white"
-                        opacity="0.57"
-                        transform="rotate(90 12 12)"
-                      />
-                      <rect
-                        width="2"
-                        height="5"
-                        x="11"
-                        y="1"
-                        fill="white"
-                        opacity="0.71"
-                        transform="rotate(120 12 12)"
-                      />
-                      <rect
-                        width="2"
-                        height="5"
-                        x="11"
-                        y="1"
-                        fill="white"
-                        opacity="0.86"
-                        transform="rotate(150 12 12)"
-                      />
-                      <rect width="2" height="5" x="11" y="1" fill="white" transform="rotate(180 12 12)" />
+                    <g stroke="white" opacity={0.8}>
+                      <circle cx="12" cy="12" r="9.5" fill="none" stroke-linecap="round" stroke-width="3">
+                        <animate
+                          attributeName="stroke-dasharray"
+                          calcMode="spline"
+                          dur="2.25s"
+                          keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+                          keyTimes="0;0.475;0.95;1"
+                          repeatCount="indefinite"
+                          values="0 150;42 150;42 150;42 150"
+                        />
+                        <animate
+                          attributeName="stroke-dashoffset"
+                          calcMode="spline"
+                          dur="2.25s"
+                          keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+                          keyTimes="0;0.475;0.95;1"
+                          repeatCount="indefinite"
+                          values="0;-16;-59;-59"
+                        />
+                      </circle>
                       <animateTransform
                         attributeName="transform"
-                        calcMode="discrete"
-                        dur="1.5s"
+                        dur="3s"
                         repeatCount="indefinite"
                         type="rotate"
-                        values="0 12 12;30 12 12;60 12 12;90 12 12;120 12 12;150 12 12;180 12 12;210 12 12;240 12 12;270 12 12;300 12 12;330 12 12;360 12 12"
+                        values="0 12 12;360 12 12"
                       />
                     </g>
                   </svg>

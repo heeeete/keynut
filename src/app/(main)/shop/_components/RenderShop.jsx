@@ -619,7 +619,7 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
                     ) : (
                       ''
                     )}
-                    <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-tb:text-xxs">
+                    <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-[960px]:text-xxs">
                       {conditions[product.condition].option}
                     </div>
                   </div>
@@ -1164,7 +1164,7 @@ export default function RenderShop() {
   return (
     <div className="flex items-start justify-start z-60" ref={pageRef}>
       <div className="flex flex-col w-full">
-        <div className="sticky top-0 flex flex-col border-b z-20 bg-white max-tb:z-60">
+        <div className="sticky top-0 flex flex-col border-b z-20 bg-white max-[960px]:z-60">
           <SearchBar
             paramsKeyword={paramsKeyword}
             setSearchText={setSearchText}

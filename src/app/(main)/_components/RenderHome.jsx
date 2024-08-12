@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 
 import { Gowun_Dodum } from 'next/font/google';
+import conditions from '../_constants/conditions';
 
 const title = Gowun_Dodum({ subsets: ['latin'], weight: ['400'] });
 
@@ -50,6 +51,9 @@ const JustIn = () => {
               ) : (
                 ''
               )}
+              <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-[960px]:text-xxs">
+                {conditions[product.condition].option}
+              </div>
             </div>
             <div className="mt-2 w-full">
               <div className="break-all line-clamp-1">{product.title}</div>
