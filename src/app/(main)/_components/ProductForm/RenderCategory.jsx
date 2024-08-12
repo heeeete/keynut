@@ -22,7 +22,7 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
           카테고리<span className="text-red-500">*</span>
         </div>
         <div className="flex h-64 border rounded">
-          <ul className="a flex-1 overflow-auto text-lg cursor-pointer text-center  rounded-tl-sm rounded-bl-sm">
+          <ul className="a flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base  rounded-tl-sm rounded-bl-sm">
             <li className={`p-3 ${mainCategory === 1 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(1)}>
               키보드
             </li>
