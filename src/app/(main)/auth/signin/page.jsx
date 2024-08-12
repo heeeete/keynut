@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { getProviders, signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });
 
-export default function SignIn() {
+function RenderSignIn() {
   const { data: session, status } = useSession();
   const [providers, setProviders] = useState({});
   const [callbackUrl, setCallbackUrl] = useState('/');
@@ -84,5 +84,13 @@ export default function SignIn() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function SignIn() {
+  return (
+    <Suspense>
+      <RenderSignIn />
+    </Suspense>
   );
 }
