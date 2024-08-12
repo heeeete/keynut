@@ -181,19 +181,6 @@ export default function Sell() {
     };
   }, []);
 
-  const handleDisabled = () => {
-    return (
-      !uploadImages.imageUrls.length ||
-      !title.trim().length ||
-      !mainCategory ||
-      (mainCategory !== 9 && !subCategory) ||
-      !price.length ||
-      !condition ||
-      !description.trim().length ||
-      !isValidOpenChat
-    );
-  };
-
   const handleUpload = async () => {
     if (
       !uploadImages.imageUrls.length ||
@@ -278,7 +265,7 @@ export default function Sell() {
   return (
     <div className="max-w-screen-lg px-10 mx-auto max-[960px]:px-10 max-md:px-2 max-[960px]:main-768 max-[960px]:mb-5">
       {isLoading && <Loading />}
-      <p className="mt-10 font-medium text-xl max-[480px]:text-base">
+      <p className="min-[960px]:mt-10 font-medium text-xl max-[480px]:text-base">
         사진<span className="text-red-500">*</span>
       </p>
       <RenderImageUploadButton

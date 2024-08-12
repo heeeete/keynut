@@ -3,6 +3,7 @@
 import React, { useCallback } from 'react';
 import RenderSubcategories from './RenderSubcategories';
 import './renderCategory.css';
+import baseCategory from '../../_constants/productPage/baseCategories';
 
 const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }) => {
   const handleMainCategoryClick = useCallback(id => {
@@ -21,34 +22,58 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
         <div className="flex font-medium text-xl my-3 max-[480px]:text-base">
           카테고리<span className="text-red-500">*</span>
         </div>
-        <div className="flex h-64 border rounded">
-          <ul className="a flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base  rounded-tl-sm rounded-bl-sm">
-            <li className={`p-3 ${mainCategory === 1 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(1)}>
-              키보드
-            </li>
-            <li className={`p-3 ${mainCategory === 2 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(2)}>
-              마우스
-            </li>
-            <li className={`p-3 ${mainCategory === 3 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(3)}>
-              패드
-            </li>
-            <li className={`p-3 ${mainCategory === 4 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(4)}>
-              모니터
-            </li>
-            <li className={`p-3 ${mainCategory === 5 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(5)}>
-              헤드셋
-            </li>
-            <li className={`p-3 ${mainCategory === 9 ? 'bg-gray-200' : ''}`} onClick={() => handleMainCategoryClick(9)}>
-              기타
-            </li>
-          </ul>
-          <ul className="a flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base rounded-tr-sm rounded-br-sm">
-            <RenderSubcategories
-              mainCategory={mainCategory}
-              subCategory={subCategory}
-              handleSubCategoryClick={handleSubCategoryClick}
-            />
-          </ul>
+        <div className=" h-72 border rounded">
+          <div className="flex bg-gray-100 text-gray-500 rounded-t justify-center font-semibold max-[480px]:text-sm">
+            <p>{baseCategory[mainCategory]}</p>
+            {mainCategory !== 4 && mainCategory !== 5 && mainCategory !== 9 && <p>- {baseCategory[subCategory]}</p>}
+          </div>
+          <div className="flex h-64">
+            <ul className="scroll-bar flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base  ">
+              <li
+                className={`p-3 ${mainCategory === 1 ? ' font-semibold text-xl' : ''}`}
+                onClick={() => handleMainCategoryClick(1)}
+              >
+                키보드
+              </li>
+              <li
+                className={`p-3 ${mainCategory === 2 ? ' font-semibold text-xl' : ''}`}
+                onClick={() => handleMainCategoryClick(2)}
+              >
+                마우스
+              </li>
+              <li
+                className={`p-3 ${mainCategory === 3 ? ' font-semibold text-xl' : ''}`}
+                onClick={() => handleMainCategoryClick(3)}
+              >
+                패드
+              </li>
+              <li
+                className={`p-3 ${mainCategory === 4 ? ' font-semibold text-xl' : ''}`}
+                onClick={() => handleMainCategoryClick(4)}
+              >
+                모니터
+              </li>
+              <li
+                className={`p-3 ${mainCategory === 5 ? ' font-semibold text-xl' : ''}`}
+                onClick={() => handleMainCategoryClick(5)}
+              >
+                헤드셋
+              </li>
+              <li
+                className={`p-3 ${mainCategory === 9 ? ' font-semibold text-xl' : ''}`}
+                onClick={() => handleMainCategoryClick(9)}
+              >
+                기타
+              </li>
+            </ul>
+            <ul className="scroll-bar flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base">
+              <RenderSubcategories
+                mainCategory={mainCategory}
+                subCategory={subCategory}
+                handleSubCategoryClick={handleSubCategoryClick}
+              />
+            </ul>
+          </div>
         </div>
       </div>
     </>
