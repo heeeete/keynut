@@ -26,13 +26,6 @@ const RenderDescriptionInput = React.memo(({ description, setDescription, subCat
     setTemplate(!template);
   };
 
-  useEffect(() => {
-    if (!isTyping.current === false) {
-      setTemplate(false);
-      setDescription('');
-    }
-  }, [subCategory]);
-
   return (
     <>
       <div className="flex items-end mt-10 mb-3 space-x-3 max-md:justify-between">
