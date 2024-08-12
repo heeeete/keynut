@@ -57,8 +57,6 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteIm
     [uploadImages.imageFiles, uploadImages.imageUrls, setUploadImages],
   );
 
-  console.log(uploadImages);
-
   const draggableItems = useMemo(
     () =>
       uploadImages.imageUrls.map((url, idx) => (

@@ -986,7 +986,6 @@ export default function RenderShop() {
     if (window.innerWidth > 960) setIsMaxtb(false);
   }, []);
 
-  console.log(isMaxtb);
   useEffect(() => {
     const footer = document.getElementById('footer');
     if (filterActive) {

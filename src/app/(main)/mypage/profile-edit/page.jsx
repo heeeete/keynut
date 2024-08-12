@@ -107,7 +107,6 @@ const ProfileImage = ({ session, status, update, openModal }) => {
   const handleImageSelect = async e => {
     if (!e.target.files.length) return;
     if (e.target.files[0].size > IMAGE_MAX_SIZE) {
-      console.log('max');
       openModal({ message: '이미지 용량 초과', subMessage: '4.5MB 이하로 업로드해 주세요.' });
       e.target.value = '';
       return;
@@ -126,7 +125,6 @@ const ProfileImage = ({ session, status, update, openModal }) => {
     } else {
       const data = await res.json();
       update({ image: data.url });
-      console.log('done');
     }
   };
 
@@ -343,7 +341,6 @@ export default function ProfileEdit() {
     });
 
     if (!res.ok) {
-      console.log(await res.json());
       openModal({ message: '회원 탈퇴 처리에 실패했습니다. 다시 로그인 후 시도해주세요.' });
       await signIn();
     } else {
