@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { getSession, signIn, signOut, useSession } from 'next-auth/react';
 import Loading from '@/app/(main)/_components/Loading';
 import { useRouter } from 'next/navigation';
-import Modal from '../../_components/Modal';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import formatDate from '../../_lib/formatDate';
 import { useModal } from '../../_components/ModalProvider';
@@ -164,7 +163,7 @@ const ProfileImage = ({ session, status, update, openModal }) => {
                 <div className="absolute top-0 left-0 w-full h-full rounded-full bg-black bg-opacity-25 flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24">
                     <g stroke="white" opacity={0.8}>
-                      <circle cx="12" cy="12" r="9.5" fill="none" stroke-linecap="round" stroke-width="3">
+                      <circle cx="12" cy="12" r="9.5" fill="none" strokeLinecap="round" strokeWidth="3">
                         <animate
                           attributeName="stroke-dasharray"
                           calcMode="spline"

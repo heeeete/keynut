@@ -10,7 +10,6 @@ import debounce from '../../../../utils/debounce';
 import Link from 'next/link';
 import fetchHotProducts from '../_lib/fetchHotProducts';
 import Skeletons from './Skeletons';
-import Skeleton from '../../_components/Skeleton';
 import conditions from '../../_constants/conditions';
 
 const categories = [
@@ -457,6 +456,7 @@ const RenderProducts = React.memo(
 
     const queryString = createQueryString();
 
+    console.log(queryString);
     const useProducts = queryString => {
       return useInfiniteQuery({
         queryKey: ['products', queryString],
