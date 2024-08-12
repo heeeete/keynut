@@ -8,8 +8,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import Loading from '@/app/(main)/_components/Loading';
-import Link from 'next/link';
-import Modal from '@/app/(main)/_components/Modal';
 import { useModal } from '@/app/(main)/_components/ModalProvider';
 import uploadToS3 from '@/lib/uploadToS3';
 import getSignedUrls from '@/lib/getSignedUrls';
@@ -25,7 +23,7 @@ import RenderHashTagInputWithTag from '@/app/(main)/_components/ProductForm/Rend
 const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteImages }) => {
   const removeImage = useCallback(
     idx => {
-      if (uploadImages.imageUrls[idx].startsWith('https://keynut-bucket.s3.ap-northeast-2.amazonaws.com'))
+      if (!uploadImages.imageUrls[idx].startsWith('blob'))
         setDeleteImages(curr => [...curr, uploadImages.imageUrls[idx]]);
 
       const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
@@ -59,6 +57,8 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteIm
     [uploadImages.imageFiles, uploadImages.imageUrls, setUploadImages],
   );
 
+  console.log(uploadImages);
+
   const draggableItems = useMemo(
     () =>
       uploadImages.imageUrls.map((url, idx) => (
@@ -71,7 +71,11 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteIm
               className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
             >
               <Image
-                src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url}`}
+                src={
+                  typeof uploadImages.imageFiles[idx] === 'object'
+                    ? url
+                    : `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url}`
+                }
                 fill
                 alt={`item-${idx}`}
                 className="rounded border"
@@ -149,6 +153,16 @@ export default function Edit() {
   });
 
   useEffect(() => {
+    const errorHandler = async () => {
+      if (error?.message === 'Not Found') {
+        await openModal({ message: '삭제된 상품입니다.' });
+        router.back();
+      }
+    };
+    errorHandler();
+  }, [error, router]);
+
+  useEffect(() => {
     const originalDataInit = async () => {
       if ((session && data.userId !== session.user.id) || status === 'unauthenticated') {
         await openModal({ message: '비정상적인 접근입니다.' });
@@ -174,8 +188,8 @@ export default function Edit() {
     if (data) originalDataInit();
   }, [status, session, data, router]);
 
-  const handleDisabled = () => {
-    return (
+  const handleUpload = async () => {
+    if (
       !uploadImages.imageUrls.length ||
       !title.trim().length ||
       !mainCategory ||
@@ -184,11 +198,12 @@ export default function Edit() {
       !condition ||
       !description.trim().length ||
       !isValidOpenChat
-    );
-  };
-
-  const handleUpload = async () => {
-    if (!openChatUrl) {
+    ) {
+      openModal({
+        message: `필수 항목을 입력해주세요.`,
+      });
+      return;
+    } else if (!openChatUrl) {
       const result = await openModal({
         message: '오픈 채팅방 주소가 없습니다. 계속 진행하시겠습니까?',
         subMessage: '오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
@@ -207,7 +222,7 @@ export default function Edit() {
     uploadImages.imageFiles.forEach((file, idx) => {
       if (typeof file === 'object') {
         newImageIdx.push(idx);
-        names.push(file.name);
+        names.push(`product_${new Date().getTime()}_${file.name}`);
       }
     });
 
@@ -218,13 +233,12 @@ export default function Edit() {
       return;
     }
 
-    const uploadUrls = await Promise.all(
+    await Promise.all(
       urls.map(async (url, idx) => {
-        const uploadUrl = await uploadToS3(url, uploadImages.imageFiles[newImageIdx[idx]]);
-        return uploadUrl;
+        await uploadToS3(url, uploadImages.imageFiles[newImageIdx[idx]]);
       }),
     );
-    newImageIdx.forEach((idx, i) => (uploadImages.imageFiles[idx] = uploadUrls[i]));
+    newImageIdx.forEach((idx, i) => (uploadImages.imageFiles[idx] = names[i]));
 
     const formData = new FormData();
     deleteImages.forEach(file => {
@@ -303,15 +317,10 @@ export default function Edit() {
       <RenderPriceInput price={price} setPrice={setPrice} />
 
       <div className="w-full flex justify-end">
-        <button
-          className="bg-gray-300 text-white font-bold px-7 py-4 rounded ml-auto disabled:cursor-not-allowed disabled:opacity-10"
-          disabled={handleDisabled()}
-          onClick={handleUpload}
-        >
-          <p>수정</p>
+        <button className="bg-black text-white font-extrabold px-7 py-4 rounded ml-auto" onClick={handleUpload}>
+          <p>업로드</p>
         </button>
       </div>
-      <Modal />
     </div>
   );
 }

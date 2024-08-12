@@ -150,20 +150,20 @@ export async function PUT(req) {
     const formData = await req.formData();
     const deleteFiles = formData.getAll('deleteFiles');
 
-    const deletePromises = await Promise.all(
+    await Promise.all(
       deleteFiles.map(file => {
         const params = {
           Bucket: process.env.S3_BUCKET_NAME,
           Key: file,
         };
-        return s3Client.send(new DeleteObjectCommand(params)); // Promise 반환
+        return s3Client.send(new DeleteObjectCommand(params));
       }),
     );
 
     await users.updateOne({ email: session.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
     let tags = formData.get('tags');
     tags = tags.length ? tags.split(',') : [];
-    const result = await products.updateOne(
+    await products.updateOne(
       { _id: new ObjectId(formData.get('id')) },
       {
         $set: {

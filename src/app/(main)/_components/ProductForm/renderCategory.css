@@ -1,0 +1,12 @@
+.a::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  background-color: rgb(240, 240, 240);
+}
+.a::-webkit-scrollbar-thumb {
+  background-color: rgb(85, 85, 85);
+  border-radius: 5px;
+  /* background-clip: padding-box; */
+  border: 2px solid transparent;
+}

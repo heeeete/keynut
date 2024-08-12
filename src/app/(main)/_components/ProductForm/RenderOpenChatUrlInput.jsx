@@ -10,6 +10,18 @@ const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isVali
     else setIsValidOpenChat(true);
   };
 
+  const handlePaste = async event => {
+    const clipboardData = await navigator.clipboard.readText(); // 클립보드에서 텍스트 읽기
+    console.log(clipboardData);
+    const httpsIndex = clipboardData.indexOf('https');
+    console.log(httpsIndex);
+
+    if (httpsIndex !== -1) {
+      const httpsContent = clipboardData.substring(httpsIndex);
+      onChangeHandler(httpsContent);
+    }
+  };
+
   return (
     <>
       <div className="mt-10 max-w-lg border-b">
@@ -42,6 +54,7 @@ const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isVali
           onChange={e => onChangeHandler(e.target.value)}
           className="w-full outline-none no-underline text-xl max-[480px]:text-base"
           placeholder="카카오톡의 오픈 채팅방을 개설하여 주소를 입력해주세요."
+          onPaste={handlePaste}
         />
       </div>
       {!isValidOpenChat && (
