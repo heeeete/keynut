@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { getProviders, signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Nothing_You_Could_Do } from 'next/font/google';
 import Link from 'next/link';
 
@@ -12,7 +12,14 @@ export default function SignIn() {
   const { data: session, status } = useSession();
   const [providers, setProviders] = useState({});
   const [callbackUrl, setCallbackUrl] = useState('/');
+  const params = useSearchParams();
   const router = useRouter();
+  const error = params.get('error');
+
+  useEffect(() => {
+    if (error === 'OAuthAccountNotLinked') alert('이미 가입된 계정이 있습니다. 다른 플랫폼으로 로그인해 주세요.');
+  }, []);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
