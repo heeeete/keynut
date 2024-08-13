@@ -88,6 +88,8 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
               className={`w-3 h-3 rounded-full border-0 ${currentImageIndex === idx ? 'bg-gray-400' : 'bg-white'}`}
               onClick={() => setCurrentImageIndex(idx)}
               key={idx}
+              id="navigation-button"
+              aria-label="navigation-button"
             ></button>
           ))}
         </div>

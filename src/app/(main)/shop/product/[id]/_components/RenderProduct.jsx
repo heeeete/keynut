@@ -252,7 +252,11 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
   };
 
   return (
-    <button onClick={handleClick} className="flex justify-center items-center w-10 rounded -mr-3">
+    <button
+      aria-label="open-chat-link"
+      onClick={handleClick}
+      className="flex justify-center items-center w-10 rounded -mr-3"
+    >
       <svg xmlns="http://www.w3.org/2000/svg" width="60%" height="60%" viewBox="0 0 32 32">
         <path fill={color} stroke="black" strokeWidth={3} d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>

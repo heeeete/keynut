@@ -29,8 +29,8 @@ export default function Nav() {
       } fixed w-full top-0 bg-white z-50 ${maxMdBorder ? 'max-[960px]:border-0' : ''}`}
     >
       <nav className="flex flex-col w-full h-full  max-w-screen-xl mx-auto max-[960px]:space-y-0">
-        <ul className="flex justify-end pr-10 pt-2 max-[960px]:hidden">
-          <div className="flex justify-end space-x-2 text-xs">
+        <div className="flex justify-end pr-10 pt-2 max-[960px]:hidden">
+          <ul className="flex justify-end space-x-2 text-xs">
             {/* <li>
               <Link href="/search?c=keyboard">고객센터</Link>
             </li> */}
@@ -56,16 +56,16 @@ export default function Nav() {
                 <button onClick={() => signIn()}>로그인</button>
               )}
             </li>
-          </div>
-        </ul>
+          </ul>
+        </div>
         <div className="flex flex-col pb-2 items-center space-y-5 max-[960px]:space-y-0 max-[960px]:py-2">
           <div className="flex font-bold text-3xl items-center rounded justify-center max-[960px]:text-2xl max-[960px]:w-28">
             <Link className="flex w-full justify-center" href={'/'}>
               <p className={`${title.className}`}>KEYNUT</p>
             </Link>
           </div>
-          <ul className="">
-            <div className="flex justify-end space-x-8 text-base max-[960px]:hidden">
+          <div className="">
+            <ul className="flex justify-end space-x-8 text-base max-[960px]:hidden">
               <li>
                 <Link
                   href={'/gallery'}
@@ -126,8 +126,8 @@ export default function Nav() {
               {/* <li>
                 <Link href={'/price'}>시세</Link>
               </li> */}
-            </div>
-          </ul>
+            </ul>
+          </div>
         </div>
       </nav>
     </header>

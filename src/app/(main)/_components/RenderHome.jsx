@@ -25,7 +25,7 @@ const JustIn = () => {
           <div className="font-medium text-xl">just in</div>
           <div className="text-gray-500 font-medium">신규 등록 상품</div>
         </div>
-        <Link href={'/shop'} className="rounded">
+        <Link href={'/shop'} aria-label="more" className="rounded">
           <div className="flex items-center font-medium text-sm text-gray-500 px-0.5">더보기</div>
         </Link>
       </div>
@@ -80,6 +80,7 @@ const Categories = () => {
         <li className="flex flex-col items-center space-y-1">
           <Link
             href={'/shop?categories=1'}
+            aria-label="keyboard category"
             className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24"
           >
             <Image className="max-md:w-16" src="/keyboard.svg" width={80} height={80} alt="keyboard" />
@@ -89,6 +90,7 @@ const Categories = () => {
         <li className="flex flex-col items-center space-y-1">
           <Link
             href={'/shop?categories=2'}
+            aria-label="mouse category"
             className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-slate-100 justify-center items-center max-md:w-24"
           >
             <Image className="max-md:w-9" src="/mouse.svg" width={45} height={45} alt="mouse" />
@@ -98,6 +100,7 @@ const Categories = () => {
         <li className="flex flex-col items-center space-y-1">
           <Link
             href={'/shop?categories=3'}
+            aria-label="pad category"
             className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-gray-100 justify-center items-center max-md:w-24"
           >
             <svg width="60" height="50" viewBox="0 0 496 265" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -110,6 +113,7 @@ const Categories = () => {
         <li className="flex flex-col items-center space-y-1">
           <Link
             href={'/shop?categories=4'}
+            aria-label="monitor category"
             className="flex w-28 aspect-square min-h-16 min-w-16 rounded bg-slate-100 justify-center items-center max-md:w-24"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 64 64">
@@ -128,6 +132,7 @@ const Categories = () => {
         <li className="flex flex-col items-center space-y-1">
           <Link
             href={'/shop?categories=5'}
+            aria-label="headphone category"
             className="flex w-28 aspect-square min-h-16 min-w-16 rounded  bg-gray-100 justify-center items-center max-md:w-24"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 64 64">
@@ -160,7 +165,7 @@ const Categories = () => {
           <p className="text-gray-600">헤드셋</p>
         </li>
         <li className="flex flex-col items-center space-y-1">
-          <Link href={'/shop?categories=9'}>
+          <Link href={'/shop?categories=9'} aria-label="others category">
             <div className="flex w-28 aspect-square min-h-16 min-w-16 bg-slate-100 rounded justify-center items-center max-md:w-24">
               <svg
                 className="max-md:w-10"
