@@ -456,7 +456,6 @@ const RenderProducts = React.memo(
 
     const queryString = createQueryString();
 
-    console.log(queryString);
     const useProducts = queryString => {
       return useInfiniteQuery({
         queryKey: ['products', queryString],
