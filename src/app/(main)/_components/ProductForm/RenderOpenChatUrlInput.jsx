@@ -11,12 +11,16 @@ const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isVali
   };
 
   const handlePaste = async event => {
-    const clipboardData = await navigator.clipboard.readText(); // 클립보드에서 텍스트 읽기
-    const httpsIndex = clipboardData.indexOf('https');
+    try {
+      const clipboardData = await navigator.clipboard.readText(); // 클립보드에서 텍스트 읽기
+      const httpsIndex = clipboardData.indexOf('https');
 
-    if (httpsIndex !== -1) {
-      const httpsContent = clipboardData.substring(httpsIndex);
-      onChangeHandler(httpsContent);
+      if (httpsIndex !== -1) {
+        const httpsContent = clipboardData.substring(httpsIndex);
+        onChangeHandler(httpsContent);
+      }
+    } catch (error) {
+      console.error(error.message);
     }
   };
 
