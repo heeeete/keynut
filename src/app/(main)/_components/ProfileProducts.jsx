@@ -91,39 +91,34 @@ export default function ProfileProducts({ data }) {
         <h2 className="text-xl max-md:text-base max-md:px-3">상품</h2>
         <nav className="mb-2">
           <ul className="grid grid-cols-3 items-center bg-gray-100 border-gray-200 border-t border-r border-l">
-            <button>
-              <li
-                className={`flex justify-center py-2 text-lg space-x-2 max-md:text-sm border-gray-200 border-r ${
-                  productOption === 1 ? 'bg-white text-black' : 'text-gray-400'
-                }`}
-                onClick={() => updateURL('all')}
-              >
-                <p>판매 중</p>
-                <p className="font-medium">{data?.filter(a => a.state === 1).length}</p>
-              </li>
-            </button>
-            <button>
-              <li
-                className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 border-r max-md:text-sm ${
-                  productOption === 2 ? 'bg-white text-black' : 'text-gray-400'
-                }`}
-                onClick={() => updateURL(2)}
-              >
-                <p>예약 중</p>
-                <p className="font-medium">{data?.filter(a => a.state === 2).length}</p>
-              </li>
-            </button>
-            <button>
-              <li
-                className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 max-md:text-sm ${
-                  productOption === 0 ? 'bg-white text-black' : 'text-gray-400'
-                }`}
-                onClick={() => updateURL(0)}
-              >
-                <p>판매 완료 </p>
-                <p className="font-medium">{data?.filter(a => a.state === 0).length}</p>
-              </li>
-            </button>
+            <li
+              className={`flex justify-center py-2 text-lg space-x-2 max-md:text-sm border-gray-200 border-r cursor-pointer ${
+                productOption === 1 ? 'bg-white text-black' : 'text-gray-400'
+              }`}
+              onClick={() => updateURL('all')}
+            >
+              <p>판매 중</p>
+              <p className="font-medium">{data?.filter(a => a.state === 1).length}</p>
+            </li>
+            <li
+              className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 border-r max-md:text-sm cursor-pointer ${
+                productOption === 2 ? 'bg-white text-black' : 'text-gray-400'
+              }`}
+              onClick={() => updateURL(2)}
+            >
+              <p>예약 중</p>
+              <p className="font-medium">{data?.filter(a => a.state === 2).length}</p>
+            </li>
+
+            <li
+              className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 max-md:text-sm cursor-pointer ${
+                productOption === 0 ? 'bg-white text-black' : 'text-gray-400'
+              }`}
+              onClick={() => updateURL(0)}
+            >
+              <p>판매 완료 </p>
+              <p className="font-medium">{data?.filter(a => a.state === 0).length}</p>
+            </li>
           </ul>
         </nav>
         <div className="">

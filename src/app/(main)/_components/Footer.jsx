@@ -24,7 +24,7 @@ export default function Footer() {
               <a href="mailto:helloword@na.com">keynut65@gmail.com</a>
             </p>
             <div className="flex">
-              <Link href="https://www.instagram.com/keynut_official/">
+              <Link href="https://www.instagram.com/keynut_official/" aria-label="keynut instagram">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
                   <g
                     fill="none"

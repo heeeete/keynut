@@ -131,6 +131,8 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
                 setOffset(idx * -clientWidth);
                 setCurrentImageIndex(idx);
               }}
+              id="navigation-button"
+              aria-label="navigation-button"
             ></button>
           ))}
         </div>
