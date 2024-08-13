@@ -32,7 +32,7 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
   return (
     <div className="my-3">
       <div className="flex items-center">
-        <p className="text-gray-400">#</p>
+        <p className="text-gray-400 mr-0.5">#</p>
         <input
           type="text"
           value={tempTag}
@@ -61,13 +61,15 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
           </div>
         ))}
       </div>
-      <p
-        className={`${
-          isFocus ? 'opacity-100' : 'opacity-0'
-        } transition-opacity text-sm text-gray-400 font-semibold px-2 max-md:text-xs`}
-      >
-        상품 태그는 엔터로 입력할 수 있습니다.
-      </p>
+      {tags.length === 0 && (
+        <p
+          className={`${
+            isFocus ? 'opacity-100' : 'opacity-0'
+          } transition-opacity text-sm text-gray-400 font-semibold px-2 max-md:text-xs`}
+        >
+          상품 태그는 엔터로 입력할 수 있습니다.
+        </p>
+      )}
     </div>
   );
 });
