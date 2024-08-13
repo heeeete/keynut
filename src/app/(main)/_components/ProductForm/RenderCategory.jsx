@@ -30,7 +30,7 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
             )}
           </div>
           <div className="flex h-64">
-            <ul className="scroll-bar flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base  ">
+            <ul className="scroll-bar flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base">
               <li
                 className={`p-3 ${mainCategory === 1 ? 'selected font-semibold' : ''}`}
                 onClick={() => handleMainCategoryClick(1)}
