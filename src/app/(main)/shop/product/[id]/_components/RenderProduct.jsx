@@ -489,13 +489,14 @@ export default function RenderProduct({ id }) {
 
   useEffect(() => {
     const errorHandler = async () => {
-      if (error?.message === 'Not Found') {
+      console.log(data);
+      if (data === null) {
         await openModal({ message: '삭제된 상품입니다.' });
         router.back();
       }
     };
     errorHandler();
-  }, [error, router]);
+  }, [data, router]);
 
   useEffect(() => {
     if (settingModal) {
@@ -600,9 +601,7 @@ export default function RenderProduct({ id }) {
                       <></>
                     ) : (
                       <>
-                        <OpenChatLink
-                          url={session ? product.openChatUrl : `/auth/signin?callbackUrl=/shop/product/${id}`}
-                        />
+                        <OpenChatLink url={product.openChatUrl} session={session} id={id} />
                         <RenderBookmarkButton
                           productId={id}
                           bookmarked={product.bookmarked}

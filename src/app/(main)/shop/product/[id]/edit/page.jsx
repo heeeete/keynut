@@ -153,13 +153,14 @@ export default function Edit() {
 
   useEffect(() => {
     const errorHandler = async () => {
-      if (error?.message === 'Not Found') {
+      console.log(data);
+      if (data === null) {
         await openModal({ message: '삭제된 상품입니다.' });
         router.back();
       }
     };
     errorHandler();
-  }, [error, router]);
+  }, [data, router]);
 
   useEffect(() => {
     const originalDataInit = async () => {
