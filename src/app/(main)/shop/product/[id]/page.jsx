@@ -9,10 +9,10 @@ export async function generateMetadata({ params }) {
   const product = await getProductWithUser(id);
 
   return {
-    title: product ? `${product.title}ㅣKEYNUT - 키넛` : 'KEYNUT - 키넛',
+    title: product ? `${product.title}ㅣKEYNUT` : 'KEYNUT',
     description: product ? `${product.description}` : '상품을 찾을 수 없습니다',
     openGraph: {
-      title: product ? `${product.title}ㅣKEYNUT - 키넛` : 'KEYNUT - 키넛',
+      title: product ? `${product.title}ㅣKEYNUT` : 'KEYNUT',
       description: product ? `${product.description}` : '상품을 찾을 수 없습니다.',
       images: [
         {
