@@ -1,10 +1,15 @@
 import { connectDB } from '@/lib/mongodb';
 
+export const revalidate = 86400; // 24시간마다 페이지 갱신
+
 async function getAllProducts() {
   try {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
-    const products = await db.collection('products').find({}).toArray();
+    const products = await db
+      .collection('products')
+      .find({ state: { $in: [1, 2] } })
+      .toArray();
 
     return products;
   } catch (error) {
@@ -39,5 +44,3 @@ export default async function sitemap() {
     },
   ];
 }
-
-export const revalidate = 86400; // 24시간마다 페이지 갱신
