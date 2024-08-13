@@ -120,7 +120,7 @@ const RenderProfile = ({ user, id }) => {
     );
   };
 
-  const Provider = ({ provider = 'kakao' }) => {
+  const Provider = ({ provider }) => {
     return (
       <div className="flex text-gray-400 items-center space-x-1 text-sm max-[960px]:text-xs">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
@@ -177,7 +177,7 @@ const RenderProfile = ({ user, id }) => {
             </div>
             <div>
               <LoginDate createdAt={user.createdAt} />
-              <Provider />
+              <Provider provider={user.provider} />
             </div>
           </div>
           <div className="flex relative rounded-full  aspect-square justify-center items-center cursor-pointer">
@@ -470,8 +470,8 @@ const incrementViewCount = async productId => {
 
 const onPaste = async (id, openModal) => {
   try {
-    await navigator.clipboard.writeText();
-    openModal({ message: 'URL복사', subMessage: `다른 곳에 공유해 보세요\n${id}` });
+    await navigator.clipboard.writeText(`https://keynut.co.kr/shop/product/${id}`);
+    openModal({ message: 'URL복사', subMessage: `URL이 복사되었습니다.\n다른 곳에 공유해 보세요!` });
   } catch (error) {
     openModal({ message: 'URL복사', subMessage: `에러가 발생했습니다.\n잠시 후 다시 시도해 주세요` });
   }
@@ -575,6 +575,7 @@ export default function RenderProduct({ id }) {
   if (!data || !product) return <div>데이터를 가져오고 있습니다...</div>;
   return (
     <div className="min-[960px]:mt-5 min-[960px]:flex-1 min-[960px]:px-10 max-w-screen-lg mx-auto min-h-80vh max-[960px]:max-w-screen-md max-[960px]:max-w- max-[960px]:mt-12">
+      {session?.admin && <div className="font-extrabold text-3xl">ADMIN ACCOUNT</div>}
       <div className="flex items-end justify-between max-[960px]:py-3 max-[960px]:px-3">
         <RenderCategory category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
@@ -604,20 +605,22 @@ export default function RenderProduct({ id }) {
                 </div>
                 <div className="flex self-end h-8 items-center space-x-2">
                   {status !== 'loading' ? (
-                    writer || session?.admin || product.state === 0 ? (
+                    writer ? (
                       <div className="hidden max-[480px]:block">
                         <DropdownMenu id={id} state={product.state} />
                       </div>
                     ) : (
-                      <>
-                        <OpenChatLink url={product.openChatUrl} session={session} id={id} />
-                        <RenderBookmarkButton
-                          productId={id}
-                          bookmarked={product.bookmarked}
-                          session={session}
-                          queryClient={queryClient}
-                        />
-                      </>
+                      product.state !== 0 && (
+                        <>
+                          <OpenChatLink url={product.openChatUrl} session={session} id={id} />
+                          <RenderBookmarkButton
+                            productId={id}
+                            bookmarked={product.bookmarked}
+                            session={session}
+                            queryClient={queryClient}
+                          />
+                        </>
+                      )
                     )
                   ) : null}
                   <button

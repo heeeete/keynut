@@ -34,6 +34,30 @@ export async function GET(req, { params }) {
             preserveNullAndEmptyArrays: true, // 사용자 정보가 없을 경우에도 결과를 반환하도록 설정
           },
         },
+        {
+          $lookup: {
+            from: 'accounts', // 조인할 컬렉션 이름 (accounts)
+            localField: 'user._id', // users 컬렉션의 _id 필드를 사용하여 조인
+            foreignField: 'userId', // accounts 컬렉션의 userId 필드
+            as: 'account', // 조인 결과를 저장할 필드 이름
+          },
+        },
+        {
+          $unwind: {
+            path: '$account',
+            preserveNullAndEmptyArrays: true, // 계정 정보가 없을 경우에도 결과를 반환하도록 설정
+          },
+        },
+        {
+          $addFields: {
+            'user.provider': '$account.provider', // account에서 가져온 provider 정보를 user 필드에 추가
+          },
+        },
+        {
+          $project: {
+            account: 0, // account 필드를 결과에서 제거 (원하지 않는 경우)
+          },
+        },
       ])
       .toArray();
 
