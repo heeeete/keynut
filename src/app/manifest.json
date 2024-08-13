@@ -1,19 +1,20 @@
 {
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "icons": [
+    { "purpose": "maskable", "sizes": "512x512", "src": "/icon512_maskable.png", "type": "image/png" },
+    { "purpose": "any", "sizes": "512x512", "src": "/icon512_rounded.png", "type": "image/png" },
+    { "purpose": "maskable", "sizes": "192x192", "src": "/icon192_maskable.png", "type": "image/png" },
+    { "purpose": "any", "sizes": "192x192", "src": "/icon192_rounded.png", "type": "image/png" }
+  ],
+  "orientation": "any",
+  "display": "standalone",
+  "dir": "auto",
+  "lang": "ko-KR",
   "name": "KEYNUT",
   "short_name": "KEYNUT",
   "start_url": "/",
-  "scope": ".",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "description": "전자기기 중고거래 사이트",
-  "dir": "ltr",
-  "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "/keynut.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "scope": "/",
+  "description": "키보드, 마우스, 헤드셋, 모니터등 다양한 전자기기를 한눈에",
+  "id": "https://keynut.co.kr"
 }

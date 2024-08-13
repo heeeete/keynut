@@ -4,14 +4,12 @@ import HomeLink from './HomeLink';
 import ShopLink from './ShopLink';
 import SellLink from './SellLink';
 import MyPageLink from './MyPageLink';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import handleLogin from '@/utils/handleLogin';
 
 export default function BottomNav() {
   const router = useRouter();
   return (
-    <nav className="hidden fixed z-40 border-t w-full max-w-screen-xl  bg-white justify-between bottom-nav-calc-height pb-safe-bottom bottom-0 left-1/2 -translate-x-1/2     max-[960px]:flex ">
+    <nav className="hidden fixed z-40 border-t w-full max-w-screen-xl  bg-white justify-between bottom-nav-calc-height bottom-0 left-1/2 -translate-x-1/2     max-[960px]:flex ">
       <ul className="flex w-full justify-around items-center">
         <li className="flex flex-col justify-center items-center h-full flex-1">
           <HomeLink />
