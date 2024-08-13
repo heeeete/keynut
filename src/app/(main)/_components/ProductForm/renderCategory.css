@@ -23,7 +23,7 @@
   left: 25%;
   width: 50%;
   height: 1px;
-  background-color: rgb(226, 226, 226);
+  background-color: #e7e8ea;
 }
 
 .scroll-bar li.selected::before {
