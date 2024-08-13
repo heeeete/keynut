@@ -1,13 +1,21 @@
 export default async function getProductWithUser(productId) {
+  if (productId?.length !== 24) {
+    console.error('고유 ID의 값이 24글자가 아닙니다.');
+    return null;
+  }
+
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${productId}`, {
     next: { tags: [productId] },
   });
+
   if (res.status === 404) {
-    throw new Error('Not Found'); // 404 상태일 때 에러를 발생시킵니다.
+    console.error('상품을 찾을 수 없습니다.');
+    return null;
+  }
+  if (!res.ok) {
+    console.error('상품을 가져오는데 실패');
+    return null;
   }
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch'); // 기타 에러 발생 시
-  }
   return await res.json();
 }

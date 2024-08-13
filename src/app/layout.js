@@ -6,10 +6,10 @@ import RQProvider from './(main)/_components/RQProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'KEYNUT',
+  title: 'KEYNUT - 키넛',
   description: '키보드, 마우스, 헤드셋, 모니터등 다양한 전자기기를 한눈에',
   openGraph: {
-    title: 'KEYNUT',
+    title: 'KEYNUT - 키넛',
     description: '키보드, 마우스, 헤드셋, 모니터등 다양한 전자기기를 한눈에',
     images: [
       {

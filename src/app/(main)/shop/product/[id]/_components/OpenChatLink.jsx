@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-export default function OpenChatLink({ url }) {
+export default function OpenChatLink({ url, session, id }) {
   if (!url)
     return (
       <button className="flex justify-center items-center rounded aspect-square w-10 opacity-10 cursor-not-allowed">
@@ -16,10 +16,10 @@ export default function OpenChatLink({ url }) {
     );
   return (
     <Link
-      target={url?.startsWith('/auth/signin') ? '_self' : '_blank'}
+      target={session ? '_blank' : '_self'}
       className="flex justify-center items-center rounded aspect-square w-10"
       style={url ? {} : { cursor: 'not-allowed', opacity: 0.1 }}
-      href={url}
+      href={session ? url : `/auth/signin?callbackUrl=/shop/product/${id}`}
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="70%" height="70%" viewBox="0 0 24 24">
         <path

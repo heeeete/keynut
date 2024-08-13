@@ -4,6 +4,7 @@ import React, { useCallback, useState } from 'react';
 
 const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
   const [tempTag, setTempTag] = useState('');
+  const [isFocus, setIsFocus] = useState(false);
 
   const removeTag = idx => {
     const newTags = [...tags];
@@ -30,7 +31,8 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
 
   return (
     <div className="my-3">
-      <div className="flex">
+      <div className="flex items-center">
+        <p className="text-gray-400">#</p>
         <input
           type="text"
           value={tempTag}
@@ -39,7 +41,8 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
           maxLength={10}
           placeholder="상품 태그 최대 10개"
           className="bg-gray-100 rounded p-1 max-w-md outline-none no-underline"
-          enterKeyHint="next"
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
         />
         <p className="flex text-xs ml-2 text-gray-400 items-center">{`(${tags.length}/10)`}</p>
       </div>
@@ -58,6 +61,13 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
           </div>
         ))}
       </div>
+      <p
+        className={`${
+          isFocus ? 'opacity-100' : 'opacity-0'
+        } transition-opacity text-sm text-gray-400 font-semibold px-2 max-md:text-xs`}
+      >
+        상품 태그는 엔터로 입력할 수 있습니다.
+      </p>
     </div>
   );
 });
