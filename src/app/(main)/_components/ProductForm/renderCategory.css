@@ -12,14 +12,21 @@
 
 .scroll-bar li {
   position: relative;
+  transition: 0.3s;
 }
 
-.scroll-bar li:not(:last-child)::before {
-  content: ""; /* 각 li 앞에 줄을 추가 */
+.scroll-bar li::before {
+  transition: 0.3s;
+  content: "";
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 25%;
-  border-bottom: 1px solid rgb(226, 226, 226);
   width: 50%;
-  height: 100%;
+  height: 1px;
+  background-color: rgb(226, 226, 226);
+}
+
+.scroll-bar li.select::before {
+  height: 10px;
+  border-radius: 20px;
 }

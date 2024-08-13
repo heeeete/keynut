@@ -32,37 +32,37 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
           <div className="flex h-64">
             <ul className="scroll-bar flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base  ">
               <li
-                className={`p-3 ${mainCategory === 1 ? ' font-semibold text-xl' : ''}`}
+                className={`p-3 ${mainCategory === 1 ? 'select font-semibold text-xl' : ''}`}
                 onClick={() => handleMainCategoryClick(1)}
               >
                 키보드
               </li>
               <li
-                className={`p-3 ${mainCategory === 2 ? ' font-semibold text-xl' : ''}`}
+                className={`p-3 ${mainCategory === 2 ? 'select font-semibold text-xl' : ''}`}
                 onClick={() => handleMainCategoryClick(2)}
               >
                 마우스
               </li>
               <li
-                className={`p-3 ${mainCategory === 3 ? ' font-semibold text-xl' : ''}`}
+                className={`p-3 ${mainCategory === 3 ? 'select font-semibold text-xl' : ''}`}
                 onClick={() => handleMainCategoryClick(3)}
               >
                 패드
               </li>
               <li
-                className={`p-3 ${mainCategory === 4 ? ' font-semibold text-xl' : ''}`}
+                className={`p-3 ${mainCategory === 4 ? 'select font-semibold text-xl' : ''}`}
                 onClick={() => handleMainCategoryClick(4)}
               >
                 모니터
               </li>
               <li
-                className={`p-3 ${mainCategory === 5 ? ' font-semibold text-xl' : ''}`}
+                className={`p-3 ${mainCategory === 5 ? 'select font-semibold text-xl' : ''}`}
                 onClick={() => handleMainCategoryClick(5)}
               >
                 헤드셋
               </li>
               <li
-                className={`p-3 ${mainCategory === 9 ? ' font-semibold text-xl' : ''}`}
+                className={`p-3 ${mainCategory === 9 ? 'select font-semibold text-xl' : ''}`}
                 onClick={() => handleMainCategoryClick(9)}
               >
                 기타
