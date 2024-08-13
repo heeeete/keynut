@@ -42,7 +42,7 @@ const ProfileName = ({ session, status, update, openModal }) => {
         openModal({ message: '허용되지 않는 단어가 포함되어 있습니다.' });
       } else if (res.status === 400) {
         setTempNickname(nickname);
-        openModal({ message: '닉네임은 2글자 이상 10글자 이내의 한글, 영어, 숫자만 사용 가능합니다.' });
+        openModal({ message: '닉네임은 2글자 이상 10글자 이하의 한글, 영어, 숫자만 사용 가능합니다.' });
       } else console.error('API 요청 실패:', res.status, res.statusText);
     } else {
       const data = await res.json();
