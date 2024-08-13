@@ -26,7 +26,7 @@
   background-color: rgb(226, 226, 226);
 }
 
-.scroll-bar li.select::before {
+.scroll-bar li.selected::before {
   height: 10px;
   border-radius: 20px;
 }

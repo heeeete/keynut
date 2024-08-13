@@ -41,7 +41,6 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
           maxLength={10}
           placeholder="상품 태그 최대 10개"
           className="bg-gray-100 rounded p-1 max-w-md outline-none no-underline"
-          enterKeyHint="next"
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
         />
@@ -65,7 +64,7 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
       <p
         className={`${
           isFocus ? 'opacity-100' : 'opacity-0'
-        } transition-opacity text-sm text-gray-400 font-semibold px-2`}
+        } transition-opacity text-sm text-gray-400 font-semibold px-2 max-md:text-xs`}
       >
         상품 태그는 엔터로 입력할 수 있습니다.
       </p>
