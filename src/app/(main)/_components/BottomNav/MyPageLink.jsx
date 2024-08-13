@@ -7,7 +7,7 @@ export default function MyPageLink({ router }) {
   const pathName = usePathname();
   return (
     <>
-      {pathName === '/mypage' ? (
+      {pathName.startsWith('/mypage') ? (
         <div className="flex flex-col justify-center items-center w-full h-full">
           <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 16 16">
             <path fill="black" d="M3 14s-1 0-1-1s1-4 6-4s6 3 6 4s-1 1-1 1zm5-6a3 3 0 1 0 0-6a3 3 0 0 0 0 6" />

@@ -18,24 +18,14 @@ import DropdownMenu from '../../_components/DropdownMenu';
 import { useModal } from '../../_components/ModalProvider';
 import conditions from '../../_constants/conditions';
 
-const UpButton = ({ state, raiseCount, raiseHandler, openModal }) => {
-  const openUpModal = async () => {
-    const res = await openModal({
-      message: raiseCount > 0 ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.',
-      subMessage: raiseCount > 0 ? `사용 시 1회 차감됩니다.` : '',
-      isSelect: raiseCount > 0 ? true : false,
-    });
-    if (!res) return;
-    raiseHandler();
-  };
-
+const UpButton = ({ state, id, openUpModal }) => {
   return (
     <>
       <button
         className={`px-2 font-medium border border-gray-300 rounded flex-nowrap whitespace-nowrap ${
           state !== 1 ? 'text-gray-300' : 'max-md:text-gray-600'
         } `}
-        onClick={openUpModal}
+        onClick={() => openUpModal(id)}
         disabled={state === 0 || state === 2}
       >
         up
@@ -44,14 +34,14 @@ const UpButton = ({ state, raiseCount, raiseHandler, openModal }) => {
   );
 };
 
-const DeleteButton = ({ setShowSetting, openDeleteModal }) => {
+const DeleteButton = ({ id, setShowSetting, openDeleteModal }) => {
   return (
     <>
       <button
         className="px-2 font-medium border border-gray-300 text-red-400 rounded flex-nowrap whitespace-nowrap max-md:border-0 max-md:flex-1 max-md:w-full max-md:text-base max-md:font-semibold"
         onClick={() => {
           if (setShowSetting) setShowSetting(false);
-          openDeleteModal();
+          openDeleteModal(id);
         }}
       >
         삭제
@@ -81,7 +71,7 @@ const SettingModal = ({ id, setShowSetting, openDeleteModal }) => {
     >
       <div className="flex flex-col items-center rounded-md border space-y-1 bg-white w-52 h-32">
         <ModifyButton id={id} />
-        <DeleteButton setShowSetting={setShowSetting} openDeleteModal={openDeleteModal} />
+        <DeleteButton id={id} setShowSetting={setShowSetting} openDeleteModal={openDeleteModal} />
       </div>
     </div>
   );
@@ -109,26 +99,7 @@ const SettingButton = ({ id, openDeleteModal }) => {
   );
 };
 
-const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount, raiseCount, openModal }) => {
-  const raiseHandler = async () => {
-    await raiseProduct(product._id, () => {
-      router.refresh();
-      invalidateFilters();
-      fetchRaiseCount();
-      openModal({ message: '최상단으로 UP!', subMessage: `${raiseCount - 1}회 사용가능` });
-    });
-  };
-
-  const openDeleteModal = useCallback(async () => {
-    const res = await openModal({ message: '삭제하시겠습니까', isSelect: true });
-    if (!res) return;
-
-    await deleteProduct(product._id, () => {
-      invalidateFilters();
-      refetch();
-    });
-  }, [router, invalidateFilters, refetch]);
-
+const Product = ({ product, openDeleteModal, openUpModal }) => {
   return (
     <div className="flex space-x-3 border p-3 rounded relative mb-3 max-md:border-0 max-md:border-b max-md:border-gray-100 max-md:mb-0 max-md:py-4">
       <div className="w-28 aspect-square relative bg-gray-100 max-md:w-24">
@@ -186,10 +157,10 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
         <div className="flex justify-between items-end">
           <div className="flex space-x-2 text-sm max-md:space-x-1">
             <DropdownMenu state={product.state} id={product._id} />
-            <UpButton state={product.state} raiseCount={raiseCount} raiseHandler={raiseHandler} openModal={openModal} />
+            <UpButton state={product.state} id={product._id} openUpModal={openUpModal} />
             <div className="flex  space-x-2 max-md:hidden">
               <ModifyButton id={product._id} />
-              <DeleteButton openDeleteModal={openDeleteModal} />
+              <DeleteButton id={product._id} openDeleteModal={openDeleteModal} />
             </div>
           </div>
           <div className="flex items-center space-x-2 max-md:space-x-1">
@@ -229,6 +200,31 @@ function ProductEdit() {
     enabled: status === 'authenticated' && !!session?.user?.id,
   });
   const productState = params.get('state') === null ? 3 : Number(params.get('state'));
+
+  const openDeleteModal = async id => {
+    const res = await openModal({ message: '삭제하시겠습니까', isSelect: true });
+    if (!res) return;
+
+    await deleteProduct(id, () => {
+      invalidateFilters();
+      refetch();
+    });
+  };
+
+  const openUpModal = async id => {
+    const res = await openModal({
+      message: raiseCount > 0 ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.',
+      subMessage: raiseCount > 0 ? `사용 시 1회 차감됩니다.` : '',
+      isSelect: raiseCount > 0 ? true : false,
+    });
+    if (!res) return;
+    await raiseProduct(id, () => {
+      router.refresh();
+      invalidateFilters();
+      fetchRaiseCount();
+      openModal({ message: '최상단으로 UP!', subMessage: `${raiseCount - 1}회 사용가능` });
+    });
+  };
 
   const updateURL = useCallback(state => {
     if (state === 'all') return router.push(window.location.pathname);
@@ -279,15 +275,7 @@ function ProductEdit() {
             data.userProducts.length ? (
               data.userProducts.map((product, idx) => (
                 <Fragment key={idx}>
-                  <Product
-                    product={product}
-                    router={router}
-                    invalidateFilters={invalidateFilters}
-                    refetch={refetch}
-                    raiseCount={raiseCount}
-                    fetchRaiseCount={fetchRaiseCount}
-                    openModal={openModal}
-                  />
+                  <Product product={product} openDeleteModal={openDeleteModal} openUpModal={openUpModal} />
                 </Fragment>
               ))
             ) : (
