@@ -72,10 +72,10 @@ const RenderTimeAgo = ({ date }) => {
   const [clientTime, setClientTime] = useState(null);
 
   useEffect(() => {
-    setClientTime(timeAgo(date)); // 클라이언트 측에서만 시간이 업데이트되도록 함
+    setClientTime(timeAgo(date));
   }, [date]);
 
-  return <p>{clientTime || timeAgo(date)}</p>; // 초기 렌더링 시 서버 시간 사용
+  return <p>{clientTime || timeAgo(date)}</p>;
 };
 
 const RenderBookMark = ({ bookmarked }) => {
@@ -489,7 +489,6 @@ export default function RenderProduct({ id }) {
 
   useEffect(() => {
     const errorHandler = async () => {
-      console.log(data);
       if (data === null) {
         await openModal({ message: '삭제된 상품입니다.' });
         router.back();
