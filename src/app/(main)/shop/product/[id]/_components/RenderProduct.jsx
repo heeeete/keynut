@@ -596,7 +596,7 @@ export default function RenderProduct({ id }) {
                 </div>
                 <div className="flex self-end h-8 items-center">
                   {status !== 'loading' ? (
-                    writer || session?.admin ? (
+                    writer || session?.admin || product.state === 0 ? (
                       // <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
                       <></>
                     ) : (
