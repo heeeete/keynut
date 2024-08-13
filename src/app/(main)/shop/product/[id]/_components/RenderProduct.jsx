@@ -252,12 +252,8 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
   };
 
   return (
-    <button
-      aria-label="open-chat-link"
-      onClick={handleClick}
-      className="flex justify-center items-center w-10 rounded -mr-3"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="60%" height="60%" viewBox="0 0 32 32">
+    <button aria-label="bookmark button" onClick={handleClick} className="flex justify-center items-center w-7 rounded">
+      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32">
         <path fill={color} stroke="black" strokeWidth={3} d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
     </button>
@@ -472,6 +468,15 @@ const incrementViewCount = async productId => {
   return res.json();
 };
 
+const onPaste = async (id, openModal) => {
+  try {
+    await navigator.clipboard.writeText();
+    openModal({ message: 'URL복사', subMessage: `다른 곳에 공유해 보세요\n${id}` });
+  } catch (error) {
+    openModal({ message: 'URL복사', subMessage: `에러가 발생했습니다.\n잠시 후 다시 시도해 주세요` });
+  }
+};
+
 export default function RenderProduct({ id }) {
   const queryClient = useQueryClient();
   const [settingModal, setSettingModal] = useState(null);
@@ -597,7 +602,7 @@ export default function RenderProduct({ id }) {
                   <span className="text-2xl font-bold">{Number(product.price).toLocaleString()}</span>
                   <span className="text-xl">원</span>
                 </div>
-                <div className="flex self-end h-8 items-center">
+                <div className="flex self-end h-8 items-center space-x-2">
                   {status !== 'loading' ? (
                     writer || session?.admin || product.state === 0 ? (
                       <div className="hidden max-[480px]:block">
@@ -615,6 +620,13 @@ export default function RenderProduct({ id }) {
                       </>
                     )
                   ) : null}
+                  <button
+                    className="flex justify-center items-center rounded w-7 h-7 font-semibold bg-black text-white "
+                    style={{ fontSize: '10px' }}
+                    onClick={() => onPaste(id, openModal)}
+                  >
+                    URL
+                  </button>
                 </div>
               </div>
               <div className="flex w-full justify-between text-sm text-gray-500 font-semibold">
