@@ -16,7 +16,14 @@ export async function GET(req) {
       return NextResponse.json([], { status: 200 });
     }
     const bookmarkedProducts = await collection.find({ _id: { $in: bookmarked } }).toArray();
-    return NextResponse.json(bookmarkedProducts, { status: 200 });
+    const map = new Map();
+    bookmarkedProducts.map(a => {
+      map.set(a._id.toString(), a);
+    });
+    const sortedProducts = bookmarked.reverse().map(a => {
+      return map.get(a.toString());
+    });
+    return NextResponse.json(sortedProducts, { status: 200 });
   } catch (error) {
     console.error('Failed to retrieve bookmarked products:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });

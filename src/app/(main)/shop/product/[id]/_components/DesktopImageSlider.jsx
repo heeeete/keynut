@@ -54,20 +54,31 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
             </div>
           </button>
         )}
-        {images?.map((img, idx) => (
+        {images?.length ? (
+          images.map((img, idx) => (
+            <Image
+              id="image"
+              key={idx}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img}`}
+              alt="product-img"
+              fill
+              sizes="(max-width: 24rem) 100vw, 50rem"
+              className={`absolute transition-opacity duration-200 cursor-pointer tb:rounded-xl ${
+                currentImageIndex === idx ? 'opacity-100' : 'opacity-0'
+              }`}
+              style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
+            />
+          ))
+        ) : (
           <Image
-            id="image"
-            key={idx}
-            src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img}`}
+            src="/noImage.svg"
             alt="product-img"
             fill
             sizes="(max-width: 24rem) 100vw, 50rem"
-            className={`absolute transition-opacity duration-200 cursor-pointer tb:rounded-xl ${
-              currentImageIndex === idx ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`absolute transition-opacity duration-200 cursor-pointer tb:rounded-xl`}
             style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
           />
-        ))}
+        )}
         {images && images.length > 1 && (
           <button
             className="absolute hidden group-hover:flex right-1 z-50 p-4 cursor-pointer max-md:flex max-md:p-2"

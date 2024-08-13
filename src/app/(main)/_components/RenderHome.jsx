@@ -38,7 +38,11 @@ const JustIn = () => {
           >
             <div className="w-full aspect-square relative min-h-32 min-w-32 bg-gray-100">
               <Image
-                src={process.env.NEXT_PUBLIC_IMAGE_DOMAIN + '/' + product.images[0]}
+                src={
+                  product.images.length
+                    ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}`
+                    : '/noImage.svg'
+                }
                 alt={product._id}
                 sizes="(max-width: 690px) 250px, (max-width: 1280px) 40vw, 500px"
                 fill

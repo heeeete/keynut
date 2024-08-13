@@ -417,7 +417,7 @@ const Product = ({ product }) => {
         <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
           {conditions[product.condition].option}
         </div>
-        {product.images.length !== 1 && (
+        {product.images.length > 1 && (
           <svg
             className="absolute right-1 top-1 opacity-90 max-md:w-7"
             xmlns="http://www.w3.org/2000/svg"

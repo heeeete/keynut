@@ -107,16 +107,27 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
               transition: isTransitioning ? 'none' : 'transform 0.3s ',
             }}
           >
-            {images?.map((img, idx) => (
-              <div key={idx} className="flex relative max-w-lg w-screen aspect-square">
+            {images?.length ? (
+              images.map((img, idx) => (
+                <div key={idx} className="flex relative max-w-lg w-screen aspect-square">
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img}`}
+                    alt="product-img"
+                    fill
+                    style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="flex relative max-w-lg w-screen aspect-square">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img}`}
+                  src="/noImage.svg"
                   alt="product-img"
                   fill
                   style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
                 />
               </div>
-            ))}
+            )}
           </div>
         </button>
       </div>

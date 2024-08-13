@@ -67,7 +67,7 @@ const ABookMark = ({ item }) => {
         <div className="flex w-28 min-w-28 aspect-square mr-4 relative">
           <Image
             className="rounded object-cover"
-            src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${item.images[0]}`}
+            src={item.images.length ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${item.images[0]}` : '/noImage.svg'}
             alt={item.title}
             fill
             sizes="200px"

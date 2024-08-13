@@ -135,7 +135,9 @@ const Product = ({ product, router, invalidateFilters, refetch, fetchRaiseCount,
         <Link href={`/shop/product/${product._id}`} className="after_selling">
           <Image
             className="rounded object-cover relative"
-            src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}`}
+            src={
+              product.images.length ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}` : '/noImage.svg'
+            }
             alt={product._id}
             fill
             sizes="(max-width:768px) 200px, 250px"

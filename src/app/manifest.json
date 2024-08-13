@@ -1,0 +1,19 @@
+{
+  "name": "KEYNUT",
+  "short_name": "KEYNUT",
+  "start_url": "/",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "description": "전자기기 중고거래 사이트",
+  "dir": "ltr",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/keynut.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
