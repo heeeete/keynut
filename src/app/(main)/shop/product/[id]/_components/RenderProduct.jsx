@@ -600,8 +600,9 @@ export default function RenderProduct({ id }) {
                 <div className="flex self-end h-8 items-center">
                   {status !== 'loading' ? (
                     writer || session?.admin || product.state === 0 ? (
-                      // <IsWriter id={id} state={product.state} setSettingModal={setSettingModal} />
-                      <></>
+                      <div className="hidden max-[480px]:block">
+                        <DropdownMenu id={id} state={product.state} />
+                      </div>
                     ) : (
                       <>
                         <OpenChatLink url={product.openChatUrl} session={session} id={id} />
