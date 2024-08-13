@@ -17,7 +17,9 @@ const Product = ({ product, productOption }) => {
         <div className="w-56 aspect-square relative mr-4 bg-gray-100">
           <Image
             className="rounded object-cover"
-            src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}`}
+            src={
+              product.images.length ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}` : '/noImage.svg'
+            }
             alt={product._id}
             fill
             sizes="(max-width:768px) 280px, 220px"
