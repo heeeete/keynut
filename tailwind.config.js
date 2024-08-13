@@ -153,7 +153,10 @@ module.exports = {
     function ({ addUtilities }) {
       const newUtilities = {
         '.bottom-nav-calc-height': {
+          height: 'calc(50px + constant(safe-area-inset-bottom))',
           height: 'calc(50px + env(safe-area-inset-bottom))',
+          'padding-bottom': 'constant(safe-area-inset-bottom)',
+          'padding-bottom': 'env(safe-area-inset-bottom)',
         },
         '.custom-dvh': {
           height: '100vh',
