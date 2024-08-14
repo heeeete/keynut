@@ -1,0 +1,9 @@
+.shadow-button {
+  filter: drop-shadow(3px 3px 2px gray);
+  transition: 0.1s;
+}
+
+.shadow-button:active {
+  transform: translateY(3px);
+  filter: none;
+}

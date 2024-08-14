@@ -22,6 +22,7 @@ import Warning from '@/app/(main)/_components/Warning';
 import { useModal } from '@/app/(main)/_components/ModalProvider';
 import baseCategory from '@/app/(main)/_constants/productPage/baseCategories';
 import formatDate from '@/app/(main)/_lib/formatDate';
+import './button.css';
 
 const RenderCondition = ({ condition }) => {
   return (
@@ -253,7 +254,7 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
 
   return (
     <button aria-label="bookmark button" onClick={handleClick} className="flex justify-center items-center w-7 rounded">
-      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32">
+      <svg xmlns="http://www.w3.org/2000/svg" className="shadow-button" width="100%" height="100%" viewBox="0 0 32 32">
         <path fill={color} stroke="black" strokeWidth={3} d="M24 2H8a2 2 0 0 0-2 2v26l10-5.054L26 30V4a2 2 0 0 0-2-2" />
       </svg>
     </button>
@@ -604,6 +605,13 @@ export default function RenderProduct({ id }) {
                   <span className="text-xl">원</span>
                 </div>
                 <div className="flex self-end h-8 items-center space-x-2">
+                  <button
+                    className="flex justify-center items-center rounded w-7 h-7 font-semibold bg-black text-white shadow-button"
+                    style={{ fontSize: '10px' }}
+                    onClick={() => onPaste(id, openModal)}
+                  >
+                    URL
+                  </button>
                   {status !== 'loading' ? (
                     writer ? (
                       <div className="hidden max-[480px]:block">
@@ -623,13 +631,6 @@ export default function RenderProduct({ id }) {
                       )
                     )
                   ) : null}
-                  <button
-                    className="flex justify-center items-center rounded w-7 h-7 font-semibold bg-black text-white "
-                    style={{ fontSize: '10px' }}
-                    onClick={() => onPaste(id, openModal)}
-                  >
-                    URL
-                  </button>
                 </div>
               </div>
               <div className="flex w-full justify-between text-sm text-gray-500 font-semibold">
