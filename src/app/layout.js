@@ -11,11 +11,11 @@ export const viewport = {
 
 export const metadata = {
   title: 'KEYNUT - 키넛',
-  description: '키보드, 마우스, 헤드셋, 모니터등 다양한 전자기기를 한눈에',
+  description: '전자기기 중고거래는 키넛에서',
   manifest: './manifest.json',
   openGraph: {
     title: 'KEYNUT - 키넛',
-    description: '키보드, 마우스, 헤드셋, 모니터등 다양한 전자기기를 한눈에',
+    description: '전자기기 중고거래는 키넛에서',
     images: [
       {
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`, // 이미지의 절대 URL

@@ -41,7 +41,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
     }
     document.removeEventListener('touchmove', move);
     document.removeEventListener('touchend', end);
-  }, [clientWidth, totalChildren, offset]);
+  }, [clientWidth, totalChildren, currentImageIndex]);
 
   const move = useCallback(
     e => {
@@ -60,7 +60,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
         }
       }
     },
-    [clientWidth, totalChildren, offset],
+    [clientWidth, currentImageIndex],
   );
 
   const startTouch = useCallback(
@@ -70,19 +70,19 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
       travelRatio.current = 0;
       initDragPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       originOffset.current = offset;
-      document.addEventListener('touchmove', move, { passive: false }); // passive: false 설정
+      document.addEventListener('touchmove', move, { passive: false });
       document.addEventListener('touchend', end);
     },
-    [clientWidth, totalChildren, offset],
+    [offset, move, end],
   );
 
   useEffect(() => {
-    if (imageShowRef.current) imageShowRef.current.addEventListener('touchstart', startTouch, { passive: false });
+    if (imageShowRef.current) imageShowRef.current.addEventListener('touchstart', startTouch);
 
     return () => {
       if (imageShowRef.current) imageShowRef.current.removeEventListener('touchstart', startTouch);
     };
-  }, [clientWidth, totalChildren, offset]);
+  }, [startTouch]);
 
   return (
     <div className="relative flex flex-col items-center">
