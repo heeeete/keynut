@@ -3,8 +3,8 @@ export default function robots() {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: '/private/',
+      disallow: '/admin/',
     },
-    sitemap: 'https://keynut.co.kr/sitemap.xml',
+    sitemap: 'https://www.keynut.co.kr/sitemap.xml',
   };
 }
