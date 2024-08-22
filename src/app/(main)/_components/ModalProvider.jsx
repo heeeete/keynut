@@ -16,10 +16,10 @@ export const ModalProvider = ({ children }) => {
   const [resolvePromise, setResolvePromise] = useState(null);
   const pathName = usePathname();
 
-  const openModal = useCallback(({ message, subMessage = '', isSelect, size }) => {
+  const openModal = useCallback(({ message, subMessage = '', isSelect = false, size }) => {
     setModalMessage(message);
     setModalSubMessage(subMessage);
-    if (isSelect) setIsSelect(isSelect);
+    setIsSelect(isSelect);
     setIsModalOpen(true);
     if (size) setSize(size);
 
@@ -28,35 +28,32 @@ export const ModalProvider = ({ children }) => {
     });
   }, []);
 
+  const resetModalState = useCallback(() => {
+    setModalMessage('');
+    setModalSubMessage('');
+    setIsSelect(false);
+    setSize('w-72');
+  }, []);
+
   const closeModal = useCallback(() => {
-    setIsModalOpen(false);
     if (resolvePromise) {
       resolvePromise(false);
       setResolvePromise(null);
-      setModalMessage('');
-      setModalSubMessage('');
-      setIsSelect(false);
-      setSize('w-72');
     }
+    setIsModalOpen(false);
+    resetModalState();
   }, [resolvePromise]);
 
   const confirmModal = useCallback(() => {
-    setIsModalOpen(false);
     if (resolvePromise) {
       resolvePromise(true);
       setResolvePromise(null);
-      setModalMessage('');
-      setModalSubMessage('');
-      setIsSelect(false);
-      setSize('w-72');
     }
+    setIsModalOpen(false);
+    resetModalState();
   }, [resolvePromise]);
 
-  useEffect(() => {
-    if (isModalOpen) {
-      closeModal();
-    }
-  }, [pathName]);
+  useEffect(() => closeModal(), [pathName]);
 
   return (
     <ModalContext.Provider
