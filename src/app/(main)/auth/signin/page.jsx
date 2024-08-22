@@ -76,7 +76,7 @@ function RenderSignIn() {
             <Image
               className="min-w-80 "
               src={`/${providerId}Login.svg`}
-              width={350}
+              width={300}
               height={0}
               alt={`${providerId}Login`}
             />
