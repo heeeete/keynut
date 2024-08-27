@@ -1,4 +1,4 @@
-# Stack
+# Tech Stack
 Next.JS, React-Query, MongoDB, AWS, Vercel
 # Member
 | [김현지](https://github.com/licakim) | [박희태](https://github.com/heeeete) |
