@@ -10,12 +10,25 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: 'KEYNUT - 키넛',
-  description: '전자기기 중고거래는 키넛에서',
+  title: 'KEYNUT - 전자기기 중고거래',
+  description: '커스텀 키보드 | 마우스 | 마우스패드 | 헤드셋 | 모니터는 키넛에서 - 전자기기 중고거래 KEYNUT',
+  keywords: [
+    '전자기기',
+    '중고거래',
+    '커스텀 키보드',
+    '키보드',
+    '마우스',
+    '마우스패드',
+    '헤드셋',
+    '모니터',
+    'KEYNUT',
+    '키넛',
+  ],
+  colorScheme: 'light',
   manifest: './manifest.json',
   openGraph: {
     title: 'KEYNUT - 키넛',
-    description: '전자기기 중고거래는 키넛에서',
+    description: '커스텀 키보드 | 마우스 | 마우스패드 | 헤드셋 | 모니터는 키넛에서 - 전자기기 중고거래 KEYNUT',
     images: [
       {
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`, // 이미지의 절대 URL
