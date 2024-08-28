@@ -13,6 +13,5 @@
   "short_name": "KEYNUT",
   "start_url": "/",
   "scope": "/",
-  "description": "키보드, 마우스, 헤드셋, 모니터등 다양한 전자기기를 한눈에",
-  "id": "https://keynut.co.kr"
+  "description": "키보드, 마우스, 헤드셋, 모니터등 다양한 전자기기를 한눈에"
 }
