@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 import { Gowun_Dodum } from 'next/font/google';
 import conditions from '../_constants/conditions';
+import { useUser } from './UserProvider';
 
 const title = Gowun_Dodum({ subsets: ['latin'], weight: ['400'] });
 

@@ -254,7 +254,6 @@ const AllProductsCnt = ({ userCnt }) => {
 };
 
 const DetailModal = ({ setIsDetailModal, detailProduct }) => {
-  console.log(detailProduct);
   return (
     <div
       className="fixed left-0 top-0 flex justify-center items-center w-d-screen custom-dvh bg-black bg-opacity-50 z-90"
