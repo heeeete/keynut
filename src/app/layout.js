@@ -15,6 +15,7 @@ export const viewport = {
 export async function generateMetadata({}) {
   const { isBot } = userAgent({ headers: headers() });
   const title = isBot ? 'KEYNUT - 커스텀 키보드등 다양한 전자기기 중고거래는 키넛' : 'KEYNUT | 키넛';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   return {
     title,
@@ -35,49 +36,26 @@ export async function generateMetadata({}) {
     manifest: './manifest.json',
     openGraph: {
       title: 'KEYNUT - 키넛',
+      type: 'website',
+      url: baseUrl,
       description: '커스텀 키보드 | 마우스 | 마우스패드 | 헤드셋 | 모니터는 키넛에서 - 전자기기 중고거래 KEYNUT',
       images: [
         {
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`, // 이미지의 절대 URL
+          url: `${baseUrl}/keynut.png`,
           width: 500,
           height: 500,
           alt: 'KEYNUT Logo',
         },
       ],
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'KEYNUT - 키넛',
+      description: '커스텀 키보드 | 마우스 | 마우스패드 | 헤드셋 | 모니터는 키넛에서 - 전자기기 중고거래 KEYNUT',
+      images: `${baseUrl}/keynut.png`,
+    },
   };
 }
-
-// export const metadata = {
-//   title: 'KEYNUT - 전자기기 중고거래',
-//   description: '커스텀 키보드 | 마우스 | 마우스패드 | 헤드셋 | 모니터는 키넛에서 - 전자기기 중고거래 KEYNUT',
-//   keywords: [
-//     '전자기기',
-//     '중고거래',
-//     '커스텀 키보드',
-//     '키보드',
-//     '마우스',
-//     '마우스패드',
-//     '헤드셋',
-//     '모니터',
-//     'KEYNUT',
-//     '키넛',
-//   ],
-//   colorScheme: 'light',
-//   manifest: './manifest.json',
-//   openGraph: {
-//     title: 'KEYNUT - 키넛',
-//     description: '커스텀 키보드 | 마우스 | 마우스패드 | 헤드셋 | 모니터는 키넛에서 - 전자기기 중고거래 KEYNUT',
-//     images: [
-//       {
-//         url: `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`, // 이미지의 절대 URL
-//         width: 500,
-//         height: 500,
-//         alt: 'KEYNUT Logo',
-//       },
-//     ],
-//   },
-// };
 
 export default function RootLayout({ children }) {
   const user = userAgent({ headers: headers() });
