@@ -107,7 +107,9 @@ const Product = ({ product, openDeleteModal, openUpModal }) => {
           <Image
             className="rounded object-cover relative"
             src={
-              product.images.length ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}` : '/noImage.svg'
+              product.images.length
+                ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
+                : '/noImage.svg'
             }
             alt={product._id}
             fill

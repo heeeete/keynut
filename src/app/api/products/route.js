@@ -111,7 +111,7 @@ export async function POST(req) {
       condition: Number(formData.get('condition')),
       description: formData.get('description'),
       price: Number(formData.get('price')),
-      images: JSON.parse(formData.get('imageUrls')),
+      images: JSON.parse(formData.get('imageDetails')),
       bookmarked: [],
       complain: [],
       openChatUrl: formData.get('openChatUrl'),

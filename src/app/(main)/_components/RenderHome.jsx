@@ -40,7 +40,7 @@ const JustIn = () => {
               <Image
                 src={
                   product.images.length
-                    ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}`
+                    ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
                     : '/noImage.svg'
                 }
                 alt={product._id}

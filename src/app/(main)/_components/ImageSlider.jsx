@@ -14,13 +14,11 @@ export default function ImageSlider({ images, state }) {
   const initPhotoSwipe = async (index, imageShow, eventFunc) => {
     if (imageShow) imageShow.removeEventListener('touchstart', eventFunc);
     const options = { showHideAnimationType: 'fade', errorMsg: '이미지를 찾을 수 없습니다.' };
-    const imageDataPromise = images.map(async (url, idx) => {
-      const { width, height } = await getImageSize(url);
-      return { src: `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url}`, width, height, alt: `image-${idx}` };
-    });
-    const imageData = await Promise.all(imageDataPromise);
-
-    options.dataSource = imageData;
+    const imageSrc = images.map(img => ({
+      ...img,
+      src: `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img.name}`,
+    }));
+    options.dataSource = imageSrc;
     options.index = index;
 
     if (pswpRef.current) {

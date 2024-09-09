@@ -207,8 +207,12 @@ export default function Sell() {
     }
 
     setIsLoading(true);
-    const names = uploadImages.imageFiles.map(file => `product_${new Date().getTime()}_${file.name}`);
-    const { urls, status } = await getSignedUrls(names);
+    const imageDetails = uploadImages.imageFiles.map(file => ({
+      name: `product_${new Date().getTime()}_${file.name}`,
+      width: file.width,
+      height: file.height,
+    }));
+    const { urls, status } = await getSignedUrls(imageDetails);
     if (status !== 200) {
       await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
       setIsLoading(false);
@@ -221,7 +225,7 @@ export default function Sell() {
     );
 
     const formData = new FormData();
-    formData.append('imageUrls', JSON.stringify(names));
+    formData.append('imageDetails', JSON.stringify(imageDetails));
     formData.append('title', title.replace(/ +/g, ' ').trim());
     formData.append('subCategory', subCategory);
     formData.append('condition', condition);

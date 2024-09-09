@@ -5,10 +5,10 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req) {
   try {
-    const { names } = await req.json();
+    const { imageDetails } = await req.json();
     const urls = await Promise.all(
-      names.map(async name => {
-        const command = new PutObjectCommand({ Bucket: process.env.S3_BUCKET_NAME, Key: name });
+      imageDetails.map(async image => {
+        const command = new PutObjectCommand({ Bucket: process.env.S3_BUCKET_NAME, Key: image.name });
         const url = await getSignedUrl(s3Client, command, { expiresIn: 15 * 60 });
         return url;
       }),

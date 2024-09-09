@@ -402,7 +402,9 @@ const Product = ({ product }) => {
       <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
         <Image
           className="rounded object-cover"
-          src={product.images.length ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}` : '/noImage.svg'}
+          src={
+            product.images.length ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}` : '/noImage.svg'
+          }
           alt={product.title}
           fill
           sizes="(max-width:768px) 60vw, (max-width:1300px) 30vw , 500px"
@@ -586,6 +588,7 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
       </div>
     );
   }
+
   return (
     <>
       {data?.length ? (
@@ -604,7 +607,7 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
                       className="rounded object-cover"
                       src={
                         product.images.length
-                          ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}`
+                          ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
                           : '/noImage.svg'
                       }
                       alt={product.title}

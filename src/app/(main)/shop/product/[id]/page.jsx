@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
       images: [
         {
           url: product
-            ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]}`
+            ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
             : `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`,
           width: 500,
           height: 500,

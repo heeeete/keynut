@@ -19,16 +19,40 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
       if (!e.target.files) return;
       if (uploadImages.imageUrls.length + e.target.files.length > 5)
         return openModal({ message: '사진은 최대 5장까지 가능합니다.' });
-      const files = e.target.files;
-      const filesArray = Array.from(files);
 
-      const newArray = filesArray.map(file => URL.createObjectURL(file));
-      setUploadImages({
-        imageFiles: [...uploadImages.imageFiles, ...filesArray],
-        imageUrls: [...uploadImages.imageUrls, ...newArray],
-      });
+      const files = Array.from(e.target.files);
+      const imageUrls = new Array(files.length);
+      const imageFiles = new Array(files.length);
+
+      const promise = files.map(
+        (file, idx) =>
+          new Promise((resolve, reject) => {
+            const imgURL = URL.createObjectURL(file);
+            const img = new Image();
+            img.src = imgURL;
+            img.onload = () => {
+              file.width = img.width;
+              file.height = img.height;
+              imageUrls[idx] = imgURL;
+              imageFiles[idx] = file;
+              resolve();
+            };
+            img.onerror = reject;
+          }),
+      );
+
+      try {
+        await Promise.all(promise);
+
+        setUploadImages(prevState => ({
+          imageFiles: [...prevState.imageFiles, ...imageFiles],
+          imageUrls: [...prevState.imageUrls, ...imageUrls],
+        }));
+      } catch (error) {
+        console.error('이미지 로딩 중 오류 발생:', error);
+      }
     },
-    [uploadImages],
+    [setUploadImages, uploadImages.imageUrls.length, openModal],
   );
 
   return (

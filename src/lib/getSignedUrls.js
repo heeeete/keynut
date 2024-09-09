@@ -1,6 +1,6 @@
 'use client';
 
-export default async function getSignedUrls(names) {
+export default async function getSignedUrls(imageDetails) {
   let res;
 
   try {
@@ -9,13 +9,13 @@ export default async function getSignedUrls(names) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ names }),
+      body: JSON.stringify({ imageDetails }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
     return { urls: data.urls, status: res.status };
   } catch (error) {
     console.error(error.message);
-    return { status: res.status };
+    return { status: res ? res.status : 500 };
   }
 }
