@@ -176,7 +176,7 @@ export async function PUT(req) {
           condition: Number(formData.get('condition')),
           description: formData.get('description'),
           price: Number(formData.get('price')),
-          images: JSON.parse(formData.get('imageUrls')),
+          images: JSON.parse(formData.get('imageDetails')),
           openChatUrl: formData.get('openChatUrl'),
           tags: tags,
           updatedAt: new Date(),

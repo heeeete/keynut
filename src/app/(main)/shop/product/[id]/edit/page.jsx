@@ -69,18 +69,12 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteIm
               className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
             >
               <Image
-                src={
-                  typeof uploadImages.imageFiles[idx] === 'object'
-                    ? url
-                    : `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url}`
-                }
+                src={typeof url === 'object' ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url.name}` : url}
                 fill
                 alt={`item-${idx}`}
                 className="rounded border"
                 style={{ objectFit: 'cover' }}
                 sizes="(max-width: 768px) 256px, 384px"
-                placeholder="blur"
-                blurDataURL={url}
               />
               {idx === 0 && (
                 <div className="absolute bg-black left-1 top-1 p-1 rounded-xl bg-opacity-50 text-xxs text-white">
@@ -217,16 +211,19 @@ export default function Edit() {
     setUploadLoading(true);
 
     const newImageIdx = [];
-    const names = [];
 
-    uploadImages.imageFiles.forEach((file, idx) => {
-      if (typeof file === 'object') {
+    const imageDetails = uploadImages.imageFiles.map((file, idx) => {
+      if (typeof uploadImages.imageUrls[idx] !== 'object') {
         newImageIdx.push(idx);
-        names.push(`product_${new Date().getTime()}_${file.name}`);
-      }
+        return {
+          name: `product_${new Date().getTime()}_${file.name}`,
+          width: file.width,
+          height: file.height,
+        };
+      } else return file;
     });
 
-    const { urls, status } = await getSignedUrls(names);
+    const { urls, status } = await getSignedUrls(imageDetails.filter((e, idx) => newImageIdx.includes(idx)));
     if (status !== 200) {
       await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
       setUploadImages(false);
@@ -238,13 +235,12 @@ export default function Edit() {
         await uploadToS3(url, uploadImages.imageFiles[newImageIdx[idx]]);
       }),
     );
-    newImageIdx.forEach((idx, i) => (uploadImages.imageFiles[idx] = names[i]));
 
     const formData = new FormData();
     deleteImages.forEach(file => {
       formData.append('deleteFiles', file);
     });
-    formData.append('imageUrls', JSON.stringify(uploadImages.imageFiles));
+    formData.append('imageDetails', JSON.stringify(imageDetails));
     formData.append('title', title.replace(/ +/g, ' ').trim());
     formData.append('subCategory', subCategory);
     formData.append('condition', condition);
