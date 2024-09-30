@@ -10,7 +10,7 @@ export default async function Shop({ props }) {
   try {
     // 서버에서 데이터를 미리 가져옴
     await queryClient.prefetchInfiniteQuery({
-      queryKey: ['products', ''],
+      queryKey: ['products', 'all'],
       queryFn: getProducts,
       initialPageParam: 0,
       staleTime: 60 * 1000,

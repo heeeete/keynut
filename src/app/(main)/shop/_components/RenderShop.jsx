@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback, Fragment, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, Fragment, useLayoutEffect, Suspense, Children } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useSuspenseInfiniteQuery, useSuspenseQuery } from '@tanstack/react-query';
 import getProducts from '../_lib/getProducts';
 import { useInView } from 'react-intersection-observer';
 import debounce from '../../../../utils/debounce';
@@ -374,17 +374,17 @@ const RenderProductsNum = ({ data, includeBooked }) => {
     : 0;
   return (
     <>
-      {data === undefined ? (
+      {/* {data === undefined ? (
         <div className="flex h-5 w-32 my-4 max-[960px]:my-2 max-[960px]:mx-10 max-md:mx-3 bg-gray-100 relative rounded-sm">
           <div className="absolute top-0 left-0 h-full w-full animate-loading">
             <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
           </div>
         </div>
-      ) : (
-        <div className="flex py-4 text-sm max-[960px]:py-2 max-[960px]:px-10 max-md:px-3">
-          <p className="font-semibold">{totalCount}</p>개의 검색 결과
-        </div>
-      )}
+      ) : ( */}
+      <div className="flex py-4 text-sm max-[960px]:py-2 max-[960px]:px-10 max-md:px-3">
+        <p className="font-semibold">{totalCount}</p>개의 검색 결과
+      </div>
+      {/* )} */}
     </>
   );
 };
@@ -446,7 +446,7 @@ const Product = ({ product }) => {
 };
 
 const RenderProducts = React.memo(
-  ({ params, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxtb, includeBooked }) => {
+  ({ params, includeBooked, isMaxtb, categoriesState, pricesState, handleCategoryChange, handlePriceChange }) => {
     const initPageRef = useRef(true);
     const createQueryString = useCallback(() => {
       const queryParams = new URLSearchParams();
@@ -457,14 +457,13 @@ const RenderProducts = React.memo(
     }, [params]);
 
     const queryString = createQueryString();
-
     const useProducts = queryString => {
-      return useInfiniteQuery({
-        queryKey: ['products', queryString],
+      return useSuspenseInfiniteQuery({
+        queryKey: ['products', !!queryString.length ? queryString : 'all'],
         queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
         initialPageParam: 0, //[1,2,3,4,5] [6,7,8,9,10] [11,12,13,14,15] -> 데이터를 페이지별로 관리 , 이차원 배열
         getNextPageParam: (lastPage, allPages) => {
-          if (lastPage.length === 0) return undefined;
+          if (lastPage.length < 48) return undefined;
           const lastProduct = lastPage[lastPage.length - 1];
           return { lastId: lastProduct._id, lastCreatedAt: lastProduct.createdAt };
         },
@@ -472,13 +471,15 @@ const RenderProducts = React.memo(
       });
     };
 
-    const { ref, inView } = useInView({ threshold: 0, delay: 0, rootMargin: '500px' });
-    const { data, fetchNextPage, hasNextPage, isFetching, error, isLoading } = useProducts(queryString);
+    const { ref, inView } = useInView({ threshold: 0, delay: 0 });
+    const { data, fetchNextPage, hasNextPage, isFetching, error, isPending, isLoading } = useProducts(queryString);
+    console.log(data, queryString);
 
     const hasProducts = data?.pages.some(page => page.length > 0);
 
     useEffect(() => {
       if (inView && !isFetching && hasNextPage) {
+        console.log('hahaha');
         fetchNextPage();
       }
     }, [inView, fetchNextPage]);
@@ -490,6 +491,8 @@ const RenderProducts = React.memo(
     useEffect(() => {
       if (!isFetching) initPageRef.current = false;
     }, [isFetching]);
+
+    console.log(inView, isFetching, hasNextPage);
 
     return (
       <div className="flex-col w-full">
@@ -503,9 +506,7 @@ const RenderProducts = React.memo(
           />
         )}
         {/* 검색 결과 없을 때 일단 min-h로.. */}
-        {isFetching && initPageRef.current ? (
-          <Skeletons />
-        ) : hasProducts ? (
+        {hasProducts ? (
           <>
             <div className="grid grid-cols-4 md:gap-3 max-[960px]:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-[960px]:px-10 max-md:px-3">
               {includeBooked
@@ -549,7 +550,48 @@ const RenderProducts = React.memo(
   },
 );
 
-const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
+const DefferedComponent = ({ children }) => {
+  const [isDeferred, setIsDeferred] = useState(false);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsDeferred(true);
+    }, 200);
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  if (!isDeferred) {
+    return null;
+  }
+
+  return <>{children}</>;
+};
+
+const Parents = React.memo(
+  ({ params, includeBooked, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxtb }) => {
+    return (
+      <Suspense
+        fallback={
+          <DefferedComponent>
+            <Skeletons />
+          </DefferedComponent>
+        }
+      >
+        <RenderProducts
+          isMaxtb={isMaxtb}
+          params={params}
+          includeBooked={includeBooked}
+          categoriesState={categoriesState}
+          pricesState={pricesState}
+          handleCategoryChange={handleCategoryChange}
+          handlePriceChange={handlePriceChange}
+        />
+      </Suspense>
+    );
+  },
+);
+
+const PopularProductSkeleton = ({ category }) => {
   let categoryTitle =
     category === 0
       ? '전체'
@@ -567,27 +609,67 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
       ? '기타'
       : '';
 
-  if (isLoading) {
-    return (
-      <div className="max-[960px]:border-0 max-[960px]:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto px-10">
-        <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
-        <div className="grid grid-cols-6 gap-2 pb-2 w-full relative max-md:flex overflow-x-scroll scrollbar-hide">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div className="flex flex-col rounded max-md:min-w-28 max-md:w-36" key={index}>
-              <div className="w-full aspect-square  min-h-20 min-w-20 bg-gray-100"></div>
-              <div className="flex flex-col py-1 justify-center h-14 space-y-1">
-                <div className="w-3/4  bg-gray-100 h-5 min-h-3"></div>
-                <div className="w-2/3 bg-gray-100 h-5 min-h-3"></div>
-              </div>
+  return (
+    <div className="max-[960px]:border-0 max-[960px]:border-b-8 max-md:px-3 md:max-w-screen-xl md:mx-auto px-10">
+      <p className="z-30 py-2 font-semibold">{categoryTitle} 인기 매물</p>
+      <div className="grid grid-cols-6 gap-2 pb-2 w-full relative max-md:flex overflow-x-scroll scrollbar-hide">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div className="flex flex-col rounded max-md:min-w-28 max-md:w-36" key={index}>
+            <div className="w-full aspect-square  min-h-20 min-w-20 bg-gray-100"></div>
+            <div className="flex flex-col py-1 justify-center h-14 space-y-1">
+              <div className="w-3/4  bg-gray-100 h-5 min-h-3"></div>
+              <div className="w-2/3 bg-gray-100 h-5 min-h-3"></div>
             </div>
-          ))}
-          <div className="absolute top-0 left-0 h-full w-full animate-loading">
-            <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
           </div>
+        ))}
+        <div className="absolute top-0 left-0 h-full w-full animate-loading">
+          <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+};
+
+const RenderPopularProducts = React.memo(({ category, paramsKeyword, setHasTop }) => {
+  const useHotProducts = category => {
+    return useSuspenseQuery({
+      queryKey: ['topProducts', category],
+      queryFn: () => fetchHotProducts(category),
+      enabled:
+        !paramsKeyword &&
+        (category === 1 ||
+          category === 2 ||
+          category === 3 ||
+          category === 4 ||
+          category === 5 ||
+          category === 9 ||
+          category === 0),
+      staleTime: Infinity,
+    });
+  };
+  const { data, error, isLoading } = useHotProducts(category);
+
+  useEffect(() => {
+    if (data?.length) setHasTop(true);
+    else setHasTop(false);
+  }, [data]);
+
+  let categoryTitle =
+    category === 0
+      ? '전체'
+      : category === 1
+      ? '키보드'
+      : category === 2
+      ? '마우스'
+      : category === 3
+      ? '패드'
+      : category === 4
+      ? '모니터'
+      : category === 5
+      ? '헤드셋'
+      : category === 9
+      ? '기타'
+      : '';
 
   return (
     <>
@@ -645,6 +727,20 @@ const RenderPopularProducts = React.memo(({ data, category, isLoading }) => {
     </>
   );
 });
+
+const PopularParents = ({ category, paramsKeyword, setHasTop }) => {
+  return (
+    <Suspense
+      fallback={
+        <DefferedComponent>
+          <PopularProductSkeleton category={category} />
+        </DefferedComponent>
+      }
+    >
+      <RenderPopularProducts category={category} paramsKeyword={paramsKeyword} setHasTop={setHasTop} />
+    </Suspense>
+  );
+};
 
 const RenderMdFilter = ({
   categoriesState,
@@ -937,7 +1033,9 @@ export default function RenderShop() {
   const [priceOpen, setPriceOpen] = useState(true);
   const [isMaxtb, setIsMaxtb] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
+  const [hasTop, setHasTop] = useState(false);
   const pageRef = useRef(null);
+
   const [includeBooked, setIncludeBooked] = useState(true);
   const [categoriesState, setCategoriesState] = useState({
     1: { option: '키보드', checked: false, childId: [10, 11, 12, 13, 14, 15, 16, 19] },
@@ -979,7 +1077,8 @@ export default function RenderShop() {
     return queryParams.toString();
   });
 
-  const hotProductFlag = useRef(0);
+  // 문제1 기존에 0으로 초기화해서 새로고침하면 처음에 전체 인기 상품이 나오고 해당 카테고리의 인기 상품이 나와서 수정
+  const hotProductFlag = useRef(Number(params.get('categories')));
   const currPosY = useRef(0);
   const searchFlag = useRef(true);
   const obj = {};
@@ -1145,23 +1244,6 @@ export default function RenderShop() {
     router.push(`/shop?${searchParams.toString()}`);
   };
 
-  const useHotProducts = category => {
-    return useQuery({
-      queryKey: ['topProducts', category],
-      queryFn: () => fetchHotProducts(category),
-      enabled:
-        !paramsKeyword &&
-        (category === 1 ||
-          category === 2 ||
-          category === 3 ||
-          category === 4 ||
-          category === 5 ||
-          category === 9 ||
-          category === 0),
-      staleTime: Infinity,
-    });
-  };
-  const { data: top, error, isLoading } = useHotProducts(hotProductFlag.current);
   return (
     <div className="flex items-start justify-start z-60" ref={pageRef}>
       <div className="flex flex-col w-full">
@@ -1176,15 +1258,14 @@ export default function RenderShop() {
         </div>
         <div className="border-b max-[960px]:border-0">
           {!paramsKeyword ? (
-            <RenderPopularProducts isLoading={isLoading} data={top} category={hotProductFlag.current} />
+            <PopularParents category={hotProductFlag.current} paramsKeyword={paramsKeyword} setHasTop={setHasTop} />
           ) : (
             ''
           )}
         </div>
-
         <div
           className={`flex items-start w-full min-h-60vh md:max-w-screen-xl md:mx-auto min-[960px]:px-10 max-[960px]:flex-col max-[960px]:px-0 ${
-            top?.length ? 'max-md:min-h-96' : 'max-md:min-h-70vh'
+            hasTop ? 'max-md:min-h-96' : 'max-md:min-h-70vh'
           }`}
         >
           <div
@@ -1215,7 +1296,7 @@ export default function RenderShop() {
             />
           </div>
           <div className="flex flex-col w-full">
-            <RenderProducts
+            <Parents
               params={params}
               categoriesState={categoriesState}
               pricesState={pricesState}
