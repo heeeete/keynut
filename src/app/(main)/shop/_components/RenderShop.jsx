@@ -512,6 +512,9 @@ const RenderProducts = ({
     initPageRef.current = true;
   }, [params]);
 
+
+  
+  
   useEffect(() => {
     if (!isFetching) initPageRef.current = false;
   }, [isFetching]);
