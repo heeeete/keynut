@@ -445,151 +445,135 @@ const Product = ({ product }) => {
   );
 };
 
-const RenderProducts = React.memo(
-  ({ params, includeBooked, isMaxtb, categoriesState, pricesState, handleCategoryChange, handlePriceChange }) => {
-    const initPageRef = useRef(true);
-    const createQueryString = useCallback(() => {
-      const queryParams = new URLSearchParams();
-      if (params.get('keyword')) queryParams.append('keyword', params.get('keyword'));
-      if (params.get('categories')) queryParams.append('categories', params.get('categories'));
-      if (params.get('prices')) queryParams.append('prices', params.get('prices'));
-      return queryParams.toString();
-    }, [params]);
+const RenderProducts = ({
+  params,
+  includeBooked,
+  isMaxtb,
+  categoriesState,
+  pricesState,
+  handleCategoryChange,
+  handlePriceChange,
+}) => {
+  const initPageRef = useRef(true);
+  const createQueryString = useCallback(() => {
+    const queryParams = new URLSearchParams();
+    if (params.get('keyword')) queryParams.append('keyword', params.get('keyword'));
+    if (params.get('categories')) queryParams.append('categories', params.get('categories'));
+    if (params.get('prices')) queryParams.append('prices', params.get('prices'));
+    return queryParams.toString();
+  }, [params]);
 
-    const queryString = createQueryString();
-    const useProducts = queryString => {
-      return useSuspenseInfiniteQuery({
-        queryKey: ['products', !!queryString.length ? queryString : 'all'],
-        queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
-        initialPageParam: 0, //[1,2,3,4,5] [6,7,8,9,10] [11,12,13,14,15] -> 데이터를 페이지별로 관리 , 이차원 배열
-        getNextPageParam: (lastPage, allPages) => {
-          if (lastPage.length < 48) return undefined;
-          const lastProduct = lastPage[lastPage.length - 1];
-          return { lastId: lastProduct._id, lastCreatedAt: lastProduct.createdAt };
-        },
-        staleTime: 60 * 1000,
-      });
-    };
+  const queryString = createQueryString();
+  const useProducts = queryString => {
+    return useInfiniteQuery({
+      queryKey: ['products', !!queryString.length ? queryString : 'all'],
+      queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
+      initialPageParam: 0,
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length < 48) return undefined;
+        const lastProduct = lastPage[lastPage.length - 1];
+        return { lastId: lastProduct._id, lastCreatedAt: lastProduct.createdAt };
+      },
+      staleTime: 60 * 1000,
+    });
+  };
 
-    const { ref, inView } = useInView({ threshold: 0, delay: 0 });
-    const { data, fetchNextPage, hasNextPage, isFetching, error, isPending, isLoading } = useProducts(queryString);
-    console.log(data, queryString);
+  const { ref, inView } = useInView({ threshold: 0, delay: 0 });
+  const { data, fetchNextPage, hasNextPage, isFetching, error, isPending, isLoading } = useProducts(queryString);
 
-    const hasProducts = data?.pages.some(page => page.length > 0);
-
-    useEffect(() => {
-      if (inView && !isFetching && hasNextPage) {
-        console.log('hahaha');
-        fetchNextPage();
-      }
-    }, [inView, fetchNextPage]);
-
-    useEffect(() => {
-      initPageRef.current = true;
-    }, [params]);
-
-    useEffect(() => {
-      if (!isFetching) initPageRef.current = false;
-    }, [isFetching]);
-
-    console.log(inView, isFetching, hasNextPage);
-
-    return (
-      <div className="flex-col w-full">
-        <RenderProductsNum data={data} includeBooked={includeBooked} />
-        {!isMaxtb && (
-          <SelectedFilters
-            categoriesState={categoriesState}
-            pricesState={pricesState}
-            handleCategoryChange={handleCategoryChange}
-            handlePriceChange={handlePriceChange}
-          />
-        )}
-        {/* 검색 결과 없을 때 일단 min-h로.. */}
-        {hasProducts ? (
-          <>
-            <div className="grid grid-cols-4 md:gap-3 max-[960px]:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-[960px]:px-10 max-md:px-3">
-              {includeBooked
-                ? data?.pages.map((page, i) => (
-                    <Fragment key={i}>
-                      {page.map((product, idx) => (
-                        <Fragment key={idx}>
-                          <Product product={product} />
-                        </Fragment>
-                      ))}
-                    </Fragment>
-                  ))
-                : data?.pages.map((page, i) => (
-                    <Fragment key={i}>
-                      {page
-                        .filter(a => a.state === 1)
-                        .map((product, idx) => (
-                          <Fragment key={idx}>
-                            <Product product={product} />
-                          </Fragment>
-                        ))}
-                    </Fragment>
-                  ))}
-            </div>
-            {isFetching && <Skeletons />}
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center space-y-1 h-52">
-            <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 256 256">
-              <path
-                fill="lightgray"
-                d="m212.24 83.76l-56-56A6 6 0 0 0 152 26H56a14 14 0 0 0-14 14v176a14 14 0 0 0 14 14h144a14 14 0 0 0 14-14V88a6 6 0 0 0-1.76-4.24M158 46.48L193.52 82H158ZM202 216a2 2 0 0 1-2 2H56a2 2 0 0 1-2-2V40a2 2 0 0 1 2-2h90v50a6 6 0 0 0 6 6h50Zm-45.76-92.24a6 6 0 0 1 0 8.48L136.49 152l19.75 19.76a6 6 0 1 1-8.48 8.48L128 160.49l-19.76 19.75a6 6 0 0 1-8.48-8.48L119.51 152l-19.75-19.76a6 6 0 1 1 8.48-8.48L128 143.51l19.76-19.75a6 6 0 0 1 8.48 0"
-              />
-            </svg>
-            <p className="text-gray-300 font-medium">해당하는 상품이 없습니다</p>
-          </div>
-        )}
-        <div className="h-12" ref={ref}></div>
-      </div>
-    );
-  },
-);
-
-const DefferedComponent = ({ children }) => {
   const [isDeferred, setIsDeferred] = useState(false);
 
+  let timeoutId;
+
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setIsDeferred(true);
-    }, 200);
+    if (isFetching) {
+      timeoutId = setTimeout(() => {
+        setIsDeferred(true);
+      }, 200);
+    }
+    if (!isFetching) {
+      setIsDeferred(false);
+      clearTimeout(timeoutId);
+    }
+
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [isFetching]);
 
-  if (!isDeferred) {
-    return null;
+  const hasProducts = data?.pages.some(page => page.length > 0);
+
+  useEffect(() => {
+    if (inView && !isFetching && hasNextPage) {
+      console.log('hahaha');
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage]);
+
+  useEffect(() => {
+    initPageRef.current = true;
+  }, [params]);
+
+  useEffect(() => {
+    if (!isFetching) initPageRef.current = false;
+  }, [isFetching]);
+
+  if (isFetching) {
+    if (isDeferred) return <Skeletons />;
+    return '';
   }
-
-  return <>{children}</>;
-};
-
-const Parents = React.memo(
-  ({ params, includeBooked, categoriesState, pricesState, handleCategoryChange, handlePriceChange, isMaxtb }) => {
-    return (
-      <Suspense
-        fallback={
-          <DefferedComponent>
-            <Skeletons />
-          </DefferedComponent>
-        }
-      >
-        <RenderProducts
-          isMaxtb={isMaxtb}
-          params={params}
-          includeBooked={includeBooked}
+  return (
+    <div className="flex-col w-full">
+      <RenderProductsNum data={data} includeBooked={includeBooked} />
+      {!isMaxtb && (
+        <SelectedFilters
           categoriesState={categoriesState}
           pricesState={pricesState}
           handleCategoryChange={handleCategoryChange}
           handlePriceChange={handlePriceChange}
         />
-      </Suspense>
-    );
-  },
-);
+      )}
+      {/* 검색 결과 없을 때 일단 min-h로.. */}
+      {hasProducts ? (
+        <>
+          <div className="grid grid-cols-4 md:gap-3 max-[960px]:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-[960px]:px-10 max-md:px-3">
+            {includeBooked
+              ? data?.pages.map((page, i) => (
+                  <Fragment key={i}>
+                    {page.map((product, idx) => (
+                      <Fragment key={idx}>
+                        <Product product={product} />
+                      </Fragment>
+                    ))}
+                  </Fragment>
+                ))
+              : data?.pages.map((page, i) => (
+                  <Fragment key={i}>
+                    {page
+                      .filter(a => a.state === 1)
+                      .map((product, idx) => (
+                        <Fragment key={idx}>
+                          <Product product={product} />
+                        </Fragment>
+                      ))}
+                  </Fragment>
+                ))}
+          </div>
+          {isFetching && <Skeletons />}
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center space-y-1 h-52">
+          <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 256 256">
+            <path
+              fill="lightgray"
+              d="m212.24 83.76l-56-56A6 6 0 0 0 152 26H56a14 14 0 0 0-14 14v176a14 14 0 0 0 14 14h144a14 14 0 0 0 14-14V88a6 6 0 0 0-1.76-4.24M158 46.48L193.52 82H158ZM202 216a2 2 0 0 1-2 2H56a2 2 0 0 1-2-2V40a2 2 0 0 1 2-2h90v50a6 6 0 0 0 6 6h50Zm-45.76-92.24a6 6 0 0 1 0 8.48L136.49 152l19.75 19.76a6 6 0 1 1-8.48 8.48L128 160.49l-19.76 19.75a6 6 0 0 1-8.48-8.48L119.51 152l-19.75-19.76a6 6 0 1 1 8.48-8.48L128 143.51l19.76-19.75a6 6 0 0 1 8.48 0"
+            />
+          </svg>
+          <p className="text-gray-300 font-medium">해당하는 상품이 없습니다</p>
+        </div>
+      )}
+      <div className="h-12" ref={ref}></div>
+    </div>
+  );
+};
 
 const PopularProductSkeleton = ({ category }) => {
   let categoryTitle =
@@ -632,7 +616,7 @@ const PopularProductSkeleton = ({ category }) => {
 
 const RenderPopularProducts = React.memo(({ category, paramsKeyword, setHasTop }) => {
   const useHotProducts = category => {
-    return useSuspenseQuery({
+    return useQuery({
       queryKey: ['topProducts', category],
       queryFn: () => fetchHotProducts(category),
       enabled:
@@ -647,7 +631,7 @@ const RenderPopularProducts = React.memo(({ category, paramsKeyword, setHasTop }
       staleTime: Infinity,
     });
   };
-  const { data, error, isLoading } = useHotProducts(category);
+  const { data, error, isLoading, isFetching } = useHotProducts(category);
 
   useEffect(() => {
     if (data?.length) setHasTop(true);
@@ -671,6 +655,28 @@ const RenderPopularProducts = React.memo(({ category, paramsKeyword, setHasTop }
       ? '기타'
       : '';
 
+  const [isDeferred, setIsDeferred] = useState(false);
+
+  let timeoutId;
+
+  useEffect(() => {
+    if (isFetching) {
+      timeoutId = setTimeout(() => {
+        setIsDeferred(true);
+      }, 200);
+    }
+    if (!isFetching) {
+      setIsDeferred(false);
+      clearTimeout(timeoutId);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [isFetching]);
+
+  if (isFetching) {
+    if (isDeferred) return <PopularProductSkeleton category={category} />;
+    return '';
+  }
   return (
     <>
       {data?.length ? (
@@ -727,20 +733,6 @@ const RenderPopularProducts = React.memo(({ category, paramsKeyword, setHasTop }
     </>
   );
 });
-
-const PopularParents = ({ category, paramsKeyword, setHasTop }) => {
-  return (
-    <Suspense
-      fallback={
-        <DefferedComponent>
-          <PopularProductSkeleton category={category} />
-        </DefferedComponent>
-      }
-    >
-      <RenderPopularProducts category={category} paramsKeyword={paramsKeyword} setHasTop={setHasTop} />
-    </Suspense>
-  );
-};
 
 const RenderMdFilter = ({
   categoriesState,
@@ -1258,7 +1250,11 @@ export default function RenderShop() {
         </div>
         <div className="border-b max-[960px]:border-0">
           {!paramsKeyword ? (
-            <PopularParents category={hotProductFlag.current} paramsKeyword={paramsKeyword} setHasTop={setHasTop} />
+            <RenderPopularProducts
+              category={hotProductFlag.current}
+              paramsKeyword={paramsKeyword}
+              setHasTop={setHasTop}
+            />
           ) : (
             ''
           )}
@@ -1296,7 +1292,7 @@ export default function RenderShop() {
             />
           </div>
           <div className="flex flex-col w-full">
-            <Parents
+            <RenderProducts
               params={params}
               categoriesState={categoriesState}
               pricesState={pricesState}
