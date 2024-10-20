@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { Fragment, Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { getSession, signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import getUserProducts from '@/lib/getUserProducts';
@@ -8,9 +8,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import ProfileProducts from '../_components/ProfileProducts';
 import formatDate from '../_lib/formatDate';
-import { EmailConfig } from 'next-auth/providers';
-import { ObjectId } from 'mongodb';
 import { Session } from 'next-auth';
+import { UserData } from '@/type/userData';
 
 const MyProfile = React.memo(
   ({
@@ -115,41 +114,22 @@ const MyProfile = React.memo(
   },
 );
 
-interface User {
-  bookmarked?: ObjectId[]; // 없거나 ObjectId 배열
-  createdAt: Date;
-  email: string;
-  emailVerified: null;
-  id: ObjectId;
-  image: null | string; // null or string
-  lastRaiseReset: Date; //
-  memo?: { [key: string]: string }; // 없거나 key:objectId value:string
-  name: null | string; //null or string
-  nickname: string;
-  nicknameChangedAt?: Date; //없거나 타임형식
-  openChatUrl?: string; //없거나 string
-  provider: string;
-  raiseCount: number;
-  state: number;
-  products?: ObjectId[]; // 없거나 ObjectId 배열
-}
-
 interface SessionData {
   data: Session;
   status: 'loading' | 'authenticated' | 'unauthenticated';
   update: Function;
 }
+3;
 
 export default function MyPage() {
   const { data: session, status, update }: SessionData = useSession();
 
-  //이거 제대로!
-  const { data, isLoading, error }: { data: any; isLoading: any; error: any } = useQuery({
+  const { data, isLoading, error }: { data: UserData; isLoading: boolean; error: Error } = useQuery({
     queryKey: ['userProducts', session?.user?.id],
     queryFn: () => getUserProducts(session?.user?.id),
     enabled: status === 'authenticated' && !!session?.user?.id,
   });
-  console.log(session.user.id);
+
   return (
     <Suspense>
       <div className="flex flex-col h-full space-y-8 max-w-screen-lg mx-auto px-10 max-[960px]:mt-16 max-md:space-y-4 max-md:px-0 max-md:mt-12 max-md:pb-3 min-[960px]:min-h-80vh">
