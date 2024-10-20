@@ -19,18 +19,17 @@ interface Product {
   state: number;
   price: number;
   openChatUrl: string;
-  images: {name: string; width:number; height: number}[];
+  images: { name: string; width: number; height: number }[];
   description: string;
   createdAt: string;
   condition: 1 | 2 | 3 | 4 | 5;
-  complain: {category: string, text: string}[];
+  complain: { category: string; text: string }[];
   category: number;
   bookmarked: string[];
 }
 
-
 const JustIn = () => {
-  const { data, error, isLoading } = useQuery<Product[]>({
+  const { data, error, isLoading }: { data: Product[]; error: Error; isLoading: boolean } = useQuery({
     queryKey: ['recentProducts'],
     queryFn: getRecentProducts,
     staleTime: Infinity,

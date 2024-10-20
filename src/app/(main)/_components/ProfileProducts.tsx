@@ -6,8 +6,9 @@ import timeAgo from '@/utils/timeAgo';
 import ProfileSkeleton from './ProfileSkeleton';
 import conditions from '../_constants/conditions';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ProductData } from '@/type/productData';
 
-const Product = ({ product, productOption }) => {
+const Product = ({ product }: { product: ProductData }) => {
   return (
     <Link
       href={`/shop/product/${product._id}`}
@@ -22,7 +23,7 @@ const Product = ({ product, productOption }) => {
                 ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
                 : '/noImage.svg'
             }
-            alt={product._id}
+            alt={product._id.toString()}
             fill
             sizes="(max-width:768px) 280px, 220px"
           ></Image>
@@ -76,15 +77,15 @@ const Product = ({ product, productOption }) => {
   );
 };
 
-export default function ProfileProducts({ data }) {
+export default function ProfileProducts({ data }: { data: ProductData[] }) {
   const router = useRouter();
   const params = useSearchParams();
   const productOption = params.get('state') === null ? 1 : Number(params.get('state'));
 
-  const updateURL = useCallback(state => {
+  const updateURL = useCallback((state: 'all' | 0 | 1 | 2) => {
     if (state === 'all') return router.push(window.location.pathname);
     const currentParams = new URLSearchParams(params.toString());
-    currentParams.set('state', state);
+    currentParams.set('state', state.toString());
     const newURL = `${window.location.pathname}?${currentParams.toString()}`;
     router.push(newURL);
   }, []);
@@ -134,7 +135,7 @@ export default function ProfileProducts({ data }) {
                   .map((product, index) => {
                     return (
                       <Fragment key={index}>
-                        <Product product={product} productOption={productOption} />
+                        <Product product={product} />
                       </Fragment>
                     );
                   })}
