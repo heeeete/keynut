@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-export default function CustomDropdownMenu({ placeholder, values, onChange = () => {} }) {
+export default function CustomDropdownMenu({ placeholder, values, onChange = e => {} }) {
   const [isDropDown, setIsDropDown] = useState(false);
   const [state, setState] = useState(0);
   const posY = useRef(0);

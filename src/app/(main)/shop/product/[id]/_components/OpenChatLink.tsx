@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import './button.css';
+import { Session } from 'next-auth';
 
-export default function OpenChatLink({ url, session, id }) {
+export default function OpenChatLink({ url, session, id }: { url: string; session: Session; id: string }) {
   if (!url)
     return (
       <button

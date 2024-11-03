@@ -2,7 +2,7 @@ import { User } from '@/type/user';
 import RenderProfile from './RenderProfile';
 import getUserProfile from '@/lib/getUserProfile';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params }: { params: { id: string } }) {
   const { id }: { id: string } = params;
   const data: User = await getUserProfile(id);
   return {

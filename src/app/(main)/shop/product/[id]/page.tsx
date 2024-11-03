@@ -4,7 +4,13 @@ import getProductWithUser from './_lib/getProductWithUser';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import Warning from '@/app/(main)/_components/Warning';
 
-export async function generateMetadata({ params }) {
+interface ProductProps {
+  params: {
+    id: string;
+  };
+}
+
+export async function generateMetadata({ params }: ProductProps) {
   const { id } = params;
   const product = await getProductWithUser(id);
 
@@ -28,7 +34,7 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function Product({ context, params }) {
+export default async function Product({ params }: ProductProps): Promise<JSX.Element> {
   const { id } = params;
   if (id.length !== 24) return <Warning message={'존재하지 않는 상품입니다.'} />;
   const queryClient = new QueryClient();

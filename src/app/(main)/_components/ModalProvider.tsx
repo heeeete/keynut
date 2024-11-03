@@ -1,13 +1,25 @@
 'use client';
 
+import { OpenModal } from '@/type/modal';
 import { usePathname } from 'next/navigation';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
-const ModalContext = createContext();
+interface ModalContextType {
+  isModalOpen: boolean;
+  modalMessage: string;
+  modalSubMessage: string;
+  isSelect: boolean;
+  size: string;
+  openModal: OpenModal;
+  closeModal: () => void;
+  confirmModal: () => void;
+}
+
+const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const useModal = () => useContext(ModalContext);
 
-export const ModalProvider = ({ children }) => {
+export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalSubMessage, setModalSubMessage] = useState('');
@@ -23,7 +35,7 @@ export const ModalProvider = ({ children }) => {
     setIsModalOpen(true);
     if (size) setSize(size);
 
-    return new Promise(resolve => {
+    return new Promise<boolean>(resolve => {
       setResolvePromise(() => resolve);
     });
   }, []);

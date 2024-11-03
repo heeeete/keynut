@@ -10,6 +10,7 @@ import ProfileProducts from '../_components/ProfileProducts';
 import formatDate from '../_lib/formatDate';
 import { Session } from 'next-auth';
 import { UserData } from '@/type/userData';
+import { SessionData } from '@/type/sessionData';
 
 const MyProfile = React.memo(
   ({
@@ -113,13 +114,6 @@ const MyProfile = React.memo(
     );
   },
 );
-
-interface SessionData {
-  data: Session;
-  status: 'loading' | 'authenticated' | 'unauthenticated';
-  update: Function;
-}
-3;
 
 export default function MyPage() {
   const { data: session, status, update }: SessionData = useSession();

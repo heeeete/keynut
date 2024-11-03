@@ -202,7 +202,7 @@ const UserProfile = React.memo(({ data, provider }: { data: User; provider: 'kak
 });
 
 export default function RenderProfile() {
-  const { id }: { id: string } = useParams();
+  const { id } = useParams<{ id: string }>();
   if (id.length !== 24) return <Warning message={'사용자를 찾을 수 없습니다'} />;
 
   const { data, isLoading, error }: { data: UserData; isLoading: boolean; error: Error } = useQuery({
