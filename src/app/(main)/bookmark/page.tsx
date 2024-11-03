@@ -1,19 +1,19 @@
 'use client';
 import Image from 'next/image';
-import { getSession, signIn, useSession } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getBookmarkedProducts from './_lib/getBookmarkedProducts';
 import Link from 'next/link';
 import { Fragment } from 'react';
 import conditions from '../_constants/conditions';
 import timeAgo from '@/utils/timeAgo';
+import { ProductData } from '@/type/productData';
+import { ObjectId } from 'mongodb';
 
-const HandleBookMark = ({ productId }) => {
-  const { data: session, status } = useSession();
-
+const HandleBookMark = ({ productId }: { productId: ObjectId }) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: async ({ productId }) => {
+    mutationFn: async ({ productId }: { productId: ObjectId }) => {
       const res = await fetch(`/api/products/${productId}/bookmark`, {
         method: 'POST',
         headers: {
@@ -21,25 +21,25 @@ const HandleBookMark = ({ productId }) => {
         },
         body: JSON.stringify({ isBookmarked: true }),
       });
+      const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || 'Network response was not ok');
       }
-      const data = await res.json();
       return data;
     },
     onMutate: async ({ productId }) => {
-      await queryClient.cancelQueries(['bookmarkedProducts']);
+      await queryClient.cancelQueries({ queryKey: ['bookmarkedProducts'] });
       const previousProduct = queryClient.getQueryData(['bookmarkedProducts']);
-      queryClient.setQueryData(['bookmarkedProducts'], old => {
+      queryClient.setQueryData(['bookmarkedProducts'], (old: ProductData[]) => {
         return old.filter(product => product._id !== productId);
       });
       return { previousProduct };
     },
     onError: (err, variables, context) => {
-      queryClient.setQueryData(['bookmarkedProducts', context.previousProduct]);
+      queryClient.setQueryData(['bookmarkedProducts'], context.previousProduct);
     },
     onSettled: (data, error, variables) => {
-      queryClient.invalidateQueries(['bookmarkedProducts']);
+      queryClient.invalidateQueries({ queryKey: ['bookmarkedProducts'] });
     },
   });
   const handleBookmarkClick = async e => {
@@ -117,8 +117,7 @@ const ABookMark = ({ item }) => {
 };
 
 export default function Bookmark() {
-  const { data: user } = useSession();
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading }: { data: ProductData[]; error: Error; isLoading: boolean } = useQuery({
     queryKey: ['bookmarkedProducts'],
     queryFn: () => getBookmarkedProducts(),
   });

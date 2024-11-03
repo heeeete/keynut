@@ -7,12 +7,29 @@ import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 import { Gowun_Dodum } from 'next/font/google';
 import conditions from '../_constants/conditions';
-import { useUser } from './UserProvider';
 
 const title = Gowun_Dodum({ subsets: ['latin'], weight: ['400'] });
 
+interface Product {
+  _id: string;
+  views: number;
+  useId: string;
+  title: string;
+  tags: string[];
+  state: number;
+  price: number;
+  openChatUrl: string;
+  images: { name: string; width: number; height: number }[];
+  description: string;
+  createdAt: string;
+  condition: 1 | 2 | 3 | 4 | 5;
+  complain: { category: string; text: string }[];
+  category: number;
+  bookmarked: string[];
+}
+
 const JustIn = () => {
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading }: { data: Product[]; error: Error; isLoading: boolean } = useQuery({
     queryKey: ['recentProducts'],
     queryFn: getRecentProducts,
     staleTime: Infinity,
@@ -192,7 +209,7 @@ const Categories = () => {
   );
 };
 
-export default function RenderHome() {
+export default function RenderHome(): JSX.Element {
   return (
     <div className="flex flex-col w-full min-h-80vh md:-mt-4 max-[960px]:pt-12">
       <Link
@@ -208,18 +225,6 @@ export default function RenderHome() {
         <Categories />
         <JustIn />
       </div>
-      {/* <section className="flex flex-col space-y-5">
-        <div className="flex items-end">
-        <div className="flex flex-1 flex-col">
-        <div className="font-medium text-xl">top picks</div>
-        <div className="text-gray-600 font-medium">인기 사진</div>
-        </div>
-        <Link href={'/gallery'}>
-            <div className="font-medium text-sm">더보기 +</div>
-          </Link>
-        </div>
-        <TopPicks picks={picks} />
-      </section> */}
     </div>
   );
 }

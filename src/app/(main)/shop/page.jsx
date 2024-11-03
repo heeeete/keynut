@@ -4,7 +4,7 @@ import getProducts from './_lib/getProducts';
 import { Suspense } from 'react';
 import fetchHotProducts from './_lib/fetchHotProducts';
 
-export default async function Shop({ props }) {
+export default async function Shop({}) {
   const queryClient = new QueryClient();
   //queryclient를 사용하여 getProducts 사전실행 -> 서버측에서 미리 데이터를 가져옴, ['products'] 라는 키로 캐시됨
   try {

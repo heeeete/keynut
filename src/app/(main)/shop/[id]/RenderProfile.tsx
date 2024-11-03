@@ -10,6 +10,8 @@ import formatDate from '../../_lib/formatDate';
 import Warning from '../../_components/Warning';
 import { useSession } from 'next-auth/react';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
+import { UserData } from '@/type/userData';
+import { User } from '@/type/user';
 
 const ProfileImage = ({ image }) => {
   return (
@@ -177,7 +179,7 @@ const Memo = ({ status, data, session }) => {
   );
 };
 
-const UserProfile = React.memo(({ data, provider }) => {
+const UserProfile = React.memo(({ data, provider }: { data: User; provider: 'kakao' | 'google' }) => {
   const { data: session, status, update } = useSession();
 
   return (
@@ -200,10 +202,10 @@ const UserProfile = React.memo(({ data, provider }) => {
 });
 
 export default function RenderProfile() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   if (id.length !== 24) return <Warning message={'사용자를 찾을 수 없습니다'} />;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error }: { data: UserData; isLoading: boolean; error: Error } = useQuery({
     queryKey: ['userProducts', id],
     queryFn: () => getUserProducts(id),
     enabled: !!id,

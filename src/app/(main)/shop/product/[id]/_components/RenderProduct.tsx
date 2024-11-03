@@ -23,6 +23,11 @@ import { useModal } from '@/app/(main)/_components/ModalProvider';
 import baseCategory from '@/app/(main)/_constants/productPage/baseCategories';
 import formatDate from '@/app/(main)/_lib/formatDate';
 import './button.css';
+import { Session } from 'next-auth';
+import { SessionData } from '@/type/sessionData';
+import { ProductData } from '@/type/productData';
+import { User } from '@/type/user';
+import { OpenModal } from '@/type/modal';
 
 const RenderCondition = ({ condition }) => {
   return (
@@ -37,7 +42,7 @@ const RenderCondition = ({ condition }) => {
 };
 
 const RenderCategory = ({ category }) => {
-  let mainCategory = {};
+  let mainCategory = { key: 0, value: '' };
 
   if (category >= 10 && category <= 19) mainCategory = { key: 1, value: '키보드' };
   else if (category >= 20 && category <= 29) mainCategory = { key: 2, value: '마우스' };
@@ -214,7 +219,7 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
   const color = isBookmarked ? 'black' : 'white';
 
   const mutation = useMutation({
-    mutationFn: async ({ productId }) => {
+    mutationFn: async ({ productId }: { productId: string; isBookmarked: boolean }) => {
       const res = await fetch(`/api/products/${productId}/bookmark`, {
         method: 'POST',
         headers: {
@@ -228,10 +233,10 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
       }
       return data;
     },
-    onMutate: async ({ productId, isBookmarked }) => {
+    onMutate: async ({ productId, isBookmarked }: { productId: string; isBookmarked: boolean }) => {
       await queryClient.cancelQueries(['product', productId]);
       const previousProduct = queryClient.getQueryData(['product', productId]);
-      queryClient.setQueryData(['product', productId], old => ({
+      queryClient.setQueryData(['product', productId], (old: ProductData) => ({
         ...old,
         bookmarked: isBookmarked
           ? old.bookmarked.filter(id => id !== session.user.id)
@@ -287,7 +292,24 @@ const RenderDescriptor = ({ product }) => {
   );
 };
 
-const UpButton = ({ setSettingModal, raiseCount, state, raiseHandler, openModal }) => {
+const UpButton = ({
+  setSettingModal,
+  raiseCount,
+  state,
+  raiseHandler,
+  openModal,
+}: {
+  setSettingModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  raiseCount: number;
+  state: number;
+  raiseHandler: () => Promise<void>;
+  openModal: (props: {
+    message: string;
+    subMessage?: string;
+    isSelect?: boolean;
+    size?: string | number;
+  }) => Promise<boolean>;
+}) => {
   const openUpModal = async () => {
     if (!(await getSession())) return signIn();
     if (setSettingModal) setSettingModal(false);
@@ -313,7 +335,15 @@ const UpButton = ({ setSettingModal, raiseCount, state, raiseHandler, openModal 
   );
 };
 
-const DeleteButton = ({ setSettingModal, openModal, deleteHandler }) => {
+const DeleteButton = ({
+  setSettingModal,
+  openModal,
+  deleteHandler,
+}: {
+  setSettingModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  openModal: OpenModal;
+  deleteHandler: () => void;
+}) => {
   const openDeleteModal = async () => {
     if (!(await getSession())) return signIn();
     if (setSettingModal) setSettingModal(false);
@@ -478,23 +508,28 @@ const onPaste = async (id, openModal) => {
   }
 };
 
-export default function RenderProduct({ id }) {
+interface ProductWithUserData extends ProductData {
+  user: User | null;
+}
+
+export default function RenderProduct({ id }): JSX.Element {
   const queryClient = useQueryClient();
   const [settingModal, setSettingModal] = useState(null);
   const [complainModal, setComplainModal] = useState(false);
   const [raiseCount, setRaiseCount] = useState(0);
   const posY = useRef(0);
   const router = useRouter();
-  const { data: session, status } = useSession();
-  const { data, error, isLoading } = useQuery({
+  const { data: session, status }: SessionData = useSession();
+  const { data, error, isLoading } = useQuery<ProductWithUserData>({
     queryKey: ['product', id],
     queryFn: () => getProductWithUser(id),
     staleTime: Infinity,
   });
   const invalidateFilters = useInvalidateFiltersQuery();
   const fetchRaiseCount = initRaiseCount(setRaiseCount);
-  const { user = null, ...product } = data || {};
-  const writer = status !== 'loading' && session ? session.user.id === product.userId : false;
+  const user = data?.user ?? null; // Optional chaining 사용
+  const product = data;
+  const writer = status !== 'loading' && session ? session.user.id === product?.userId : false;
   const { openModal } = useModal();
 
   useEffect(() => {
@@ -534,10 +569,12 @@ export default function RenderProduct({ id }) {
         }, 300);
         return;
       }
-      queryClient.setQueryData(['product', id], oldData => ({
-        ...oldData,
-        views: data.views,
-      }));
+      queryClient.setQueryData(['product', id], (oldData: ProductData) => {
+        return {
+          ...oldData,
+          views: data.views,
+        };
+      });
     };
     fetchUpdateViews();
   }, []);
@@ -670,7 +707,6 @@ export default function RenderProduct({ id }) {
         <SettingModal
           openModal={openModal}
           id={id}
-          session={session}
           setSettingModal={setSettingModal}
           state={product.state}
           raiseHandler={raiseHandler}

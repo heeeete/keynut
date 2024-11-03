@@ -2,7 +2,7 @@
 import useProductStateMutation from '@/hooks/useProductStateMutaion';
 import { useEffect, useRef, useState } from 'react';
 
-const DropdownMenu = ({ state, id }) => {
+const DropdownMenu = ({ state, id }: { state: number; id: string }) => {
   const [dropMenu, setDropMenu] = useState(false);
   const { onClickSelling, onClickSellCompleted, onClickBooked } = useProductStateMutation();
   const menuRef = useRef(null);
