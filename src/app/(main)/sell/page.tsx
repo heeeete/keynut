@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import Loading from '../_components/Loading';
@@ -21,9 +21,19 @@ import RenderPriceInput from '@/app/(main)/_components/ProductForm/RenderPriceIn
 import RenderOpenChatUrlInput from '@/app/(main)/_components/ProductForm/RenderOpenChatUrlInput';
 import RenderHashTagInputWithTag from '@/app/(main)/_components/ProductForm/RenderHashTagInputWithTag';
 
-const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }) => {
+interface UploadImagesProps {
+  imageFiles: { file: File; width: number; height: number }[]; // 문자열과 숫자의 튜플 배열
+  imageUrls: string[];
+}
+
+interface UploadImagesHookProps {
+  uploadImages: UploadImagesProps;
+  setUploadImages: React.Dispatch<React.SetStateAction<UploadImagesProps>>
+}
+
+const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }: UploadImagesHookProps) => {
   const removeImage = useCallback(
-    idx => {
+    (idx: number) => {
       const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
       const newImageUrls = uploadImages.imageUrls.filter((_, index) => index !== idx);
       setUploadImages({
@@ -35,7 +45,7 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }) => {
   );
 
   const onDragEnd = useCallback(
-    result => {
+    (result: DropResult) => {
       if (!result.destination) {
         return;
       }
@@ -109,7 +119,7 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }) => {
 });
 
 export default function Sell() {
-  const [uploadImages, setUploadImages] = useState({
+  const [uploadImages, setUploadImages] = useState<UploadImagesProps>({
     imageFiles: [],
     imageUrls: [],
   });
@@ -123,8 +133,7 @@ export default function Sell() {
   const [openChatUrl, setOpenChatUrl] = useState('');
   const [tags, setTags] = useState([]);
   const [isValidOpenChat, setIsValidOpenChat] = useState(true);
-  const fileInputRef = useRef(null);
-  const router = new useRouter();
+  const router = useRouter();
   const { data: session, status, update } = useSession();
   const invalidateFilters = useInvalidateFiltersQuery();
   const isInitialRender = useRef(true); // 첫 번째 렌더링인지 확인하는 ref
@@ -152,18 +161,22 @@ export default function Sell() {
       } else sessionStorage.removeItem('draft');
     };
 
-    if (status !== 'loading' && status === 'unauthenticated') return signIn();
-    if (status === 'authenticated') {
-      const fetchUserProfile = async () => {
-        const user = await getUserProfile(session.user.id);
-        if (session.user.openChatUrl !== user?.openChatUrl) update({ openChatUrl: user.openChatUrl });
-      };
-      fetchUserProfile();
-      setOpenChatUrl(session.user.openChatUrl || '');
-      openDraftModal();
+    const fetchUserProfile = async () => {
+      const user = await getUserProfile(session.user.id);
+      if (session.user.openChatUrl !== user?.openChatUrl) update({ openChatUrl: user.openChatUrl });
+    };
 
-      isInitialRender.current = false;
-    }
+    const initializeData = async () => {
+      if (status !== 'loading' && status === 'unauthenticated') return signIn();
+      if (status === 'authenticated') {
+        await fetchUserProfile();
+        setOpenChatUrl(session.user.openChatUrl || '');
+        await openDraftModal();
+        isInitialRender.current = false;
+      }
+    };
+
+    initializeData();
   }, [status]);
 
   useEffect(() => {
@@ -208,7 +221,7 @@ export default function Sell() {
 
     setIsLoading(true);
     const imageDetails = uploadImages.imageFiles.map(file => ({
-      name: `product_${new Date().getTime()}_${file.name}`,
+      name: `product_${new Date().getTime()}_${file.file.name}`,
       width: file.width,
       height: file.height,
     }));
@@ -218,6 +231,7 @@ export default function Sell() {
       setIsLoading(false);
       return;
     }
+
     await Promise.all(
       urls.map(async (url, idx) => {
         await uploadToS3(url, uploadImages.imageFiles[idx]);
@@ -227,12 +241,12 @@ export default function Sell() {
     const formData = new FormData();
     formData.append('imageDetails', JSON.stringify(imageDetails));
     formData.append('title', title.replace(/ +/g, ' ').trim());
-    formData.append('subCategory', subCategory);
-    formData.append('condition', condition);
+    formData.append('subCategory', subCategory.toString());
+    formData.append('condition', condition.toString());
     formData.append('description', description);
     formData.append('openChatUrl', openChatUrl.trim());
     formData.append('price', price.replaceAll(',', ''));
-    formData.append('tags', tags);
+    formData.append('tags', JSON.stringify(tags));
 
     try {
       const res = await fetch('/api/products', {
@@ -272,11 +286,7 @@ export default function Sell() {
       <p className="min-[960px]:mt-10 font-medium text-xl max-[480px]:text-base">
         사진<span className="text-red-500">*</span>
       </p>
-      <RenderImageUploadButton
-        fileInputRef={fileInputRef}
-        uploadImages={uploadImages}
-        setUploadImages={setUploadImages}
-      />
+      <RenderImageUploadButton uploadImages={uploadImages} setUploadImages={setUploadImages} />
       <RenderDNDImages uploadImages={uploadImages} setUploadImages={setUploadImages} />
       <RenderTitle title={title} setTitle={setTitle} />
       <RenderHashTagInputWithTag tags={tags} setTags={setTags} />

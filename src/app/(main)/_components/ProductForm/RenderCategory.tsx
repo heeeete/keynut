@@ -5,14 +5,21 @@ import RenderSubcategories from './RenderSubcategories';
 import './renderCategory.css';
 import baseCategory from '../../_constants/productPage/baseCategories';
 
-const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }) => {
-  const handleMainCategoryClick = useCallback(id => {
+interface Props {
+  mainCategory: number;
+  subCategory: number;
+  setMainCategory: React.Dispatch<React.SetStateAction<number>>
+  setSubCategory: React.Dispatch<React.SetStateAction<number>>
+}
+
+const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }: Props) => {
+  const handleMainCategoryClick = useCallback((id: number) => {
     setMainCategory(id);
     if (id !== 9 && id !== 4 && id !== 5) setSubCategory(id * 10);
     else setSubCategory(id);
   }, []);
 
-  const handleSubCategoryClick = useCallback(id => {
+  const handleSubCategoryClick = useCallback((id: number) => {
     setSubCategory(id);
   }, []);
 

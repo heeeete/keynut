@@ -2,7 +2,12 @@
 
 import React, { useCallback } from 'react';
 
-const RenderPriceInput = React.memo(({ price, setPrice }) => {
+interface Props {
+  price: string;
+  setPrice: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const RenderPriceInput = React.memo(({ price, setPrice }: Props) => {
   const handlePrice = useCallback(e => {
     const value = e.target.value.replace(/,/g, '');
     if (!isNaN(value) && value.length <= 9) {

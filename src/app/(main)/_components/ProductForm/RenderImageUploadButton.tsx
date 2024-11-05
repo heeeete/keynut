@@ -1,10 +1,22 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useModal } from '../ModalProvider';
 
-const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUploadImages }) => {
+// uploadImages 타입을 정의
+interface UploadImages {
+  imageFiles: { file: File; width: number; height: number }[];
+  imageUrls: string[];
+}
+
+interface Props {
+  uploadImages: UploadImages;
+  setUploadImages: React.Dispatch<React.SetStateAction<UploadImages>>;
+}
+
+const RenderImageUploadButton = React.memo(({ uploadImages, setUploadImages }: Props) => {
   const { openModal } = useModal();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleImageUploadClick = useCallback(() => {
     if (uploadImages.imageUrls.length < 5) {
@@ -15,14 +27,14 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
   }, [uploadImages]);
 
   const handleImageUpload = useCallback(
-    async e => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!e.target.files) return;
       if (uploadImages.imageUrls.length + e.target.files.length > 5)
         return openModal({ message: '사진은 최대 5장까지 가능합니다.' });
 
       const files = Array.from(e.target.files);
       const imageUrls = new Array(files.length);
-      const imageFiles = new Array(files.length);
+      const imageFiles = files.map((file) => ({ file, width: 0, height: 0 })); // 파일과 메타데이터를 함께 저장
 
       const promise = files.map(
         (file, idx) =>
@@ -31,11 +43,10 @@ const RenderImageUploadButton = React.memo(({ fileInputRef, uploadImages, setUpl
             const img = new Image();
             img.src = imgURL;
             img.onload = () => {
-              file.width = img.width;
-              file.height = img.height;
               imageUrls[idx] = imgURL;
-              imageFiles[idx] = file;
-              resolve();
+              imageFiles[idx].width = img.width;
+              imageFiles[idx].height = img.height;
+              resolve(null);
             };
             img.onerror = reject;
           }),

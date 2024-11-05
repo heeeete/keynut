@@ -1,6 +1,17 @@
 'use client';
 
-export default async function getSignedUrls(imageDetails) {
+interface ImageDetails {
+  name: string;
+  width: number;
+  height: number;
+}
+
+interface SignedUrlsResponse {
+  urls?: string[];
+  status: number;
+}
+
+export default async function getSignedUrls(imageDetails: ImageDetails[]): Promise<SignedUrlsResponse> {
   let res;
 
   try {

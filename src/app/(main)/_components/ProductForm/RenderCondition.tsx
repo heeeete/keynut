@@ -2,7 +2,12 @@
 
 import React, { useCallback } from 'react';
 
-const RenderCondition = React.memo(({ condition, setCondition }) => {
+interface Props {
+  condition: number;
+  setCondition: React.Dispatch<React.SetStateAction<number>>
+}
+
+const RenderCondition = React.memo(({ condition, setCondition }: Props) => {
   const handleConditionClick = useCallback(id => {
     setCondition(id);
   }, []);

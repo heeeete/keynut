@@ -1,7 +1,12 @@
 'use client';
 import React, { useCallback } from 'react';
 
-const RenderTitle = React.memo(({ title, setTitle }) => {
+interface Props {
+  title: string;
+  setTitle: React.Dispatch<React.SetStateAction<string>>
+}
+
+const RenderTitle = React.memo(({ title, setTitle }: Props) => {
   const onChangeTitle = useCallback(e => {
     setTitle(e.target.value);
   }, []);

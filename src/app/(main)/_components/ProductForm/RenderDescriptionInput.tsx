@@ -1,9 +1,16 @@
 'use client';
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useModal } from '../ModalProvider';
 
-const RenderDescriptionInput = React.memo(({ description, setDescription, subCategory }) => {
+
+interface Props {
+  description: string;
+  setDescription: React.Dispatch<React.SetStateAction<string>>;
+  subCategory: number
+}
+
+const RenderDescriptionInput = React.memo(({ description, setDescription, subCategory }: Props) => {
   const [template, setTemplate] = useState(false);
   const isTyping = useRef(null);
   const { openModal } = useModal();
@@ -34,9 +41,8 @@ const RenderDescriptionInput = React.memo(({ description, setDescription, subCat
         </p>
         {subCategory === 10 && (
           <button
-            className={`${
-              template ? ' text-gray-500 border-gray-500' : 'text-gray-300 border-gray-200'
-            }  rounded px-2 py-0.5 text-sm border`}
+            className={`${template ? ' text-gray-500 border-gray-500' : 'text-gray-300 border-gray-200'
+              }  rounded px-2 py-0.5 text-sm border`}
             onClick={onClickTemplate}
           >
             {template ? '템플릿 끄기' : '템플릿 사용'}
