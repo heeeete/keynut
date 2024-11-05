@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function Warning({ message }) {
+export default function Warning({ message }: { message: string }) {
   return (
     <div className="flex flex-col justify-center items-center min-h-70vh space-y-3">
       <svg xmlns="http://www.w3.org/2000/svg" width="5em" height="5em" viewBox="0 0 24 24">

@@ -5,11 +5,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut, signIn } from 'next-auth/react';
 import handleLogin from '../../../utils/handleLogin';
 import { Nothing_You_Could_Do } from 'next/font/google';
+import { SessionData } from '@/type/sessionData';
 
 const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });
 
 export default function Nav() {
-  const { data: session, status } = useSession();
+  const { data: session, status }: SessionData = useSession();
   const pathname = usePathname();
   const router = useRouter();
   const border =
@@ -31,17 +32,11 @@ export default function Nav() {
       <nav className="flex flex-col w-full h-full  max-w-screen-xl mx-auto max-[960px]:space-y-0">
         <div className="flex justify-end pr-10 pt-2 max-[960px]:hidden">
           <ul className="flex justify-end space-x-2 text-xs">
-            {/* <li>
-              <Link href="/search?c=keyboard">고객센터</Link>
-            </li> */}
             <li>
               <Link href="/mypage" onClick={e => handleLogin(e, router, '/mypage')}>
                 마이페이지
               </Link>
             </li>
-            {/* <li>
-              <Link href="/search?c=mouse">알림</Link>
-            </li> */}
             <li>
               <Link href="/bookmark" onClick={e => handleLogin(e, router, '/bookmark')}>
                 찜
@@ -103,19 +98,6 @@ export default function Nav() {
                   SELL
                 </Link>
               </li>
-              {/* <li>
-                <Link
-                  href={'/post'}
-                  onClick={e => handleLogin(e, router, '/post')}
-                  className={`${
-                    pathname.startsWith('/post')
-                      ? 'after:block after:w-full after:h-px after:absolute after:-rotate-12 after:top-1/2 after:bg-slate-950'
-                      : ''
-                  } relative`}
-                >
-                  POST
-                </Link>
-              </li> */}
               {session?.admin && (
                 <>
                   <li>
@@ -123,9 +105,6 @@ export default function Nav() {
                   </li>
                 </>
               )}
-              {/* <li>
-                <Link href={'/price'}>시세</Link>
-              </li> */}
             </ul>
           </div>
         </div>

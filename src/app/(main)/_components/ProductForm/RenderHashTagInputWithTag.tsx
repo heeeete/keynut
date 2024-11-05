@@ -2,7 +2,12 @@
 
 import React, { useCallback, useState } from 'react';
 
-const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
+interface Props {
+  tags: string[];
+  setTags: React.Dispatch<React.SetStateAction<string[]>>
+}
+
+const RenderHashTagInputWithTag = React.memo(({ tags, setTags }: Props) => {
   const [tempTag, setTempTag] = useState('');
   const [isFocus, setIsFocus] = useState(false);
 
@@ -63,9 +68,8 @@ const RenderHashTagInputWithTag = React.memo(({ tags, setTags }) => {
       </div>
       {tags.length === 0 && (
         <p
-          className={`${
-            isFocus ? 'opacity-100' : 'opacity-0'
-          } transition-opacity text-sm text-gray-400 font-semibold px-2 max-md:text-xs`}
+          className={`${isFocus ? 'opacity-100' : 'opacity-0'
+            } transition-opacity text-sm text-gray-400 font-semibold px-2 max-md:text-xs`}
         >
           상품 태그는 엔터로 입력할 수 있습니다.
         </p>

@@ -1,8 +1,16 @@
-'use client';
-
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+
+interface type {
+  images: {
+    width: number;
+    height: number;
+    name: string;
+  }[];
+  state: number;
+  initPhotoSwipe: (index: number, imageShow: HTMLDivElement | null, startTouch: (e: TouchEvent) => void) => void;
+}
 
 export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -44,7 +52,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
   }, [clientWidth, totalChildren, currentImageIndex]);
 
   const move = useCallback(
-    e => {
+    (e: TouchEvent) => {
       const travelX = e.touches[0].clientX - initDragPos.current.x;
       const travelY = e.touches[0].clientY - initDragPos.current.y;
       if (isScrolling.current === undefined) isScrolling.current = Math.abs(travelY) > Math.abs(travelX);
@@ -64,7 +72,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
   );
 
   const startTouch = useCallback(
-    e => {
+    (e: TouchEvent) => {
       isScrolling.current = undefined;
       setIsTransitioning(true);
       travelRatio.current = 0;
@@ -108,7 +116,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
             }}
           >
             {images?.length ? (
-              images.map((img, idx) => (
+              images.map((img: { name: string }, idx: number) => (
                 <div key={idx} className="flex relative max-w-lg w-screen aspect-square">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img.name}`}
@@ -133,7 +141,7 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
       </div>
       {images?.length > 1 && (
         <div className=" absolute  bottom-4 flex space-x-3 mt-3">
-          {images?.map((_, idx) => (
+          {images?.map((_, idx: number) => (
             <button
               key={idx}
               className={`w-3 h-3 rounded-full ${currentImageIndex === idx ? 'bg-gray-400' : 'bg-white'}`}

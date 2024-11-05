@@ -2,7 +2,14 @@
 
 import React from 'react';
 
-const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }) => {
+interface Props {
+  mainCategory: number;
+  subCategory: number;
+  handleSubCategoryClick: (id: number) => void
+}
+
+
+const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }: Props) => {
   switch (mainCategory) {
     case 1:
       return (

@@ -6,5 +6,6 @@ declare module 'next-auth' {
   interface Session {
     user: User & DefaultSession['user'];
     expires: string;
+    admin: true | false;
   }
 }

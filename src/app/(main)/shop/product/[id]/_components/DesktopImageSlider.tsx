@@ -3,12 +3,22 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import 'photoswipe/style.css';
 
-export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
+interface type {
+  images: {
+    width: number;
+    height: number;
+    name: string;
+  }[];
+  state: number;
+  initPhotoSwipe: (index: number) => void;
+}
+
+export default function DesktopImageSlider({ images, state, initPhotoSwipe }: type) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const pathname = usePathname();
 
-  const handleNextImage = e => {
+  const handleNextImage = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (!isTransitioning) {
       setIsTransitioning(true);
@@ -17,7 +27,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }) {
     }
   };
 
-  const handlePrevImage = e => {
+  const handlePrevImage = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (!isTransitioning) {
       setIsTransitioning(true);

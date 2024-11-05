@@ -1,9 +1,16 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import Link from 'next/link';
 
-const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isValidOpenChat, setIsValidOpenChat }) => {
+interface Props {
+  openChatUrl: string;
+  setOpenChatUrl: React.Dispatch<React.SetStateAction<string>>;
+  isValidOpenChat: boolean;
+  setIsValidOpenChat: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isValidOpenChat, setIsValidOpenChat }: Props) => {
   const onChangeHandler = value => {
     setOpenChatUrl(value);
     if (value && !value.startsWith('https://open.kakao.com/')) setIsValidOpenChat(false);

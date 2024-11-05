@@ -4,7 +4,7 @@ import Nav from './_components/Nav';
 import { ModalProvider } from './_components/ModalProvider';
 import Modal from './_components/Modal';
 
-export default function MainLayout({ children }) {
+export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <ModalProvider>
       <Nav />
