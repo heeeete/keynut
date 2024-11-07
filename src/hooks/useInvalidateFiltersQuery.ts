@@ -5,10 +5,14 @@ export const useInvalidateFiltersQuery = () => {
   const queryClient = useQueryClient();
 
   return useCallback(
-    key => {
+    (key?: unknown) => {
       queryClient.invalidateQueries({
         predicate: query =>
-          query.queryKey.some(key => typeof key === 'string' && (key.includes('categories') || key.includes('prices'))),
+          query.queryKey.some(
+            queryKeyItem =>
+              typeof queryKeyItem === 'string' &&
+              (queryKeyItem.includes('categories') || queryKeyItem.includes('prices')),
+          ),
       });
       if (key) queryClient.invalidateQueries(key);
     },

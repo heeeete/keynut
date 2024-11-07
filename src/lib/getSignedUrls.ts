@@ -1,7 +1,8 @@
 'use client';
 
 interface ImageDetails {
-  name: string;
+  file?: File;
+  name?: string;
   width: number;
   height: number;
 }
@@ -12,7 +13,7 @@ interface SignedUrlsResponse {
 }
 
 export default async function getSignedUrls(imageDetails: ImageDetails[]): Promise<SignedUrlsResponse> {
-  let res;
+  let res: Response;
 
   try {
     res = await fetch('/api/s3/get-signed-urls', {

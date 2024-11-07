@@ -2,10 +2,10 @@
 import getProductWithUser from '../_lib/getProductWithUser';
 import Image from 'next/image';
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import Loading from '@/app/(main)/_components/Loading';
 import { useModal } from '@/app/(main)/_components/ModalProvider';
@@ -19,11 +19,23 @@ import RenderDescriptionInput from '@/app/(main)/_components/ProductForm/RenderD
 import RenderPriceInput from '@/app/(main)/_components/ProductForm/RenderPriceInput';
 import RenderOpenChatUrlInput from '@/app/(main)/_components/ProductForm/RenderOpenChatUrlInput';
 import RenderHashTagInputWithTag from '@/app/(main)/_components/ProductForm/RenderHashTagInputWithTag';
+import { ProductData } from '@/type/productData';
 
-const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteImages }) => {
+interface UploadImagesProps {
+  imageFiles: { name?: string; file?: File; width: number; height: number }[]; // 문자열과 숫자의 튜플 배열
+  imageUrls: string[];
+}
+
+interface UploadImagesHookProps {
+  uploadImages: UploadImagesProps;
+  setUploadImages: React.Dispatch<React.SetStateAction<UploadImagesProps>>;
+  setDeleteImages: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteImages }: UploadImagesHookProps) => {
   const removeImage = useCallback(
-    idx => {
-      if (!uploadImages.imageUrls[idx].startsWith('blob'))
+    (idx: number) => {
+      if (!uploadImages.imageUrls[idx].startsWith('blol'))
         setDeleteImages(curr => [...curr, uploadImages.imageUrls[idx]]);
 
       const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
@@ -37,7 +49,7 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteIm
   );
 
   const onDragEnd = useCallback(
-    result => {
+    (result: DropResult) => {
       if (!result.destination) return;
 
       const newImageFiles = Array.from(uploadImages.imageFiles);
@@ -69,7 +81,7 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteIm
               className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
             >
               <Image
-                src={typeof url === 'object' ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url.name}` : url}
+                src={!url.startsWith('blob') ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url}` : url}
                 fill
                 alt={`item-${idx}`}
                 className="rounded border"
@@ -118,28 +130,26 @@ const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteIm
 
 export default function Edit() {
   const { id } = useParams();
-  const [uploadImages, setUploadImages] = useState({
+  const [uploadImages, setUploadImages] = useState<UploadImagesProps>({
     imageFiles: [],
     imageUrls: [],
   });
-  const [deleteImages, setDeleteImages] = useState([]);
+  const [deleteImages, setDeleteImages] = useState<string[]>([]);
   const [title, setTitle] = useState('');
   const [mainCategory, setMainCategory] = useState(1);
-  const [subCategory, setSubCategory] = useState(null);
-  const [condition, setCondition] = useState(null);
+  const [subCategory, setSubCategory] = useState(10);
+  const [condition, setCondition] = useState(1);
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [uploadLoading, setUploadLoading] = useState(false);
   const [openChatUrl, setOpenChatUrl] = useState('');
   const [tags, setTags] = useState([]);
   const [isValidOpenChat, setIsValidOpenChat] = useState(true);
-  const fileInputRef = useRef(null);
   const router = useRouter();
   const { data: session, update, status } = useSession();
   const invalidateFilters = useInvalidateFiltersQuery();
   const { openModal } = useModal();
-
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading } = useQuery<ProductData>({
     queryKey: ['product', id],
     queryFn: () => getProductWithUser(id),
     staleTime: Infinity,
@@ -147,7 +157,6 @@ export default function Edit() {
 
   useEffect(() => {
     const errorHandler = async () => {
-      console.log(data);
       if (data === null) {
         await openModal({ message: '삭제된 상품입니다.' });
         router.back();
@@ -166,7 +175,7 @@ export default function Edit() {
         const originalUploadImages = { imageFiles: [], imageUrls: [] };
         data.images.map(img => {
           originalUploadImages.imageFiles.push(img);
-          originalUploadImages.imageUrls.push(img);
+          originalUploadImages.imageUrls.push(img.name);
         });
         setUploadImages(originalUploadImages);
         setMainCategory(~~(data.category / 10) ? ~~(data.category / 10) : data.category);
@@ -211,12 +220,11 @@ export default function Edit() {
     setUploadLoading(true);
 
     const newImageIdx = [];
-
     const imageDetails = uploadImages.imageFiles.map((file, idx) => {
-      if (typeof uploadImages.imageUrls[idx] !== 'object') {
+      if (file.name === undefined) {
         newImageIdx.push(idx);
         return {
-          name: `product_${new Date().getTime()}_${file.name}`,
+          name: `product_${new Date().getTime()}_${file.file.name}`,
           width: file.width,
           height: file.height,
         };
@@ -226,7 +234,7 @@ export default function Edit() {
     const { urls, status } = await getSignedUrls(imageDetails.filter((e, idx) => newImageIdx.includes(idx)));
     if (status !== 200) {
       await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
-      setUploadImages(false);
+      setUploadLoading(false);
       return;
     }
 
@@ -242,13 +250,13 @@ export default function Edit() {
     });
     formData.append('imageDetails', JSON.stringify(imageDetails));
     formData.append('title', title.replace(/ +/g, ' ').trim());
-    formData.append('subCategory', subCategory);
-    formData.append('condition', condition);
+    formData.append('subCategory', subCategory.toString());
+    formData.append('condition', condition.toString());
     formData.append('description', description);
     formData.append('openChatUrl', openChatUrl.trim());
     formData.append('price', price.replaceAll(',', ''));
-    formData.append('tags', tags);
-    formData.append('id', id);
+    formData.append('tags', JSON.stringify(tags));
+    formData.append('id', id.toString());
 
     try {
       const res = await fetch('/api/products', {
@@ -281,11 +289,7 @@ export default function Edit() {
   return (
     <div className="max-w-screen-lg px-10 mx-auto max-md:px-2 max-md:main-768">
       {uploadLoading && <Loading />}
-      <RenderImageUploadButton
-        fileInputRef={fileInputRef}
-        uploadImages={uploadImages}
-        setUploadImages={setUploadImages}
-      />
+      <RenderImageUploadButton uploadImages={uploadImages} setUploadImages={setUploadImages} />
       <RenderDNDImages
         uploadImages={uploadImages}
         setUploadImages={setUploadImages}

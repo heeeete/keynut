@@ -3,9 +3,8 @@
 import React, { useCallback, useRef } from 'react';
 import { useModal } from '../ModalProvider';
 
-// uploadImages 타입을 정의
 interface UploadImages {
-  imageFiles: { file: File; width: number; height: number }[];
+  imageFiles: { name?: string; file?: File; width: number; height: number }[];
   imageUrls: string[];
 }
 
@@ -34,7 +33,7 @@ const RenderImageUploadButton = React.memo(({ uploadImages, setUploadImages }: P
 
       const files = Array.from(e.target.files);
       const imageUrls = new Array(files.length);
-      const imageFiles = files.map((file) => ({ file, width: 0, height: 0 })); // 파일과 메타데이터를 함께 저장
+      const imageFiles = files.map(file => ({ file, width: 0, height: 0 })); // 파일과 메타데이터를 함께 저장
 
       const promise = files.map(
         (file, idx) =>

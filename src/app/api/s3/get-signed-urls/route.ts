@@ -3,9 +3,16 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import s3Client from '@/lib/s3Client';
 import { NextResponse } from 'next/server';
 
-export async function POST(req) {
+interface ImageDetails {
+  file?: File;
+  name?: string;
+  width: number;
+  height: number;
+}
+
+export async function POST(req: Request) {
   try {
-    const { imageDetails } = await req.json();
+    const { imageDetails }: { imageDetails: ImageDetails[] } = await req.json();
     const urls = await Promise.all(
       imageDetails.map(async image => {
         const command = new PutObjectCommand({ Bucket: process.env.S3_BUCKET_NAME, Key: image.name });

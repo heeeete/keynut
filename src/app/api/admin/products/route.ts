@@ -5,8 +5,17 @@ import { ObjectId } from 'mongodb';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import s3Client from '@/lib/s3Client';
 import { revalidateTag } from 'next/cache';
+import { ProductData } from '@/type/productData';
 
-export async function GET(req) {
+interface SearchQuery {
+  userId?: string;
+  $or?: Array<
+    { title?: { $regex: string; $options: string } } | { tags?: { $elemMatch: { $regex: string; $options: string } } }
+  >;
+  $and?: Array<{ price?: { $gte?: number; $lte?: number } }>;
+}
+
+export async function GET(req: Request) {
   try {
     const session = await getUserSession();
     if (!session.admin) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
@@ -21,7 +30,7 @@ export async function GET(req) {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
 
-    let searchQuery = {};
+    let searchQuery: SearchQuery = {};
 
     if (nickname) {
       const user = await db.collection('users').findOne({
@@ -110,15 +119,15 @@ export async function GET(req) {
   }
 }
 
-export async function DELETE(req) {
+export async function DELETE(req: Request) {
   try {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const formData = await req.formData();
-    const ids = JSON.parse(formData.get('products'));
+    const ids = JSON.parse(formData.get('products') as string);
 
-    const deleteProduct = async id => {
-      const target = await db.collection('products').findOne({ _id: new ObjectId(id) });
+    const deleteProduct = async (id: number) => {
+      const target: ProductData = await db.collection('products').findOne({ _id: new ObjectId(id) });
       if (!target) {
         return NextResponse.json({ error: 'Product not found' }, { status: 404 });
       }
@@ -126,7 +135,7 @@ export async function DELETE(req) {
       const deletePromises = target.images.map(file => {
         const params = {
           Bucket: process.env.S3_BUCKET_NAME,
-          Key: file,
+          Key: file.name,
         };
         return s3Client.send(new DeleteObjectCommand(params));
       });

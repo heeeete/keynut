@@ -1,10 +1,10 @@
-interface Condition{
-  option: string
+interface Condition {
+  option: string;
 }
 
 type ConditionKeys = 1 | 2 | 3 | 4 | 5;
 
-const conditions : {[key in ConditionKeys]: Condition}  = {
+const conditions = {
   1: { option: '미사용' },
   2: { option: '사용감 없음' },
   3: { option: '사용감 적음' },

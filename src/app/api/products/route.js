@@ -115,7 +115,7 @@ export async function POST(req) {
       bookmarked: [],
       complain: [],
       openChatUrl: formData.get('openChatUrl'),
-      tags: formData.get('tags'),
+      tags: JSON.parse(formData.get('tags')),
       views: 0,
       state: 1,
       createdAt: new Date(),
@@ -154,6 +154,8 @@ export async function PUT(req) {
     const formData = await req.formData();
     const deleteFiles = formData.getAll('deleteFiles');
 
+    console.log(deleteFiles);
+
     await Promise.all(
       deleteFiles.map(file => {
         const params = {
@@ -178,7 +180,7 @@ export async function PUT(req) {
           price: Number(formData.get('price')),
           images: JSON.parse(formData.get('imageDetails')),
           openChatUrl: formData.get('openChatUrl'),
-          tags: tags,
+          tags: JSON.parse(tags),
           updatedAt: new Date(),
         },
       },
