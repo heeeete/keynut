@@ -1,11 +1,9 @@
-import { ObjectId } from 'mongodb';
-
 export interface User {
-  bookmarked?: ObjectId[]; // 없거나 ObjectId 배열
+  bookmarked?: string[]; // 없거나 ObjectId 배열
   createdAt: Date;
   email: string;
   emailVerified: null;
-  id: ObjectId;
+  id: string;
   image: null | string; // null or string
   lastRaiseReset: Date; //
   memo?: { [key: string]: string }; // 없거나 key:objectId value:string
@@ -16,5 +14,5 @@ export interface User {
   provider: string;
   raiseCount: number;
   state: number;
-  products?: ObjectId[]; // 없거나 ObjectId 배열
+  products?: string[]; // 없거나 ObjectId 배열
 }
