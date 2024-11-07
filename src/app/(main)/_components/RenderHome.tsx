@@ -7,29 +7,12 @@ import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 import { Gowun_Dodum } from 'next/font/google';
 import conditions from '../_constants/conditions';
+import { ProductData } from '@/type/productData';
 
 const title = Gowun_Dodum({ subsets: ['latin'], weight: ['400'] });
 
-interface Product {
-  _id: string;
-  views: number;
-  useId: string;
-  title: string;
-  tags: string[];
-  state: number;
-  price: number;
-  openChatUrl: string;
-  images: { name: string; width: number; height: number }[];
-  description: string;
-  createdAt: string;
-  condition: 1 | 2 | 3 | 4 | 5;
-  complain: { category: string; text: string }[];
-  category: number;
-  bookmarked: string[];
-}
-
 const JustIn = () => {
-  const { data, error, isLoading }: { data: Product[]; error: Error; isLoading: boolean } = useQuery({
+  const { data, error, isLoading } = useQuery<ProductData[]>({
     queryKey: ['recentProducts'],
     queryFn: getRecentProducts,
     staleTime: Infinity,
@@ -51,7 +34,7 @@ const JustIn = () => {
           <Link
             href={`/shop/product/${product._id}`}
             className="flex flex-col cursor-pointer relative max-md:max-w-40 max-md:w-40 max-md:text-sm"
-            key={idx}
+            key={product._id}
           >
             <div className="w-full aspect-square relative min-h-32 min-w-32 bg-gray-100">
               <Image
@@ -209,7 +192,7 @@ const Categories = () => {
   );
 };
 
-export default function RenderHome(): JSX.Element {
+export default function RenderHome() {
   return (
     <div className="flex flex-col w-full min-h-80vh md:-mt-4 max-[960px]:pt-12">
       <Link

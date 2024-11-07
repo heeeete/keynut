@@ -11,6 +11,7 @@ import formatDate from '../_lib/formatDate';
 import { Session } from 'next-auth';
 import { UserData } from '@/type/userData';
 import { SessionData } from '@/type/sessionData';
+import { User } from '@/type/user';
 
 const MyProfile = React.memo(
   ({
@@ -22,7 +23,7 @@ const MyProfile = React.memo(
     session: Session;
     update: Function;
     status: string;
-    userProfile: any;
+    userProfile: User;
   }) => {
     const router = useRouter();
     useEffect(() => {
@@ -116,9 +117,9 @@ const MyProfile = React.memo(
 );
 
 export default function MyPage() {
-  const { data: session, status, update }: SessionData = useSession();
+  const { data: session, status, update } = useSession();
 
-  const { data, isLoading, error }: { data: UserData; isLoading: boolean; error: Error } = useQuery({
+  const { data, isLoading, error } = useQuery<UserData>({
     queryKey: ['userProducts', session?.user?.id],
     queryFn: () => getUserProducts(session?.user?.id),
     enabled: status === 'authenticated' && !!session?.user?.id,

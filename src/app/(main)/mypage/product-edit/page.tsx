@@ -4,11 +4,9 @@ import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
-import useProductStateMutation from '@/hooks/useProductStateMutaion';
 import initRaiseCount from '@/lib/initRaiseCount';
 import raiseProduct from '@/lib/raiseProduct';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Modal from '../../_components/Modal';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import Link from 'next/link';
 import deleteProduct from '@/lib/deleteProduct';
@@ -17,6 +15,8 @@ import timeAgo from '@/utils/timeAgo';
 import DropdownMenu from '../../_components/DropdownMenu';
 import { useModal } from '../../_components/ModalProvider';
 import conditions from '../../_constants/conditions';
+import { UserData } from '@/type/userData';
+import { ProductData } from '@/type/productData';
 
 const UpButton = ({ state, id, openUpModal }) => {
   return (
@@ -99,7 +99,7 @@ const SettingButton = ({ id, openDeleteModal }) => {
   );
 };
 
-const Product = ({ product, openDeleteModal, openUpModal }) => {
+const Product = ({ product, openDeleteModal, openUpModal }: { product: ProductData }) => {
   return (
     <div className="flex space-x-3 border p-3 rounded relative mb-3 max-md:border-0 max-md:border-b max-md:border-gray-100 max-md:mb-0 max-md:py-4">
       <div className="w-28 aspect-square relative bg-gray-100 max-md:w-24">
@@ -196,14 +196,14 @@ function ProductEdit() {
   const [raiseCount, setRaiseCount] = useState(0);
   const fetchRaiseCount = initRaiseCount(setRaiseCount);
   const invalidateFilters = useInvalidateFiltersQuery();
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<UserData>({
     queryKey: ['userProducts', session?.user?.id],
     queryFn: () => getUserProducts(session?.user?.id),
     enabled: status === 'authenticated' && !!session?.user?.id,
   });
   const productState = params.get('state') === null ? 3 : Number(params.get('state'));
 
-  const openDeleteModal = async id => {
+  const openDeleteModal = async (id: string) => {
     const res = await openModal({ message: '삭제하시겠습니까', isSelect: true });
     if (!res) return;
 
@@ -213,7 +213,7 @@ function ProductEdit() {
     });
   };
 
-  const openUpModal = async id => {
+  const openUpModal = async (id: string) => {
     const res = await openModal({
       message: raiseCount > 0 ? `${raiseCount}회 사용 가능` : '사용 가능 회수를 초과하셨습니다.',
       subMessage: raiseCount > 0 ? `사용 시 1회 차감됩니다.` : '',
@@ -276,7 +276,7 @@ function ProductEdit() {
           {productState === 3 ? (
             data.userProducts.length ? (
               data.userProducts.map((product, idx) => (
-                <Fragment key={idx}>
+                <Fragment key={product._id}>
                   <Product product={product} openDeleteModal={openDeleteModal} openUpModal={openUpModal} />
                 </Fragment>
               ))

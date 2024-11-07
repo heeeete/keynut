@@ -134,7 +134,7 @@ export default function ProfileProducts({ data }: { data: ProductData[] }) {
                   .filter(a => a.state === productOption)
                   .map((product, index) => {
                     return (
-                      <Fragment key={index}>
+                      <Fragment key={product._id}>
                         <Product product={product} />
                       </Fragment>
                     );
