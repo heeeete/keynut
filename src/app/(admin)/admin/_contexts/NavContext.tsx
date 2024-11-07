@@ -2,7 +2,12 @@
 
 import { createContext, useContext, useState } from 'react';
 
-const NavContext = createContext();
+interface NavContextType {
+  navStatus: boolean;
+  setNavStatus: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const NavContext = createContext<NavContextType | undefined>(undefined);
 
 export function NavProvider({ children }) {
   const [navStatus, setNavStatus] = useState(true);

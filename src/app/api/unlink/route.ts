@@ -5,7 +5,7 @@ import refreshAccessToken from '@/lib/refreshAccessToken';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 
-async function kakaoUnlink(access_token) {
+async function kakaoUnlink(access_token: string) {
   const res = await fetch('https://kapi.kakao.com/v1/user/unlink', {
     method: 'POST',
     headers: {
@@ -20,7 +20,7 @@ async function kakaoUnlink(access_token) {
   }
 }
 
-async function naverUnlink(access_token) {
+async function naverUnlink(access_token: string) {
   const res = await fetch(
     `https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=${process.env.NAVER_CLIENT_ID}&client_secret=${process.env.NAVER_CLIENT_SECRET}&access_token=${access_token}`,
     {
@@ -38,13 +38,25 @@ async function naverUnlink(access_token) {
   }
 }
 
-export async function POST(req) {
+interface Req {
+  userId: string;
+  expires_at: number;
+}
+
+interface Account {
+  provider: string;
+  access_token: string;
+  refresh_token: string;
+  expires_at: number; // Unix 타임스탬프 (초 또는 밀리초)
+}
+
+export async function POST(req: Request) {
   try {
-    const { userId, expires_at: time } = await req.json();
+    const { userId, expires_at: time }: Req = await req.json();
 
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
-    let { provider, access_token, refresh_token, expires_at } = await db
+    let { provider, access_token, refresh_token, expires_at }: Account = await db
       .collection('accounts')
       .findOne({ userId: new ObjectId(userId) });
     const { email } = await db.collection('users').findOne({ _id: new ObjectId(userId) });
@@ -73,14 +85,3 @@ export async function POST(req) {
     return NextResponse.json({ error }, { status: 500 });
   }
 }
-
-// async function googleUnlink(access_token) {
-//   const res = await fetch(`https://accounts.google.com/o/oauth2/revoke?token=${access_token}`, {
-//     method: 'POST',
-//   });
-//   if (!res.ok) {
-//     const error = await res.json();
-//     console.error('Google unlink error:', error);
-//     throw new Error('Failed to unlink Google user');
-//   }
-// }

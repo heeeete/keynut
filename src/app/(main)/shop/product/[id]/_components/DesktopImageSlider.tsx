@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import 'photoswipe/style.css';
 
-interface type {
+interface Props {
   images: {
     width: number;
     height: number;
@@ -13,7 +13,7 @@ interface type {
   initPhotoSwipe: (index: number) => void;
 }
 
-export default function DesktopImageSlider({ images, state, initPhotoSwipe }: type) {
+export default function DesktopImageSlider({ images, state, initPhotoSwipe }: Props) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const pathname = usePathname();

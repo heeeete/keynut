@@ -1,6 +1,6 @@
 'use server';
 
-async function refreshAccessToken(provider, refreshToken) {
+async function refreshAccessToken(provider: string, refreshToken: string) {
   try {
     const url = provider === 'kakao' ? 'https://kauth.kakao.com/oauth/token' : 'https://nid.naver.com/oauth2.0/token';
 
@@ -28,7 +28,7 @@ async function refreshAccessToken(provider, refreshToken) {
 
     return {
       access_token: refreshedTokens.access_token,
-      refresh_token: refreshedTokens.refresh_token, // 갱신된 리프레시 토큰이 있는 경우
+      refresh_token: refreshedTokens.refresh_token,
       expires_in: refreshedTokens.expires_in,
       refresh_token_expires_in: refreshedTokens.refresh_token_expires_in,
     };

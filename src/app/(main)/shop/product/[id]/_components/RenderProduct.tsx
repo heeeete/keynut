@@ -324,9 +324,8 @@ const UpButton = ({
   };
   return (
     <button
-      className={`min-[480px]:flex-1 min-[480px]:max-w-44 min-[480px]:px-4 min-[480px]:py-1 min-[480px]:border min-[480px]:rounded min-[480px]:border-gray-300 flex items-center justify-center font-semibold flex-nowrap whitespace-nowrap  max-[480px]:w-full max-[480px]:py-4 max-[480px]:border-b  ${
-        state !== 1 ? 'text-gray-300' : 'text-black'
-      }`}
+      className={`min-[480px]:flex-1 min-[480px]:max-w-44 min-[480px]:px-4 min-[480px]:py-1 min-[480px]:border min-[480px]:rounded min-[480px]:border-gray-300 flex items-center justify-center font-semibold flex-nowrap whitespace-nowrap  max-[480px]:w-full max-[480px]:py-4 max-[480px]:border-b  ${state !== 1 ? 'text-gray-300' : 'text-black'
+        }`}
       onClick={() => openUpModal()}
       disabled={state === 0 || state === 2}
     >
@@ -467,9 +466,8 @@ const ComplainModal = ({ setComplainModal, productId }) => {
         </div>
         <div className="bg-gray-100 border rounded">
           <textarea
-            className={`${
-              state === 0 && 'cursor-not-allowed'
-            } w-full scrollbar-hide p-2 resize-none bg-gray-100 outline-none`}
+            className={`${state === 0 && 'cursor-not-allowed'
+              } w-full scrollbar-hide p-2 resize-none bg-gray-100 outline-none`}
             placeholder={state > 0 ? descriptions[state - 1] : placeholder}
             rows={10}
             maxLength={1000}
@@ -682,20 +680,20 @@ export default function RenderProduct({ id }): JSX.Element {
             </div>
             {status !== 'loading'
               ? (writer || session?.admin) && (
-                  <div className="flex space-x-4 text-sm max-[480px]:hidden">
-                    <DropdownMenu id={id} state={product.state} />
-                    <div className="flex flex-1 space-x-4">
-                      <UpButton
-                        raiseCount={raiseCount}
-                        state={product.state}
-                        raiseHandler={raiseHandler}
-                        openModal={openModal}
-                      />
-                      <ModifyButton id={id} />
-                      <DeleteButton openModal={openModal} deleteHandler={deleteHandler} />
-                    </div>
+                <div className="flex space-x-4 text-sm max-[480px]:hidden">
+                  <DropdownMenu id={id} state={product.state} />
+                  <div className="flex flex-1 space-x-4">
+                    <UpButton
+                      raiseCount={raiseCount}
+                      state={product.state}
+                      raiseHandler={raiseHandler}
+                      openModal={openModal}
+                    />
+                    <ModifyButton id={id} />
+                    <DeleteButton openModal={openModal} deleteHandler={deleteHandler} />
                   </div>
-                )
+                </div>
+              )
               : ''}
           </div>
         </div>

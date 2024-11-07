@@ -28,7 +28,7 @@ interface UploadImagesProps {
 
 interface UploadImagesHookProps {
   uploadImages: UploadImagesProps;
-  setUploadImages: React.Dispatch<React.SetStateAction<UploadImagesProps>>
+  setUploadImages: React.Dispatch<React.SetStateAction<UploadImagesProps>>;
 }
 
 const RenderDNDImages = React.memo(({ uploadImages, setUploadImages }: UploadImagesHookProps) => {
@@ -226,6 +226,7 @@ export default function Sell() {
       height: file.height,
     }));
     const { urls, status } = await getSignedUrls(imageDetails);
+    console.log(urls, status);
     if (status !== 200) {
       await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
       setIsLoading(false);

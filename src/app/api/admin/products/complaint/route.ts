@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
+import { ProductData } from '@/type/productData';
+import { KakaoAccounts, NaverAccounts } from '@/type/accounts';
 
 export const dynamic = 'force-dynamic'; // 동적 생성 모드 설정
 
-export async function GET(req) {
+interface Data extends ProductData {
+  userAccount: NaverAccounts | KakaoAccounts;
+}
+
+export async function GET(req: Request) {
   try {
     const session = await getUserSession();
     if (!session) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
@@ -49,8 +55,8 @@ export async function GET(req) {
       { $limit: limit },
     ];
 
-    const products = await productsCollection.aggregate(pipeline).toArray();
-
+    const products: Data[] | [] = await productsCollection.aggregate(pipeline).toArray();
+    console.log(products);
     return NextResponse.json({ products }, { status: 200 });
   } catch (error) {
     console.error(error);

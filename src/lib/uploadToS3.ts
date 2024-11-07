@@ -1,13 +1,20 @@
-export default async function uploadToS3(url, file) {
-  let res;
-  const { type } = file;
+interface FileType {
+  file?: File;
+  name?: string;
+  width: number;
+  height: number;
+}
+
+export default async function uploadToS3(url: string, file: FileType) {
+  let res: Response;
+
   try {
     res = await fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': type,
+        'Content-Type': file.file.type,
       },
-      body: file,
+      body: file.file,
     });
 
     if (!res.ok) throw new Error('Failed to upload file to S3');
