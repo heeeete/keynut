@@ -1,11 +1,11 @@
 import { ObjectId } from 'mongodb';
 
 export interface ProductData {
-  _id: ObjectId;
-  userId: ObjectId;
+  _id: string;
+  userId: string;
   title: string;
   category: number;
-  condition: number;
+  condition: 1 | 2 | 3 | 4 | 5;
   description: string;
   price: number;
   images: {
@@ -13,8 +13,8 @@ export interface ProductData {
     width: number;
     height: number;
   }[];
-  bookmarked: ObjectId[];
-  complain: { openChatUrl: string }[];
+  bookmarked: string[];
+  complain: { category: string; text: string }[];
   openChatUrl: string;
   tags: string[];
   views: number;

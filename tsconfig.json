@@ -21,6 +21,13 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/app/(main)/bookmark/page.jsx",
+    "src/app/(main)/shop/[id]/RenderProfile.jsx"
+  ],
   "exclude": ["node_modules"]
 }
