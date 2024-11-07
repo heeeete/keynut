@@ -8,12 +8,11 @@ import { Fragment } from 'react';
 import conditions from '../_constants/conditions';
 import timeAgo from '@/utils/timeAgo';
 import { ProductData } from '@/type/productData';
-import { ObjectId } from 'mongodb';
 
-const HandleBookMark = ({ productId }: { productId: ObjectId }) => {
+const HandleBookMark = ({ productId }: { productId: string }) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: async ({ productId }: { productId: ObjectId }) => {
+    mutationFn: async ({ productId }: { productId: string }) => {
       const res = await fetch(`/api/products/${productId}/bookmark`, {
         method: 'POST',
         headers: {
@@ -29,8 +28,8 @@ const HandleBookMark = ({ productId }: { productId: ObjectId }) => {
     },
     onMutate: async ({ productId }) => {
       await queryClient.cancelQueries({ queryKey: ['bookmarkedProducts'] });
-      const previousProduct = queryClient.getQueryData(['bookmarkedProducts']);
-      queryClient.setQueryData(['bookmarkedProducts'], (old: ProductData[]) => {
+      const previousProduct: ProductData[] = queryClient.getQueryData(['bookmarkedProducts']);
+      queryClient.setQueryData(['bookmarkedProducts'], (old: ProductData[] | undefined) => {
         return old.filter(product => product._id !== productId);
       });
       return { previousProduct };
@@ -42,7 +41,7 @@ const HandleBookMark = ({ productId }: { productId: ObjectId }) => {
       queryClient.invalidateQueries({ queryKey: ['bookmarkedProducts'] });
     },
   });
-  const handleBookmarkClick = async e => {
+  const handleBookmarkClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (!(await getSession())) return signIn();
     mutation.mutate({ productId });
@@ -57,7 +56,7 @@ const HandleBookMark = ({ productId }: { productId: ObjectId }) => {
   );
 };
 
-const ABookMark = ({ item }) => {
+const ABookMark = ({ item }: { item: ProductData }) => {
   return (
     <Link
       href={`/shop/product/${item._id}`}
@@ -117,7 +116,7 @@ const ABookMark = ({ item }) => {
 };
 
 export default function Bookmark() {
-  const { data, error, isLoading }: { data: ProductData[]; error: Error; isLoading: boolean } = useQuery({
+  const { data, error, isLoading } = useQuery<ProductData[]>({
     queryKey: ['bookmarkedProducts'],
     queryFn: () => getBookmarkedProducts(),
   });
@@ -163,7 +162,7 @@ export default function Bookmark() {
           <p className="text-gray-500 max-md:text-sm">전체 {data.length}</p>
           <div className="grid grid-cols-2 gap-3  max-md:grid-cols-1">
             {data.map((item, index) => (
-              <Fragment key={index}>
+              <Fragment key={item._id}>
                 <ABookMark item={item} />
               </Fragment>
             ))}

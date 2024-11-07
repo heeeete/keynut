@@ -1,20 +1,17 @@
-import { ObjectId } from 'mongodb';
-
 export interface User {
-  bookmarked?: ObjectId[]; // 없거나 ObjectId 배열
-  createdAt: Date;
+  _id: string;
+  name: null | string;
   email: string;
+  image: null | string;
   emailVerified: null;
-  id: ObjectId;
-  image: null | string; // null or string
-  lastRaiseReset: Date; //
-  memo?: { [key: string]: string }; // 없거나 key:objectId value:string
-  name: null | string; //null or string
   nickname: string;
-  nicknameChangedAt?: Date; //없거나 타임형식
-  openChatUrl?: string; //없거나 string
-  provider: string;
+  createdAt: Date;
+  lastRaiseReset: Date;
   raiseCount: number;
   state: number;
-  products?: ObjectId[]; // 없거나 ObjectId 배열
+  openChatUrl?: string;
+  products?: string[];
+  memo?: { [key: string]: string };
+  nicknameChangedAt?: Date;
+  bookmarked?: string[];
 }

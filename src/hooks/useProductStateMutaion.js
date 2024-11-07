@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getSession, signIn } from 'next-auth/react';
-import { useInvalidateFiltersQuery } from './useInvalidateFiltersQuery';
+import { useInvalidateFiltersQuery } from './useInvalidateFiltersQuery.ts';
 
 const useProductStateMutation = () => {
   const queryClient = useQueryClient();

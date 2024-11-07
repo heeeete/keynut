@@ -19,7 +19,7 @@ const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const useModal = () => useContext(ModalContext);
 
-export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalSubMessage, setModalSubMessage] = useState('');
