@@ -18,66 +18,12 @@ import conditions from '../../_constants/conditions';
 import { UserData } from '@/type/userData';
 import { ProductData } from '@/type/productData';
 
-const UpButton = ({ state, id, openUpModal }) => {
-  return (
-    <>
-      <button
-        className={`px-2 font-medium border border-gray-300 rounded flex-nowrap whitespace-nowrap ${
-          state !== 1 ? 'text-gray-300' : 'max-md:text-gray-600'
-        } `}
-        onClick={() => openUpModal(id)}
-        disabled={state === 0 || state === 2}
-      >
-        up
-      </button>
-    </>
-  );
-};
+interface SettingButtonProps {
+  id: string;
+  openDeleteModal: (id: string) => void;
+}
 
-const DeleteButton = ({ id, setShowSetting, openDeleteModal }) => {
-  return (
-    <>
-      <button
-        className="px-2 font-medium border border-gray-300 text-red-400 rounded flex-nowrap whitespace-nowrap max-md:border-0 max-md:flex-1 max-md:w-full max-md:text-base max-md:font-semibold"
-        onClick={() => {
-          if (setShowSetting) setShowSetting(false);
-          openDeleteModal(id);
-        }}
-      >
-        삭제
-      </button>
-    </>
-  );
-};
-
-const ModifyButton = ({ id }) => {
-  return (
-    <Link
-      className="flex  items-center justify-center px-2 font-medium border border-gray-300 rounded flex-nowrap whitespace-nowrap max-md:flex-1 max-md:w-full max-md:border-0 max-md:border-b max-md:rounded-none max-md:text-base max-md:font-semibold"
-      href={`/shop/product/${id}/edit`}
-    >
-      수정
-    </Link>
-  );
-};
-
-const SettingModal = ({ id, setShowSetting, openDeleteModal }) => {
-  return (
-    <div
-      className="fixed w-screen custom-dvh top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
-      onClick={e => {
-        if (e.currentTarget === e.target) setShowSetting(false);
-      }}
-    >
-      <div className="flex flex-col items-center rounded-md border space-y-1 bg-white w-52 h-32">
-        <ModifyButton id={id} />
-        <DeleteButton id={id} setShowSetting={setShowSetting} openDeleteModal={openDeleteModal} />
-      </div>
-    </div>
-  );
-};
-
-const SettingButton = ({ id, openDeleteModal }) => {
+const SettingButton = ({ id, openDeleteModal }: SettingButtonProps) => {
   const [showSetting, setShowSetting] = useState(false);
   return (
     <>
@@ -99,7 +45,84 @@ const SettingButton = ({ id, openDeleteModal }) => {
   );
 };
 
-const Product = ({ product, openDeleteModal, openUpModal }: { product: ProductData }) => {
+interface UpButtonProps {
+  id: string;
+  state: number;
+  openUpModal: (id: string) => void;
+}
+
+const UpButton = ({ state, id, openUpModal }: UpButtonProps) => {
+  return (
+    <>
+      <button
+        className={`px-2 font-medium border border-gray-300 rounded flex-nowrap whitespace-nowrap ${
+          state !== 1 ? 'text-gray-300' : 'max-md:text-gray-600'
+        } `}
+        onClick={() => openUpModal(id)}
+        disabled={state === 0 || state === 2}
+      >
+        up
+      </button>
+    </>
+  );
+};
+
+interface DeleteButtonProps extends SettingButtonProps {
+  setShowSetting?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const DeleteButton = ({ id, setShowSetting, openDeleteModal }: DeleteButtonProps) => {
+  return (
+    <>
+      <button
+        className="px-2 font-medium border border-gray-300 text-red-400 rounded flex-nowrap whitespace-nowrap max-md:border-0 max-md:flex-1 max-md:w-full max-md:text-base max-md:font-semibold"
+        onClick={() => {
+          if (setShowSetting) setShowSetting(false);
+          openDeleteModal(id);
+        }}
+      >
+        삭제
+      </button>
+    </>
+  );
+};
+
+const ModifyButton = ({ id }: { id: string }) => {
+  return (
+    <Link
+      className="flex  items-center justify-center px-2 font-medium border border-gray-300 rounded flex-nowrap whitespace-nowrap max-md:flex-1 max-md:w-full max-md:border-0 max-md:border-b max-md:rounded-none max-md:text-base max-md:font-semibold"
+      href={`/shop/product/${id}/edit`}
+    >
+      수정
+    </Link>
+  );
+};
+
+interface SettingModalProps extends DeleteButtonProps {}
+
+const SettingModal = ({ id, setShowSetting, openDeleteModal }: SettingModalProps) => {
+  return (
+    <div
+      className="fixed w-screen custom-dvh top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
+      onClick={e => {
+        if (e.currentTarget === e.target) setShowSetting(false);
+      }}
+    >
+      <div className="flex flex-col items-center rounded-md border space-y-1 bg-white w-52 h-32">
+        <ModifyButton id={id} />
+        <DeleteButton id={id} setShowSetting={setShowSetting} openDeleteModal={openDeleteModal} />
+      </div>
+    </div>
+  );
+};
+
+interface ProductProps {
+  product: ProductData;
+  openDeleteModal: (id: string) => void;
+  openUpModal: (id: string) => void;
+}
+
+const Product = ({ product, openDeleteModal, openUpModal }: ProductProps) => {
   return (
     <div className="flex space-x-3 border p-3 rounded relative mb-3 max-md:border-0 max-md:border-b max-md:border-gray-100 max-md:mb-0 max-md:py-4">
       <div className="w-28 aspect-square relative bg-gray-100 max-md:w-24">
@@ -228,10 +251,10 @@ function ProductEdit() {
     });
   };
 
-  const updateURL = useCallback(state => {
+  const updateURL = useCallback((state: 'all' | 0 | 1 | 2) => {
     if (state === 'all') return router.push(window.location.pathname);
     const currentParams = new URLSearchParams(params.toString());
-    currentParams.set('state', state);
+    currentParams.set('state', state.toString());
     const newURL = `${window.location.pathname}?${currentParams.toString()}`;
     router.push(newURL);
   }, []);
@@ -295,16 +318,8 @@ function ProductEdit() {
             data.userProducts
               .filter(a => a.state === productState)
               .map((product, idx) => (
-                <Fragment key={idx}>
-                  <Product
-                    product={product}
-                    router={router}
-                    invalidateFilters={invalidateFilters}
-                    refetch={refetch}
-                    raiseCount={raiseCount}
-                    fetchRaiseCount={fetchRaiseCount}
-                    openModal={openModal}
-                  />
+                <Fragment key={product._id}>
+                  <Product product={product} openDeleteModal={openDeleteModal} openUpModal={openUpModal} />
                 </Fragment>
               ))
           ) : (

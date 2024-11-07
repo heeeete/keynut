@@ -512,9 +512,6 @@ const RenderProducts = ({
     initPageRef.current = true;
   }, [params]);
 
-
-  
-  
   useEffect(() => {
     if (!isFetching) initPageRef.current = false;
   }, [isFetching]);
@@ -1029,7 +1026,7 @@ export default function RenderShop() {
   const [isMaxtb, setIsMaxtb] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const [hasTop, setHasTop] = useState(false);
-  const pageRef = useRef(null);
+  const pageRef = useRef<HTMLDivElement | null>(null);
 
   const [includeBooked, setIncludeBooked] = useState(true);
   const [categoriesState, setCategoriesState] = useState({
@@ -1067,8 +1064,8 @@ export default function RenderShop() {
   const [queryString, setQueryString] = useState(() => {
     const queryParams = new URLSearchParams();
     if (paramsKeyword.length) queryParams.append('keyword', paramsKeyword);
-    if (paramsCategories.length) queryParams.append('categories', paramsCategories);
-    if (paramsPrices.length) queryParams.append('prices', paramsPrices);
+    if (paramsCategories.length) queryParams.append('categories', paramsCategories.map(a => a.toString).join(','));
+    if (paramsPrices.length) queryParams.append('prices', paramsPrices.map(a => a.toString()).join(','));
     return queryParams.toString();
   });
 
@@ -1101,8 +1098,9 @@ export default function RenderShop() {
   }, [filterActive]);
 
   useEffect(() => {
-    const debounceViewResizing = debounce(e => {
-      if (e.target.innerWidth > 960) {
+    const debounceViewResizing = debounce((e: UIEvent) => {
+      const target = e.target as Window;
+      if (target.innerWidth > 960) {
         setIsMaxtb(false);
         setFilterActive(false);
       } else {

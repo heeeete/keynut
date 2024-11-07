@@ -8,13 +8,21 @@ import { useRouter } from 'next/navigation';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import formatDate from '../../_lib/formatDate';
 import { useModal } from '../../_components/ModalProvider';
+import { Session } from 'next-auth';
 
 const IMAGE_MAX_SIZE = 4.5 * 1024 * 1024;
 
-const ProfileName = ({ session, status, update, openModal }) => {
+interface ProfileProps {
+  session: Session;
+  status: 'authenticated' | 'loading' | 'unauthenticated';
+}
+
+const ProfileName = ({ session, status }: ProfileProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempNickname, setTempNickname] = useState('');
   const [nickname, setNickname] = useState('');
+  const { openModal } = useModal();
+  const { update } = useSession();
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -45,7 +53,6 @@ const ProfileName = ({ session, status, update, openModal }) => {
         openModal({ message: '닉네임은 2글자 이상 10글자 이하의 한글, 영어, 숫자만 사용 가능합니다.' });
       } else console.error('API 요청 실패:', res.status, res.statusText);
     } else {
-      const data = await res.json();
       setNickname(tempNickname);
       update({ nickname: tempNickname });
     }
@@ -92,10 +99,12 @@ const ProfileName = ({ session, status, update, openModal }) => {
   );
 };
 
-const ProfileImage = ({ session, status, update, openModal }) => {
+const ProfileImage = ({ session, status }: ProfileProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [profileImg, setProfileImg] = useState(null);
-  const fileInputRef = useRef(null);
+  const [profileImg, setProfileImg] = useState<null | string>(null);
+  const { openModal } = useModal();
+  const { update } = useSession();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (status === 'authenticated') {
       setProfileImg(session.user.image);
@@ -103,7 +112,7 @@ const ProfileImage = ({ session, status, update, openModal }) => {
     }
   }, [status]);
 
-  const handleImageSelect = async e => {
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files.length) return;
     if (e.target.files[0].size > IMAGE_MAX_SIZE) {
       openModal({ message: '이미지 용량 초과', subMessage: '4.5MB 이하로 업로드해 주세요.' });
@@ -138,7 +147,6 @@ const ProfileImage = ({ session, status, update, openModal }) => {
       if (!res.ok) {
         console.error('API 요청 실패:', res.status, res.statusText);
       } else {
-        const data = await res.json();
         update({ image: null });
       }
     }
@@ -237,17 +245,17 @@ const ProfileImage = ({ session, status, update, openModal }) => {
   );
 };
 
-const ProfileInfo = ({ session, status, update, openModal }) => {
+const ProfileInfo = ({ session, status }: ProfileProps) => {
   return (
     <section className="flex flex-col rounded-none space-y-4">
       <p className="font-medium border-b border-black md:text-lg">프로필 정보</p>
-      <ProfileImage session={session} status={status} update={update} openModal={openModal} />
-      <ProfileName session={session} status={status} update={update} openModal={openModal} />
+      <ProfileImage session={session} status={status} />
+      <ProfileName session={session} status={status} />
     </section>
   );
 };
 
-const SignInInfo = ({ session }) => {
+const SignInInfo = ({ session }: { session: Session }) => {
   return (
     <section className="flex flex-col space-y-4 mb-6">
       <p className="font-medium border-b border-black md:text-lg">가입 정보</p>
@@ -289,15 +297,13 @@ const SignInInfo = ({ session }) => {
 };
 
 export default function ProfileEdit() {
-  const { data: session, status, update } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [withdrawalModalStatus, setWithdrawalModalStatus] = useState(false);
   const invalidateFilters = useInvalidateFiltersQuery();
   const { openModal } = useModal();
 
   const onClickWithdrawal = async () => {
-    setWithdrawalModalStatus(false);
     setIsLoading(true);
 
     const date = new Date();
@@ -350,7 +356,7 @@ export default function ProfileEdit() {
         </svg>
       </button>
       <div className="flex flex-col w-full md:py-5 max-md:py-0 max-md:w-full">
-        <ProfileInfo session={session} status={status} update={update} openModal={openModal} />
+        <ProfileInfo session={session} status={status} />
         <SignInInfo session={session} />
         <section className="flex md:justify-end">
           <div className="flex space-x-4">
