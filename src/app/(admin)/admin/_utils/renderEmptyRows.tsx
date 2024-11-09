@@ -1,5 +1,5 @@
 const renderEmptyRows = () => {
-  const rows = [];
+  const rows: JSX.Element[] = [];
   for (let i = 0; i < 30; i++) {
     rows.push(
       <tr key={`empty-${i}`}>

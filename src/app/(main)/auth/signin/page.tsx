@@ -8,9 +8,26 @@ import Link from 'next/link';
 
 const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });
 
+interface Providers {
+  kakao: {
+    id: string;
+    name: string;
+    type: string;
+    signinUrl: string;
+    callbackUrl: string;
+  };
+  naver: {
+    id: string;
+    name: string;
+    type: string;
+    signinUrl: string;
+    callbackUrl: string;
+  };
+}
+
 function RenderSignIn() {
   const { data: session, status } = useSession();
-  const [providers, setProviders] = useState({});
+  const [providers, setProviders] = useState<Providers | {}>({});
   const [callbackUrl, setCallbackUrl] = useState('/');
   const params = useSearchParams();
   const router = useRouter();

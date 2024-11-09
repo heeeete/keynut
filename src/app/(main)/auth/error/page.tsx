@@ -1,6 +1,6 @@
 'use client';
 import { Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 function ErrorComponent() {
   const params = useSearchParams();

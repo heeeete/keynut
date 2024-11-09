@@ -3,11 +3,13 @@ import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ProductData } from '@/type/productData';
 import { KakaoAccounts, NaverAccounts } from '@/type/accounts';
+import { User } from '@/type/user';
 
 export const dynamic = 'force-dynamic'; // 동적 생성 모드 설정
 
 interface Data extends ProductData {
   userAccount: NaverAccounts | KakaoAccounts;
+  userInfo: Partial<User>;
 }
 
 export async function GET(req: Request) {
