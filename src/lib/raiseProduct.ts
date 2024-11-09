@@ -1,4 +1,4 @@
-const raiseProduct = async (id, callback) => {
+const raiseProduct = async (id: string, callback: () => void) => {
   try {
     const res = await fetch(`/api/products/${id}/raise`, { method: 'PATCH' });
     if (res.ok) {
