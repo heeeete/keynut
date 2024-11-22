@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     "src/app/(main)/bookmark/page.jsx",
-    "src/app/(main)/shop/[id]/RenderProfile.jsx"
+    "src/app/(main)/shop/[id]/RenderProfile.jsx",
+    "src/app/(admin)/admin/_utils/renderEmptyRows.js"
   ],
   "exclude": ["node_modules"]
 }

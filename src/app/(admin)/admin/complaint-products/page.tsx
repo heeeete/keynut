@@ -6,79 +6,113 @@ import renderEmptyRows from '../_utils/renderEmptyRows';
 import Loading from '@/app/(main)/_components/Loading';
 import useComplaintProductsQuery from '../_hooks/useComplaintProductsQuery';
 import userBanHandler from '../_lib/userBanHandler';
-import productStateHandler from '@/lib/productStateHandler';
 import deleteProduct from '@/lib/deleteProduct';
 import Link from 'next/link';
+import { ProductData } from '@/type/productData';
+import { KakaoAccounts, NaverAccounts } from '@/type/accounts';
+import { User } from '@/type/user';
+
+interface SelectedProduct {
+  _id: string;
+}
+
+interface SelectedProducts {
+  [key: string]: SelectedProduct;
+}
+
+interface Data extends ProductData {
+  userAccount: NaverAccounts | KakaoAccounts;
+  userInfo: Partial<User>;
+}
 
 const PAGE_SIZE = 100;
 const PAGE_RANGE = 10;
 
-const PageControl = ({ page, data }) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams.toString());
-  const totalPages = Math.ceil(data?.total / PAGE_SIZE);
-  const [pageRange, setPageRange] = useState({ start: 1, end: PAGE_RANGE });
+// interface PageControlProps {
+//   page: number;
+//   data: Products;
+// }
 
-  useEffect(() => {
-    if (totalPages)
-      if (page > totalPages) {
-        params.set('page', 1);
-        router.push(`/admin/products?${params.toString()}`);
-      }
-  }, [totalPages]);
+// const PageControl = ({ page, data }: PageControlProps) => {
+//   console.log(data);
+//   const router = useRouter();
+//   const searchParams = useSearchParams();
+//   const params = new URLSearchParams(searchParams.toString());
+//   const totalPages = Math.ceil(data?.total / PAGE_SIZE);
+//   const [pageRange, setPageRange] = useState({ start: 1, end: PAGE_RANGE });
 
-  useEffect(() => {
-    const initTotalPage = () => {
-      if (data) {
-        const newStart = ~~((page - 1) / PAGE_RANGE) * PAGE_RANGE + 1;
-        const newEnd = Math.min(newStart + PAGE_RANGE - 1, totalPages);
-        setPageRange({ start: newStart, end: newEnd });
-      }
-    };
-    initTotalPage();
-  }, [data]);
+//   useEffect(() => {
+//     if (totalPages)
+//       if (page > totalPages) {
+//         params.set('page', '1');
+//         router.push(`/admin/products?${params.toString()}`);
+//       }
+//   }, [totalPages]);
 
-  const updatePage = useCallback(
-    newPage => {
-      if (newPage < 1 || newPage > totalPages) return;
-      params.set('page', newPage);
-      router.push(`/admin/products?${params.toString()}`);
-    },
-    [totalPages],
-  );
+//   useEffect(() => {
+//     const initTotalPage = () => {
+//       if (data) {
+//         const newStart = ~~((page - 1) / PAGE_RANGE) * PAGE_RANGE + 1;
+//         const newEnd = Math.min(newStart + PAGE_RANGE - 1, totalPages);
+//         setPageRange({ start: newStart, end: newEnd });
+//       }
+//     };
+//     initTotalPage();
+//   }, [data]);
 
-  return (
-    <div className="flex space-x-2">
-      <button onClick={() => updatePage(page - 1)} disabled={page <= 1}>
-        <img src="/admin/adminPrevPage.svg" alt="adminPrevPage" />
-      </button>
-      <div className="flex space-x-2">
-        {Array(pageRange.end - pageRange.start + 1 >= 0 ? pageRange.end - pageRange.start + 1 : 0)
-          .fill(0)
-          .map((_, idx) => {
-            const pageNumber = pageRange.start + idx;
-            return (
-              <button
-                key={pageNumber}
-                onClick={() => updatePage(pageNumber)}
-                className={`${
-                  page === pageNumber ? 'font-bold border text-black' : 'text-gray-600'
-                } px-2 py-1 font-semibold`}
-              >
-                {pageNumber}
-              </button>
-            );
-          })}
-      </div>
-      <button onClick={() => updatePage(page + 1)}>
-        <img src="/admin/adminNextPage.svg" alt="adminNextPage" />
-      </button>
-    </div>
-  );
-};
+//   const updatePage = useCallback(
+//     newPage => {
+//       if (newPage < 1 || newPage > totalPages) return;
+//       params.set('page', newPage);
+//       router.push(`/admin/products?${params.toString()}`);
+//     },
+//     [totalPages],
+//   );
 
-const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }) => {
+//   return (
+//     <div className="flex space-x-2">
+//       <button onClick={() => updatePage(page - 1)} disabled={page <= 1}>
+//         <img src="/admin/adminPrevPage.svg" alt="adminPrevPage" />
+//       </button>
+//       <div className="flex space-x-2">
+//         {Array(pageRange.end - pageRange.start + 1 >= 0 ? pageRange.end - pageRange.start + 1 : 0)
+//           .fill(0)
+//           .map((_, idx) => {
+//             const pageNumber = pageRange.start + idx;
+//             return (
+//               <button
+//                 key={pageNumber}
+//                 onClick={() => updatePage(pageNumber)}
+//                 className={`${
+//                   page === pageNumber ? 'font-bold border text-black' : 'text-gray-600'
+//                 } px-2 py-1 font-semibold`}
+//               >
+//                 {pageNumber}
+//               </button>
+//             );
+//           })}
+//       </div>
+//       <button onClick={() => updatePage(page + 1)}>
+//         <img src="/admin/adminNextPage.svg" alt="adminNextPage" />
+//       </button>
+//     </div>
+//   );
+// };
+
+interface Products {
+  products: Data[] | [];
+}
+
+interface TaskbarProps {
+  data: Products;
+  page: number;
+  selectedProducts: SelectedProducts;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  dataRefetch: () => void;
+}
+
+const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }: TaskbarProps) => {
+  console.log(data);
   const onClickDelete = async () => {
     setIsLoading(true);
     const formData = new FormData();
@@ -101,7 +135,7 @@ const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }) =>
   return (
     <div className="flex flex-col sticky top-10 space-y-2 justify-center border-x px-4 py-2 bg-slate-100">
       <div className="flex space-x-4 justify-between h-9">
-        <AllProductsCnt userCnt={data?.total} />
+        {/* <AllProductsCnt userCnt={data?.total} /> */}
         <div className="flex space-x-4">
           <button className="px-2 py-1 border border-black rounded bg-white" onClick={dataRefetch}>
             <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
@@ -121,7 +155,7 @@ const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }) =>
       </div>
       <div className="flex justify-between">
         <div></div>
-        <PageControl page={page} data={data} />
+        {/* <PageControl page={page} data={data} /> */}
       </div>
     </div>
   );
@@ -153,7 +187,7 @@ const Table = ({
   }, [selectAll, selectedProducts, data]);
 
   const handleSelectUser = useCallback(
-    (idx, userId, access_token, provider) => {
+    (idx: number, userId: string) => {
       if (selectedProducts[idx]) {
         const newObj = { ...selectedProducts };
         delete newObj[idx];
@@ -162,8 +196,6 @@ const Table = ({
         const newObj = { ...selectedProducts };
         newObj[idx] = {
           _id: userId,
-          access_token: access_token,
-          provider: provider,
         };
         setSelectedProducts(newObj);
       }
@@ -210,7 +242,7 @@ const Table = ({
                       type="checkbox"
                       className="w-5 h-5"
                       checked={Boolean(selectedProducts[idx])}
-                      onChange={() => handleSelectUser(idx, product._id, product.access_token, product.provider)}
+                      onChange={() => handleSelectUser(idx, product._id)}
                     />
                   </div>
                 </td>
@@ -313,12 +345,12 @@ export default function Products() {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get('page')) || 1;
   const { data, error, refetch } = useComplaintProductsQuery(page, PAGE_SIZE);
-  const [selectedProducts, setSelectedProducts] = useState({});
+  const [selectedProducts, setSelectedProducts] = useState<SelectedProducts | {}>({});
   const [selectAll, setSelectAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [detailProduct, setDetailProduct] = useState(null);
   const [isDetailModal, setIsDetailModal] = useState(false);
-  const { navStatus, setNavStatus } = useNav();
+  const { navStatus } = useNav();
 
   useEffect(() => {
     setSelectAll(false);

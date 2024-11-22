@@ -1,6 +1,6 @@
 'use client';
 
-const handleKakaoWithdrawal = async (_id, providerAccountId) => {
+const handleKakaoWithdrawal = async (_id: string, providerAccountId: string) => {
   try {
     const res = await fetch('/api/admin/kakao/unlink', {
       method: 'POST',

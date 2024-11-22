@@ -1,4 +1,4 @@
-const handleGoogleWithdrawal = async (_id, access_token) => {
+const handleGoogleWithdrawal = async (_id: string, access_token: string) => {
   try {
     const res1 = await fetch(`/api/user/${_id}`, { method: 'DELETE' });
     if (!res1.ok) throw new Error('Google user deletion error');
