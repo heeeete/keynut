@@ -16,6 +16,15 @@ Next.JS, React-Query, MongoDB, AWS, Vercel
 # Architecture
 ![제목 없는 다이어그램 drawio (2)](https://github.com/user-attachments/assets/175f224e-ff4b-4f81-92ba-49c63dff9de0)
 
+# PC Screenshots
+![Group 1](https://github.com/user-attachments/assets/cf0b4ba7-a2cd-4c4e-801d-b3330a72207e)
+
+
+# Mobile Screenshots
+![Group 2](https://github.com/user-attachments/assets/27d2009b-9a17-4f3a-bc52-9de026ea10d0)
+
+
+
 # Member
 | [김현지](https://github.com/licakim) | [박희태](https://github.com/heeeete) |
 | :---: | :---: |
