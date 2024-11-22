@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "home": "next dev --hostname 172.30.1.32",
+    "home": "next dev --hostname 172.30.1.34",
     "huipark": "next dev --hostname 10.18.240.104",
     "hyunjki": "next dev --hostname 10.18.225.54",
     "tt": "next dev --hostname 172.30.1.9",

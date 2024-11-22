@@ -120,7 +120,6 @@ export async function POST(req) {
       state: 1,
       createdAt: new Date(),
     };
-    product.tags = product.tags.length ? product.tags.split(',') : [];
 
     const result = await products.insertOne(product);
     await users.updateOne(
