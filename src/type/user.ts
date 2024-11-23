@@ -1,5 +1,6 @@
 export interface User {
-  id: string;
+  id?: string;
+  _id?: string;
   name: null | string;
   email: string;
   image: null | string;
@@ -14,5 +15,5 @@ export interface User {
   memo?: { [key: string]: string };
   nicknameChangedAt?: Date;
   bookmarked?: string[];
-  provider: 'kakao' | 'naver';
+  provider?: 'kakao' | 'naver';
 }

@@ -7,7 +7,7 @@ const DropdownMenu = ({ state, id }: { state: number; id: string }) => {
   const { onClickSelling, onClickSellCompleted, onClickBooked } = useProductStateMutation();
   const menuRef = useRef(null);
 
-  const handleClickOutside = event => {
+  const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
       setDropMenu(false);
     }
@@ -23,7 +23,6 @@ const DropdownMenu = ({ state, id }: { state: number; id: string }) => {
   return (
     <div
       ref={menuRef}
-      // id="dropDown"
       className="flex w-85 h-8 justify-between font-medium border text-sm border-gray-300 rounded flex-nowrap whitespace-nowrap items-center relative max-md:text-gray-600"
       onClick={() => {
         setDropMenu(!dropMenu);

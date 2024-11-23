@@ -19,6 +19,7 @@ const getProducts = async (queryString: string, pageParam) => {
       throw new Error('Failed to fetch products');
     }
     const data = await res.json();
+
     return data;
   } catch (error) {
     console.error('getProducts 함수 실행 중 에러 발생:', error);

@@ -30,7 +30,6 @@ export async function GET(req: Request) {
     const pricesParam = searchParams.get('prices');
     const curPage = Number(searchParams.get('lastPage'));
     // const lastProductCreatedAt = searchParams.get('lastCreatedAt');
-
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
     let query: Record<string, any> = { $or: [{ state: 1 }, { state: 2 }] };
@@ -84,6 +83,7 @@ export async function GET(req: Request) {
       .skip((curPage - 1) * 48)
       .limit(48)
       .toArray();
+
 
     if (products) {
       return NextResponse.json(products, { status: 200 });

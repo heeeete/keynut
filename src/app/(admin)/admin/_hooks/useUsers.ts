@@ -3,7 +3,6 @@ import getUsers from '../_lib/getUsers';
 import { useQuery } from '@tanstack/react-query';
 
 interface ExtendsUser extends User {
-  provider: string;
   providerAccountId: string;
   state: number;
 }

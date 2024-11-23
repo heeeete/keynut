@@ -10,7 +10,7 @@ interface Props {
     name: string;
   }[];
   state: number;
-  initPhotoSwipe: (index: number) => void;
+  initPhotoSwipe: (index: number, _imageShow?: any, _eventFunc?: any) => void;
 }
 
 export default function DesktopImageSlider({ images, state, initPhotoSwipe }: Props) {

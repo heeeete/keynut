@@ -53,16 +53,26 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
 
   const move = useCallback(
     (e: TouchEvent) => {
+      // 터치 이동 시 X, Y축 이동 거리 계산
       const travelX = e.touches[0].clientX - initDragPos.current.x;
       const travelY = e.touches[0].clientY - initDragPos.current.y;
-      if (isScrolling.current === undefined) isScrolling.current = Math.abs(travelY) > Math.abs(travelX);
 
+      // 스크롤 방향이 아직 결정되지 않은 경우, 수직 스크롤인지 수평 스크롤인지 판단
+      if (isScrolling.current === undefined) isScrolling.current = Math.abs(travelY) >= Math.abs(travelX);
+
+      // 수평 스크롤인 경우에만 실행
       if (isScrolling.current === false) {
+        // 첫 번째 이미지에서 왼쪽으로 이동하거나 마지막 이미지에서 오른쪽으로 이동하지 않도록 제한
         if ((travelX > 0 && currentImageIndex === 0) || (travelX < 0 && currentImageIndex === images.length - 1))
           return;
+
+        // 기본 터치 이벤트 동작 방지 (페이지 스크롤 방지)
         e.preventDefault();
+
+        // 이동 비율이 0.8보다 작은 경우에만 슬라이더 이동 적용
         if (Math.abs(travelRatio.current) < 0.8) {
           travelRatio.current = travelX / clientWidth;
+
           if (imageShowRef.current)
             imageShowRef.current.style.transform = `translateX(${originOffset.current + travelX}px)`;
         }
@@ -108,11 +118,11 @@ export default function MobileImageSlider({ images, state, initPhotoSwipe }) {
           )}
           <div
             id="imageShow"
-            className="flex bg-gray-50"
+            className="flex bg-gray-50 touch-pan-y"
             onClick={() => initPhotoSwipe(currentImageIndex, imageShowRef.current, startTouch)}
             ref={imageShowRef}
             style={{
-              transition: isTransitioning ? 'none' : 'transform 0.3s ',
+              transition: isTransitioning ? 'none' : 'transform 0.3s',
             }}
           >
             {images?.length ? (
