@@ -1,9 +1,14 @@
 import { connectDB } from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import getUserSession from '@/lib/getUserSession';
 
-export async function GET(req, { params }) {
+interface Params {
+  params: {
+    userId: string;
+  };
+}
+
+export async function GET(req, { params }: Params) {
   try {
     // const session = await getUserSession();
     // if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });

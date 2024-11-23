@@ -1,14 +1,14 @@
 import { connectDB } from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 
-const client = await connectDB;
-const db = client.db(process.env.MONGODB_NAME);
-const products = db.collection('products');
+export async function GET(req: Request) {
+  const client = await connectDB;
+  const db = client.db(process.env.MONGODB_NAME);
+  const products = db.collection('products');
 
-export async function GET(req) {
   const url = new URL(req.url);
   const category = url.searchParams.get('category');
-  let query = { $or: [{ state: 1 }, { state: 2 }] };
+  let query: Record<string, any> = { $or: [{ state: 1 }, { state: 2 }] };
   const categories = [];
 
   if (category) {

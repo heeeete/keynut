@@ -1,4 +1,4 @@
-const getProducts = async (queryString, pageParam) => {
+const getProducts = async (queryString: string, pageParam) => {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 

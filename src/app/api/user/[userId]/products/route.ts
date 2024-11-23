@@ -2,7 +2,13 @@ import { connectDB } from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 
-export async function GET(req, { params }) {
+interface Params {
+  params: {
+    userId: string;
+  };
+}
+
+export async function GET(req, { params }: Params) {
   const { userId } = params;
   if (!ObjectId.isValid(userId)) {
     return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });

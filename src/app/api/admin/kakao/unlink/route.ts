@@ -3,11 +3,16 @@ import { connectDB } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 
-export async function POST(req) {
+interface RequestBody {
+  providerAccountId: string;
+  _id: string;
+}
+
+export async function POST(req: Request) {
   try {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
-    const { providerAccountId, _id } = await req.json();
+    const { providerAccountId, _id }: RequestBody = await req.json();
 
     const body = new URLSearchParams({
       target_id_type: 'user_id',
@@ -29,7 +34,7 @@ export async function POST(req) {
       return NextResponse.json({ error: errorData }, { status: res.status });
     }
 
-    const { email } = await db.collection('users').findOne({ _id: new ObjectId(_id) });
+    const { email }: { email: string } = await db.collection('users').findOne({ _id: new ObjectId(_id) });
     const date = new Date();
     date.setMonth(date.getMonth() + 3);
     const expiresAt = Math.floor(date.getTime() / 1000);

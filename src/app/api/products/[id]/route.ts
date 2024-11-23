@@ -7,9 +7,13 @@ import { cookies } from 'next/headers';
 import getUserSession from '@/lib/getUserSession';
 import { revalidateTag } from 'next/cache';
 
+interface Params {
+  id: string;
+}
+
 export async function GET(req, { params }) {
   try {
-    const { id } = params;
+    const { id }: Params = params;
 
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
@@ -61,7 +65,7 @@ export async function GET(req, { params }) {
       ])
       .toArray();
 
-    if (productWithUser[0]) return NextResponse.json(productWithUser[0], { status: '200' });
+    if (productWithUser[0]) return NextResponse.json(productWithUser[0], { status: 200 });
     else return NextResponse.json({ message: 'Product not found' }, { status: 404 });
   } catch (error) {
     console.log(error);
@@ -69,9 +73,16 @@ export async function GET(req, { params }) {
   }
 }
 
+interface ViewHistory {
+  _id: string;
+  productId: string;
+  userId: string;
+  lastViewed: string;
+}
+
 export async function PUT(req, { params }) {
   try {
-    const { id } = params;
+    const { id }: Params = params;
     const session = await getUserSession();
     const THROTTLE_TIME = 180 * 60 * 1000; // 3시간
     const client = await connectDB;
@@ -80,11 +91,11 @@ export async function PUT(req, { params }) {
     let shouldIncrementView = true;
 
     if (session) {
-      const lastView = await db.collection('viewHistory').findOne({
+      const lastView: ViewHistory = await db.collection('viewHistory').findOne({
         userId: new ObjectId(session.user.id),
         productId: new ObjectId(id),
       });
-      if (lastView && new Date() - new Date(lastView.lastViewed) < THROTTLE_TIME) {
+      if (lastView && new Date().getTime() - new Date(lastView.lastViewed).getTime() < THROTTLE_TIME) {
         shouldIncrementView = false;
       } else {
         const viewHistory = await db.collection('viewHistory');
@@ -96,7 +107,7 @@ export async function PUT(req, { params }) {
       }
     } else {
       const lastViewed = cookieStore.get(`product_${id}`);
-      if (lastViewed && new Date() - new Date(lastViewed.value) < THROTTLE_TIME) {
+      if (lastViewed && new Date().getTime() - new Date(lastViewed.value).getTime() < THROTTLE_TIME) {
         shouldIncrementView = false;
       } else {
         cookieStore.set({

@@ -1,4 +1,4 @@
-const userBanHandler = async (email: string, state: number, expires_at?: string) => {
+const userBanHandler = async (email: string, state: number, expires_at?: number) => {
   if (state !== 0 && state !== 1) {
     console.error('state는 0 또는 1만 가능합니다');
     return 500;

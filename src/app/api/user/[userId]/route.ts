@@ -3,11 +3,18 @@ import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import s3Client from '@/lib/s3Client';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { ObjectId } from 'mongodb';
+import { ObjectId, UpdateResult } from 'mongodb';
 import { revalidateTag } from 'next/cache';
+import { User } from '@/type/user';
+
+interface Params {
+  params: {
+    userId: string;
+  };
+}
 
 //회원탈퇴
-export async function DELETE(req, { params }) {
+export async function DELETE(req, { params }: Params) {
   const { userId: id } = params;
   const userId = new ObjectId(id);
   try {
@@ -15,12 +22,12 @@ export async function DELETE(req, { params }) {
     const db = client.db(process.env.MONGODB_NAME);
     const userCollection = db.collection('users');
 
-    const user = await userCollection.findOne({ _id: userId });
+    const user: User | null = await userCollection.findOne({ _id: userId });
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    const { bookmarked = [], products = [] } = user;
+    const { bookmarked, products } = user;
 
     // 사용자가 북마크한 상품의 북마크 목록에서 해당 유저 제거
     const updateBookmarkedPromises = bookmarked.map(productId =>
@@ -36,12 +43,12 @@ export async function DELETE(req, { params }) {
         continue;
       }
 
-      const updateProductBookmarksPromises = (product.bookmarked || []).map(uId =>
+      const updateProductBookmarksPromises: Promise<UpdateResult>[] = (product.bookmarked || []).map((uId: string) =>
         userCollection.updateOne({ _id: uId }, { $pull: { bookmarked: productId } }),
       );
       await Promise.all(updateProductBookmarksPromises);
 
-      const deleteS3ImagesPromises = product.images.map(async img => {
+      const deleteS3ImagesPromises: Promise<void>[] = product.images.map(async (img: string) => {
         const params = {
           Bucket: process.env.S3_BUCKET_NAME,
           Key: img,
@@ -61,7 +68,7 @@ export async function DELETE(req, { params }) {
       }
     }
 
-    const deleteUserPromises = [
+    const deleteUserPromises: Promise<void>[] = [
       userCollection.deleteOne({ _id: userId }),
       db.collection('accounts').deleteMany({ userId: userId }),
       db.collection('products').deleteMany({ userId: userId }),

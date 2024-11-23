@@ -3,7 +3,18 @@ import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 
-export async function POST(req, { params }) {
+interface Params {
+  params: {
+    id: string;
+  };
+}
+
+interface RequestBody {
+  category: string;
+  text: string;
+}
+
+export async function POST(req: Request, { params }: Params) {
   try {
     const session = await getUserSession();
     if (!session) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
@@ -12,7 +23,7 @@ export async function POST(req, { params }) {
     const db = client.db(process.env.MONGODB_NAME);
     const productsCollection = await db.collection('products');
     const { id } = params;
-    const data = await req.json();
+    const data: RequestBody = await req.json();
 
     await productsCollection.updateOne({ _id: new ObjectId(id) }, { $push: { complain: data } });
     return NextResponse.json({}, { status: 200 });

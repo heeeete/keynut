@@ -3,10 +3,17 @@ import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
 
-export async function PUT(req, { params }) {
+interface Params {
+  params: {
+    id: string;
+  };
+}
+
+// 상품 상태 변경 API
+export async function PUT(req: Request, { params }: Params) {
   try {
     const { id } = params;
-    const { state } = await req.json();
+    const { state }: { state: number } = await req.json();
 
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
