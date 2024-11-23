@@ -11,6 +11,7 @@ import Link from 'next/link';
 import fetchHotProducts from '../_lib/fetchHotProducts';
 import Skeletons from './Skeletons';
 import conditions from '../../_constants/conditions';
+import { ProductData } from '@/type/productData';
 
 const categories = [
   {
@@ -70,9 +71,17 @@ const prices = [
   { id: 5, option: '50만원 이상' },
 ];
 
+interface RecentSearchProps {
+  recentSearches: string[];
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  setRecentSearches: React.Dispatch<React.SetStateAction<string[]>>;
+  searchFlag: React.MutableRefObject<boolean>;
+  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const RecentSearch = React.memo(
-  ({ recentSearches, setSearchText, setRecentSearches, inputRef, searchFlag, setIsFocused }) => {
-    const handleRecentSearch = search => {
+  ({ recentSearches, setSearchText, setRecentSearches, searchFlag, setIsFocused }: RecentSearchProps) => {
+    const handleRecentSearch = (search: string) => {
       searchFlag.current = false;
       const newRecentSearches = [search, ...recentSearches.filter(item => item !== search)].slice(0, 5);
       setRecentSearches(newRecentSearches);
@@ -125,186 +134,198 @@ const RecentSearch = React.memo(
   },
 );
 
-const SearchBar = React.memo(({ paramsKeyword, setSearchText, searchFlag, isFocused, setIsFocused }) => {
-  const [tempSearchText, setTempSearchText] = useState(paramsKeyword);
-  const [recentSearches, setRecentSearches] = useState([]);
-  const inputRef = useRef(null);
-  const searchRef = useRef(null);
-  const searchContainerRef = useRef(null);
+interface SearchBarProps {
+  paramsKeyword: string;
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  searchFlag: React.MutableRefObject<boolean>;
+  isFocused: boolean;
+  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-  useEffect(() => {
-    const $nav = document.getElementById('nav');
+const SearchBar = React.memo(
+  ({ paramsKeyword, setSearchText, searchFlag, isFocused, setIsFocused }: SearchBarProps) => {
+    const [tempSearchText, setTempSearchText] = useState(paramsKeyword);
+    const [recentSearches, setRecentSearches] = useState<string[]>([]);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
+    const searchContainerRef = useRef<HTMLDivElement>(null);
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) {
+    useEffect(() => {
+      const $nav = document.getElementById('nav');
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) {
+            setIsFocused(false);
+            inputRef.current?.blur();
+            $nav.style.borderBottom = '1px solid lightgray';
+          } else {
+            $nav.style.borderBottom = '';
+          }
+        },
+        {
+          rootMargin: '-114px 0px 0px 0px',
+          threshold: 0,
+        },
+      );
+
+      if (searchContainerRef.current && window.innerWidth >= 768) {
+        observer.observe(searchContainerRef.current);
+      }
+
+      return () => {
+        if (searchContainerRef.current) observer.unobserve(searchContainerRef.current);
+      };
+    }, []);
+
+    useEffect(() => {
+      const handleTouchStart = event => {
+        if (searchContainerRef.current && searchContainerRef.current.contains(event.target)) {
+          return;
+        }
+        if (document.activeElement === inputRef.current) {
           setIsFocused(false);
           inputRef.current?.blur();
-          $nav.style.borderBottom = '1px solid lightgray';
-        } else {
-          $nav.style.borderBottom = '';
         }
-      },
-      {
-        rootMargin: '-114px 0px 0px 0px',
-        threshold: 0,
-      },
-    );
+      };
 
-    if (searchContainerRef.current && window.innerWidth >= 768) {
-      observer.observe(searchContainerRef.current);
-    }
+      document.addEventListener('touchstart', handleTouchStart);
 
-    return () => {
-      if (searchContainerRef.current) observer.unobserve(searchContainerRef.current);
-    };
-  }, []);
+      return () => {
+        document.removeEventListener('touchstart', handleTouchStart);
+      };
+    }, []);
 
-  useEffect(() => {
-    const handleTouchStart = event => {
-      if (searchContainerRef.current && searchContainerRef.current.contains(event.target)) {
-        return;
+    useEffect(() => {
+      const storedSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+      setRecentSearches(storedSearches);
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          inputRef.current &&
+          searchRef.current &&
+          event.target instanceof Node &&
+          !inputRef.current.contains(event.target) &&
+          !searchRef.current.contains(event.target)
+        ) {
+          setIsFocused(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, []);
+
+    useEffect(() => {
+      setTempSearchText(paramsKeyword);
+    }, [paramsKeyword]);
+
+    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      searchFlag.current = false;
+      if (tempSearchText.trim() !== '') {
+        const newRecentSearches = [tempSearchText, ...recentSearches.filter(item => item !== tempSearchText)].slice(
+          0,
+          5,
+        );
+        setRecentSearches(newRecentSearches);
+        localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
       }
-      if (document.activeElement === inputRef.current) {
-        setIsFocused(false);
-        inputRef.current?.blur();
-      }
+      setSearchText(tempSearchText.trim());
+      setIsFocused(false);
+      inputRef.current.blur();
     };
-
-    document.addEventListener('touchstart', handleTouchStart);
-
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
+    const deleteAllRecentSearch = () => {
+      setRecentSearches([]);
+      localStorage.setItem('recentSearches', JSON.stringify([]));
     };
-  }, []);
-
-  useEffect(() => {
-    const storedSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
-    setRecentSearches(storedSearches);
-    const handleClickOutside = event => {
-      if (
-        inputRef.current &&
-        searchRef.current &&
-        !inputRef.current.contains(event.target) &&
-        !searchRef.current.contains(event.target)
-      ) {
-        setIsFocused(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    setTempSearchText(paramsKeyword);
-  }, [paramsKeyword]);
-
-  const handleSearch = e => {
-    e.preventDefault();
-    searchFlag.current = false;
-    if (tempSearchText.trim() !== '') {
-      const newRecentSearches = [tempSearchText, ...recentSearches.filter(item => item !== tempSearchText)].slice(0, 5);
-      setRecentSearches(newRecentSearches);
-      localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
-    }
-    setSearchText(tempSearchText.trim());
-    setIsFocused(false);
-    inputRef.current.blur();
-  };
-  const deleteAllRecentSearch = () => {
-    setRecentSearches([]);
-    localStorage.setItem('recentSearches', JSON.stringify([]));
-  };
-  return (
-    <div
-      ref={searchContainerRef}
-      className="search-bar-container-md  max-[960px]:search-bar-container-maxtb max-md:search-bar-container-maxmd flex-col "
-    >
-      <div className="max-[960px]:search-bar-maxmd">
-        <div className="search-bar-md max-[960px]:search-bar-maxmd ">
-          <form className="flex w-450 max-[960px]:w-full items-center" onSubmit={handleSearch}>
-            <input
-              id="searchInput"
-              ref={inputRef}
-              type="text"
-              autoComplete="off"
-              placeholder="상품명, #태그 입력"
-              value={tempSearchText}
-              onFocus={() => {
-                setIsFocused(true);
-              }}
-              onChange={e => setTempSearchText(e.target.value)}
-              className="outline-none w-full md:placeholder:text-lg  pr-2  max-[960px]:bg-transparent"
-            />
-          </form>
-          {tempSearchText.length ? (
-            <button
-              onClick={() => {
-                setTempSearchText('');
-                inputRef.current.focus();
-              }}
-            >
-              <svg
-                className="max-[960px]:mr-1"
-                xmlns="http://www.w3.org/2000/svg"
-                width="0.7em"
-                height="0.7em"
-                viewBox="0 0 2048 2048"
+    return (
+      <div
+        ref={searchContainerRef}
+        className="search-bar-container-md  max-[960px]:search-bar-container-maxtb max-md:search-bar-container-maxmd flex-col "
+      >
+        <div className="max-[960px]:search-bar-maxmd">
+          <div className="search-bar-md max-[960px]:search-bar-maxmd ">
+            <form className="flex w-450 max-[960px]:w-full items-center" onSubmit={handleSearch}>
+              <input
+                id="searchInput"
+                ref={inputRef}
+                type="text"
+                autoComplete="off"
+                placeholder="상품명, #태그 입력"
+                value={tempSearchText}
+                onFocus={() => {
+                  setIsFocused(true);
+                }}
+                onChange={e => setTempSearchText(e.target.value)}
+                className="outline-none w-full md:placeholder:text-lg  pr-2  max-[960px]:bg-transparent"
+              />
+            </form>
+            {tempSearchText.length ? (
+              <button
+                onClick={() => {
+                  setTempSearchText('');
+                  inputRef.current.focus();
+                }}
               >
-                <path
-                  fill="currentColor"
-                  d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
-                />
-              </svg>
-            </button>
+                <svg
+                  className="max-[960px]:mr-1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="0.7em"
+                  height="0.7em"
+                  viewBox="0 0 2048 2048"
+                >
+                  <path
+                    fill="currentColor"
+                    d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                  />
+                </svg>
+              </button>
+            ) : (
+              ''
+            )}
+          </div>
+          {isFocused && tempSearchText === '' ? (
+            <div
+              className="flex flex-col absolute min-h-34 bg-white w-450  top-20 left-1/2 -translate-x-1/2 p-4 rounded-lg border max-[960px]:w-full max-[960px]:rounded-none max-[960px]:border-0 max-[960px]:border-b max-md:translate-x-0  max-[960px]:top-14 max-md:left-0 max-[960px]:px-10 max-md:px-4"
+              ref={searchRef}
+            >
+              <p className=" border-b">최근 검색어</p>
+              <RecentSearch
+                recentSearches={recentSearches}
+                setSearchText={setSearchText}
+                setRecentSearches={setRecentSearches}
+                searchFlag={searchFlag}
+                setIsFocused={setIsFocused}
+              />
+              <div className="flex space-x-2 justify-end text-gray-400 text-sm">
+                <button
+                  className="p-1"
+                  onClick={() => {
+                    deleteAllRecentSearch();
+                  }}
+                >
+                  전체 삭제
+                </button>
+                <button
+                  className="p-1"
+                  onClick={() => {
+                    setIsFocused(false);
+                  }}
+                >
+                  닫기
+                </button>
+              </div>
+            </div>
           ) : (
             ''
           )}
         </div>
-        {isFocused && tempSearchText === '' ? (
-          <div
-            className="flex flex-col absolute min-h-34 bg-white w-450  top-20 left-1/2 -translate-x-1/2 p-4 rounded-lg border max-[960px]:w-full max-[960px]:rounded-none max-[960px]:border-0 max-[960px]:border-b max-md:translate-x-0  max-[960px]:top-14 max-md:left-0 max-[960px]:px-10 max-md:px-4"
-            ref={searchRef}
-          >
-            <p className=" border-b">최근 검색어</p>
-            <RecentSearch
-              recentSearches={recentSearches}
-              setTempSearchText={setTempSearchText}
-              setSearchText={setSearchText}
-              setRecentSearches={setRecentSearches}
-              inputRef={inputRef}
-              searchFlag={searchFlag}
-              setIsFocused={setIsFocused}
-            />
-            <div className="flex space-x-2 justify-end text-gray-400 text-sm">
-              <button
-                className="p-1"
-                onClick={() => {
-                  deleteAllRecentSearch();
-                }}
-              >
-                전체 삭제
-              </button>
-              <button
-                className="p-1"
-                onClick={() => {
-                  setIsFocused(false);
-                }}
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, handlePriceChange }) => {
   return (
@@ -366,11 +387,11 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
   );
 };
 
-const RenderProductsNum = ({ data, includeBooked }) => {
+const RenderProductsNum = ({ data, includeBooked }: { data: ProductData[][]; includeBooked: boolean }) => {
   const totalCount = data
     ? includeBooked
-      ? data.pages.reduce((acc, page) => acc + page.length, 0)
-      : data.pages.reduce((acc, page) => acc + page.filter(a => a.state === 1).length, 0)
+      ? data.reduce((acc, page) => acc + page.length, 0)
+      : data.reduce((acc, page) => acc + page.filter(product => product.state === 1).length, 0)
     : 0;
   return (
     <>
@@ -396,7 +417,7 @@ const Product = ({ product }) => {
       className="flex flex-col cursor-pointer relative rounded"
       // key={product._id}
       onClick={() => {
-        sessionStorage.setItem('scrollPos', window.scrollY);
+        sessionStorage.setItem('scrollPos', window.scrollY.toString());
       }}
     >
       <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
@@ -464,22 +485,21 @@ const RenderProducts = ({
   }, [params]);
 
   const queryString = createQueryString();
-  const useProducts = queryString => {
-    return useInfiniteQuery({
+  const useProducts = (queryString: string) => {
+    return useInfiniteQuery<ProductData[]>({
       queryKey: ['products', !!queryString.length ? queryString : 'all'],
+      initialPageParam: 1,
       queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
-      initialPageParam: 0,
-      getNextPageParam: (lastPage, allPages) => {
-        if (lastPage.length < 48) return undefined;
-        const lastProduct = lastPage[lastPage.length - 1];
-        return { lastId: lastProduct._id, lastCreatedAt: lastProduct.createdAt };
+      getNextPageParam: (lastPage: ProductData[], allPages: ProductData[][]): number | undefined => {
+        const nextPage = allPages.length + 1;
+        return lastPage?.length < 48 ? undefined : nextPage;
       },
       staleTime: 60 * 1000,
     });
   };
 
   const { ref, inView } = useInView({ threshold: 0, delay: 0 });
-  const { data, fetchNextPage, hasNextPage, isFetching, error, isPending, isLoading } = useProducts(queryString);
+  const { data, fetchNextPage, hasNextPage, isFetching } = useProducts(queryString);
 
   const [isDeferred, setIsDeferred] = useState(false);
 
@@ -522,7 +542,7 @@ const RenderProducts = ({
   }
   return (
     <div className="flex-col w-full">
-      <RenderProductsNum data={data} includeBooked={includeBooked} />
+      <RenderProductsNum data={data?.pages} includeBooked={includeBooked} />
       {!isMaxtb && (
         <SelectedFilters
           categoriesState={categoriesState}
@@ -614,8 +634,14 @@ const PopularProductSkeleton = ({ category }) => {
   );
 };
 
-const RenderPopularProducts = React.memo(({ category, paramsKeyword, setHasTop }) => {
-  const useHotProducts = category => {
+interface RenderPopularProductsProps {
+  category: number;
+  paramsKeyword: string;
+  setHasTop: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const RenderPopularProducts = React.memo(({ category, paramsKeyword, setHasTop }: RenderPopularProductsProps) => {
+  const useHotProducts = (category: number) => {
     return useQuery({
       queryKey: ['topProducts', category],
       queryFn: () => fetchHotProducts(category),
@@ -1193,13 +1219,13 @@ export default function RenderShop() {
     else router.push('/shop');
   }, [queryString, router]);
 
-  const handleCategoryChange = (id, checked) => {
+  const handleCategoryChange = (id: number, checked: boolean) => {
     searchFlag.current = true;
     const newState = { ...categoriesState };
     newState[id].checked = checked;
 
     if (newState[id].childId) {
-      newState[id].childId.forEach(childId => {
+      newState[id].childId.forEach((childId: number) => {
         newState[childId].checked = false;
       });
     }
@@ -1212,7 +1238,7 @@ export default function RenderShop() {
     setCategoriesState(newState);
   };
 
-  const handlePriceChange = (id, checked) => {
+  const handlePriceChange = (id: number, checked: boolean) => {
     searchFlag.current = true;
     const newState = { ...pricesState };
     newState[id].checked = checked;

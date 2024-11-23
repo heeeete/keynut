@@ -330,7 +330,6 @@ export default function ProfileEdit() {
 
     setIsLoading(false);
   };
-
   const openWithdrawal = async () => {
     const res = await openModal({
       message: '회원탈퇴 하시겠습니까?',

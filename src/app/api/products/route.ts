@@ -28,9 +28,8 @@ export async function GET(req: Request) {
     let keywordParam = searchParams.get('keyword');
     const categoriesParam = searchParams.get('categories');
     const pricesParam = searchParams.get('prices');
-    const lastProductId = searchParams.get('lastId');
-    const lastProductCreatedAt = searchParams.get('lastCreatedAt');
-
+    const curPage = Number(searchParams.get('lastPage'));
+    // const lastProductCreatedAt = searchParams.get('lastCreatedAt');
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
     let query: Record<string, any> = { $or: [{ state: 1 }, { state: 2 }] };
@@ -67,17 +66,24 @@ export async function GET(req: Request) {
       query.$and = [{ $or: priceConditions }];
     }
 
-    if (lastProductCreatedAt && lastProductId) {
-      query.$and = query.$and || [];
-      query.$and.push({
-        $or: [
-          { createdAt: { $lt: new Date(lastProductCreatedAt) } },
-          { createdAt: new Date(lastProductCreatedAt), _id: { $lt: new ObjectId(lastProductId) } },
-        ],
-      });
-    }
+    // if (lastProductCreatedAt && lastProductId) {
+    //   query.$and = query.$and || [];
+    //   query.$and.push({
+    //     $or: [
+    //       { createdAt: { $lt: new Date(lastProductCreatedAt) } },
+    //       { createdAt: new Date(lastProductCreatedAt), _id: { $lt: new ObjectId(lastProductId) } },
+    //     ],
+    //   });
+    // }
 
-    const products = await db.collection('products').find(query).sort({ createdAt: -1, _id: -1 }).limit(48).toArray();
+    const products = await db
+      .collection('products')
+      .find(query)
+      .sort({ createdAt: -1, _id: -1 })
+      .skip((curPage - 1) * 48)
+      .limit(48)
+      .toArray();
+
 
     if (products) {
       return NextResponse.json(products, { status: 200 });
