@@ -1185,7 +1185,6 @@ export default function RenderShop() {
     else hotProductFlag.current = 0;
   }, [obj]);
 
-  // ======================================================
   const createQueryString = useCallback(() => {
     const categoryQuery = Object.keys(categoriesState)
       .filter(key => categoriesState[key].checked)

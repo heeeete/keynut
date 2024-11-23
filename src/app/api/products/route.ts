@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidateTag } from 'next/cache';
 import checkBannedEmail from '@/lib/checkBannedEmail';
 import { User } from '@/type/user';
 
@@ -30,10 +30,10 @@ export async function GET(req: Request) {
     const pricesParam = searchParams.get('prices');
     const curPage = Number(searchParams.get('lastPage'));
     // const lastProductCreatedAt = searchParams.get('lastCreatedAt');
+
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
     let query: Record<string, any> = { $or: [{ state: 1 }, { state: 2 }] };
-
     if (keywordParam) {
       if (keywordParam[0] == '#') {
         keywordParam = keywordParam.replaceAll(' ', '');
@@ -44,7 +44,6 @@ export async function GET(req: Request) {
         query.title = { $regex: escapedKeyword, $options: 'i' };
       }
     }
-
     if (categories.length > 0) {
       if (categories.includes(1)) {
         categories.push(10, 11, 12, 13, 14, 15, 16, 19);
@@ -66,16 +65,6 @@ export async function GET(req: Request) {
       query.$and = [{ $or: priceConditions }];
     }
 
-    // if (lastProductCreatedAt && lastProductId) {
-    //   query.$and = query.$and || [];
-    //   query.$and.push({
-    //     $or: [
-    //       { createdAt: { $lt: new Date(lastProductCreatedAt) } },
-    //       { createdAt: new Date(lastProductCreatedAt), _id: { $lt: new ObjectId(lastProductId) } },
-    //     ],
-    //   });
-    // }
-
     const products = await db
       .collection('products')
       .find(query)
@@ -83,7 +72,6 @@ export async function GET(req: Request) {
       .skip((curPage - 1) * 48)
       .limit(48)
       .toArray();
-
 
     if (products) {
       return NextResponse.json(products, { status: 200 });
