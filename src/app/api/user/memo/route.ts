@@ -4,7 +4,12 @@ import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
 
-export async function PUT(req) {
+interface Memo {
+  userId: string;
+  tempMemo: string;
+}
+
+export async function PUT(req: Request) {
   try {
     const session = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
@@ -12,14 +17,14 @@ export async function PUT(req) {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const users = db.collection('users');
-    const { memo } = await req.json();
+    const { memo }: { memo: Memo } = await req.json();
     const { userId, tempMemo } = memo;
     const user = await users.findOne({ _id: new ObjectId(userId) });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    let updateQuery;
+    let updateQuery: Record<string, any>;
     if (tempMemo === '') {
       updateQuery = { $unset: { [`memo.${session.user.id}`]: '' } };
     } else {

@@ -1,12 +1,19 @@
 import getUserSession from '@/lib/getUserSession';
 import { connectDB } from '@/lib/mongodb';
+import { User } from '@/type/user';
 import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
 
-export async function PATCH(req, { params }) {
+interface Params {
+  params: {
+    id: string;
+  };
+}
+
+export async function PATCH(req: Request, { params }: Params) {
   try {
-    const { user: session } = await getUserSession();
+    const { user: session }: { user: User } = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
 
     const { id } = params;

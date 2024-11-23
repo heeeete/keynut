@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
+import { ProductData } from '@/type/productData';
 
-export async function GET(req) {
+export async function GET() {
   try {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
@@ -15,12 +16,12 @@ export async function GET(req) {
     if (!bookmarked || bookmarked.length === 0) {
       return NextResponse.json([], { status: 200 });
     }
-    const bookmarkedProducts = await collection.find({ _id: { $in: bookmarked } }).toArray();
+    const bookmarkedProducts: ProductData[] = await collection.find({ _id: { $in: bookmarked } }).toArray();
     const map = new Map();
     bookmarkedProducts.map(a => {
       map.set(a._id.toString(), a);
     });
-    const sortedProducts = bookmarked.reverse().map(a => {
+    const sortedProducts: ProductData[] = bookmarked.reverse().map((a: ProductData) => {
       return map.get(a.toString());
     });
     return NextResponse.json(sortedProducts, { status: 200 });
@@ -30,4 +31,4 @@ export async function GET(req) {
   }
 }
 
-export async function POST(req) {}
+export async function POST() {}

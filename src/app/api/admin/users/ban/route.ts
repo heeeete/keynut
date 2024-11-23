@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 
-export async function POST(req) {
+interface Req {
+  email: string;
+  state: number;
+  expires_at: string;
+}
+
+export async function POST(req: Request) {
   try {
-    const { email, state, expires_at } = await req.json();
+    const { email, state, expires_at }: Req = await req.json();
 
     if (!email || (state !== 0 && state !== 1))
       return NextResponse.json({ error: 'Invalid email or state' }, { status: 400 });

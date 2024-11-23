@@ -5,6 +5,7 @@ import s3Client from '@/lib/s3Client';
 import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
+import { User } from '@/type/user';
 
 const forbiddenList = [
   '씨발',
@@ -29,7 +30,7 @@ const forbiddenList = [
   '키넛',
 ];
 
-export async function PUT(req) {
+export async function PUT(req: Request) {
   try {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
@@ -38,9 +39,9 @@ export async function PUT(req) {
     const session = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const formData = await req.formData();
-    const oldImage = JSON.parse(formData.get('oldImage'));
-    const newImage = formData.get('newImage');
-    const nickname = JSON.parse(formData.get('nickname'));
+    const oldImage = JSON.parse(formData.get('oldImage').toString());
+    const newImage = formData.get('newImage') as File;
+    const nickname = JSON.parse(formData.get('nickname').toString());
 
     const deleteImage = async () => {
       const params = {
@@ -50,7 +51,7 @@ export async function PUT(req) {
       await s3Client.send(new DeleteObjectCommand(params));
     };
 
-    let Key;
+    let Key: string;
     const uploadImage = async () => {
       Key = `profile_${Date.now()}_${newImage.name}`;
       const arrayBuffer = await newImage.arrayBuffer();
@@ -85,14 +86,14 @@ export async function PUT(req) {
     }
 
     if (nickname) {
-      const now = new Date();
+      const now = new Date().getTime();
       const user = await users.findOne({ _id: new ObjectId(session.user.id) });
-      const lastChanged = user.nicknameChangedAt ? new Date(user.nicknameChangedAt) : null;
+      const lastChanged = user.nicknameChangedAt ? new Date(user.nicknameChangedAt).getTime() : null;
       if (lastChanged) {
         const period = Math.floor((now - lastChanged) / (1000 * 60 * 60 * 24));
         if (period < 30) return NextResponse.json({ state: 0 }, { status: 403 });
       }
-      const exisitingUser = await users.findOne({ nickname: nickname });
+      const exisitingUser: User = await users.findOne({ nickname: nickname });
       if (exisitingUser) {
         return NextResponse.json('dup', { status: 409 });
       }
