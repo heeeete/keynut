@@ -536,10 +536,7 @@ const RenderProducts = ({
     if (!isFetching) initPageRef.current = false;
   }, [isFetching]);
 
-  if (isFetching) {
-    if (isDeferred) return <Skeletons />;
-    return '';
-  }
+  if (isFetching && isDeferred) return <Skeletons />;
   return (
     <div className="flex-col w-full">
       <RenderProductsNum data={data?.pages} includeBooked={includeBooked} />
@@ -580,15 +577,17 @@ const RenderProducts = ({
           {isFetching && <Skeletons />}
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center space-y-1 h-52">
-          <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 256 256">
-            <path
-              fill="lightgray"
-              d="m212.24 83.76l-56-56A6 6 0 0 0 152 26H56a14 14 0 0 0-14 14v176a14 14 0 0 0 14 14h144a14 14 0 0 0 14-14V88a6 6 0 0 0-1.76-4.24M158 46.48L193.52 82H158ZM202 216a2 2 0 0 1-2 2H56a2 2 0 0 1-2-2V40a2 2 0 0 1 2-2h90v50a6 6 0 0 0 6 6h50Zm-45.76-92.24a6 6 0 0 1 0 8.48L136.49 152l19.75 19.76a6 6 0 1 1-8.48 8.48L128 160.49l-19.76 19.75a6 6 0 0 1-8.48-8.48L119.51 152l-19.75-19.76a6 6 0 1 1 8.48-8.48L128 143.51l19.76-19.75a6 6 0 0 1 8.48 0"
-            />
-          </svg>
-          <p className="text-gray-300 font-medium">해당하는 상품이 없습니다</p>
-        </div>
+        !isFetching && (
+          <div className="flex flex-col items-center justify-center space-y-1 h-52">
+            <svg xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 256 256">
+              <path
+                fill="lightgray"
+                d="m212.24 83.76l-56-56A6 6 0 0 0 152 26H56a14 14 0 0 0-14 14v176a14 14 0 0 0 14 14h144a14 14 0 0 0 14-14V88a6 6 0 0 0-1.76-4.24M158 46.48L193.52 82H158ZM202 216a2 2 0 0 1-2 2H56a2 2 0 0 1-2-2V40a2 2 0 0 1 2-2h90v50a6 6 0 0 0 6 6h50Zm-45.76-92.24a6 6 0 0 1 0 8.48L136.49 152l19.75 19.76a6 6 0 1 1-8.48 8.48L128 160.49l-19.76 19.75a6 6 0 0 1-8.48-8.48L119.51 152l-19.75-19.76a6 6 0 1 1 8.48-8.48L128 143.51l19.76-19.75a6 6 0 0 1 8.48 0"
+              />
+            </svg>
+            <p className="text-gray-300 font-medium">해당하는 상품이 없습니다</p>
+          </div>
+        )
       )}
       <div className="h-12" ref={ref}></div>
     </div>
