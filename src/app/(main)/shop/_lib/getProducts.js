@@ -8,8 +8,8 @@ const getProducts = async (queryString, pageParam) => {
       url += `?${queryString}`;
     }
 
-    if (pageParam && pageParam.lastId && pageParam.lastCreatedAt) {
-      url += `${queryString ? '&' : '?'}lastId=${pageParam.lastId}&lastCreatedAt=${pageParam.lastCreatedAt}`;
+    if (pageParam) {
+      url += `${queryString ? '&' : '?'}lastPage=${pageParam}`;
     }
     const res = await fetch(url, {
       next: { tags: ['products'] },

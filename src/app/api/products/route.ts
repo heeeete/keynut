@@ -6,6 +6,7 @@ import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import checkBannedEmail from '@/lib/checkBannedEmail';
+import { User } from '@/type/user';
 
 const priceRanges = [
   { id: 1, min: 0, max: 50000 },
@@ -15,10 +16,10 @@ const priceRanges = [
   { id: 5, min: 500000, max: Infinity },
 ];
 
-const escapeRegExp = string => {
+const escapeRegExp = (string: string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
-export async function GET(req) {
+export async function GET(req: Request) {
   try {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
@@ -27,12 +28,12 @@ export async function GET(req) {
     let keywordParam = searchParams.get('keyword');
     const categoriesParam = searchParams.get('categories');
     const pricesParam = searchParams.get('prices');
-    const lastProductId = searchParams.get('lastId');
-    const lastProductCreatedAt = searchParams.get('lastCreatedAt');
+    const curPage = Number(searchParams.get('lastPage'));
+    // const lastProductCreatedAt = searchParams.get('lastCreatedAt');
 
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
-    let query = { $or: [{ state: 1 }, { state: 2 }] };
+    let query: Record<string, any> = { $or: [{ state: 1 }, { state: 2 }] };
 
     if (keywordParam) {
       if (keywordParam[0] == '#') {
@@ -66,17 +67,23 @@ export async function GET(req) {
       query.$and = [{ $or: priceConditions }];
     }
 
-    if (lastProductCreatedAt && lastProductId) {
-      query.$and = query.$and || [];
-      query.$and.push({
-        $or: [
-          { createdAt: { $lt: new Date(lastProductCreatedAt) } },
-          { createdAt: new Date(lastProductCreatedAt), _id: { $lt: new ObjectId(lastProductId) } },
-        ],
-      });
-    }
+    // if (lastProductCreatedAt && lastProductId) {
+    //   query.$and = query.$and || [];
+    //   query.$and.push({
+    //     $or: [
+    //       { createdAt: { $lt: new Date(lastProductCreatedAt) } },
+    //       { createdAt: new Date(lastProductCreatedAt), _id: { $lt: new ObjectId(lastProductId) } },
+    //     ],
+    //   });
+    // }
 
-    const products = await db.collection('products').find(query).sort({ createdAt: -1, _id: -1 }).limit(48).toArray();
+    const products = await db
+      .collection('products')
+      .find(query)
+      .sort({ createdAt: -1, _id: -1 })
+      .skip((curPage - 1) * 48)
+      .limit(48)
+      .toArray();
 
     if (products) {
       return NextResponse.json(products, { status: 200 });
@@ -89,7 +96,7 @@ export async function GET(req) {
   }
 }
 
-export async function POST(req) {
+export async function POST(req: Request) {
   try {
     const session = await getUserSession();
     if (!session) {
@@ -111,11 +118,11 @@ export async function POST(req) {
       condition: Number(formData.get('condition')),
       description: formData.get('description'),
       price: Number(formData.get('price')),
-      images: JSON.parse(formData.get('imageDetails')),
+      images: JSON.parse(formData.get('imageDetails').toString()),
       bookmarked: [],
       complain: [],
       openChatUrl: formData.get('openChatUrl'),
-      tags: JSON.parse(formData.get('tags')),
+      tags: JSON.parse(formData.get('tags').toString()),
       views: 0,
       state: 1,
       createdAt: new Date(),
@@ -139,9 +146,14 @@ export async function POST(req) {
   }
 }
 
-export async function PUT(req) {
+interface CustomSession {
+  user: User;
+}
+
+// 상품 수정 API
+export async function PUT(req: Request) {
   try {
-    const session = await getUserSession();
+    const session: CustomSession = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
@@ -159,17 +171,17 @@ export async function PUT(req) {
       deleteFiles.map(file => {
         const params = {
           Bucket: process.env.S3_BUCKET_NAME,
-          Key: file,
+          Key: file as string,
         };
         return s3Client.send(new DeleteObjectCommand(params));
       }),
     );
 
-    await users.updateOne({ email: session.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
-    let tags = formData.get('tags');
-    tags = tags.length ? tags.split(',') : [];
+    await users.updateOne({ email: session.user.email }, { $set: { openChatUrl: formData.get('openChatUrl') } });
+    let tags: string[] | [] = JSON.parse(formData.get('tags').toString());
+
     await products.updateOne(
-      { _id: new ObjectId(formData.get('id')) },
+      { _id: new ObjectId(formData.get('id').toString()) },
       {
         $set: {
           title: formData.get('title'),
@@ -177,14 +189,15 @@ export async function PUT(req) {
           condition: Number(formData.get('condition')),
           description: formData.get('description'),
           price: Number(formData.get('price')),
-          images: JSON.parse(formData.get('imageDetails')),
+          images: JSON.parse(formData.get('imageDetails').toString()),
           openChatUrl: formData.get('openChatUrl'),
-          tags: JSON.parse(tags),
+          tags: JSON.parse(formData.get('tags').toString()),
+
           updatedAt: new Date(),
         },
       },
     );
-    const productId = formData.get('id');
+    const productId = formData.get('id') as string;
     revalidateTag(productId);
     revalidateTag('products');
     return NextResponse.json({ success: true }, { status: 200 });

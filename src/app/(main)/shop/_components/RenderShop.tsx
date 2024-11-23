@@ -71,9 +71,17 @@ const prices = [
   { id: 5, option: '50만원 이상' },
 ];
 
+interface RecentSearchProps {
+  recentSearches: string[];
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  setRecentSearches: React.Dispatch<React.SetStateAction<string[]>>;
+  searchFlag: React.MutableRefObject<boolean>;
+  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const RecentSearch = React.memo(
-  ({ recentSearches, setSearchText, setRecentSearches, inputRef, searchFlag, setIsFocused }) => {
-    const handleRecentSearch = search => {
+  ({ recentSearches, setSearchText, setRecentSearches, searchFlag, setIsFocused }: RecentSearchProps) => {
+    const handleRecentSearch = (search: string) => {
       searchFlag.current = false;
       const newRecentSearches = [search, ...recentSearches.filter(item => item !== search)].slice(0, 5);
       setRecentSearches(newRecentSearches);
@@ -137,10 +145,10 @@ interface SearchBarProps {
 const SearchBar = React.memo(
   ({ paramsKeyword, setSearchText, searchFlag, isFocused, setIsFocused }: SearchBarProps) => {
     const [tempSearchText, setTempSearchText] = useState(paramsKeyword);
-    const [recentSearches, setRecentSearches] = useState([]);
-    const inputRef = useRef(null);
-    const searchRef = useRef(null);
-    const searchContainerRef = useRef(null);
+    const [recentSearches, setRecentSearches] = useState<string[]>([]);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
+    const searchContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
       const $nav = document.getElementById('nav');
@@ -191,10 +199,11 @@ const SearchBar = React.memo(
     useEffect(() => {
       const storedSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
       setRecentSearches(storedSearches);
-      const handleClickOutside = event => {
+      const handleClickOutside = (event: MouseEvent) => {
         if (
           inputRef.current &&
           searchRef.current &&
+          event.target instanceof Node &&
           !inputRef.current.contains(event.target) &&
           !searchRef.current.contains(event.target)
         ) {
@@ -212,7 +221,7 @@ const SearchBar = React.memo(
       setTempSearchText(paramsKeyword);
     }, [paramsKeyword]);
 
-    const handleSearch = e => {
+    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       searchFlag.current = false;
       if (tempSearchText.trim() !== '') {
@@ -285,10 +294,8 @@ const SearchBar = React.memo(
               <p className=" border-b">최근 검색어</p>
               <RecentSearch
                 recentSearches={recentSearches}
-                setTempSearchText={setTempSearchText}
                 setSearchText={setSearchText}
                 setRecentSearches={setRecentSearches}
-                inputRef={inputRef}
                 searchFlag={searchFlag}
                 setIsFocused={setIsFocused}
               />
@@ -380,11 +387,11 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
   );
 };
 
-const RenderProductsNum = ({ data, includeBooked }) => {
+const RenderProductsNum = ({ data, includeBooked }: { data: ProductData[][]; includeBooked: boolean }) => {
   const totalCount = data
     ? includeBooked
-      ? data.pages.reduce((acc, page) => acc + page.length, 0)
-      : data.pages.reduce((acc, page) => acc + page.filter(a => a.state === 1).length, 0)
+      ? data.reduce((acc, page) => acc + page.length, 0)
+      : data.reduce((acc, page) => acc + page.filter(product => product.state === 1).length, 0)
     : 0;
   return (
     <>
@@ -410,7 +417,7 @@ const Product = ({ product }) => {
       className="flex flex-col cursor-pointer relative rounded"
       // key={product._id}
       onClick={() => {
-        sessionStorage.setItem('scrollPos', window.scrollY);
+        sessionStorage.setItem('scrollPos', window.scrollY.toString());
       }}
     >
       <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
@@ -478,15 +485,14 @@ const RenderProducts = ({
   }, [params]);
 
   const queryString = createQueryString();
-  const useProducts = queryString => {
-    return useInfiniteQuery({
+  const useProducts = (queryString: string) => {
+    return useInfiniteQuery<ProductData[]>({
       queryKey: ['products', !!queryString.length ? queryString : 'all'],
-      initialPageParam: 0,
+      initialPageParam: 1,
       queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
-      getNextPageParam: (lastPage: ProductData[]) => {
-        if (lastPage.length < 5) return undefined;
-        const lastProduct = lastPage[lastPage.length - 1];
-        return { lastId: lastProduct._id, lastCreatedAt: lastProduct.createdAt };
+      getNextPageParam: (lastPage: ProductData[], allPages: ProductData[][]): number | undefined => {
+        const nextPage = allPages.length + 1;
+        return lastPage?.length < 48 ? undefined : nextPage;
       },
       staleTime: 60 * 1000,
     });
@@ -536,7 +542,7 @@ const RenderProducts = ({
   }
   return (
     <div className="flex-col w-full">
-      <RenderProductsNum data={data} includeBooked={includeBooked} />
+      <RenderProductsNum data={data?.pages} includeBooked={includeBooked} />
       {!isMaxtb && (
         <SelectedFilters
           categoriesState={categoriesState}
