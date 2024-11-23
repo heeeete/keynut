@@ -1,4 +1,4 @@
-const getProducts = async (queryString, pageParam) => {
+const getProducts = async (queryString: string, pageParam) => {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -8,9 +8,8 @@ const getProducts = async (queryString, pageParam) => {
       url += `?${queryString}`;
     }
 
-    if (pageParam) {
-      url += `${queryString ? '&' : '?'}lastPage=${pageParam}`;
-    }
+    url += `${queryString ? '&' : '?'}lastPage=${pageParam}`;
+
     const res = await fetch(url, {
       next: { tags: ['products'] },
     });
