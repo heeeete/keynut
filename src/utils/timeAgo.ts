@@ -1,4 +1,4 @@
-export default function timeAgo(date) {
+export default function timeAgo(date: Date) {
   const now = new Date();
   const createTime = new Date(date).getTime();
 

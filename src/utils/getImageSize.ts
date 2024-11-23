@@ -1,4 +1,4 @@
-const getImageSize = url => {
+const getImageSize = (url: string) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {

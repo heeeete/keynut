@@ -1,4 +1,4 @@
-const initRaiseCount = setRaiseCount => {
+const initRaiseCount = (setRaiseCount: React.Dispatch<React.SetStateAction<number>>) => {
   return () => {
     fetch('/api/user/raise')
       .then(res => res.json())

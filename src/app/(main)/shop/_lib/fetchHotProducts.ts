@@ -1,4 +1,4 @@
-const fetchHotProducts = async category => {
+const fetchHotProducts = async (category: number) => {
   const url = category
     ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/hot?category=${category}`
     : `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/hot`;

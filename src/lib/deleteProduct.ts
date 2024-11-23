@@ -1,5 +1,5 @@
-const deleteProduct = async (id, callback = () => {}) => {
-  let res;
+const deleteProduct = async (id: string, callback: () => void) => {
+  let res: Response | number;
   try {
     res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
     if (res.ok) {
