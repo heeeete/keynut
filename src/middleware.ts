@@ -4,8 +4,8 @@ import { NextResponse } from 'next/server';
 const s = process.env.NEXTAUTH_SECRET;
 
 export async function middleware(req) {
-  const session = await getToken({ req, s });
-  // console.log('--------------------', session);
+  const session = await getToken({ req });
+  // const session = await getToken({ req,s });
 
   const { pathname } = req.nextUrl;
 

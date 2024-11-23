@@ -9,7 +9,7 @@ import { Gowun_Dodum } from 'next/font/google';
 import conditions from '../_constants/conditions';
 import { ProductData } from '@/type/productData';
 
-const title = Gowun_Dodum({ subsets: ['latin'], weight: ['400'] });
+const title = Gowun_Dodum({ subsets: ['latin'], weight: '400' });
 
 const JustIn = () => {
   const { data, error, isLoading } = useQuery<ProductData[]>({

@@ -1,4 +1,4 @@
-const productStateHandler = async (productId, state) => {
+const productStateHandler = async (productId: string, state: number) => {
   let res;
   try {
     res = await fetch(`/api/products/${productId}/state`, {

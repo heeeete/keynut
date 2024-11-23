@@ -1,4 +1,13 @@
-const getUserProducts = async id => {
+import { ProductData } from '@/type/productData';
+import { User } from '@/type/user';
+
+interface ResponseData {
+  provider: 'naver' | 'kakao';
+  userProducts: ProductData[];
+  userProfile: User;
+}
+
+const getUserProducts = async (id: string) => {
   const res = await fetch(`/api/user/${id}/products`, {
     method: 'GET',
   });
@@ -7,7 +16,8 @@ const getUserProducts = async id => {
     console.error('API 요청 실패:', res.status, res.statusText);
     throw new Error('Failed to fetch products');
   }
-  const data = await res.json();
+  const data: ResponseData = await res.json();
+
   return data;
 };
 

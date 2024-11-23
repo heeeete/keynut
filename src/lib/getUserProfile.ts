@@ -1,4 +1,6 @@
-const getUserProfile = async id => {
+import { User } from '@/type/user';
+
+const getUserProfile = async (id: string) => {
   if (id.length !== 24) return null;
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/${id}/profile`, {
     method: 'GET',
@@ -9,7 +11,8 @@ const getUserProfile = async id => {
     console.error('API 요청 실패:', res.status, res.statusText);
     throw new Error('Failed to fetch profile');
   }
-  const data = await res.json();
+  const data: User = await res.json();
+
   return data;
 };
 

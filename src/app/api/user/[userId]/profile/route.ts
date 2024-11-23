@@ -1,6 +1,7 @@
 import { connectDB } from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
+import { User } from '@/type/user';
 
 interface Params {
   params: {
@@ -17,7 +18,7 @@ export async function GET(req, { params }: Params) {
     const users = db.collection('users');
     const { userId } = params;
     // console.log('_______________', userId);)
-    const user = await users.findOne({ _id: new ObjectId(userId) });
+    const user: User = await users.findOne({ _id: new ObjectId(userId) });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
