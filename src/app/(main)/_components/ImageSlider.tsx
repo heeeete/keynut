@@ -7,13 +7,25 @@ import PhotoSwipe from 'photoswipe';
 import getImageSize from '@/utils/getImageSize';
 import { useUser } from './UserProvider';
 
-export default function ImageSlider({ images, state }) {
+interface Image {
+  name: string;
+  height: number;
+  width: number;
+}
+
+interface Props {
+  images: Image[];
+  state: number;
+}
+
+export default function ImageSlider({ images, state }: Props) {
   const pswpRef = useRef(null); // PhotoSwipe 인스턴스를 저장할 ref
   const { user } = useUser();
 
-  const initPhotoSwipe = async (index, imageShow, eventFunc) => {
+  const initPhotoSwipe = async (index: number, imageShow: HTMLDivElement, eventFunc: (e: TouchEvent) => void) => {
+    console.log(index, imageShow, eventFunc);
     if (imageShow) imageShow.removeEventListener('touchstart', eventFunc);
-    const options = { showHideAnimationType: 'fade', errorMsg: '이미지를 찾을 수 없습니다.' };
+    const options: Record<string, any> = { showHideAnimationType: 'fade', errorMsg: '이미지를 찾을 수 없습니다.' };
     const imageSrc = images.map(img => ({
       ...img,
       src: `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${img.name}`,
