@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
-export default function CustomDropdownMenu({ placeholder, values, onChange = e => {} }) {
+interface Props {
+  placeholder: string;
+  values: string[];
+  onChange: (idx: number) => void;
+}
+
+export default function CustomDropdownMenu({ placeholder, values, onChange }: Props) {
   const [isDropDown, setIsDropDown] = useState(false);
   const [state, setState] = useState(0);
   const posY = useRef(0);

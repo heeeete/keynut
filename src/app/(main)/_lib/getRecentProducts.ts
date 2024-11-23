@@ -1,3 +1,5 @@
+import { ProductData } from '@/type/productData';
+
 const getRecentProducts = async () => {
   try {
     console.log('recent Products prefetchQuery 실행');
@@ -9,7 +11,7 @@ const getRecentProducts = async () => {
       console.error('API 요청 실패:', res.status, res.statusText);
       throw new Error('Failed to fetch products');
     }
-    const data = await res.json();
+    const data: ProductData[] = await res.json();
     return data;
   } catch (error) {
     console.error('recent Products prefetchQuery 실행 중 에러 발생:', error);

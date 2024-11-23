@@ -1,6 +1,6 @@
-const formatDate = createdAt => {
+const formatDate = (createdAt: string) => {
   const date = new Date(createdAt);
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long', // 월을 길게 표시
     day: 'numeric',

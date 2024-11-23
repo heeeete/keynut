@@ -10,7 +10,6 @@ import userBanHandler from '../_lib/userBanHandler';
 import { User } from '@/type/user';
 
 interface ExtendedUser extends User {
-  provider: string;
   providerAccountId: string;
   state: number;
 }
