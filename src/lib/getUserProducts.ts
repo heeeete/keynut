@@ -1,11 +1,6 @@
 import { ProductData } from '@/type/productData';
 import { User } from '@/type/user';
-
-interface ResponseData {
-  provider: 'naver' | 'kakao';
-  userProducts: ProductData[];
-  userProfile: User;
-}
+import { UserData } from '@/type/userData';
 
 const getUserProducts = async (id: string) => {
   const res = await fetch(`/api/user/${id}/products`, {
@@ -16,7 +11,7 @@ const getUserProducts = async (id: string) => {
     console.error('API 요청 실패:', res.status, res.statusText);
     throw new Error('Failed to fetch products');
   }
-  const data: ResponseData = await res.json();
+  const data: UserData = await res.json();
 
   return data;
 };
