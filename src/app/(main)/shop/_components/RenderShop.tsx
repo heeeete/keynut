@@ -523,7 +523,6 @@ const RenderProducts = ({
 
   useEffect(() => {
     if (inView && !isFetching && hasNextPage) {
-      console.log('hahaha');
       fetchNextPage();
     }
   }, [inView, fetchNextPage]);
