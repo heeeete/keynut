@@ -15,7 +15,5 @@ export default async function adminGetProducts(
     },
   );
   const data = await response.json();
-
-  console.log(data);
   return data;
 }

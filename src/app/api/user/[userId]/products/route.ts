@@ -29,7 +29,6 @@ export async function GET(req, { params }: Params) {
 
     const { provider } = await accounts.findOne({ userId: new ObjectId(userId) });
 
-    // console.log('------provider-----', provider);
     // 사용자 제품 정보를 가져옴
     const userProducts = await products
       .find({ _id: { $in: user.products || [] } }) // products 배열이 비어 있을 경우를 대비

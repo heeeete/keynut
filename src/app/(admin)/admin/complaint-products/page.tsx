@@ -104,15 +104,12 @@ interface Products {
 }
 
 interface TaskbarProps {
-  data: Products;
-  page: number;
   selectedProducts: SelectedProducts;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   dataRefetch: () => void;
 }
 
-const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }: TaskbarProps) => {
-  console.log(data);
+const Taskbar = ({ selectedProducts, setIsLoading, dataRefetch }: TaskbarProps) => {
   const onClickDelete = async () => {
     setIsLoading(true);
     const formData = new FormData();
@@ -367,13 +364,7 @@ export default function Products() {
     <div className={`${navStatus ? 'pl-72' : 'pl-14'} w-full h-full`}>
       <div className={`${navStatus ? 'max-w-screen-xl' : 'max-w-screen-2xl'} w-full mx-auto h-full `}>
         <article className="py-7 h-full">
-          <Taskbar
-            data={data}
-            page={page}
-            selectedProducts={selectedProducts}
-            setIsLoading={setIsLoading}
-            dataRefetch={dataRefetch}
-          />
+          <Taskbar selectedProducts={selectedProducts} setIsLoading={setIsLoading} dataRefetch={dataRefetch} />
           <Table
             data={data}
             selectAll={selectAll}
