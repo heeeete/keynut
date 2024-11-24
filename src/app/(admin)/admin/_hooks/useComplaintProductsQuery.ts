@@ -15,7 +15,6 @@ const useComplaintProductsQuery = (page = 1, PAGE_SIZE: number) => {
       const offset = (page - 1) * PAGE_SIZE;
       const res = await fetch(`/api/admin/products/complaint?offset=${offset}&&limit=${PAGE_SIZE}`);
       const data = await res.json();
-      console.log(data);
       return data;
     },
     enabled: page !== undefined,

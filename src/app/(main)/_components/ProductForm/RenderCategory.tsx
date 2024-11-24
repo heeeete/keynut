@@ -8,8 +8,8 @@ import baseCategory from '../../_constants/productPage/baseCategories';
 interface Props {
   mainCategory: number;
   subCategory: number;
-  setMainCategory: React.Dispatch<React.SetStateAction<number>>
-  setSubCategory: React.Dispatch<React.SetStateAction<number>>
+  setMainCategory: React.Dispatch<React.SetStateAction<number>>;
+  setSubCategory: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }: Props) => {

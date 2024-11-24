@@ -1,7 +1,6 @@
 import { User } from '@/type/user';
 
 interface ExtendsUser extends User {
-  provider: string;
   providerAccountId: string;
   state: number;
 }

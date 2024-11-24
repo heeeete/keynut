@@ -58,7 +58,6 @@ export async function GET(req: Request) {
     ];
 
     const products: Data[] | [] = await productsCollection.aggregate(pipeline).toArray();
-    console.log(products);
     return NextResponse.json({ products }, { status: 200 });
   } catch (error) {
     console.error(error);

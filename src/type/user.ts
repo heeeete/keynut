@@ -1,18 +1,19 @@
 export interface User {
-  id: string;
+  id?: string;
+  _id?: string;
   name: null | string;
   email: string;
   image: null | string;
   emailVerified: null;
   nickname: string;
-  createdAt: Date;
-  lastRaiseReset: Date;
+  createdAt: string;
+  lastRaiseReset: string;
   raiseCount: number;
   state: number;
   openChatUrl?: string;
   products?: string[];
   memo?: { [key: string]: string };
-  nicknameChangedAt?: Date;
+  nicknameChangedAt?: string;
   bookmarked?: string[];
-  provider: 'kakao' | 'naver';
+  provider?: 'kakao' | 'naver';
 }

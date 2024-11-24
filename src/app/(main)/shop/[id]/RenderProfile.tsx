@@ -179,7 +179,7 @@ const Memo = ({ status, data, session }) => {
   );
 };
 
-const UserProfile = React.memo(({ data, provider }: { data: User; provider: 'kakao' | 'google' }) => {
+const UserProfile = React.memo(({ data, provider }: { data: User; provider: 'kakao' | 'naver' }) => {
   const { data: session, status, update } = useSession();
 
   return (

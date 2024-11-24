@@ -10,7 +10,6 @@ import userBanHandler from '../_lib/userBanHandler';
 import { User } from '@/type/user';
 
 interface ExtendedUser extends User {
-  provider: string;
   providerAccountId: string;
   state: number;
 }
@@ -279,7 +278,6 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
 
   const handleSelectUser = useCallback(
     (idx: number, user: Partial<ExtendedUser>) => {
-      console.log(user);
       if (selectedUsers[idx]) {
         const newObj = { ...selectedUsers };
         delete newObj[idx];
