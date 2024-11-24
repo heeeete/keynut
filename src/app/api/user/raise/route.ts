@@ -20,7 +20,9 @@ export async function GET() {
     const kstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
     const nowDate = kstNow.toISOString().split('T')[0];
 
-    const lastRaiseResetDate = new Date(lastRaiseReset.getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const lastRaiseResetDate = new Date(new Date(lastRaiseReset).getTime() + 9 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0];
 
     if (nowDate === lastRaiseResetDate) {
       return NextResponse.json(raiseCount, { status: 200 });
