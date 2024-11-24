@@ -6,14 +6,14 @@ export interface User {
   image: null | string;
   emailVerified: null;
   nickname: string;
-  createdAt: Date;
-  lastRaiseReset: Date;
+  createdAt: string;
+  lastRaiseReset: string;
   raiseCount: number;
   state: number;
   openChatUrl?: string;
   products?: string[];
   memo?: { [key: string]: string };
-  nicknameChangedAt?: Date;
+  nicknameChangedAt?: string;
   bookmarked?: string[];
   provider?: 'kakao' | 'naver';
 }

@@ -63,7 +63,7 @@ const Product = ({ product }: { product: ProductData }) => {
         </div>
       </div>
       <div className="flex absolute bottom-2 right-3 space-x-2 items-center text-xs">
-        <p className="text-gray-400">{timeAgo(new Date(product.createdAt))}</p>
+        <p className="text-gray-400">{timeAgo(product.createdAt)}</p>
         <div className="flex justify-center items-center">
           <div className="max-md:w-4 md:w-3">
             <svg className="" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32">
