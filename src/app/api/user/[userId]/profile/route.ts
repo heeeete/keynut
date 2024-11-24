@@ -17,7 +17,6 @@ export async function GET(req, { params }: Params) {
     const db = client.db(process.env.MONGODB_NAME);
     const users = db.collection('users');
     const { userId } = params;
-    // console.log('_______________', userId);)
     const user: User = await users.findOne({ _id: new ObjectId(userId) });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });

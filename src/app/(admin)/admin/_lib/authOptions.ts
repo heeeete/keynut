@@ -206,7 +206,6 @@ export const authOptions = {
       const db = client.db(process.env.MONGODB_NAME);
 
       const isBanned = await checkBannedEmail(user.email, db);
-      console.log(isBanned);
       if (isBanned) {
         const { email, expires_at } = isBanned;
         if (expires_at && new Date(expires_at * 1000) <= new Date()) userBanHandler(email, 1);
@@ -220,7 +219,6 @@ export const authOptions = {
       const db = client.db(process.env.MONGODB_NAME);
 
       if (user) {
-        // console.log('===========', user);
         delete user.products;
         token.user = user;
         if (user.email === process.env.ADMIN_EMAIL) token.admin = true;
@@ -236,7 +234,6 @@ export const authOptions = {
       }
 
       if (account) {
-        // console.log('===========', account);
         const userDoc = await db.collection('users').findOne({ _id: new ObjectId(user.id) });
         token.user.nickname = userDoc.nickname;
         token.user.createdAt = userDoc.createdAt;

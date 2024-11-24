@@ -2,7 +2,6 @@ import { ProductData } from '@/type/productData';
 
 const getRecentProducts = async () => {
   try {
-    console.log('recent Products prefetchQuery 실행');
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const res = await fetch(`${baseUrl}/api/products/recent`, {
       next: { tags: ['products'] },

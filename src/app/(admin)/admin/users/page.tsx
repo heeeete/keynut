@@ -278,7 +278,6 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
 
   const handleSelectUser = useCallback(
     (idx: number, user: Partial<ExtendedUser>) => {
-      console.log(user);
       if (selectedUsers[idx]) {
         const newObj = { ...selectedUsers };
         delete newObj[idx];

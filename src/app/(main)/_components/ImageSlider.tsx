@@ -23,7 +23,6 @@ export default function ImageSlider({ images, state }: Props) {
   const { user } = useUser();
 
   const initPhotoSwipe = async (index: number, imageShow: HTMLDivElement, eventFunc: (e: TouchEvent) => void) => {
-    console.log(index, imageShow, eventFunc);
     if (imageShow) imageShow.removeEventListener('touchstart', eventFunc);
     const options: Record<string, any> = { showHideAnimationType: 'fade', errorMsg: '이미지를 찾을 수 없습니다.' };
     const imageSrc = images.map(img => ({

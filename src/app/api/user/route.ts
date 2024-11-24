@@ -104,7 +104,6 @@ export async function PUT(req: Request) {
       const regex = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]+$/;
 
       if (!regex.test(nickname) || nickname.length < 2 || nickname.length > 10) {
-        console.log(nickname.length, regex.test(nickname));
         return NextResponse.json('invalid', { status: 400 });
       }
       const res = await users.updateOne(

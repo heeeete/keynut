@@ -153,8 +153,6 @@ export async function PUT(req: Request) {
     const formData = await req.formData();
     const deleteFiles = formData.getAll('deleteFiles');
 
-    console.log(deleteFiles);
-
     await Promise.all(
       deleteFiles.map(file => {
         const params = {
