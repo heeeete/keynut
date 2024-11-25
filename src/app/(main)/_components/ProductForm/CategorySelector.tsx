@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import RenderSubcategories from './RenderSubcategories';
-import './renderCategory.css';
+import Subcategories from './Subcategories';
+import './categorySelector.css';
 import baseCategory from '../../_constants/productPage/baseCategories';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
   setSubCategory: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }: Props) => {
+const CategorySelector = React.memo(({ mainCategory, subCategory, setMainCategory, setSubCategory }: Props) => {
   const handleMainCategoryClick = useCallback((id: number) => {
     setMainCategory(id);
     if (id !== 9 && id !== 4 && id !== 5) setSubCategory(id * 10);
@@ -76,7 +76,7 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
               </li>
             </ul>
             <ul className="scroll-bar flex-1 overflow-auto text-lg cursor-pointer text-center max-[480px]:text-base">
-              <RenderSubcategories
+              <Subcategories
                 mainCategory={mainCategory}
                 subCategory={subCategory}
                 handleSubCategoryClick={handleSubCategoryClick}
@@ -89,4 +89,4 @@ const RenderCategory = React.memo(({ mainCategory, subCategory, setMainCategory,
   );
 });
 
-export default RenderCategory;
+export default CategorySelector;

@@ -7,7 +7,7 @@ interface Props {
   setPrice: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const RenderPriceInput = React.memo(({ price, setPrice }: Props) => {
+const PriceInput = React.memo(({ price, setPrice }: Props) => {
   const handlePrice = useCallback(e => {
     const value = e.target.value.replace(/,/g, '');
     if (!isNaN(value) && value.length <= 9) {
@@ -34,4 +34,4 @@ const RenderPriceInput = React.memo(({ price, setPrice }: Props) => {
   );
 });
 
-export default RenderPriceInput;
+export default PriceInput;

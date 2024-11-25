@@ -22,9 +22,10 @@ export async function generateMetadata({ params }: ProductProps) {
       description: product ? `${product.description}` : '상품을 찾을 수 없습니다.',
       images: [
         {
-          url: product
-            ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
-            : `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`,
+          url:
+            product && product.images.length
+              ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
+              : `${process.env.NEXT_PUBLIC_BASE_URL}/keynut.png`,
           width: 500,
           height: 500,
           alt: 'KEYNUT Logo',

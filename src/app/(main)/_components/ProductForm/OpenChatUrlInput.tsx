@@ -7,10 +7,10 @@ interface Props {
   openChatUrl: string;
   setOpenChatUrl: React.Dispatch<React.SetStateAction<string>>;
   isValidOpenChat: boolean;
-  setIsValidOpenChat: React.Dispatch<React.SetStateAction<boolean>>
+  setIsValidOpenChat: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isValidOpenChat, setIsValidOpenChat }: Props) => {
+const OpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isValidOpenChat, setIsValidOpenChat }: Props) => {
   const onChangeHandler = value => {
     setOpenChatUrl(value);
     if (value && !value.startsWith('https://open.kakao.com/')) setIsValidOpenChat(false);
@@ -78,4 +78,4 @@ const RenderOpenChatUrlInput = React.memo(({ openChatUrl, setOpenChatUrl, isVali
   );
 });
 
-export default RenderOpenChatUrlInput;
+export default OpenChatUrlInput;

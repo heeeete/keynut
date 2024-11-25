@@ -5,11 +5,10 @@ import React from 'react';
 interface Props {
   mainCategory: number;
   subCategory: number;
-  handleSubCategoryClick: (id: number) => void
+  handleSubCategoryClick: (id: number) => void;
 }
 
-
-const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }: Props) => {
+const Subcategories = React.memo(({ mainCategory, subCategory, handleSubCategoryClick }: Props) => {
   switch (mainCategory) {
     case 1:
       return (
@@ -133,4 +132,4 @@ const RenderSubcategories = React.memo(({ mainCategory, subCategory, handleSubCa
   }
 });
 
-export default RenderSubcategories;
+export default Subcategories;
