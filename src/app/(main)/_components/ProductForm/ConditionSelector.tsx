@@ -4,10 +4,10 @@ import React, { useCallback } from 'react';
 
 interface Props {
   condition: number;
-  setCondition: React.Dispatch<React.SetStateAction<number>>
+  setCondition: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const RenderCondition = React.memo(({ condition, setCondition }: Props) => {
+const ConditionSelector = React.memo(({ condition, setCondition }: Props) => {
   const handleConditionClick = useCallback(id => {
     setCondition(id);
   }, []);
@@ -78,4 +78,4 @@ const RenderCondition = React.memo(({ condition, setCondition }: Props) => {
   );
 });
 
-export default RenderCondition;
+export default ConditionSelector;

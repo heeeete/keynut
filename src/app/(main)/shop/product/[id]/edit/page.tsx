@@ -11,126 +11,22 @@ import Loading from '@/app/(main)/_components/Loading';
 import { useModal } from '@/app/(main)/_components/ModalProvider';
 import uploadToS3 from '@/lib/uploadToS3';
 import getSignedUrls from '@/lib/getSignedUrls';
-import RenderImageUploadButton from '@/app/(main)/_components/ProductForm/RenderImageUploadButton';
-import RenderTitle from '@/app/(main)/_components/ProductForm/RenderTitle';
-import RenderCategory from '@/app/(main)/_components/ProductForm/RenderCategory';
-import RenderCondition from '@/app/(main)/_components/ProductForm/RenderCondition';
-import RenderDescriptionInput from '@/app/(main)/_components/ProductForm/RenderDescriptionInput';
-import RenderPriceInput from '@/app/(main)/_components/ProductForm/RenderPriceInput';
-import RenderOpenChatUrlInput from '@/app/(main)/_components/ProductForm/RenderOpenChatUrlInput';
-import RenderHashTagInputWithTag from '@/app/(main)/_components/ProductForm/RenderHashTagInputWithTag';
+import ImageUploadButton from '@/app/(main)/_components/ProductForm/ImageUploadButton';
+import TitleInput from '@/app/(main)/_components/ProductForm/TitleInput';
+import Category from '@/app/(main)/_components/ProductForm/CategorySelector';
+import Condition from '@/app/(main)/_components/ProductForm/ConditionSelector';
+import DescriptionInput from '@/app/(main)/_components/ProductForm/DescriptionInput';
+import PriceInput from '@/app/(main)/_components/ProductForm/PriceInput';
+import OpenChatUrlInput from '@/app/(main)/_components/ProductForm/OpenChatUrlInput';
+import HashTagInputWithTag from '@/app/(main)/_components/ProductForm/HashTagInputWithTag';
 import { ProductData } from '@/type/productData';
-
-interface UploadImagesProps {
-  imageFiles: { name?: string; file?: File; width: number; height: number }[]; // 문자열과 숫자의 튜플 배열
-  imageUrls: string[];
-}
-
-interface UploadImagesHookProps {
-  uploadImages: UploadImagesProps;
-  setUploadImages: React.Dispatch<React.SetStateAction<UploadImagesProps>>;
-  setDeleteImages: React.Dispatch<React.SetStateAction<string[]>>;
-}
-
-const RenderDNDImages = React.memo(({ uploadImages, setUploadImages, setDeleteImages }: UploadImagesHookProps) => {
-  const removeImage = useCallback(
-    (idx: number) => {
-      if (!uploadImages.imageUrls[idx].startsWith('blol'))
-        setDeleteImages(curr => [...curr, uploadImages.imageUrls[idx]]);
-
-      const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
-      const newImageUrls = uploadImages.imageUrls.filter((_, index) => index !== idx);
-      setUploadImages({
-        imageFiles: newImageFiles,
-        imageUrls: newImageUrls,
-      });
-    },
-    [uploadImages.imageFiles, uploadImages.imageUrls, setDeleteImages, setUploadImages],
-  );
-
-  const onDragEnd = useCallback(
-    (result: DropResult) => {
-      if (!result.destination) return;
-
-      const newImageFiles = Array.from(uploadImages.imageFiles);
-      const newImageUrls = Array.from(uploadImages.imageUrls);
-
-      const [removedFile] = newImageFiles.splice(result.source.index, 1);
-      const [removedUrl] = newImageUrls.splice(result.source.index, 1);
-
-      newImageFiles.splice(result.destination.index, 0, removedFile);
-      newImageUrls.splice(result.destination.index, 0, removedUrl);
-
-      setUploadImages({
-        imageFiles: newImageFiles,
-        imageUrls: newImageUrls,
-      });
-    },
-    [uploadImages.imageFiles, uploadImages.imageUrls, setUploadImages],
-  );
-
-  const draggableItems = useMemo(
-    () =>
-      uploadImages.imageUrls.map((url, idx) => (
-        <Draggable key={idx} draggableId={`draggable-${idx}`} index={idx}>
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              className="relative min-w-28 max-w-56 w-56 aspect-square mr-2 max-md:w-28"
-            >
-              <Image
-                src={!url.startsWith('blob') ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${url}` : url}
-                fill
-                alt={`item-${idx}`}
-                className="rounded border"
-                style={{ objectFit: 'cover' }}
-                sizes="(max-width: 768px) 256px, 384px"
-              />
-              {idx === 0 && (
-                <div className="absolute bg-black left-1 top-1 p-1 rounded-xl bg-opacity-50 text-xxs text-white">
-                  대표이미지
-                </div>
-              )}
-              <button onClick={() => removeImage(idx)} title="remove-image-btn">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="1.5em"
-                  height="1.5em"
-                  viewBox="0 0 24 24"
-                  className="absolute opacity-50 right-1 top-1"
-                >
-                  <path
-                    fill="black"
-                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41L8.41 7L12 10.59L15.59 7L17 8.41L13.41 12z"
-                  />
-                </svg>
-              </button>
-            </div>
-          )}
-        </Draggable>
-      )),
-    [uploadImages.imageUrls, removeImage],
-  );
-
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable" direction="horizontal">
-        {(provided, snapshot) => (
-          <div ref={provided.innerRef} className="flex overflow-auto scrollbar-hide" {...provided.droppableProps}>
-            {draggableItems}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
-  );
-});
+import validateProductForm from '@/app/(main)/sell/utils/validateProductForm';
+import { EditUploadImagesProps } from './_type/editUploadImagesProps';
+import DNDImages from './_components/DNDImages';
 
 export default function Edit() {
   const { id } = useParams();
-  const [uploadImages, setUploadImages] = useState<UploadImagesProps>({
+  const [uploadImages, setUploadImages] = useState<EditUploadImagesProps>({
     imageFiles: [],
     imageUrls: [],
   });
@@ -189,38 +85,10 @@ export default function Edit() {
     };
 
     if (data) originalDataInit();
-  }, [status, session, data, router]);
+  }, [status, session, data]);
 
-  const handleUpload = async () => {
-    if (
-      !uploadImages.imageUrls.length ||
-      !title.trim().length ||
-      !mainCategory ||
-      (mainCategory !== 9 && !subCategory) ||
-      !price.length ||
-      !condition ||
-      !description.trim().length ||
-      !isValidOpenChat
-    ) {
-      openModal({
-        message: `필수 항목을 입력해주세요.`,
-      });
-      return;
-    } else if (!openChatUrl) {
-      const result = await openModal({
-        message: '오픈 채팅방 주소가 없습니다. 계속 진행하시겠습니까?',
-        subMessage: '오픈 채팅방 주소를 입력하지 않으면, 상품에 대한 문의 및 대화를 위해 다른 수단을 제공해야 합니다.',
-        isSelect: true,
-        size: 'w-80',
-      });
-
-      if (!result) return;
-    }
-
-    setUploadLoading(true);
-
-    const newImageIdx = [];
-    const imageDetails = uploadImages.imageFiles.map((file, idx) => {
+  const getImageDetails = (newImageIdx: number[]) => {
+    return uploadImages.imageFiles.map((file, idx) => {
       if (file.name === undefined) {
         newImageIdx.push(idx);
         return {
@@ -230,57 +98,97 @@ export default function Edit() {
         };
       } else return file;
     });
+  };
 
-    const { urls, status } = await getSignedUrls(imageDetails.filter((e, idx) => newImageIdx.includes(idx)));
-    if (status !== 200) {
-      await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
-      setUploadLoading(false);
+  const batchUploadToS3 = async (urls: string[], newImageIdx: number[]) => {
+    await Promise.all(urls.map((url, idx) => uploadToS3(url, uploadImages.imageFiles[newImageIdx[idx]])));
+  };
+
+  const generateFormData = imageDetails => {
+    const tempFrom = new FormData();
+    deleteImages.forEach(file => {
+      tempFrom.append('deleteFiles', file);
+    });
+    tempFrom.append('imageDetails', JSON.stringify(imageDetails));
+    tempFrom.append('title', title.replace(/ +/g, ' ').trim());
+    tempFrom.append('subCategory', subCategory.toString());
+    tempFrom.append('condition', condition.toString());
+    tempFrom.append('description', description);
+    tempFrom.append('openChatUrl', openChatUrl.trim());
+    tempFrom.append('price', price.replaceAll(',', ''));
+    tempFrom.append('tags', JSON.stringify(tags));
+    tempFrom.append('id', id.toString());
+    return tempFrom;
+  };
+
+  const putProduct = async (formData: FormData) => {
+    const res = await fetch('/api/products', {
+      method: 'PUT',
+      body: formData,
+    });
+    return res;
+  };
+
+  const uploadProduct = async (formData: FormData) => {
+    const res = await putProduct(formData);
+    if (res.ok) {
+      update({ openChatUrl: openChatUrl });
+      invalidateFilters(['product', id]);
+      router.push(`/shop/product/${id}`);
+      router.refresh();
       return;
     }
 
-    await Promise.all(
-      urls.map(async (url, idx) => {
-        await uploadToS3(url, uploadImages.imageFiles[newImageIdx[idx]]);
-      }),
-    );
+    if (res.status === 401) {
+      await openModal({ message: '로그인이 만료되었습니다. 다시 로그인해 주세요.' });
+      signIn();
+    } else {
+      const errorData = await res.json();
+      throw new Error(errorData.error);
+    }
+  };
 
-    const formData = new FormData();
-    deleteImages.forEach(file => {
-      formData.append('deleteFiles', file);
-    });
-    formData.append('imageDetails', JSON.stringify(imageDetails));
-    formData.append('title', title.replace(/ +/g, ' ').trim());
-    formData.append('subCategory', subCategory.toString());
-    formData.append('condition', condition.toString());
-    formData.append('description', description);
-    formData.append('openChatUrl', openChatUrl.trim());
-    formData.append('price', price.replaceAll(',', ''));
-    formData.append('tags', JSON.stringify(tags));
-    formData.append('id', id.toString());
+  const getSignedUrlAndUploadImages = async (imageDetails, newImageIdx: number[]) => {
+    const { urls, status } = await getSignedUrls(imageDetails.filter((e, idx) => newImageIdx.includes(idx)));
+    if (status !== 200) {
+      throw new Error('getSignedUrl 생성 실패');
+    }
+    await batchUploadToS3(urls, newImageIdx);
+  };
 
+  const formGenerateAndUploadProduct = async imageDetails => {
+    const formData = generateFormData(imageDetails);
+    await uploadProduct(formData);
+  };
+
+  const handleUpload = async () => {
+    // 폼 양식 확인하고 모달 띄우기
     try {
-      const res = await fetch('/api/products', {
-        method: 'PUT',
-        body: formData,
-      });
-
-      if (res.ok) {
-        update({ openChatUrl: openChatUrl });
-        invalidateFilters(['product', id]);
-        router.push(`/shop/product/${id}`);
-        router.refresh();
-      } else if (res.status === 401) {
-        await openModal({ message: '로그인이 만료되었습니다. 다시 로그인해 주세요.' });
-        signIn();
-      } else {
-        const data = await res.json();
-        const errorData = await res.json();
-        console.error(errorData.error);
-        await openModal({ message: '상품 수정에 실패했습니다. 나중에 다시 시도해주세요.' });
+      const result = await validateProductForm(
+        uploadImages,
+        title,
+        mainCategory,
+        subCategory,
+        price,
+        condition,
+        description,
+        openChatUrl,
+        isValidOpenChat,
+        openModal,
+      );
+      if (!result) {
+        return;
       }
+
+      setUploadLoading(true);
+
+      const newImageIdx = [];
+      const imageDetails = getImageDetails(newImageIdx);
+      await getSignedUrlAndUploadImages(imageDetails, newImageIdx);
+      await formGenerateAndUploadProduct(imageDetails);
     } catch (error) {
-      console.error('Error edit files:', error);
-      await openModal({ message: '상품을 수정하는 도중 에러가 발생했습니다. 나중에 다시 시도해 주세요.' });
+      console.error(error);
+      await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
     } finally {
       setUploadLoading(false);
     }
@@ -289,32 +197,28 @@ export default function Edit() {
   return (
     <div className="max-w-screen-lg px-10 mx-auto max-md:px-2 max-md:main-768">
       {uploadLoading && <Loading />}
-      <RenderImageUploadButton uploadImages={uploadImages} setUploadImages={setUploadImages} />
-      <RenderDNDImages
-        uploadImages={uploadImages}
-        setUploadImages={setUploadImages}
-        setDeleteImages={setDeleteImages}
-      />
-      <RenderTitle title={title} setTitle={setTitle} />
-      <RenderHashTagInputWithTag tags={tags} setTags={setTags} />
+      <ImageUploadButton uploadImages={uploadImages} setUploadImages={setUploadImages} />
+      <DNDImages uploadImages={uploadImages} setUploadImages={setUploadImages} setDeleteImages={setDeleteImages} />
+      <TitleInput title={title} setTitle={setTitle} />
+      <HashTagInputWithTag tags={tags} setTags={setTags} />
       <div className="flex flex-1 justify-between my-3 max-md:flex-col">
-        <RenderCategory
+        <Category
           mainCategory={mainCategory}
           subCategory={subCategory}
           setMainCategory={setMainCategory}
           setSubCategory={setSubCategory}
         />
-        <RenderCondition condition={condition} setCondition={setCondition} />
+        <Condition condition={condition} setCondition={setCondition} />
       </div>
 
-      <RenderDescriptionInput description={description} setDescription={setDescription} subCategory={subCategory} />
-      <RenderOpenChatUrlInput
+      <DescriptionInput description={description} setDescription={setDescription} subCategory={subCategory} />
+      <OpenChatUrlInput
         openChatUrl={openChatUrl}
         setOpenChatUrl={setOpenChatUrl}
         isValidOpenChat={isValidOpenChat}
         setIsValidOpenChat={setIsValidOpenChat}
       />
-      <RenderPriceInput price={price} setPrice={setPrice} />
+      <PriceInput price={price} setPrice={setPrice} />
 
       <div className="w-full flex justify-end">
         <button className="bg-black text-white font-extrabold px-7 py-4 rounded ml-auto" onClick={handleUpload}>

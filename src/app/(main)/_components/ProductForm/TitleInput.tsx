@@ -3,10 +3,10 @@ import React, { useCallback } from 'react';
 
 interface Props {
   title: string;
-  setTitle: React.Dispatch<React.SetStateAction<string>>
+  setTitle: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const RenderTitle = React.memo(({ title, setTitle }: Props) => {
+const TitleInput = React.memo(({ title, setTitle }: Props) => {
   const onChangeTitle = useCallback(e => {
     setTitle(e.target.value);
   }, []);
@@ -31,4 +31,4 @@ const RenderTitle = React.memo(({ title, setTitle }: Props) => {
   );
 });
 
-export default RenderTitle;
+export default TitleInput;

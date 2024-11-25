@@ -29,7 +29,7 @@ import { ProductData } from '@/type/productData';
 import { User } from '@/type/user';
 import { OpenModal } from '@/type/modal';
 
-const RenderCondition = ({ condition }) => {
+const Condition = ({ condition }) => {
   return (
     <div className="flex space-x-2 justify-center items-center">
       <div className="flex  items-center space-x-2">
@@ -41,7 +41,7 @@ const RenderCondition = ({ condition }) => {
   );
 };
 
-const RenderCategory = ({ category }) => {
+const Category = ({ category }) => {
   let mainCategory = { key: 0, value: '' };
 
   if (category >= 10 && category <= 19) mainCategory = { key: 1, value: '키보드' };
@@ -324,8 +324,9 @@ const UpButton = ({
   };
   return (
     <button
-      className={`min-[480px]:flex-1 min-[480px]:max-w-44 min-[480px]:px-4 min-[480px]:py-1 min-[480px]:border min-[480px]:rounded min-[480px]:border-gray-300 flex items-center justify-center font-semibold flex-nowrap whitespace-nowrap  max-[480px]:w-full max-[480px]:py-4 max-[480px]:border-b  ${state !== 1 ? 'text-gray-300' : 'text-black'
-        }`}
+      className={`min-[480px]:flex-1 min-[480px]:max-w-44 min-[480px]:px-4 min-[480px]:py-1 min-[480px]:border min-[480px]:rounded min-[480px]:border-gray-300 flex items-center justify-center font-semibold flex-nowrap whitespace-nowrap  max-[480px]:w-full max-[480px]:py-4 max-[480px]:border-b  ${
+        state !== 1 ? 'text-gray-300' : 'text-black'
+      }`}
       onClick={() => openUpModal()}
       disabled={state === 0 || state === 2}
     >
@@ -466,8 +467,9 @@ const ComplainModal = ({ setComplainModal, productId }) => {
         </div>
         <div className="bg-gray-100 border rounded">
           <textarea
-            className={`${state === 0 && 'cursor-not-allowed'
-              } w-full scrollbar-hide p-2 resize-none bg-gray-100 outline-none`}
+            className={`${
+              state === 0 && 'cursor-not-allowed'
+            } w-full scrollbar-hide p-2 resize-none bg-gray-100 outline-none`}
             placeholder={state > 0 ? descriptions[state - 1] : placeholder}
             rows={10}
             maxLength={1000}
@@ -613,7 +615,7 @@ export default function RenderProduct({ id }): JSX.Element {
     <div className="min-[960px]:mt-5 min-[960px]:flex-1 min-[960px]:px-10 max-w-screen-lg mx-auto min-h-80vh max-[960px]:max-w-screen-md max-[960px]:max-w- max-[960px]:mt-12">
       {session?.admin && <div className="font-extrabold text-3xl">ADMIN ACCOUNT</div>}
       <div className="flex items-end justify-between max-[960px]:py-3 max-[960px]:px-3">
-        <RenderCategory category={Number(product.category)} />
+        <Category category={Number(product.category)} />
         {/* 글쓴이 || 어드민 계정 */}
         <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
         {!writer && status !== 'loading' && (
@@ -669,7 +671,7 @@ export default function RenderProduct({ id }): JSX.Element {
                 </div>
               </div>
               <div className="flex w-full justify-between text-sm text-gray-500 font-semibold">
-                <RenderCondition condition={Number(product.condition)} />
+                <Condition condition={Number(product.condition)} />
                 <div className="flex space-x-2 font-normal text-gray-400">
                   <RenderTimeAgo date={product.createdAt} />
                   <RenderBookMark bookmarked={product.bookmarked} />
@@ -680,20 +682,20 @@ export default function RenderProduct({ id }): JSX.Element {
             </div>
             {status !== 'loading'
               ? (writer || session?.admin) && (
-                <div className="flex space-x-4 text-sm max-[480px]:hidden">
-                  <DropdownMenu id={id} state={product.state} />
-                  <div className="flex flex-1 space-x-4">
-                    <UpButton
-                      raiseCount={raiseCount}
-                      state={product.state}
-                      raiseHandler={raiseHandler}
-                      openModal={openModal}
-                    />
-                    <ModifyButton id={id} />
-                    <DeleteButton openModal={openModal} deleteHandler={deleteHandler} />
+                  <div className="flex space-x-4 text-sm max-[480px]:hidden">
+                    <DropdownMenu id={id} state={product.state} />
+                    <div className="flex flex-1 space-x-4">
+                      <UpButton
+                        raiseCount={raiseCount}
+                        state={product.state}
+                        raiseHandler={raiseHandler}
+                        openModal={openModal}
+                      />
+                      <ModifyButton id={id} />
+                      <DeleteButton openModal={openModal} deleteHandler={deleteHandler} />
+                    </div>
                   </div>
-                </div>
-              )
+                )
               : ''}
           </div>
         </div>

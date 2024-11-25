@@ -13,7 +13,7 @@ interface Props {
   setUploadImages: React.Dispatch<React.SetStateAction<UploadImages>>;
 }
 
-const RenderImageUploadButton = React.memo(({ uploadImages, setUploadImages }: Props) => {
+const ImageUploadButton = React.memo(({ uploadImages, setUploadImages }: Props) => {
   const { openModal } = useModal();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -94,4 +94,4 @@ const RenderImageUploadButton = React.memo(({ uploadImages, setUploadImages }: P
   );
 });
 
-export default RenderImageUploadButton;
+export default ImageUploadButton;
