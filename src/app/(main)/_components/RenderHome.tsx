@@ -8,6 +8,7 @@ import getRecentProducts from '../_lib/getRecentProducts';
 import { Gowun_Dodum } from 'next/font/google';
 import conditions from '../_constants/conditions';
 import { ProductData } from '@/type/productData';
+import ModelViewer from './ModelViewer';
 
 const title = Gowun_Dodum({ subsets: ['latin'], weight: '400' });
 
@@ -195,15 +196,18 @@ const Categories = () => {
 export default function RenderHome() {
   return (
     <div className="flex flex-col w-full min-h-80vh md:-mt-4 max-[960px]:pt-12">
-      <Link
+      {/* <Link
         href={'/shop'}
         className={`${title.className} relative flex text-center bg-header max-h-50vh h-100vh items-center  justify-center max-md:h-20vh max-md:text-lg max-md:px-4 bg-center bg-cover  max-md:translate-y-0 max-md:bg-cover`}
-      >
-        <div className="header-gradient" />
+      > */}
+      {/* <div className="header-gradient" />
         <div className="flex items-center justify-center font-bold z-50 text-3xl text-gray-200  text-opacity-60 z-2 max-[1024px]:text-2xl max-md:text-lg max-md:text-opacity-20">
           키넛에서 다양한 전자기기를 만나보세요
-        </div>
-      </Link>
+        </div> */}
+      {/* </Link> */}
+      <div className="max-h-50vh h-100vh max-md:h-20vh">
+        <ModelViewer />
+      </div>
       <div className="w-full max-w-screen-xl mx-auto px-10  space-y-12 my-10 max-md:px-3 ">
         <Categories />
         <JustIn />
