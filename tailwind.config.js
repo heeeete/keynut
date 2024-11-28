@@ -220,7 +220,6 @@ module.exports = {
           borderBottom: '2px solid black',
           width: '450px',
           padding: '4px',
-          // backgroundColor: 'blue',
         },
         '.search-bar-maxmd': {
           borderRadius: '4px',
@@ -250,6 +249,16 @@ module.exports = {
           borderRadius: '16px',
           borderColor: '#e5e7eb',
           fontSize: '15px',
+        },
+        '.category-button': {
+          display: 'flex',
+          width: '8rem',
+          aspectRatio: '1 / 1',
+          minHeight: '4rem',
+          minWidth: '4rem',
+          borderRadius: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
       };
       addUtilities(newUtilities);

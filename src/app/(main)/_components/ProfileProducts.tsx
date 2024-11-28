@@ -77,13 +77,18 @@ const Product = ({ product }: { product: ProductData }) => {
   );
 };
 
-export default function ProfileProducts({ data }: { data: ProductData[] }) {
-  const router = useRouter();
-  const params = useSearchParams();
-  const productOption = params.get('state') === null ? 1 : Number(params.get('state'));
+interface ProductStateButtonProps {
+  productOption: number;
+  buttonState: number;
+  buttonName: string;
+  params: URLSearchParams;
+  data: ProductData[];
+}
 
-  const updateURL = useCallback((state: 'all' | 0 | 1 | 2) => {
-    if (state === 'all') return router.push(window.location.pathname);
+const ProductStateButton = ({ productOption, buttonState, buttonName, params, data }: ProductStateButtonProps) => {
+  const router = useRouter();
+
+  const updateURL = useCallback((state: number) => {
     const currentParams = new URLSearchParams(params.toString());
     currentParams.set('state', state.toString());
     const newURL = `${window.location.pathname}?${currentParams.toString()}`;
@@ -91,39 +96,49 @@ export default function ProfileProducts({ data }: { data: ProductData[] }) {
   }, []);
 
   return (
+    <li
+      className={`flex justify-center py-2 text-lg space-x-2 max-md:text-sm border-gray-200 border-r cursor-pointer ${
+        productOption === buttonState ? 'bg-white text-black' : 'text-gray-400'
+      }`}
+      onClick={() => updateURL(buttonState)}
+    >
+      <p>{buttonName}</p>
+      <p className="font-medium">{data?.filter(a => a.state === buttonState).length}</p>
+    </li>
+  );
+};
+
+export default function ProfileProducts({ data }: { data: ProductData[] }) {
+  const params = useSearchParams();
+  const productOption = params.get('state') === null ? 1 : Number(params.get('state'));
+
+  return (
     <div className="flex flex-col h-full space-y-8 overflow-x-hidden">
       <section className="space-y-2">
         <h2 className="text-xl max-md:text-base max-md:px-3">상품</h2>
         <nav className="mb-2">
           <ul className="grid grid-cols-3 items-center bg-gray-100 border-gray-200 border-t border-r border-l">
-            <li
-              className={`flex justify-center py-2 text-lg space-x-2 max-md:text-sm border-gray-200 border-r cursor-pointer ${
-                productOption === 1 ? 'bg-white text-black' : 'text-gray-400'
-              }`}
-              onClick={() => updateURL('all')}
-            >
-              <p>판매 중</p>
-              <p className="font-medium">{data?.filter(a => a.state === 1).length}</p>
-            </li>
-            <li
-              className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 border-r max-md:text-sm cursor-pointer ${
-                productOption === 2 ? 'bg-white text-black' : 'text-gray-400'
-              }`}
-              onClick={() => updateURL(2)}
-            >
-              <p>예약 중</p>
-              <p className="font-medium">{data?.filter(a => a.state === 2).length}</p>
-            </li>
-
-            <li
-              className={`flex justify-center py-2 text-lg space-x-2 border-gray-200 max-md:text-sm cursor-pointer ${
-                productOption === 0 ? 'bg-white text-black' : 'text-gray-400'
-              }`}
-              onClick={() => updateURL(0)}
-            >
-              <p>판매 완료 </p>
-              <p className="font-medium">{data?.filter(a => a.state === 0).length}</p>
-            </li>
+            <ProductStateButton
+              productOption={productOption}
+              buttonState={1}
+              buttonName={'판매 중'}
+              params={params}
+              data={data}
+            />
+            <ProductStateButton
+              productOption={productOption}
+              buttonState={2}
+              buttonName={'예약 중'}
+              params={params}
+              data={data}
+            />
+            <ProductStateButton
+              productOption={productOption}
+              buttonState={0}
+              buttonName={'판매 완료'}
+              params={params}
+              data={data}
+            />
           </ul>
         </nav>
         <div className="">

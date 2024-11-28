@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -9,38 +8,11 @@ import ProfileProducts from '../../_components/ProfileProducts';
 import formatDate from '../../_lib/formatDate';
 import Warning from '../../_components/Warning';
 import { useSession } from 'next-auth/react';
-import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import { UserData } from '@/type/userData';
 import { User } from '@/type/user';
+import ProfileImage from '../../_components/ProfileImage';
 
-const ProfileImage = ({ image }) => {
-  return (
-    <>
-      {image ? (
-        <div className="flex rounded-full w-85 aspect-square relative justify-center items-center border ">
-          <Image
-            className="rounded-full object-cover"
-            src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${image}`}
-            alt="myprofile"
-            fill
-            sizes="150px"
-          />
-        </div>
-      ) : (
-        <div className="w-85 aspect-square defualt-profile">
-          <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
-            <path
-              fill="rgba(0,0,0,0.2)"
-              d="M224 256a128 128 0 1 0 0-256a128 128 0 1 0 0 256m-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512h388.6c16.4 0 29.7-13.3 29.7-29.7c0-98.5-79.8-178.3-178.3-178.3z"
-            />
-          </svg>
-        </div>
-      )}
-    </>
-  );
-};
-
-const ProfileName = ({ name }) => {
+const ProfileName = ({ name }: { name: string }) => {
   return (
     <div className="flex flex-1">
       {name ? (
@@ -56,7 +28,7 @@ const ProfileName = ({ name }) => {
   );
 };
 
-const LoginDate = ({ createdAt }) => {
+const LoginDate = ({ createdAt }: { createdAt: string }) => {
   return (
     <div className="flex items-center space-x-1 text-sm text-gray-400 max-md:text-xs">
       <svg className="" xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 1024 1024">
@@ -74,7 +46,7 @@ const LoginDate = ({ createdAt }) => {
   );
 };
 
-const Provider = ({ provider }) => {
+const Provider = ({ provider }: { provider: 'kakao' | 'naver' }) => {
   return (
     <div className="flex text-gray-400 items-center space-x-1 text-sm max-md:text-xs">
       <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
@@ -99,7 +71,7 @@ const Provider = ({ provider }) => {
   );
 };
 
-const uploadMemo = async (userId, tempMemo, resetQuery) => {
+const uploadMemo = async (userId: string, tempMemo: string) => {
   const memo = {
     userId: userId,
     tempMemo: tempMemo,
@@ -116,12 +88,29 @@ const uploadMemo = async (userId, tempMemo, resetQuery) => {
   const data = await res.json();
 };
 
-const Memo = ({ status, data, session }) => {
+const MemoDescription = () => {
+  return (
+    <div className="relative px-1 group flex items-center -mb-0.5 max-md:mb-0.5 max-md:px-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
+        <path
+          fill="#c0c3c8"
+          d="M12 4c4.411 0 8 3.589 8 8s-3.589 8-8 8s-8-3.589-8-8s3.589-8 8-8m0-2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2m1 13h-2v2h2zm-2-2h2l.5-6h-3z"
+        />
+      </svg>
+      <div className="absolute border  rounded-lg z-80 bg-white p-2 text-gray-400 flex-nowrap whitespace-nowrap  max-md:-right-16  max-md:top-6 md:bottom-5 md:left-4 md:w-auto md:rounded-bl-none  hidden group-hover:block">
+        <p className="text-xs">나를 제외한 다른 사용자에게는 표시되지 않습니다.</p>
+      </div>
+    </div>
+  );
+};
+
+const MemoForm = ({ status, session, data }) => {
   const router = useRouter();
-  const [memo, setMemo] = useState('');
-  const [tempMemo, setTempMemo] = useState('');
   const memoRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [memo, setMemo] = useState('');
+  const [tempMemo, setTempMemo] = useState('');
+
   useEffect(() => {
     if (status === 'authenticated' && data) {
       if (data.memo && session.user.id && data.memo[session.user.id]) {
@@ -130,57 +119,53 @@ const Memo = ({ status, data, session }) => {
       }
     }
   }, [status, data]);
-  const resetQuery = useInvalidateFiltersQuery();
+
+  return (
+    <form
+      className="flex items-end text-gray-400 max-md:mb-1"
+      onSubmit={e => {
+        e.preventDefault();
+        memoRef.current.blur();
+      }}
+    >
+      <input
+        ref={memoRef}
+        className="border-b border-gray-400 max-md:border-gray-300 rounded-none outline-none max-md:text-sm w-36"
+        placeholder="사용자 메모하기"
+        value={tempMemo}
+        type="text"
+        maxLength={10}
+        autoComplete="off"
+        onBlur={() => {
+          if (isFocused === true) {
+            setIsFocused(false);
+            if (memo !== tempMemo) {
+              uploadMemo(data._id, tempMemo);
+              setMemo(tempMemo);
+              router.refresh();
+            }
+          }
+        }}
+        onFocus={() => {
+          setIsFocused(true);
+        }}
+        onChange={e => setTempMemo(e.target.value)}
+      ></input>
+    </form>
+  );
+};
+
+const Memo = ({ status, data, session }) => {
   return (
     <div className="flex items-end">
-      <form
-        className="flex items-end text-gray-400 max-md:mb-1"
-        onSubmit={e => {
-          e.preventDefault();
-          memoRef.current.blur();
-        }}
-      >
-        <input
-          ref={memoRef}
-          className="border-b border-gray-400 max-md:border-gray-300 rounded-none outline-none max-md:text-sm w-36"
-          placeholder="사용자 메모하기"
-          value={tempMemo}
-          type="text"
-          maxLength={10}
-          autoComplete="off"
-          onBlur={() => {
-            if (isFocused === true) {
-              setIsFocused(false);
-              if (memo !== tempMemo) {
-                uploadMemo(data._id, tempMemo, resetQuery);
-                setMemo(tempMemo);
-                router.refresh();
-              }
-            }
-          }}
-          onFocus={() => {
-            setIsFocused(true);
-          }}
-          onChange={e => setTempMemo(e.target.value)}
-        ></input>
-      </form>
-      <div className="relative px-1 group flex items-center -mb-0.5 max-md:mb-0.5 max-md:px-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
-          <path
-            fill="#c0c3c8"
-            d="M12 4c4.411 0 8 3.589 8 8s-3.589 8-8 8s-8-3.589-8-8s3.589-8 8-8m0-2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2m1 13h-2v2h2zm-2-2h2l.5-6h-3z"
-          />
-        </svg>
-        <div className="absolute border  rounded-lg z-80 bg-white p-2 text-gray-400 flex-nowrap whitespace-nowrap  max-md:-right-16  max-md:top-6 md:bottom-5 md:left-4 md:w-auto md:rounded-bl-none  hidden group-hover:block">
-          <p className="text-xs">나를 제외한 다른 사용자에게는 표시되지 않습니다.</p>
-        </div>
-      </div>
+      <MemoForm status={status} session={session} data={data} />
+      <MemoDescription />
     </div>
   );
 };
 
 const UserProfile = React.memo(({ data, provider }: { data: User; provider: 'kakao' | 'naver' }) => {
-  const { data: session, status, update } = useSession();
+  const { data: session, status } = useSession();
 
   return (
     <div className="flex h-28 border border-gray-300 rounded-md px-6 space-x-4 max-md:px-3 max-md:h-36 max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
@@ -205,7 +190,7 @@ export default function RenderProfile() {
   const { id } = useParams<{ id: string }>();
   if (id.length !== 24) return <Warning message={'사용자를 찾을 수 없습니다'} />;
 
-  const { data, isLoading, error }: { data: UserData; isLoading: boolean; error: Error } = useQuery({
+  const { data, isLoading, error } = useQuery<UserData>({
     queryKey: ['userProducts', id],
     queryFn: () => getUserProducts(id),
     enabled: !!id,

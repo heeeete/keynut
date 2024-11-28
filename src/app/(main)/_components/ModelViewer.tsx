@@ -1,35 +1,67 @@
-import React, { useEffect } from 'react';
+'use client';
+import React, { useState, useEffect, Suspense, Fragment } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, OrbitControls, useGLTF } from '@react-three/drei';
 
-// import * as THREE from 'three';
-
 function Model({ url }: { url: string }) {
   const { scene } = useGLTF(url) as any;
-
-  // useEffect(() => {
-  //   // 모든 메쉬의 머티리얼 변경
-  //   scene.traverse((node: THREE.Object3D) => {
-  //     if (node.isMesh) {
-  //       const mesh = node as THREE.Mesh;
-  //       const material = mesh.material as THREE.MeshStandardMaterial;
-
-  //       // 머티리얼 속성 변경
-  //       material.metalness = 0.2; // 금속성 (0 ~ 1)
-  //       material.roughness = 0; // 거칠기 (0 ~ 1)
-  //     }
-  //   });
-  // }, [scene]);
 
   return <primitive object={scene} />;
 }
 
 export default function ModelViewer() {
+  const [modelUrl, setModelUrl] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number>(0);
+
+  useEffect(() => {
+    const downloadModel = async () => {
+      try {
+        const response = await fetch('https://image.keynut.co.kr/case_cherry.glb');
+        const reader = response.body?.getReader();
+        const contentLength = response.headers.get('Content-Length');
+        const total = contentLength ? Number(contentLength) : null;
+
+        if (!reader || !total) {
+          console.error('ReadableStream not supported or Content-Length unavailable.');
+          return;
+        }
+
+        let received = 0;
+        const chunks: Uint8Array[] = [];
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value) {
+            chunks.push(value);
+            received += value.length;
+            setProgress(Math.round((received / total) * 100));
+          }
+        }
+
+        const blob = new Blob(chunks, { type: 'application/octet-stream' });
+        const blobUrl = URL.createObjectURL(blob);
+        setModelUrl(blobUrl);
+      } catch (error) {
+        console.error('Failed to download model:', error);
+      }
+    };
+
+    downloadModel();
+  }, []);
+
   return (
-    <Canvas camera={{ position: [-40, 25, 50], fov: 20 }} shadows>
-      <Environment files="/textures/shanghai_bund_4k.hdr" /> {/* HDRI 로드 */}
-      <Model url="/models/keyboard-pipeline-compress.glb" />
-      <OrbitControls autoRotate enableZoom={false} />
-    </Canvas>
+    <div className="w-full h-full relative flex justify-center items-center">
+      <Canvas camera={{ position: [-40, 25, 50], fov: 7 }} shadows>
+        <Suspense>
+          <Environment files="/textures/shanghai_bund_1k.hdr" />
+        </Suspense>
+        {modelUrl && <Model url={modelUrl} />}
+        {modelUrl && <OrbitControls autoRotate enableZoom={false} />}
+      </Canvas>
+      <div className={`absolute transition-opacity ${modelUrl ? 'opacity-0' : 'opacity-100'}`}>
+        <progress value={progress} max="100" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}></progress>
+      </div>
+    </div>
   );
 }
