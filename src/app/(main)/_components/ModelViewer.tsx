@@ -16,7 +16,7 @@ export default function ModelViewer() {
   useEffect(() => {
     const downloadModel = async () => {
       try {
-        const response = await fetch('/api/3d-model');
+        const response = await fetch('https://image.keynut.co.kr/case_cherry.glb');
         const reader = response.body?.getReader();
         const contentLength = response.headers.get('Content-Length');
         const total = contentLength ? Number(contentLength) : null;
