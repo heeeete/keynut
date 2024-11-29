@@ -29,7 +29,6 @@ export async function GET(req: Request) {
     const categoriesParam = searchParams.get('categories');
     const pricesParam = searchParams.get('prices');
     const curPage = Number(searchParams.get('lastPage'));
-    // const lastProductCreatedAt = searchParams.get('lastCreatedAt');
 
     const categories = categoriesParam ? categoriesParam.split(',').map(Number) : [];
     const prices = pricesParam ? pricesParam.split(',').map(Number) : [];
@@ -73,8 +72,18 @@ export async function GET(req: Request) {
       .limit(48)
       .toArray();
 
+    let allProducts = -1;
+    let unBookedProducts = -1;
+    if (products && curPage) {
+      allProducts = await db.collection('products').countDocuments(query);
+      unBookedProducts = await db.collection('products').countDocuments({
+        ...query,
+        state: { $ne: 2 },
+      });
+    }
+
     if (products) {
-      return NextResponse.json(products, { status: 200 });
+      return NextResponse.json({ products, allProducts, unBookedProducts }, { status: 200 });
     } else {
       return NextResponse.json({ message: 'No products found' }, { status: 404 });
     }

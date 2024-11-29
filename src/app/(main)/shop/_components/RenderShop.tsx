@@ -389,26 +389,11 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
   );
 };
 
-const RenderProductsNum = ({ data, includeBooked }: { data: ProductData[][]; includeBooked: boolean }) => {
-  const totalCount = data
-    ? includeBooked
-      ? data.reduce((acc, page) => acc + page.length, 0)
-      : data.reduce((acc, page) => acc + page.filter(product => product.state === 1).length, 0)
-    : 0;
+const RenderProductsNum = ({ totalProducts }: { totalProducts: number }) => {
   return (
-    <>
-      {/* {data === undefined ? (
-        <div className="flex h-5 w-32 my-4 max-[960px]:my-2 max-[960px]:mx-10 max-md:mx-3 bg-gray-100 relative rounded-sm">
-          <div className="absolute top-0 left-0 h-full w-full animate-loading">
-            <div className="w-20 h-full bg-white bg-gradient-to-r from-white blur-xl"></div>
-          </div>
-        </div>
-      ) : ( */}
-      <div className="flex py-4 text-sm max-[960px]:py-2 max-[960px]:px-10 max-md:px-3">
-        <p className="font-semibold">{totalCount}</p>개의 검색 결과
-      </div>
-      {/* )} */}
-    </>
+    <div className="flex py-4 text-sm max-[960px]:py-2 max-[960px]:px-10 max-md:px-3">
+      <p className="font-semibold">{totalProducts ? totalProducts : 0}</p>개의 검색 결과
+    </div>
   );
 };
 
@@ -426,6 +411,12 @@ const Product = ({ product }) => {
     </Link>
   );
 };
+
+interface ProductListResponse {
+  products: ProductData[];
+  allProducts: number;
+  unBookedProducts: number;
+}
 
 const RenderProducts = ({
   params,
@@ -447,24 +438,29 @@ const RenderProducts = ({
 
   const queryString = createQueryString();
   const useProducts = (queryString: string) => {
-    return useInfiniteQuery<ProductData[]>({
+    return useInfiniteQuery<ProductListResponse>({
       queryKey: ['products', !!queryString.length ? queryString : 'all'],
       initialPageParam: 1,
       queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
-      getNextPageParam: (lastPage: ProductData[], allPages: ProductData[][]): number | undefined => {
+      getNextPageParam: (lastPage: ProductListResponse, allPages: ProductListResponse[]): number | undefined => {
         const nextPage = allPages.length + 1;
-        return lastPage?.length < 48 ? undefined : nextPage;
+        return lastPage?.products.length < 48 ? undefined : nextPage;
       },
       staleTime: 60 * 1000,
     });
   };
 
   const { ref, inView } = useInView({ threshold: 0, delay: 0 });
+  const [productsNum, setProductsNum] = useState(null);
   const { data, fetchNextPage, hasNextPage, isFetching } = useProducts(queryString);
 
   const [isDeferred, setIsDeferred] = useState(false);
 
   let timeoutId;
+
+  useEffect(() => {
+    setProductsNum(includeBooked ? data?.pages[0].allProducts : data?.pages[0].unBookedProducts);
+  }, [includeBooked, params]);
 
   useEffect(() => {
     if (isFetching) {
@@ -480,7 +476,7 @@ const RenderProducts = ({
     return () => clearTimeout(timeoutId);
   }, [isFetching]);
 
-  const hasProducts = data?.pages.some(page => page.length > 0);
+  const hasProducts = data?.pages.some(page => page.products.length > 0);
 
   useEffect(() => {
     if (inView && !isFetching && hasNextPage) {
@@ -499,7 +495,7 @@ const RenderProducts = ({
   if (isFetching && isDeferred) return <Skeletons />;
   return (
     <div className="flex-col w-full">
-      <RenderProductsNum data={data?.pages} includeBooked={includeBooked} />
+      <RenderProductsNum totalProducts={productsNum} />
       {!isMaxtb && (
         <SelectedFilters
           categoriesState={categoriesState}
@@ -508,14 +504,13 @@ const RenderProducts = ({
           handlePriceChange={handlePriceChange}
         />
       )}
-      {/* 검색 결과 없을 때 일단 min-h로.. */}
       {hasProducts ? (
         <>
           <div className="grid grid-cols-4 md:gap-3 max-[960px]:gap-2 pb-2 w-full overflow-auto scrollbar-hide max-md:grid-cols-2 max-[960px]:px-10 max-md:px-3">
             {includeBooked
               ? data?.pages.map((page, i) => (
                   <Fragment key={i}>
-                    {page.map((product, idx) => (
+                    {page.products.map((product, idx) => (
                       <Fragment key={idx}>
                         <Product product={product} />
                       </Fragment>
@@ -524,7 +519,7 @@ const RenderProducts = ({
                 ))
               : data?.pages.map((page, i) => (
                   <Fragment key={i}>
-                    {page
+                    {page.products
                       .filter(a => a.state === 1)
                       .map((product, idx) => (
                         <Fragment key={idx}>
@@ -1219,7 +1214,6 @@ export default function RenderShop() {
     paramsKeyword?.length && searchParams.append('keyword', paramsKeyword);
     router.push(`/shop?${searchParams.toString()}`);
   };
-
   return (
     <div className="flex items-start justify-start z-60" ref={pageRef}>
       <div className="flex flex-col w-full">
