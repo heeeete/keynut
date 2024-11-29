@@ -62,7 +62,7 @@ function RenderSignIn() {
   const isProvidersLoaded = Object.keys(providers).length > 0;
 
   return (
-    <div className=" bg-white flex flex-co min-h-70vh items-center justify-center max-[960px]:fixed max-[960px]:w-screen max-[960px]:top-0 max-[960px]:left-0 max-[960px]:z-50 ">
+    <div className="flex flex-co min-h-70vh items-center justify-center max-[960px]:fixed max-[960px]:w-screen max-[960px]:top-0 max-[960px]:left-0 max-[960px]:z-50 ">
       <button className="fixed top-4 left-4 tb:hidden" onClick={() => router.back()}>
         <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
           <path

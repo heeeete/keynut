@@ -3,6 +3,7 @@ import BottomNav from './_components/BottomNav/BottomNav';
 import Nav from './_components/Nav';
 import { ModalProvider } from './_components/ModalProvider';
 import Modal from './_components/Modal';
+import Image from 'next/image';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,6 +13,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <Footer />
       <BottomNav />
       <Modal />
+
+      {/* 크리스마스 트리! */}
+      <div className="fixed -bottom-7 left-24 -z-10 opacity-35 max-[960px]:bottom-3">
+        <Image src="/christmas/tree.png" width={300} height={1} alt="tree" />
+      </div>
     </ModalProvider>
   );
 }
