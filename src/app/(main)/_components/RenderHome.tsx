@@ -129,7 +129,7 @@ export default function RenderHome() {
       <div className="max-h-50vh h-100vh max-md:h-20vh">
         <ModelViewer />
       </div>
-      <div className="w-full max-w-screen-xl mx-auto px-10  space-y-12 my-10 max-md:px-3 ">
+      <div className="w-full max-w-screen-xl mx-auto px-10  space-y-12 mb-10 max-md:px-3 ">
         <Categories />
         <JustIn />
       </div>
