@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useContext } from 'react';
 import ImageSlider from '@/app/(main)/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/utils/timeAgo';
@@ -28,6 +28,7 @@ import { SessionData } from '@/type/sessionData';
 import { ProductData } from '@/type/productData';
 import { User } from '@/type/user';
 import { OpenModal } from '@/type/modal';
+import { RecentViewContext } from '@/app/(main)/_components/RecentViewComponent/RecentViewContext';
 
 const Condition = ({ condition }) => {
   return (
@@ -508,12 +509,28 @@ const onPaste = async (id, openModal) => {
   }
 };
 
+const modifyRecentView = (data: ProductWithUserData, setRecentViewChange) => {
+  let item = localStorage.getItem('recentView');
+  let curList = item && item !== '' ? JSON.parse(item) : null;
+  if (!curList || curList.length === 0) {
+    localStorage.setItem('recentView', JSON.stringify([data]));
+    setRecentViewChange(true);
+    return;
+  }
+  if (curList[0]._id === data._id) return;
+  curList = curList.filter(product => product._id !== data._id);
+  if (curList.length === 6) curList.pop();
+  localStorage.setItem('recentView', JSON.stringify([data, ...curList]));
+  setRecentViewChange(true);
+};
+
 interface ProductWithUserData extends ProductData {
   user: User | null;
 }
 
 export default function RenderProduct({ id }): JSX.Element {
   const queryClient = useQueryClient();
+  const { setRecentViewChange } = useContext(RecentViewContext);
   const [settingModal, setSettingModal] = useState(null);
   const [complainModal, setComplainModal] = useState(false);
   const [raiseCount, setRaiseCount] = useState(0);
@@ -531,6 +548,10 @@ export default function RenderProduct({ id }): JSX.Element {
   const product = data;
   const writer = status !== 'loading' && session ? session.user.id === product?.userId : false;
   const { openModal } = useModal();
+
+  useEffect(() => {
+    modifyRecentView(data, setRecentViewChange);
+  }, []);
 
   useEffect(() => {
     const errorHandler = async () => {
