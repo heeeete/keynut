@@ -6,6 +6,7 @@ import { useSession, signOut, signIn } from 'next-auth/react';
 import handleLogin from '../../../utils/handleLogin';
 import { Lexend } from 'next/font/google';
 import { SessionData } from '@/type/sessionData';
+import Image from 'next/image';
 
 const title = Lexend({ subsets: ['latin'], weight: ['700'] });
 const nav = Lexend({ subsets: ['latin'], weight: ['400'] });
@@ -55,12 +56,12 @@ export default function Nav() {
           </ul>
         </div>
         <div className="flex flex-col pb-2 items-center space-y-5 max-[960px]:space-y-0 max-[960px]:py-2">
-          <div className="flex font-bold text-4xl items-center rounded justify-center max-[960px]:text-3xl max-[960px]:w-28">
+          <div className="flex font-bold text-3xl items-center rounded justify-center max-[960px]:text-2xl max-[960px]:w-28">
             <Link className="flex w-full justify-center relative" href={'/'}>
-              <p className={`${title.className}`}>TEMA</p>
-              <p className="font-extralight text-xxs absolute right-0 translate-x-full translate-y-1/2 max-[960px]:hidden">
+              <p className={`${title.className}`}>KEYNUT</p>
+              {/* <p className="font-extralight text-xxs absolute right-0 translate-x-full translate-y-1/2 max-[960px]:hidden">
                 Trade Electronics Market
-              </p>
+              </p> */}
             </Link>
           </div>
           <div className="">
