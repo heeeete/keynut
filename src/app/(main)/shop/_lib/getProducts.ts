@@ -20,6 +20,7 @@ const getProducts = async (queryString: string, pageParam: unknown) => {
     }
     const data = await res.json();
 
+    console.log(data);
     return data;
   } catch (error) {
     console.error('getProducts 함수 실행 중 에러 발생:', error);
