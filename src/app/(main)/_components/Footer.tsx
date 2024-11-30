@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function Footer() {
   const pathname = usePathname();
-  const footer = !pathname.startsWith('/bookmark') && !pathname.startsWith('/gallery');
+  const footer = !pathname.startsWith('/bookmark') && !pathname.startsWith('/gallery') && !pathname.startsWith('/auth');
   const footerRender =
     pathname.startsWith('/mypage') ||
     pathname === '/sell' ||

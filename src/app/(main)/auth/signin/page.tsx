@@ -62,8 +62,8 @@ function RenderSignIn() {
   const isProvidersLoaded = Object.keys(providers).length > 0;
 
   return (
-    <div className="flex flex-co min-h-70vh items-center justify-center max-[960px]:fixed max-[960px]:w-screen max-[960px]:top-0 max-[960px]:left-0 max-[960px]:z-50 ">
-      <button className="fixed top-4 left-4 tb:hidden" onClick={() => router.back()}>
+    <div className="flex flex-co min-h-70vh items-center justify-center max-[960px]:fixed max-[960px]:w-screen max-[960px]:top-0 max-[960px]:left-0 max-[960px]:z-90 ">
+      <button className="fixed top-3 left-3 tb:hidden" onClick={() => router.back()}>
         <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
           <path
             fill="none"
@@ -76,13 +76,6 @@ function RenderSignIn() {
         </svg>
       </button>
       <div className=" max-[960px]:flex max-[960px]:items-center max-[960px]:fixed max-[960px]:top-1/2 max-[960px]:left-1/2 max-[960px]:-translate-x-1/2 max-[960px]:-translate-y-1/2 flex flex-col gap-y-3 p-2">
-        <Link
-          href={'/'}
-          onClick={e => {}}
-          className={`${title.className} absolute -top-14 flex text-3xl justify-center cursor-pointer mb-4 tb:hidden`}
-        >
-          KEYNUT
-        </Link>
         {['kakao', 'naver'].map(providerId => (
           <button
             key={providerId}
