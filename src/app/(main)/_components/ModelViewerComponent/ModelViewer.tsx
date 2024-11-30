@@ -55,7 +55,7 @@ export default function ModelViewer() {
 
   return (
     <div className="w-full h-full relative flex justify-center items-center">
-      <Canvas camera={{ position: [-40, 25, 50], fov: 7 }} shadows>
+      <Canvas camera={{ position: [0, 10, 50], fov: 25 }} shadows>
         <Suspense>
           <Environment files="/textures/shanghai_bund_1k.hdr" />
         </Suspense>
@@ -64,7 +64,6 @@ export default function ModelViewer() {
       </Canvas>
       <div className={`absolute transition-opacity ${modelUrl ? 'opacity-0' : 'opacity-100'}`}>
         <progress value={progress} max="100" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}></progress>
-        <p>Download : {progress}%</p>
       </div>
     </div>
   );
