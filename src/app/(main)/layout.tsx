@@ -12,6 +12,15 @@ import { ModelViewerProvider } from './_components/ModelViewerComponent/ModelVie
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <ModalProvider>
+      {/* 크리스마스! */}
+      <Image
+        src="/christmas/a.png"
+        draggable={false}
+        width={100}
+        height={1}
+        alt="a"
+        className="z-80 -top-2 -left-2 fixed max-md:w-20"
+      />
       <Nav />
       <ModelViewerProvider>
         <RecentViewProvider>
@@ -22,11 +31,6 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <Footer />
       <BottomNav />
       <Modal />
-
-      {/* 크리스마스 트리! */}
-      <div className="fixed -bottom-7 left-24 -z-10 opacity-35 max-[960px]:bottom-3">
-        <Image src="/christmas/tree.png" width={300} height={1} alt="tree" />
-      </div>
     </ModalProvider>
   );
 }
