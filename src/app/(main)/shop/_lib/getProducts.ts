@@ -20,7 +20,7 @@ const getProducts = async (queryString: string, pageParam: unknown) => {
     }
     const data = await res.json();
 
-    console.log(data);
+    console.log('getProducts console = ', data);
 
     return data;
   } catch (error) {
