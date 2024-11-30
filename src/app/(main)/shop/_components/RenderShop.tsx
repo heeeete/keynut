@@ -444,8 +444,8 @@ const RenderProducts = ({
       queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
       getNextPageParam: (lastPage: ProductListResponse, allPages: ProductListResponse[]): number | undefined => {
         if (!lastPage || !lastPage.products || !allPages) {
-          console.log(allPages);
-          console.log(lastPage);
+          console.log('AllPages = ', allPages);
+          console.log('LastPage = ', lastPage);
           return undefined;
         }
         const nextPage = allPages.length + 1;
@@ -481,8 +481,9 @@ const RenderProducts = ({
     return () => clearTimeout(timeoutId);
   }, [isFetching]);
 
-  console.log(data);
+  console.log('Data = ', data);
   const hasProducts = data?.pages?.some(page => Array.isArray(page.products) && page.products.length > 0);
+  console.log(hasProducts);
   // const hasProducts = true;
 
   useEffect(() => {
