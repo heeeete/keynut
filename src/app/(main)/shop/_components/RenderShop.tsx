@@ -443,7 +443,6 @@ const RenderProducts = ({
       initialPageParam: 1,
       queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
       getNextPageParam: (lastPage: ProductListResponse, allPages: ProductListResponse[]): number | undefined => {
-        console.log(allPages, lastPage);
         const nextPage = allPages.length + 1;
         return lastPage?.products.length < 48 ? undefined : nextPage;
       },
