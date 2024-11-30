@@ -6,7 +6,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 import { ProductData } from '@/type/productData';
-import ModelViewer from './ModelViewer';
+import ModelViewer from './ModelViewerComponent/ModelViewer';
 import ProductImage from './ProductImage';
 import ProductTitleAndPrice from './ProductTitleAndPrice';
 
