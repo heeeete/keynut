@@ -482,7 +482,7 @@ const RenderProducts = ({
   }, [isFetching]);
 
   console.log(data);
-  const hasProducts = data?.pages?.some(page => page.products.length > 0);
+  const hasProducts = data?.pages?.some(page => Array.isArray(page.products) && page.products.length > 0);
   // const hasProducts = true;
 
   useEffect(() => {
