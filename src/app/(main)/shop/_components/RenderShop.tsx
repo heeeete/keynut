@@ -481,7 +481,9 @@ const RenderProducts = ({
     return () => clearTimeout(timeoutId);
   }, [isFetching]);
 
-  const hasProducts = data?.pages.some(page => page.products.length > 0);
+  console.log(data);
+  // const hasProducts = data?.pages.some(page => page.products.length > 0);
+  const hasProducts = false;
 
   useEffect(() => {
     if (inView && !isFetching && hasNextPage) {
