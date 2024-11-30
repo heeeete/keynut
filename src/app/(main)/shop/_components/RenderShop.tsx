@@ -482,8 +482,8 @@ const RenderProducts = ({
   }, [isFetching]);
 
   console.log(data);
-  // const hasProducts = data?.pages.some(page => page.products.length > 0);
-  const hasProducts = false;
+  const hasProducts = data?.pages?.some(page => page.products.length > 0);
+  // const hasProducts = true;
 
   useEffect(() => {
     if (inView && !isFetching && hasNextPage) {
