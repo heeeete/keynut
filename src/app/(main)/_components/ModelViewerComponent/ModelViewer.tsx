@@ -2,6 +2,7 @@
 import React, { useState, useEffect, Suspense, Fragment } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, OrbitControls, useGLTF } from '@react-three/drei';
+import { useModel } from './ModelViewerContext';
 
 function Model({ url }: { url: string }) {
   const { scene } = useGLTF(url) as any;
@@ -10,11 +11,13 @@ function Model({ url }: { url: string }) {
 }
 
 export default function ModelViewer() {
-  const [modelUrl, setModelUrl] = useState<string | null>(null);
+  const { modelUrl, setModelUrl } = useModel();
   const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
     const downloadModel = async () => {
+      if (modelUrl) return;
+
       try {
         const response = await fetch('https://image.keynut.co.kr/case_cherry.glb');
         const reader = response.body?.getReader();
@@ -61,6 +64,7 @@ export default function ModelViewer() {
       </Canvas>
       <div className={`absolute transition-opacity ${modelUrl ? 'opacity-0' : 'opacity-100'}`}>
         <progress value={progress} max="100" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}></progress>
+        <p>Download : {progress}%</p>
       </div>
     </div>
   );
