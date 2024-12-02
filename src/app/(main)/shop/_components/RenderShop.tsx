@@ -389,7 +389,23 @@ const SelectedFilters = ({ categoriesState, pricesState, handleCategoryChange, h
   );
 };
 
-const RenderProductsNum = ({ totalProducts }: { totalProducts: number }) => {
+const RenderProductsNum = ({
+  includeBooked,
+  params,
+  allProducts,
+  unbookedProducts,
+}: {
+  includeBooked: boolean;
+  params: string;
+  allProducts: number;
+  unbookedProducts: number;
+}) => {
+  const [totalProducts, setTotalProducts] = useState(null);
+  useEffect(() => {
+    if (includeBooked) setTotalProducts(allProducts);
+    else setTotalProducts(unbookedProducts);
+  }, [params, includeBooked, allProducts, unbookedProducts]);
+
   return (
     <div className="flex py-4 text-sm max-[960px]:py-2 max-[960px]:px-10 max-md:px-3">
       <p className="font-semibold">{totalProducts ? totalProducts : 0}</p>개의 검색 결과
@@ -451,16 +467,11 @@ const RenderProducts = ({
   };
 
   const { ref, inView } = useInView({ threshold: 0, delay: 0 });
-  const [productsNum, setProductsNum] = useState(null);
   const { data, fetchNextPage, hasNextPage, isFetching } = useProducts(queryString);
 
   const [isDeferred, setIsDeferred] = useState(false);
 
   let timeoutId;
-
-  useEffect(() => {
-    setProductsNum(includeBooked ? data?.pages[0].allProducts : data?.pages[0].unBookedProducts);
-  }, [includeBooked, params]);
 
   useEffect(() => {
     if (isFetching) {
@@ -495,7 +506,12 @@ const RenderProducts = ({
   if (isFetching && isDeferred) return <Skeletons />;
   return (
     <div className="flex-col w-full">
-      <RenderProductsNum totalProducts={productsNum} />
+      <RenderProductsNum
+        includeBooked={includeBooked}
+        params={params}
+        allProducts={data?.pages[0].allProducts}
+        unbookedProducts={data?.pages[0].unBookedProducts}
+      />
       {!isMaxtb && (
         <SelectedFilters
           categoriesState={categoriesState}
