@@ -72,8 +72,8 @@ export async function GET(req: Request) {
       .limit(48)
       .toArray();
 
-    let allProducts = -1;
-    let unBookedProducts = -1;
+    let allProducts = 0;
+    let unBookedProducts = 0;
     if (products && curPage) {
       allProducts = await db.collection('products').countDocuments(query);
       unBookedProducts = await db.collection('products').countDocuments({
