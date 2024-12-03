@@ -18,7 +18,7 @@ const ScrollToTopBtn = () => {
 
 const RightBar = () => {
   return (
-    <div className="flex flex-col fixed z-80  space-y-3 max-[960px]:right-2 max-[960px]:bottom-14 min-[960px]:right-0 min-[960px]:bottom-2">
+    <div className="flex flex-col fixed z-50  space-y-3 max-[960px]:right-2 max-[960px]:bottom-14 min-[960px]:right-0 min-[960px]:bottom-2">
       <RecentViewProducts />
       <ScrollToTopBtn />
     </div>
