@@ -3,14 +3,18 @@
   "packageManager": "yarn@4.5.3",
   "private": true,
   "exports": {
-    "./ban-user": "./routes/ban-user/route.ts"
+    "./ban-user": "./routes/ban-user/route.ts",
+    "./products": "./routes/products/route.ts"
   },
   "devDependencies": {
+    "@keynut/type": "workspace:^",
     "@types/node": "^22.10.1",
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.596.0",
     "@keynut/lib": "workspace:^",
+    "mongodb": "^5.9.2",
     "next": "^14.2.5"
   }
 }
