@@ -2255,6 +2255,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@keynut/lib@workspace:packages/lib"
   dependencies:
+    "@aws-sdk/client-s3": "npm:^3.596.0"
     "@types/node": "npm:^22.10.1"
     mongodb: "npm:^5.9.2"
     typescript: "npm:^5.7.2"
