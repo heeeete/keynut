@@ -4,7 +4,8 @@
   "private": true,
   "exports": {
     "./ban-user": "./routes/ban-user/route.ts",
-    "./products": "./routes/products/route.ts"
+    "./products": "./routes/products/route.ts",
+    "./products/id": "./routes/products/id/route.ts"
   },
   "devDependencies": {
     "@keynut/type": "workspace:^",

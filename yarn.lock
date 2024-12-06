@@ -3724,6 +3724,8 @@ __metadata:
     "@aws-sdk/client-s3": "npm:^3.596.0"
     "@aws-sdk/s3-request-presigner": "npm:^3.626.0"
     "@ducanh2912/next-pwa": "npm:^10.2.8"
+    "@keynut/api": "workspace:^"
+    "@keynut/lib": "workspace:^"
     "@keynut/type": "workspace:^"
     "@keynut/ui": "workspace:^"
     "@next-auth/mongodb-adapter": "npm:^1.1.3"
