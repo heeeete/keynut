@@ -23,7 +23,7 @@ export default [
           './packages/ui/tsconfig.json',
         ],
       },
-      globals: globals.browser,
+      globals: { ...globals.browser, ...globals.node },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
