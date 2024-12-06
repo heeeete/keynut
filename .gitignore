@@ -1,40 +1,59 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
+# Swap the comments on the following lines if you wish to use zero-installs
+# In that case, don't forget to run `yarn config set enableGlobalCache false`!
+# Documentation here: https://yarnpkg.com/features/caching#zero-installs
+
+
+# Node.js
 /node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
 
-# testing
-/coverage
+# Yarn Berry (PnP)
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
-# next.js
-/.next/
-/out/
-
-# production
+# Build artifacts
 /build
+/.next
+/out
+/dist
+/.turbo
 
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+*.log
 
-# local env files
-.env*.local
-
-# vercel
-.vercel
-
-# typescript
+# TypeScript
 *.tsbuildinfo
-next-env.d.ts
 
-/.vscode
-/public/workbox-*
-/public/sw.js
+# Environment files
+.env
+.env.*.local
+.env.local
+
+# Test coverage
+/coverage
+
+# MacOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# ESLint Cache
+/.eslintcache
+
+# Tailwind CSS
+.tailwind

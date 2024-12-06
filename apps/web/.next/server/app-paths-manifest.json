@@ -1,0 +1,9 @@
+{
+  "/manifest.json/route": "app/manifest.json/route.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/products/hot/route": "app/api/products/hot/route.js",
+  "/api/products/[id]/route": "app/api/products/[id]/route.js",
+  "/(main)/page": "app/(main)/page.js",
+  "/(main)/shop/product/[id]/page": "app/(main)/shop/product/[id]/page.js",
+  "/(main)/shop/page": "app/(main)/shop/page.js"
+}

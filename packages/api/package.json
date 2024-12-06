@@ -1,0 +1,16 @@
+{
+  "name": "@keynut/api",
+  "packageManager": "yarn@4.5.3",
+  "private": true,
+  "exports": {
+    "./banHandler": "./src/banHandler.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@keynut/lib": "workspace:^",
+    "next": "^14.2.5"
+  }
+}

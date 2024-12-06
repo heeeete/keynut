@@ -1,0 +1,15 @@
+{
+  "name": "@keynut/lib",
+  "packageManager": "yarn@4.5.3",
+  "private": true,
+  "exports": {
+    ".": "./index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "mongodb": "^5.9.2"
+  }
+}
