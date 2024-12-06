@@ -3,7 +3,7 @@
   "packageManager": "yarn@4.5.3",
   "private": true,
   "exports": {
-    "./banHandler": "./src/banHandler.ts"
+    "./ban-user": "./routes/ban-user/route.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
