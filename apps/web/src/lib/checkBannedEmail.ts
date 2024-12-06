@@ -1,4 +1,4 @@
-async function checkBannedEmail(email, db) {
+async function checkBannedEmail(email: string, db) {
   const bannedEmail = await db.collection('bannedEmails').findOne({ email });
   return bannedEmail;
 }
