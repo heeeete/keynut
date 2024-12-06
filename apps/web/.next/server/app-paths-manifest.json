@@ -1,0 +1,4 @@
+{
+  "/manifest.json/route": "app/manifest.json/route.js",
+  "/(main)/page": "app/(main)/page.js"
+}

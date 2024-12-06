@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 import { ProductData } from '@keynut/type';
@@ -10,12 +10,11 @@ import ModelViewer from './ModelViewerComponent/ModelViewer';
 import ProductImage from './ProductImage';
 import ProductTitleAndPrice from './ProductTitleAndPrice';
 
-const JustInProduct = ({ product }) => {
+const JustInProduct = ({ product }: { product: ProductData }) => {
   return (
     <Link
       href={`/shop/product/${product._id}`}
       className="flex flex-col cursor-pointer relative max-md:max-w-40 max-md:w-40 max-md:text-sm"
-      key={product._id}
     >
       <ProductImage product={product} />
       <ProductTitleAndPrice product={product} />
@@ -32,7 +31,7 @@ const MoreButton = () => {
 };
 
 const JustIn = () => {
-  const { data, error, isLoading } = useQuery<ProductData[]>({
+  const { data } = useQuery<ProductData[]>({
     queryKey: ['recentProducts'],
     queryFn: getRecentProducts,
     staleTime: Infinity,
@@ -48,11 +47,23 @@ const JustIn = () => {
         <MoreButton />
       </div>
       <div className={`grid grid-cols-5 gap-2 overflow-auto scrollbar-hide max-md:flex`}>
-        {data?.map((product, idx) => <JustInProduct product={product} />)}
+        {data?.map((product) => (
+          <Fragment key={product._id}>
+            <JustInProduct product={product} />
+          </Fragment>
+        ))}
       </div>
     </section>
   );
 };
+
+interface CatergoryButtonProps {
+  children: React.ReactNode;
+  category_number: number;
+  category_label: string;
+  category_name: string;
+  button_color: string;
+}
 
 const CategoryButton = ({
   children,
@@ -60,7 +71,7 @@ const CategoryButton = ({
   category_label,
   category_name,
   button_color,
-}) => {
+}: CatergoryButtonProps) => {
   return (
     <li className="flex flex-col items-center space-y-1">
       <Link href={`/shop?categories=${category_number}`} aria-label={`${category_label} category`}>
