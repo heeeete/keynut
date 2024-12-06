@@ -1,23 +1,50 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import pluginReact, { rules } from 'eslint-plugin-react';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import pluginReact from 'eslint-plugin-react';
+import airbnbTsConfig from 'eslint-config-airbnb-typescript';
+// import airbnbConfig from 'eslint-config-airbnb';
+import prettierConfig from 'eslint-config-prettier';
+import tsParser from '@typescript-eslint/parser';
+import importPlugin from 'eslint-plugin-import';
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
-    files: [
-      'apps/**/*.{js,mjs,cjs,ts,jsx,tsx}',
-      'packages/**/*.{js,mjs,cjs,ts,jsx,tsx}',
-    ],
-  },
-  { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  pluginReact.configs.flat.recommended,
-  {
+    files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: [
+          './tsconfig.base.json',
+          './apps/web/tsconfig.json',
+          './apps/admin/tsconfig.json',
+          './packages/ui/tsconfig.json',
+        ],
+      },
+      globals: globals.browser,
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      react: pluginReact,
+      import: importPlugin,
+      'jsx-a11y': jsxA11yPlugin,
+    },
     rules: {
-      'react/react-in-jsx-scope': 'off', // React를 import하지 않아도 JSX 사용 가능
+      ...pluginJs.configs.recommended.rules,
+      ...jsxA11yPlugin.configs.recommended.rules,
+      ...pluginReact.configs.flat.recommended.rules,
+      ...airbnbTsConfig.rules,
+      ...prettierConfig.rules,
+      'react/react-in-jsx-scope': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['error'],
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
     },
   },
 ];
