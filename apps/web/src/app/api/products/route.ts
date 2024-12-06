@@ -1,5 +1,4 @@
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
-import s3Client from '@/lib/s3Client';
 import { NextResponse } from 'next/server';
 import { connectDB } from '@keynut/lib';
 import getUserSession from '@/lib/getUserSession';
@@ -8,8 +7,10 @@ import { revalidateTag } from 'next/cache';
 import checkBannedEmail from '@/lib/checkBannedEmail';
 import { User } from '@keynut/type';
 import { GET } from '@keynut/api/products';
+import { s3Client } from '@keynut/lib';
 
 export { GET };
+
 export async function POST(req: Request) {
   try {
     const session = await getUserSession();
