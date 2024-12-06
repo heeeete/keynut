@@ -1,4 +1,4 @@
-import { connectDB } from '@keynut/lib';
+import { connectDB } from '@keynut/lib/server';
 import { ProductData } from '@keynut/type';
 import { NextResponse } from 'next/server';
 

@@ -14,7 +14,6 @@ import { useRouter } from 'next/navigation';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import initRaiseCount from '@/lib/initRaiseCount';
 import raiseProduct from '@/lib/raiseProduct';
-import deleteProduct from '@/lib/deleteProduct';
 import conditions from '@/app/(main)/_constants/conditions';
 import DropdownMenu from '@/app/(main)/_components/DropdownMenu';
 import CustomDropdownMenu from '@/app/(main)/_components/CustomDropDownMenu';
@@ -23,12 +22,11 @@ import { useModal } from '@/app/(main)/_components/ModalProvider';
 import baseCategory from '@/app/(main)/_constants/productPage/baseCategories';
 import formatDate from '@/app/(main)/_lib/formatDate';
 import './button.css';
-import { Session } from 'next-auth';
 import { SessionData } from '@/type/sessionData';
-import { ProductData } from '@keynut/type';
-import { User } from '@keynut/type';
 import { OpenModal } from '@/type/modal';
 import { RecentViewContext } from '@/app/(main)/_components/RecentViewComponent/RecentViewContext';
+import { ProductData, User } from '@keynut/type';
+import { deleteProduct } from '@keynut/lib/client';
 
 const Condition = ({ condition }) => {
   return (

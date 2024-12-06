@@ -2,7 +2,7 @@ import { SessionStrategy } from 'next-auth';
 import KakaoProvider from 'next-auth/providers/kakao';
 import NaverProvider from 'next-auth/providers/naver';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
-import { connectDB } from '@keynut/lib';
+import { connectDB } from '@keynut/lib/server';
 import { ObjectId } from 'mongodb';
 import userBanHandler from '@/app/_lib/userBanHandler';
 import checkBannedEmail from '@/lib/checkBannedEmail';

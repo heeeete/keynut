@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib';
-import getUserSession from '@/lib/getUserSession';
+import { connectDB } from '@keynut/lib/server';
 import { ObjectId } from 'mongodb';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client } from '@keynut/lib';
+import { s3Client } from '@keynut/lib/server';
 import { revalidateTag } from 'next/cache';
 import { ProductData } from '@keynut/type';
 
@@ -18,9 +17,6 @@ interface SearchQuery {
 
 export async function GET(req: Request) {
   try {
-    const session = await getUserSession();
-    if (!session.admin) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
-
     const { searchParams } = new URL(req.url, process.env.NEXT_PUBLIC_BASE_URL);
     const offset = parseInt(searchParams.get('offset')) || 0;
     const limit = parseInt(searchParams.get('limit')) || 10;

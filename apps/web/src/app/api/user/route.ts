@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib';
+import { connectDB } from '@keynut/lib/server';
 import getUserSession from '@/lib/getUserSession';
 import s3Client from '@/lib/s3Client';
 import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';

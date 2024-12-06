@@ -1,8 +1,7 @@
-import { connectDB } from '@keynut/lib';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client } from '@keynut/lib';
+import { s3Client, connectDB } from '@keynut/lib/server';
 import { revalidateTag } from 'next/cache';
 
 export async function DELETE(req, { params }) {

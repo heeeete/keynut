@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib';
+import { connectDB } from '@keynut/lib/server';
 
 export async function GET(req: Request) {
   try {
