@@ -1,4 +1,4 @@
-import { User } from '@keynut/type';
+import User from '@keynut/type/user';
 import getUsers from '../_lib/getUsers';
 import { useQuery } from '@tanstack/react-query';
 

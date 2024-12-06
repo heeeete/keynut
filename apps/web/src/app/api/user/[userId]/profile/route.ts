@@ -1,7 +1,7 @@
-import { connectDB } from '@keynut/lib/server';
+import connectDB from '@keynut/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import { User } from '@keynut/type';
+import User from '@keynut/type/user';
 
 interface Params {
   params: {

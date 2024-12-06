@@ -1,4 +1,6 @@
-import { User, ProductData, KakaoAccounts, NaverAccounts } from '@keynut/type';
+import { KakaoAccounts, NaverAccounts } from '@keynut/type/accounts';
+import User from '@keynut/type/user';
+import ProductData from '@keynut/type/productData';
 import { useQuery } from '@tanstack/react-query';
 
 interface Data extends ProductData {

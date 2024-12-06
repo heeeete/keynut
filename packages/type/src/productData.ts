@@ -1,4 +1,4 @@
-export interface ProductData {
+export default interface ProductData {
   _id: string;
   userId: string;
   title: string;

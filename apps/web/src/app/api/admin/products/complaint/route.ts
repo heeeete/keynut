@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib/server';
+import connectDB from '@keynut/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
-import { ProductData } from '@keynut/type';
-import { KakaoAccounts, NaverAccounts } from '@keynut/type';
-import { User } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
+import { KakaoAccounts, NaverAccounts } from '@keynut/type/accounts';
+import User from '@keynut/type/user';
 
 export const dynamic = 'force-dynamic'; // 동적 생성 모드 설정
 

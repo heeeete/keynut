@@ -1,5 +1,5 @@
-import userBanHandler from '@/app/(admin)/admin/_lib/userBanHandler';
-import { connectDB } from '@keynut/lib/server';
+import userBanHandler from '@keynut/lib/userBanHandler';
+import connectDB from '@keynut/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 

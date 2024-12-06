@@ -1,5 +1,5 @@
-import { connectDB } from '@keynut/lib/server';
-import { ProductData } from '@keynut/type';
+import connectDB from '@keynut/lib/mongodb';
+import ProductData from '@keynut/type/productData';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';

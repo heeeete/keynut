@@ -6,7 +6,7 @@ import timeAgo from '@/utils/timeAgo';
 import ProfileSkeleton from './ProfileSkeleton';
 import conditions from '../_constants/conditions';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 
 const Product = ({ product }: { product: ProductData }) => {
   return (

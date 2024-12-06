@@ -5,7 +5,7 @@ import Link from 'next/link';
 import React, { Fragment } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 import ModelViewer from './ModelViewerComponent/ModelViewer';
 import ProductImage from './ProductImage';
 import ProductTitleAndPrice from './ProductTitleAndPrice';

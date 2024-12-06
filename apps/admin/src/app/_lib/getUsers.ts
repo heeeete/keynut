@@ -1,4 +1,4 @@
-import { User } from '@keynut/type';
+import User from '@keynut/type/user';
 
 interface ExtendsUser extends User {
   providerAccountId: string;

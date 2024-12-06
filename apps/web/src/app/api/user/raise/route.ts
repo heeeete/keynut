@@ -1,6 +1,6 @@
 import getUserSession from '@/lib/getUserSession';
-import { connectDB } from '@keynut/lib/server';
-import { User } from '@keynut/type';
+import connectDB from '@keynut/lib/mongodb';
+import User from '@keynut/type/user';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 

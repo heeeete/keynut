@@ -1,6 +1,5 @@
-import userBanHandler from '@/app/(admin)/admin/_lib/userBanHandler';
-import getUserSession from '@/lib/getUserSession';
-import { connectDB } from '@keynut/lib/server';
+import userBanHandler from '@keynut/lib/userBanHandler';
+import connectDB from '@keynut/lib/mongodb';
 import refreshAccessToken from '@/lib/refreshAccessToken';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';

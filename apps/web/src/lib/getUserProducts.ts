@@ -1,5 +1,3 @@
-import { ProductData } from '@keynut/type';
-import { User } from '@keynut/type';
 import { UserData } from '@/type/userData';
 
 const getUserProducts = async (id: string) => {

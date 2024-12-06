@@ -1,4 +1,4 @@
-import { connectDB } from '@keynut/lib/server';
+import connectDB from '@keynut/lib/mongodb';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {

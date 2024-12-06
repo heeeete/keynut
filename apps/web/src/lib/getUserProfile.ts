@@ -1,4 +1,4 @@
-import { User } from '@keynut/type';
+import User from '@keynut/type/user';
 
 const getUserProfile = async (id: string) => {
   if (id.length !== 24) return null;

@@ -3,7 +3,9 @@
   "packageManager": "yarn@4.5.3",
   "private": true,
   "exports": {
-    ".": "./index.ts"
+    "./accounts": "./src/accounts.ts",
+    "./productData": "./src/productData.ts",
+    "./user": "./src/user.ts"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

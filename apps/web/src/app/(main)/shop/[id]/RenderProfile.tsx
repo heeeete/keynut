@@ -9,7 +9,7 @@ import formatDate from '../../_lib/formatDate';
 import Warning from '../../_components/Warning';
 import { useSession } from 'next-auth/react';
 import { UserData } from '@/type/userData';
-import { User } from '@keynut/type';
+import User from '@keynut/type/user';
 import ProfileImage from '../../_components/ProfileImage';
 
 const ProfileName = ({ name }: { name: string }) => {

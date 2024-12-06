@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import ProfileProducts from '../_components/ProfileProducts';
 import formatDate from '../_lib/formatDate';
 import { UserData } from '@/type/userData';
-import { User } from '@keynut/type';
+import User from '@keynut/type/user';
 import ProfileImage from '../_components/ProfileImage';
 
 const MyProfileName = ({ nickname }) => {

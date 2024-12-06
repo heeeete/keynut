@@ -1,8 +1,6 @@
 'use client';
 import getProductWithUser from '../_lib/getProductWithUser';
-import Image from 'next/image';
-import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { signIn, useSession } from 'next-auth/react';
@@ -19,7 +17,7 @@ import DescriptionInput from '@/app/(main)/_components/ProductForm/DescriptionIn
 import PriceInput from '@/app/(main)/_components/ProductForm/PriceInput';
 import OpenChatUrlInput from '@/app/(main)/_components/ProductForm/OpenChatUrlInput';
 import HashTagInputWithTag from '@/app/(main)/_components/ProductForm/HashTagInputWithTag';
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 import validateProductForm from '@/app/(main)/sell/utils/validateProductForm';
 import { EditUploadImagesProps } from './_type/editUploadImagesProps';
 import DNDImages from './_components/DNDImages';
@@ -45,7 +43,7 @@ export default function Edit() {
   const { data: session, update, status } = useSession();
   const invalidateFilters = useInvalidateFiltersQuery();
   const { openModal } = useModal();
-  const { data, error, isLoading } = useQuery<ProductData>({
+  const { data } = useQuery<ProductData>({
     queryKey: ['product', id],
     queryFn: () => getProductWithUser(id),
     staleTime: Infinity,

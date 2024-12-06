@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib/server';
-import getUserSession from '@/lib/getUserSession';
-import { ProductData } from '@keynut/type';
-import { KakaoAccounts, NaverAccounts } from '@keynut/type';
-import { User } from '@keynut/type';
+import connectDB from '@keynut/lib/mongodb';
+import ProductData from '@keynut/type/productData';
+import { KakaoAccounts, NaverAccounts } from '@keynut/type/accounts';
+import User from '@keynut/type/user';
 
 export const dynamic = 'force-dynamic'; // 동적 생성 모드 설정
 
@@ -14,9 +13,6 @@ interface Data extends ProductData {
 
 export async function GET(req: Request) {
   try {
-    const session = await getUserSession();
-    if (!session) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
-
     const { searchParams } = new URL(req.url, process.env.NEXT_PUBLIC_BASE_URL);
     const offset = parseInt(searchParams.get('offset')) || 0;
     const limit = parseInt(searchParams.get('limit')) || 10;

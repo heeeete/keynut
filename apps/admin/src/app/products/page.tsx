@@ -1,12 +1,12 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
-import Loading from '@/app/(main)/_components/Loading';
+import Loading from '@keynut/ui/Loading';
 import useProducts from '../_hooks/useProducts';
 import useURLSearchParams from '@/hooks/useURLSearchParams';
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 
 const PAGE_SIZE = 100;
 const PAGE_RANGE = 10;

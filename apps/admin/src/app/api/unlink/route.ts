@@ -1,4 +1,5 @@
-import { connectDB, userBanHandler } from '@keynut/lib';
+import connectDB from '@keynut/lib/mongodb';
+import userBanHandler from '@keynut/lib/userBanHandler';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 

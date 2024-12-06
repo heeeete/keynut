@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib/server';
 import { ObjectId } from 'mongodb';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client } from '@keynut/lib/server';
 import { revalidateTag } from 'next/cache';
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
+import s3Client from '@keynut/lib/s3Client';
+import connectDB from '@keynut/lib/mongodb';
 
 interface SearchQuery {
   userId?: string;

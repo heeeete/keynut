@@ -2,7 +2,7 @@
   "name": "@keynut/ui",
   "private": true,
   "exports": {
-    ".": "./index.ts"
+    "./Loading": "./src/Loading.tsx"
   },
   "dependencies": {
     "react": "^18.3.1",
