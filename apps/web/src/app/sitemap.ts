@@ -1,4 +1,4 @@
-import { connectDB } from '@keynut/lib';
+import { connectDB } from '@keynut/lib/server';
 import { ProductData } from '@keynut/type';
 
 export const revalidate = 86400; // 24시간마다 페이지 갱신

@@ -1,4 +1,4 @@
-import { connectDB } from '@keynut/lib';
+import { connectDB } from '@keynut/lib/server';
 
 export async function findUserByEmail(email: string) {
   const client = await connectDB;

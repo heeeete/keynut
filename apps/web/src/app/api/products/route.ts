@@ -1,13 +1,12 @@
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib';
 import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
 import checkBannedEmail from '@/lib/checkBannedEmail';
 import { User } from '@keynut/type';
 import { GET } from '@keynut/api/products';
-import { s3Client } from '@keynut/lib';
+import { connectDB, s3Client } from '@keynut/lib/server';
 
 export { GET };
 

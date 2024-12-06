@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib';
+import { connectDB } from '@keynut/lib/server';
 import getUserSession from '@/lib/getUserSession';
 import { ProductData } from '@keynut/type';
 import { KakaoAccounts, NaverAccounts } from '@keynut/type';

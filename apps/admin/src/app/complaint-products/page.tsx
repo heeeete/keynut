@@ -5,8 +5,7 @@ import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
 import Loading from '@/app/(main)/_components/Loading';
 import useComplaintProductsQuery from '../_hooks/useComplaintProductsQuery';
-import userBanHandler from '../_lib/userBanHandler';
-import deleteProduct from '@/lib/deleteProduct';
+import { deleteProduct, userBanHandler } from '@keynut/lib';
 import Link from 'next/link';
 import { User, ProductData, KakaoAccounts, NaverAccounts } from '@keynut/type';
 

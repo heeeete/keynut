@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib';
-import getUserSession from '@/lib/getUserSession';
-import s3Client from '@/lib/s3Client';
+import { connectDB } from '@keynut/lib/server';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId, UpdateResult } from 'mongodb';
 import { revalidateTag } from 'next/cache';
 import { User } from '@keynut/type';
+import { s3Client } from '@keynut/lib/server';
 
 interface Params {
   params: {
