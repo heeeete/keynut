@@ -8,9 +8,9 @@ interface Props {
 }
 
 const PriceInput = React.memo(({ price, setPrice }: Props) => {
-  const handlePrice = useCallback(e => {
+  const handlePrice = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/,/g, '');
-    if (!isNaN(value) && value.length <= 9) {
+    if (!isNaN(Number(value)) && !(value[0] === '0') && value.length <= 9) {
       setPrice(value.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
     }
   }, []);
@@ -33,5 +33,7 @@ const PriceInput = React.memo(({ price, setPrice }: Props) => {
     </>
   );
 });
+
+PriceInput.displayName = 'PriceInput';
 
 export default PriceInput;

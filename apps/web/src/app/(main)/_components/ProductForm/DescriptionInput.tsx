@@ -11,7 +11,7 @@ interface Props {
 
 const DescriptionInput = React.memo(({ description, setDescription, subCategory }: Props) => {
   const [template, setTemplate] = useState(false);
-  const isTyping = useRef(null);
+  const isTyping = useRef<boolean>(false);
   const { openModal } = useModal();
 
   const onClickTemplate = async () => {
@@ -52,7 +52,7 @@ const DescriptionInput = React.memo(({ description, setDescription, subCategory 
       <div className="flex ">
         <textarea
           value={description}
-          onChange={e => {
+          onChange={(e) => {
             isTyping.current = true;
             setDescription(e.target.value);
           }}
@@ -67,5 +67,7 @@ const DescriptionInput = React.memo(({ description, setDescription, subCategory 
     </>
   );
 });
+
+DescriptionInput.displayName = 'DescriptionInput';
 
 export default DescriptionInput;

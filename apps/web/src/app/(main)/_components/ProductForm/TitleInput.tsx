@@ -7,7 +7,7 @@ interface Props {
 }
 
 const TitleInput = React.memo(({ title, setTitle }: Props) => {
-  const onChangeTitle = useCallback(e => {
+  const onChangeTitle = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   }, []);
 
@@ -30,5 +30,7 @@ const TitleInput = React.memo(({ title, setTitle }: Props) => {
     </>
   );
 });
+
+TitleInput.displayName = 'TitleInput';
 
 export default TitleInput;

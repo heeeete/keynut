@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import useUsers from '../_hooks/useUsers';
 import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
-// import Loading from '@/app/(main)/_components/Loading';
+import Loading from '@keynut/ui/Loading';
 import handleKakaoWithdrawal from '../_lib/handleKakaoWithdrawal';
 import userBanHandler from '@keynut/lib/userBanHandler';
 import User from '@keynut/type/user';
@@ -22,7 +22,7 @@ interface Data {
 const PAGE_SIZE = 100;
 const PAGE_RANGE = 10;
 
-const PageControl = ({ page, data }) => {
+const PageControl = ({ page, data }: { page: number; data: Data }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
@@ -60,7 +60,7 @@ const PageControl = ({ page, data }) => {
   return (
     <div className="flex space-x-2">
       <button onClick={() => updatePage(page - 1)} disabled={page <= 1}>
-        <img src="/admin/adminPrevPage.svg" alt="adminPrevPage" />
+        <img src="/adminPrevPage.svg" alt="adminPrevPage" />
       </button>
       <div className="flex space-x-2">
         {Array(pageRange.end - pageRange.start + 1 >= 0 ? pageRange.end - pageRange.start + 1 : 0)
@@ -81,7 +81,7 @@ const PageControl = ({ page, data }) => {
           })}
       </div>
       <button onClick={() => updatePage(page + 1)}>
-        <img src="/admin/adminNextPage.svg" alt="adminNextPage" />
+        <img src="/adminNextPage.svg" alt="adminNextPage" />
       </button>
     </div>
   );
@@ -107,7 +107,7 @@ const SearchBar = () => {
 
   return (
     <div className="flex border max-w-sm w-full bg-white rounded px-2">
-      <img src="/admin/search.svg" width={24} height={24} alt="searchSVG" />
+      <img src="/search.svg" width={24} height={24} alt="searchSVG" />
       <input
         type="text"
         value={searchText}
@@ -363,7 +363,7 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
   );
 };
 
-const AllUsersCnt = ({ userCnt }) => {
+const AllUsersCnt = ({ userCnt }: { userCnt: number }) => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
@@ -385,8 +385,8 @@ export default function Users() {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get('page')) || 1;
   const keyword = searchParams.get('keyword') || '';
-  const { data, error, refetch } = useUsers(page, keyword, PAGE_SIZE);
-  const [selectedUsers, setSelectedUsers] = useState<SelectedUsers | {}>({});
+  const { data, refetch } = useUsers(page, keyword, PAGE_SIZE);
+  const [selectedUsers, setSelectedUsers] = useState<SelectedUsers>({});
   const [selectAll, setSelectAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { navStatus } = useNav();
@@ -424,7 +424,7 @@ export default function Users() {
           />
         </article>
       </div>
-      {/* {isLoading && <Loading />} */}
+      {isLoading && <Loading />}
     </div>
   );
 }

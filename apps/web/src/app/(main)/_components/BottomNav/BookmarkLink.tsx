@@ -2,8 +2,9 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import handleLogin from '@/utils/handleLogin';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
-export default function BookmarkLink({ router }) {
+export default function BookmarkLink({ router }: { router: AppRouterInstance }) {
   const pathName = usePathname();
   return (
     <>
@@ -24,7 +25,7 @@ export default function BookmarkLink({ router }) {
       ) : (
         <Link
           href={'/bookmark'}
-          onClick={e => handleLogin(e, router, '/bookmark')}
+          onClick={(e) => handleLogin(e, router, '/bookmark')}
           className="flex flex-col justify-center items-center w-full h-full"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">

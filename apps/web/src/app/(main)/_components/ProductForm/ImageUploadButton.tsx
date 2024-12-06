@@ -33,7 +33,7 @@ const ImageUploadButton = React.memo(({ uploadImages, setUploadImages }: Props) 
 
       const files = Array.from(e.target.files);
       const imageUrls = new Array(files.length);
-      const imageFiles = files.map(file => ({ file, width: 0, height: 0 })); // 파일과 메타데이터를 함께 저장
+      const imageFiles = files.map((file) => ({ file, width: 0, height: 0 })); // 파일과 메타데이터를 함께 저장
 
       const promise = files.map(
         (file, idx) =>
@@ -43,8 +43,8 @@ const ImageUploadButton = React.memo(({ uploadImages, setUploadImages }: Props) 
             img.src = imgURL;
             img.onload = () => {
               imageUrls[idx] = imgURL;
-              imageFiles[idx].width = img.width;
-              imageFiles[idx].height = img.height;
+              imageFiles[idx]!.width = img.width;
+              imageFiles[idx]!.height = img.height;
               resolve(null);
             };
             img.onerror = reject;
@@ -54,7 +54,7 @@ const ImageUploadButton = React.memo(({ uploadImages, setUploadImages }: Props) 
       try {
         await Promise.all(promise);
 
-        setUploadImages(prevState => ({
+        setUploadImages((prevState) => ({
           imageFiles: [...prevState.imageFiles, ...imageFiles],
           imageUrls: [...prevState.imageUrls, ...imageUrls],
         }));
@@ -93,5 +93,7 @@ const ImageUploadButton = React.memo(({ uploadImages, setUploadImages }: Props) 
     </div>
   );
 });
+
+ImageUploadButton.displayName = 'ImageUploadButton';
 
 export default ImageUploadButton;

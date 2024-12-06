@@ -13,111 +13,95 @@ const Subcategories = React.memo(({ mainCategory, subCategory, handleSubCategory
     case 1:
       return (
         <>
-          <li
-            onClick={() => handleSubCategoryClick(10)}
-            className={`p-3 ${subCategory === 10 ? 'selected font-semibold' : ''}`}
-          >
-            커스텀
+          <li className={`${subCategory === 10 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(10)}>
+              커스텀
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(11)}
-            className={`p-3 ${subCategory === 11 ? 'selected font-semibold' : ''}`}
-          >
-            기성품
+          <li className={`${subCategory === 11 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(11)}>
+              기성품
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(12)}
-            className={`p-3 ${subCategory === 12 ? 'selected font-semibold' : ''}`}
-          >
-            스위치
+          <li className={`${subCategory === 12 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(12)}>
+              스위치
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(13)}
-            className={`p-3 ${subCategory === 13 ? 'selected font-semibold' : ''}`}
-          >
-            보강판
+          <li className={`${subCategory === 13 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(13)}>
+              보강판
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(14)}
-            className={`p-3 ${subCategory === 14 ? 'selected font-semibold' : ''}`}
-          >
-            아티산
+          <li className={`${subCategory === 14 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(14)}>
+              아티산
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(15)}
-            className={`p-3 ${subCategory === 15 ? 'selected font-semibold' : ''}`}
-          >
-            키캡
+          <li className={`${subCategory === 15 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(15)}>
+              키캡
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(16)}
-            className={`p-3 ${subCategory === 16 ? 'selected font-semibold' : ''}`}
-          >
-            PCB
+          <li className={`${subCategory === 16 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(16)}>
+              PCB
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(19)}
-            className={`p-3 ${subCategory === 19 ? 'selected font-semibold' : ''}`}
-          >
-            기타
+          <li className={`${subCategory === 19 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(19)}>
+              기타
+            </button>
           </li>
         </>
       );
     case 2:
       return (
         <>
-          <li
-            onClick={() => handleSubCategoryClick(20)}
-            className={`p-3 ${subCategory === 20 ? 'selected font-semibold' : ''}`}
-          >
-            완제품
+          <li className={`${subCategory === 20 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(20)}>
+              완제품
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(21)}
-            className={`p-3 ${subCategory === 21 ? 'selected font-semibold' : ''}`}
-          >
-            마우스피트
+          <li className={`${subCategory === 21 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(21)}>
+              마우스피트
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(22)}
-            className={`p-3 ${subCategory === 22 ? 'selected font-semibold' : ''}`}
-          >
-            그립테이프
+          <li className={`${subCategory === 22 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(22)}>
+              그립테이프
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(23)}
-            className={`p-3 ${subCategory === 23 ? 'selected font-semibold' : ''}`}
-          >
-            PCB
+          <li className={`${subCategory === 23 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(23)}>
+              PCB
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(29)}
-            className={`p-3 ${subCategory === 29 ? 'selected font-semibold' : ''}`}
-          >
-            기타
+          <li className={`${subCategory === 29 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(29)}>
+              기타
+            </button>
           </li>
         </>
       );
     case 3:
       return (
         <>
-          <li
-            onClick={() => handleSubCategoryClick(30)}
-            className={`p-3 ${subCategory === 30 ? 'selected font-semibold' : ''}`}
-          >
-            마우스패드
+          <li className={`${subCategory === 30 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(30)}>
+              마우스패드
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(31)}
-            className={`p-3 ${subCategory === 31 ? 'selected font-semibold' : ''}`}
-          >
-            장패드
+          <li className={`${subCategory === 31 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(31)}>
+              장패드
+            </button>
           </li>
-          <li
-            onClick={() => handleSubCategoryClick(39)}
-            className={`p-3 ${subCategory === 39 ? 'selected font-semibold' : ''}`}
-          >
-            기타
+          <li className={`${subCategory === 39 ? 'selected font-semibold' : ''}`}>
+            <button className="w-full py-3" onClick={() => handleSubCategoryClick(39)}>
+              기타
+            </button>
           </li>
         </>
       );
@@ -131,5 +115,7 @@ const Subcategories = React.memo(({ mainCategory, subCategory, handleSubCategory
       return null;
   }
 });
+
+Subcategories.displayName = 'Subcategories';
 
 export default Subcategories;

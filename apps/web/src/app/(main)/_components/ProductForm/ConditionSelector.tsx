@@ -8,7 +8,7 @@ interface Props {
 }
 
 const ConditionSelector = React.memo(({ condition, setCondition }: Props) => {
-  const handleConditionClick = useCallback(id => {
+  const handleConditionClick = useCallback((id: number) => {
     setCondition(id);
   }, []);
 
@@ -77,5 +77,7 @@ const ConditionSelector = React.memo(({ condition, setCondition }: Props) => {
     </div>
   );
 });
+
+ConditionSelector.displayName = 'ConditionSelector';
 
 export default ConditionSelector;

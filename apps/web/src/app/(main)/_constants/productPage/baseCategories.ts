@@ -1,4 +1,4 @@
-const baseCategory = {
+const baseCategory: Record<number, string> = {
   // 키보드
   1: '키보드',
   10: '커스텀',
