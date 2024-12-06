@@ -25,8 +25,9 @@ import './button.css';
 import { SessionData } from '@/type/sessionData';
 import { OpenModal } from '@/type/modal';
 import { RecentViewContext } from '@/app/(main)/_components/RecentViewComponent/RecentViewContext';
-import { ProductData, User } from '@keynut/type';
-import { deleteProduct } from '@keynut/lib/client';
+import ProductData from '@keynut/type/productData';
+import User from '@keynut/type/user';
+import deleteProduct from '@/lib/deleteProduct';
 
 const Condition = ({ condition }) => {
   return (

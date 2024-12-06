@@ -1,4 +1,4 @@
-export const deleteProduct = async (id: string, callback?: () => void) => {
+const deleteProduct = async (id: string, callback?: () => void) => {
   let res: Response | number;
   try {
     res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
@@ -15,3 +15,5 @@ export const deleteProduct = async (id: string, callback?: () => void) => {
     return res ? res : 500;
   }
 };
+
+export default deleteProduct;

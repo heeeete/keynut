@@ -1,4 +1,4 @@
-import { User } from '@keynut/type';
+import User from '@keynut/type/user';
 import RenderProfile from './RenderProfile';
 import getUserProfile from '@/lib/getUserProfile';
 

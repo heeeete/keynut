@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Fragment } from 'react';
 import conditions from '../_constants/conditions';
 import timeAgo from '@/utils/timeAgo';
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 
 const HandleBookMark = ({ productId }: { productId: string }) => {
   const queryClient = useQueryClient();

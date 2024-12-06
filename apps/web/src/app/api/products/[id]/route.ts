@@ -1,4 +1,4 @@
-import { connectDB } from '@keynut/lib/server';
+import connectDB from '@keynut/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';

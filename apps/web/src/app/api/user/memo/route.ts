@@ -1,5 +1,5 @@
 import getUserSession from '@/lib/getUserSession';
-import { connectDB } from '@keynut/lib/server';
+import connectDB from '@keynut/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';

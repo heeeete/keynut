@@ -1,13 +1,13 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import useUsers from '../_hooks/useUsers';
 import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
 // import Loading from '@/app/(main)/_components/Loading';
 import handleKakaoWithdrawal from '../_lib/handleKakaoWithdrawal';
-import userBanHandler from '../_lib/userBanHandler';
-import { User } from '@keynut/type';
+import userBanHandler from '@keynut/lib/userBanHandler';
+import User from '@keynut/type/user';
 
 interface ExtendedUser extends User {
   providerAccountId: string;

@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getSession, signIn } from 'next-auth/react';
 import { useInvalidateFiltersQuery } from './useInvalidateFiltersQuery';
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 
 interface Props {
   productId: string;

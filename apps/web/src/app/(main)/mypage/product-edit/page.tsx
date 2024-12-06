@@ -16,7 +16,7 @@ import DropdownMenu from '../../_components/DropdownMenu';
 import { useModal } from '../../_components/ModalProvider';
 import conditions from '../../_constants/conditions';
 import { UserData } from '@/type/userData';
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 
 interface SettingButtonProps {
   id: string;

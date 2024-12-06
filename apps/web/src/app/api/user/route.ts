@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib/server';
+import connectDB from '@keynut/lib/mongodb';
 import getUserSession from '@/lib/getUserSession';
-import s3Client from '@/lib/s3Client';
+import s3Client from '@keynut/lib/s3Client';
 import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
-import { User } from '@keynut/type';
+import User from '@keynut/type/user';
 
 const forbiddenList = [
   '씨발',

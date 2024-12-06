@@ -1,4 +1,4 @@
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 import adminGetProducts from '../_lib/adminGetProducts';
 import { useQuery } from '@tanstack/react-query';
 

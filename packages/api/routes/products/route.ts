@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@keynut/lib/server';
+import connectDB from '@keynut/lib/mongodb';
 
 const priceRanges = [
   { id: 1, min: 0, max: 50000 },

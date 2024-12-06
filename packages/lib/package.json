@@ -3,8 +3,10 @@
   "packageManager": "yarn@4.5.3",
   "private": true,
   "exports": {
-    "./client": "./index.client.ts",
-    "./server": "./index.server.ts"
+    "./deleteProduct": "./src/deleteProduct.ts",
+    "./mongodb": "./src/mongodb.ts",
+    "./s3Client": "./src/s3Client.ts",
+    "./userBanHandler": "./src/userBanHandler.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

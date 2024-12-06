@@ -8672,6 +8672,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"utils-90423c@workspace:packages/utils":
+  version: 0.0.0-use.local
+  resolution: "utils-90423c@workspace:packages/utils"
+  languageName: unknown
+  linkType: soft
+
 "uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"

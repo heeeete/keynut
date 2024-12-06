@@ -1,4 +1,4 @@
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 
 const getRecentProducts = async () => {
   try {

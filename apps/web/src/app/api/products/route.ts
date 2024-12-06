@@ -4,9 +4,10 @@ import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
 import checkBannedEmail from '@/lib/checkBannedEmail';
-import { User } from '@keynut/type';
+import User from '@keynut/type/user';
 import { GET } from '@keynut/api/products';
-import { connectDB, s3Client } from '@keynut/lib/server';
+import connectDB from '@keynut/lib/mongodb';
+import s3Client from '@keynut/lib/s3Client';
 
 export { GET };
 
