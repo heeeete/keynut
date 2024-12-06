@@ -1,4 +1,6 @@
-const ProductTitleAndPrice = ({ product }) => {
+import ProductData from '@keynut/type/productData';
+
+const ProductTitleAndPrice = ({ product }: { product: ProductData }) => {
   return (
     <div className=" flex flex-col py-1 max-md:text-sm justify-center h-14">
       <div className="break-all overflow-hidden line-clamp-1">{product.title}</div>

@@ -2,7 +2,7 @@
 
 const handleKakaoWithdrawal = async (_id: string, providerAccountId: string) => {
   try {
-    const res = await fetch('/api/admin/kakao/unlink', {
+    const res = await fetch('/api/kakao/unlink', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

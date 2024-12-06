@@ -11,13 +11,13 @@ const HashTagInputWithTag = React.memo(({ tags, setTags }: Props) => {
   const [tempTag, setTempTag] = useState('');
   const [isFocus, setIsFocus] = useState(false);
 
-  const removeTag = idx => {
+  const removeTag = (idx: number) => {
     const newTags = [...tags];
     newTags.splice(idx, 1);
     setTags(newTags);
   };
 
-  const activeEnter = e => {
+  const activeEnter = (e: React.KeyboardEvent) => {
     if (e.nativeEvent.isComposing) {
       return;
     }
@@ -30,7 +30,7 @@ const HashTagInputWithTag = React.memo(({ tags, setTags }: Props) => {
     }
   };
 
-  const onChangeTempTag = useCallback(e => {
+  const onChangeTempTag = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setTempTag(e.target.value);
   }, []);
 
@@ -56,7 +56,12 @@ const HashTagInputWithTag = React.memo(({ tags, setTags }: Props) => {
           <div key={idx} className="flex items-center space-x-1 mr-3">
             <span>{e}</span>
             <button onClick={() => removeTag(idx)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="0.8rem" height="0.8rem" viewBox="0 0 2048 2048">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="0.8rem"
+                height="0.8rem"
+                viewBox="0 0 2048 2048"
+              >
                 <path
                   fill="currentColor"
                   d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
@@ -78,5 +83,7 @@ const HashTagInputWithTag = React.memo(({ tags, setTags }: Props) => {
     </div>
   );
 });
+
+HashTagInputWithTag.displayName = 'HashTagInputWithTag';
 
 export default HashTagInputWithTag;

@@ -6,7 +6,6 @@ import { useSession, signOut, signIn } from 'next-auth/react';
 import handleLogin from '../../../utils/handleLogin';
 import { Lexend } from 'next/font/google';
 import { SessionData } from '@/type/sessionData';
-import Image from 'next/image';
 
 const title = Lexend({ subsets: ['latin'], weight: ['700'] });
 const nav = Lexend({ subsets: ['latin'], weight: ['400'] });
@@ -20,7 +19,10 @@ export default function Nav() {
     pathname.startsWith('/shop/') ||
     pathname.startsWith('/gallery/post');
   const navRender =
-    pathname === '/shop' || pathname === '/gallery' || pathname === '/bookmark' || pathname === '/mypage/profile-edit';
+    pathname === '/shop' ||
+    pathname === '/gallery' ||
+    pathname === '/bookmark' ||
+    pathname === '/mypage/profile-edit';
 
   const maxMdBorder = pathname.startsWith('/mypage/product-edit');
 
@@ -35,12 +37,12 @@ export default function Nav() {
         <div className="flex justify-end pr-10 pt-2 max-[960px]:hidden">
           <ul className={`${nav.className} flex justify-end space-x-2 text-xs`}>
             <li>
-              <Link href="/mypage" onClick={e => handleLogin(e, router, '/mypage')}>
+              <Link href="/mypage" onClick={(e) => handleLogin(e, router, '/mypage')}>
                 마이페이지
               </Link>
             </li>
             <li>
-              <Link href="/bookmark" onClick={e => handleLogin(e, router, '/bookmark')}>
+              <Link href="/bookmark" onClick={(e) => handleLogin(e, router, '/bookmark')}>
                 찜
               </Link>
             </li>
@@ -65,7 +67,9 @@ export default function Nav() {
             </Link>
           </div>
           <div className="">
-            <ul className={`${nav.className} flex justify-end space-x-8 text-lg max-[960px]:hidden`}>
+            <ul
+              className={`${nav.className} flex justify-end space-x-8 text-lg max-[960px]:hidden`}
+            >
               <li>
                 <Link
                   href={'/gallery'}
@@ -93,7 +97,7 @@ export default function Nav() {
               <li>
                 <Link
                   href={'/sell'}
-                  onClick={e => handleLogin(e, router, '/sell')}
+                  onClick={(e) => handleLogin(e, router, '/sell')}
                   className={`${
                     pathname.startsWith('/sell')
                       ? 'after:block after:w-full after:h-px after:absolute after:-rotate-12 after:top-1/2 after:bg-slate-950'

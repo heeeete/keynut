@@ -1,12 +1,15 @@
 import Image from 'next/image';
 import conditions from '../_constants/conditions';
+import ProductData from '@keynut/type/productData';
 
-const ProductState = ({ state }) => {
+const ProductState = ({ state }: { state: number }) => {
   return (
     <>
       {state === 2 ? (
         <div className="absolute left-1 top-1 z-10 rounded px-2 py-1  bg-gray-500 bg-opacity-55 flex items-center justify-center">
-          <p className="font-semibold text-white text-sm max-[1024px]:text-xs max-md:text-xxs">예약중</p>
+          <p className="font-semibold text-white text-sm max-[1024px]:text-xs max-md:text-xxs">
+            예약중
+          </p>
         </div>
       ) : (
         ''
@@ -15,7 +18,7 @@ const ProductState = ({ state }) => {
   );
 };
 
-const ProductCondition = ({ condition }) => {
+const ProductCondition = ({ condition }: { condition: 1 | 2 | 3 | 4 | 5 }) => {
   return (
     <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
       {conditions[condition].option}
@@ -40,13 +43,15 @@ const ProductImageListOrSingle = () => {
   );
 };
 
-const ProductImage = ({ product }) => {
+const ProductImage = ({ product }: { product: ProductData }) => {
   return (
     <div className="w-full relative aspect-square min-h-32 min-w-32 bg-gray-50">
       <Image
         className="rounded object-cover"
         src={
-          product.images.length ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}` : '/noImage.svg'
+          product.images.length
+            ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]!.name}`
+            : '/noImage.svg'
         }
         alt={product.title}
         fill

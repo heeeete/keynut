@@ -2,8 +2,9 @@
 import { usePathname } from 'next/navigation';
 import handleLogin from '@/utils/handleLogin';
 import Link from 'next/link';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
-export default function SellLink({ router }) {
+export default function SellLink({ router }: { router: AppRouterInstance }) {
   const pathName = usePathname();
   return (
     <>
@@ -32,7 +33,7 @@ export default function SellLink({ router }) {
       ) : (
         <Link
           href={'/sell'}
-          onClick={e => handleLogin(e, router, '/sell')}
+          onClick={(e) => handleLogin(e, router, '/sell')}
           className="flex flex-col justify-center items-center w-full h-full"
         >
           <div
