@@ -1,40 +1,29 @@
 'use client';
 import { Suspense, useEffect, useState } from 'react';
-import { getProviders, signIn, signOut, useSession } from 'next-auth/react';
+import {
+  ClientSafeProvider,
+  getProviders,
+  LiteralUnion,
+  signIn,
+  useSession,
+} from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Nothing_You_Could_Do } from 'next/font/google';
-import Link from 'next/link';
-
-const title = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] });
-
-interface Providers {
-  kakao: {
-    id: string;
-    name: string;
-    type: string;
-    signinUrl: string;
-    callbackUrl: string;
-  };
-  naver: {
-    id: string;
-    name: string;
-    type: string;
-    signinUrl: string;
-    callbackUrl: string;
-  };
-}
+import { BuiltInProviderType } from 'next-auth/providers/index';
 
 function RenderSignIn() {
-  const { data: session, status } = useSession();
-  const [providers, setProviders] = useState<Providers | {}>({});
+  const { data: session } = useSession();
+  const [providers, setProviders] = useState<
+    Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null | {}
+  >({});
   const [callbackUrl, setCallbackUrl] = useState('/');
   const params = useSearchParams();
   const router = useRouter();
   const error = params.get('error');
 
   useEffect(() => {
-    if (error === 'OAuthAccountNotLinked') alert('이미 가입된 계정이 있습니다. 다른 플랫폼으로 로그인해 주세요.');
+    if (error === 'OAuthAccountNotLinked')
+      alert('이미 가입된 계정이 있습니다. 다른 플랫폼으로 로그인해 주세요.');
   }, []);
 
   useEffect(() => {
@@ -59,7 +48,9 @@ function RenderSignIn() {
     }
   }, [session]);
 
-  const isProvidersLoaded = Object.keys(providers).length > 0;
+  console.log(providers);
+
+  const isProvidersLoaded = Object.keys(providers || {}).length > 0;
 
   return (
     <div className="flex flex-co min-h-70vh items-center justify-center max-[960px]:fixed max-[960px]:w-screen max-[960px]:top-0 max-[960px]:left-0 max-[960px]:z-90 ">
@@ -76,10 +67,10 @@ function RenderSignIn() {
         </svg>
       </button>
       <div className=" max-[960px]:flex max-[960px]:items-center max-[960px]:fixed max-[960px]:top-1/2 max-[960px]:left-1/2 max-[960px]:-translate-x-1/2 max-[960px]:-translate-y-1/2 flex flex-col gap-y-3 p-2">
-        {['kakao', 'naver'].map(providerId => (
+        {['kakao', 'naver'].map((providerId) => (
           <button
             key={providerId}
-            onClick={isProvidersLoaded ? () => signIn(providerId, { callbackUrl }) : null}
+            onClick={isProvidersLoaded ? () => signIn(providerId, { callbackUrl }) : () => {}}
             disabled={!isProvidersLoaded}
             className="disabled:cursor-wait disabled:opacity-50"
           >

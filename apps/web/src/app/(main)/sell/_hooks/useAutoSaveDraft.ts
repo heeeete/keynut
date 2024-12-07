@@ -1,6 +1,9 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
-const useAutoSaveDraft = (isInitialRender: React.MutableRefObject<boolean>, dependency: Record<string, any>) => {
+const useAutoSaveDraft = (
+  isInitialRender: React.MutableRefObject<boolean>,
+  dependency: Record<string, any>,
+) => {
   useEffect(() => {
     if (isInitialRender.current) return;
     sessionStorage.setItem('draft', JSON.stringify(dependency));

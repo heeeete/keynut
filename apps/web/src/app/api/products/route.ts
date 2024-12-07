@@ -4,7 +4,6 @@ import getUserSession from '@/lib/getUserSession';
 import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
 import checkBannedEmail from '@/lib/checkBannedEmail';
-import User from '@keynut/type/user';
 import { GET } from '@keynut/api/products';
 import connectDB from '@keynut/lib/mongodb';
 import s3Client from '@keynut/lib/s3Client';
@@ -33,11 +32,11 @@ export async function POST(req: Request) {
       condition: Number(formData.get('condition')),
       description: formData.get('description'),
       price: Number(formData.get('price')),
-      images: JSON.parse(formData.get('imageDetails').toString()),
+      images: JSON.parse(formData.get('imageDetails')!.toString()),
       bookmarked: [],
       complain: [],
       openChatUrl: formData.get('openChatUrl'),
-      tags: JSON.parse(formData.get('tags').toString()),
+      tags: JSON.parse(formData.get('tags')!.toString()),
       views: 0,
       state: 1,
       createdAt: new Date(),
@@ -61,14 +60,10 @@ export async function POST(req: Request) {
   }
 }
 
-interface CustomSession {
-  user: User;
-}
-
 // 상품 수정 API
 export async function PUT(req: Request) {
   try {
-    const session: CustomSession = await getUserSession();
+    const session = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
@@ -94,10 +89,9 @@ export async function PUT(req: Request) {
       { email: session.user.email },
       { $set: { openChatUrl: formData.get('openChatUrl') } },
     );
-    let tags: string[] | [] = JSON.parse(formData.get('tags').toString());
 
     await products.updateOne(
-      { _id: new ObjectId(formData.get('id').toString()) },
+      { _id: new ObjectId(formData.get('id')?.toString()) },
       {
         $set: {
           title: formData.get('title'),
@@ -105,9 +99,9 @@ export async function PUT(req: Request) {
           condition: Number(formData.get('condition')),
           description: formData.get('description'),
           price: Number(formData.get('price')),
-          images: JSON.parse(formData.get('imageDetails').toString()),
+          images: JSON.parse(formData.get('imageDetails')!.toString()),
           openChatUrl: formData.get('openChatUrl'),
-          tags: JSON.parse(formData.get('tags').toString()),
+          tags: JSON.parse(formData.get('tags')!.toString()),
 
           updatedAt: new Date(),
         },

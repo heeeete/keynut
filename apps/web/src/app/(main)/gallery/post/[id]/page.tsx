@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable */
 
 'use client';
 
@@ -97,7 +98,7 @@ function RenderHashtag() {
 function CommentInput() {
   const [text, setText] = useState('');
 
-  const autoResize = e => {
+  const autoResize = (e) => {
     setText(e.target.value);
     e.target.style.height = 'auto'; //height 초기화
     e.target.style.height = e.target.scrollHeight + 'px';
@@ -133,7 +134,10 @@ export default function Page() {
   return (
     <div className="max-w-lg mx-auto max-md:main-768">
       <div className="flex items-center relative space-x-4 my-5 max-md:my-2">
-        <Link href={'/shop/123'} className="flex relative justify-center items-center bg-white  rounded-full">
+        <Link
+          href={'/shop/123'}
+          className="flex relative justify-center items-center bg-white  rounded-full"
+        >
           <Image
             src={info.profile}
             width={40}

@@ -2,10 +2,13 @@ import { SessionStrategy } from 'next-auth';
 import KakaoProvider from 'next-auth/providers/kakao';
 import NaverProvider from 'next-auth/providers/naver';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import checkBannedEmail from '@/lib/checkBannedEmail';
 import connectDB from '@keynut/lib/mongodb';
 import userBanHandler from '@keynut/lib/userBanHandler';
+import { JWT } from 'next-auth/jwt';
+import { Account, User as NextAuthUser, Session } from 'next-auth';
+import User from '@keynut/type/user';
 
 function getRandomKoreanWord() {
   const firstWords = [
@@ -134,7 +137,7 @@ function getRandomKoreanWord() {
   return `${firstWord}${secondWord}`;
 }
 
-async function addUserNickname(user, db) {
+async function addUserNickname(user: NextAuthUser, db: Db) {
   let isDuplicate = true;
   let nickname;
 
@@ -159,7 +162,7 @@ async function addUserNickname(user, db) {
   return { ...user, nickname };
 }
 
-async function initRaiseCountAndCreatedAt(user, db) {
+async function initRaiseCountAndCreatedAt(user: NextAuthUser, db: Db) {
   await db.collection('users').updateOne(
     { _id: new ObjectId(user.id) },
     {
@@ -173,11 +176,23 @@ async function initRaiseCountAndCreatedAt(user, db) {
   );
 }
 
+interface CustomToken extends JWT {
+  user: User;
+  admin?: boolean;
+  access_token?: string;
+  provider: string;
+}
+
+interface CustomSession extends Session {
+  access_token: string;
+  provider: string;
+}
+
 export const authOptions = {
   providers: [
     KakaoProvider({
-      clientId: process.env.KAKAO_CLIENT_ID,
-      clientSecret: process.env.KAKAO_CLIENT_SECRET,
+      clientId: process.env.KAKAO_CLIENT_ID as string,
+      clientSecret: process.env.KAKAO_CLIENT_SECRET as string,
       authorization: {
         params: {
           redirect_uri: process.env.NEXTAUTH_URL + '/api/auth/callback/kakao',
@@ -185,8 +200,8 @@ export const authOptions = {
       },
     }),
     NaverProvider({
-      clientId: process.env.NAVER_CLIENT_ID,
-      clientSecret: process.env.NAVER_CLIENT_SECRET,
+      clientId: process.env.NAVER_CLIENT_ID as string,
+      clientSecret: process.env.NAVER_CLIENT_SECRET as string,
       authorization: {
         params: {
           redirect_uri: process.env.NEXTAUTH_URL + '/api/auth/callback/naver',
@@ -201,11 +216,11 @@ export const authOptions = {
     // maxAge: 8,
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user }: { user: User }) {
       const client = await connectDB;
       const db = client.db(process.env.MONGODB_NAME);
 
-      const isBanned = await checkBannedEmail(user.email, db);
+      const isBanned = await checkBannedEmail(user.email as string, db);
       if (isBanned) {
         const { email, expires_at } = isBanned;
         if (expires_at && new Date(expires_at * 1000) <= new Date()) userBanHandler(email, 1);
@@ -215,7 +230,19 @@ export const authOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account, trigger, session }) {
+    async jwt({
+      token,
+      user,
+      account,
+      trigger,
+      session,
+    }: {
+      token: CustomToken;
+      user?: User;
+      account?: Account;
+      trigger?: 'signIn' | 'update' | 'signOut';
+      session: Session['user'];
+    }) {
       const client = await connectDB;
       const db = client.db(process.env.MONGODB_NAME);
 
@@ -226,19 +253,19 @@ export const authOptions = {
       }
 
       if (trigger === 'update' && session) {
-        const { openChatUrl, image, nickname, nicknameChangedAt, recentSearches, memo } = session;
+        const { openChatUrl, image, nickname, memo } = session;
         if (openChatUrl !== undefined || openChatUrl !== null) token.user.openChatUrl = openChatUrl;
         if (image !== undefined) token.user.image = image;
         if (nickname) token.user.nickname = nickname;
-        if (recentSearches) token.user.recentSearches = recentSearches;
+        // if (recentSearches) token.user.recentSearches = recentSearches;
         if (memo) token.user.memo = memo;
       }
 
-      if (account) {
+      if (account && user) {
         const userDoc = await db.collection('users').findOne({ _id: new ObjectId(user.id) });
-        token.user.nickname = userDoc.nickname;
-        token.user.createdAt = userDoc.createdAt;
-        token.user.provider = account.provider;
+        token.user.nickname = userDoc!.nickname;
+        token.user.createdAt = userDoc!.createdAt;
+        token.user.provider = account.provider as 'kakao' | 'naver';
         // token.user.lastRaiseReset = userDoc.lastRaiseReset;
         // token.user.raiseCount = userDoc.raiseCount;
         await db.collection('accounts').updateOne(
@@ -255,7 +282,7 @@ export const authOptions = {
 
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: CustomSession; token: CustomToken }) {
       if (token?.user) session.user = token.user;
       if (token?.admin) session.admin = true;
       if (token?.access_token) {
@@ -271,10 +298,11 @@ export const authOptions = {
     databaseName: 'keynut',
   }),
   events: {
-    async createUser(message) {
+    async createUser(message: CreateUserEvent) {
       const client = await connectDB;
       const db = client.db(process.env.MONGODB_NAME);
       try {
+        console.log(message);
         await addUserNickname(message.user, db);
         await initRaiseCountAndCreatedAt(message.user, db);
       } catch (error) {
@@ -287,3 +315,7 @@ export const authOptions = {
     error: '/auth/error', // 커스텀 오류 페이지 경로 설정
   },
 };
+
+interface CreateUserEvent {
+  user: NextAuthUser;
+}

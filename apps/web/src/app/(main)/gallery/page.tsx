@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable */
 
 'use client';
 
@@ -56,7 +57,7 @@ export default function Gallery() {
               type="text"
               placeholder="상품검색"
               value={searchText}
-              onChange={e => setSearchText(e.target.value)}
+              onChange={(e) => setSearchText(e.target.value)}
               className="outline-none w-450 pr-2 max-md:w-full max-md:bg-transparent"
             />
             {searchText.length ? (
@@ -125,7 +126,12 @@ export default function Gallery() {
             <div className="flex items-center space-x-2 w-full py-1">
               <div className="flex-1 break-all overflow-hidden line-clamp-1">{pick.title}</div>
               <div className="flex-none flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 1024 1024">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1.5em"
+                  height="1.5em"
+                  viewBox="0 0 1024 1024"
+                >
                   <path
                     stroke="black"
                     strokeWidth="50"

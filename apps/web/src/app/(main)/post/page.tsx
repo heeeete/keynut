@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable */
 
 'use client';
 
@@ -17,7 +18,7 @@ export default function Post() {
   const fileInputRef = useRef(null);
 
   const removeImage = useCallback(
-    idx => {
+    (idx) => {
       const newImageFiles = uploadImages.imageFiles.filter((_, index) => index !== idx);
       const newImageUrls = uploadImages.imageUrls.filter((_, index) => index !== idx);
       setUploadImages({
@@ -28,13 +29,13 @@ export default function Post() {
     [uploadImages],
   );
 
-  const removeTag = idx => {
+  const removeTag = (idx) => {
     const newTags = [...tags];
     newTags.splice(idx, 1);
     setTags(newTags);
   };
 
-  const activeEnter = e => {
+  const activeEnter = (e) => {
     if (e.nativeEvent.isComposing) {
       return;
     }
@@ -47,16 +48,16 @@ export default function Post() {
     }
   };
 
-  const onChangeTitle = useCallback(e => {
+  const onChangeTitle = useCallback((e) => {
     setTitle(e.target.value);
   }, []);
 
-  const onChangeTempTag = useCallback(e => {
+  const onChangeTempTag = useCallback((e) => {
     setTempTag(e.target.value);
   }, []);
 
   const onDragEnd = useCallback(
-    result => {
+    (result) => {
       if (!result.destination) {
         return;
       }
@@ -78,14 +79,14 @@ export default function Post() {
   );
 
   const handleImageUpload = useCallback(
-    e => {
+    (e) => {
       if (!e.target.files) return;
       if (uploadImages.imageUrls.length + e.target.files.length > 5)
         return window.alert('사진은 최대 5장까지 가능합니다.');
       const files = e.target.files;
       const filesArray = Array.from(files);
 
-      const newArray = filesArray.map(file => URL.createObjectURL(file));
+      const newArray = filesArray.map((file) => URL.createObjectURL(file));
       setUploadImages({
         imageFiles: [...uploadImages.imageFiles, ...filesArray],
         imageUrls: [...uploadImages.imageUrls, ...newArray],
@@ -132,14 +133,20 @@ export default function Post() {
             </g>
           </svg>
           <p className="text-gray-400">
-            {uploadImages.imageUrls.length ? `( ${uploadImages.imageUrls.length} / 5 )` : '사진 등록'}
+            {uploadImages.imageUrls.length
+              ? `( ${uploadImages.imageUrls.length} / 5 )`
+              : '사진 등록'}
           </p>
         </button>
       </div>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable" direction="horizontal">
           {(provided, snapshot) => (
-            <div ref={provided.innerRef} className="flex  overflow-auto  scrollbar-hide" {...provided.droppableProps}>
+            <div
+              ref={provided.innerRef}
+              className="flex  overflow-auto  scrollbar-hide"
+              {...provided.droppableProps}
+            >
               {uploadImages.imageUrls.map((url, idx) => (
                 <Draggable key={idx} draggableId={`draggable-${idx}`} index={idx}>
                   {(provided, snapshot) => (
@@ -214,7 +221,12 @@ export default function Post() {
           <div key={idx} className="flex items-center space-x-1 mr-3">
             <span>#{e}</span>
             <button onClick={() => removeTag(idx)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 2048 2048">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="0.8em"
+                height="0.8em"
+                viewBox="0 0 2048 2048"
+              >
                 <path
                   fill="currentColor"
                   d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"

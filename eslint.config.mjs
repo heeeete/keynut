@@ -23,7 +23,7 @@ export default [
           './packages/ui/tsconfig.json',
         ],
       },
-      globals: { ...globals.browser, ...globals.node },
+      globals: { ...globals.browser, ...globals.node, React: true },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
@@ -37,11 +37,11 @@ export default [
       ...pluginReact.configs.flat.recommended.rules,
       ...airbnbTsConfig.rules,
       ...prettierConfig.rules,
-      'react/react-in-jsx-scope': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['error'],
       'jsx-a11y/click-events-have-key-events': 'off',
       'jsx-a11y/no-static-element-interactions': 'off',
+      'react/react-in-jsx-scope': 'off',
     },
     settings: {
       react: {
