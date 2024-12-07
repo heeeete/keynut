@@ -11,7 +11,7 @@ import { UserData } from '@/type/userData';
 import User from '@keynut/type/user';
 import ProfileImage from '../_components/ProfileImage';
 
-const MyProfileName = ({ nickname }) => {
+const MyProfileName = ({ nickname }: { nickname: string }) => {
   return (
     <>
       {nickname ? (
@@ -25,7 +25,7 @@ const MyProfileName = ({ nickname }) => {
   );
 };
 
-const MyProfileLoginDate = ({ createdAt }) => {
+const MyProfileLoginDate = ({ createdAt }: { createdAt: string }) => {
   return (
     <div className="flex items-center space-x-1 text-sm text-gray-400 max-md:text-xs">
       <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 1024 1024">
@@ -43,7 +43,7 @@ const MyProfileLoginDate = ({ createdAt }) => {
   );
 };
 
-const ManagementButton = ({ type }) => {
+const ManagementButton = ({ type, label }: { type: string; label: string }) => {
   const router = useRouter();
   return (
     <Link
@@ -57,7 +57,7 @@ const ManagementButton = ({ type }) => {
       className="flex text-base px-2 py-1 border border-gray-300 rounded-md  items-center justify-center  max-md:text-gray-400 max-md:text-sm"
       href={`/mypage/${type}`}
     >
-      프로필 관리
+      {label}
     </Link>
   );
 };
@@ -86,18 +86,20 @@ const MyProfile = React.memo(({ userProfile }: { userProfile: User }) => {
           <MyProfileLoginDate createdAt={session?.user.createdAt} />
         </div>
         <div className="flex space-x-2">
-          <ManagementButton type={'product-edit'} />
-          <ManagementButton type={'profile-edit'} />
+          <ManagementButton type={'product-edit'} label={'상품 관리'} />
+          <ManagementButton type={'profile-edit'} label={'프로필 관리'} />
         </div>
       </div>
     </div>
   );
 });
 
-export default function MyPage() {
-  const { data: session, status, update } = useSession();
+MyProfile.displayName = 'MyProfile';
 
-  const { data, isLoading, error } = useQuery<UserData>({
+export default function MyPage() {
+  const { data: session, status } = useSession();
+
+  const { data } = useQuery<UserData>({
     queryKey: ['userProducts', session?.user?.id],
     queryFn: () => getUserProducts(session?.user?.id),
     enabled: status === 'authenticated' && !!session?.user?.id,

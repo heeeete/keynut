@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { getSession, signIn, signOut, useSession } from 'next-auth/react';
 import Loading from '@/app/(main)/_components/Loading';
@@ -50,7 +50,9 @@ const ProfileName = ({ session, status }: ProfileProps) => {
         openModal({ message: '허용되지 않는 단어가 포함되어 있습니다.' });
       } else if (res.status === 400) {
         setTempNickname(nickname);
-        openModal({ message: '닉네임은 2글자 이상 10글자 이하의 한글, 영어, 숫자만 사용 가능합니다.' });
+        openModal({
+          message: '닉네임은 2글자 이상 10글자 이하의 한글, 영어, 숫자만 사용 가능합니다.',
+        });
       } else console.error('API 요청 실패:', res.status, res.statusText);
     } else {
       setNickname(tempNickname);
@@ -69,15 +71,16 @@ const ProfileName = ({ session, status }: ProfileProps) => {
               className="flex border h-8 rounded px-1 outline-none items-center flex-1 max-md:text-sm"
               type="text"
               value={tempNickname}
-              onChange={e => setTempNickname(e.target.value)}
-              autoFocus
+              onChange={(e) => setTempNickname(e.target.value)}
             />
           ) : (
-            <div className="flex border rounded px-1 h-8 flex-1 items-center max-md:text-sm">{nickname}</div>
+            <div className="flex border rounded px-1 h-8 flex-1 items-center max-md:text-sm">
+              {nickname}
+            </div>
           )}
           <button
             className="px-3 py-1 border h-8 outline-none rounded-lg text-sm text-gray-500 active:bg-gray-100"
-            onClick={async e => {
+            onClick={async () => {
               if (!(await getSession())) return signIn();
               if (isEditing && nickname !== tempNickname) handleNickname();
               setIsEditing(!isEditing);
@@ -168,9 +171,21 @@ const ProfileImage = ({ session, status }: ProfileProps) => {
               />
               {isLoading && (
                 <div className="absolute top-0 left-0 w-full h-full rounded-full bg-black bg-opacity-25 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="3em"
+                    height="3em"
+                    viewBox="0 0 24 24"
+                  >
                     <g stroke="white" opacity={0.8}>
-                      <circle cx="12" cy="12" r="9.5" fill="none" strokeLinecap="round" strokeWidth="3">
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9.5"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeWidth="3"
+                      >
                         <animate
                           attributeName="stroke-dasharray"
                           calcMode="spline"
@@ -204,7 +219,12 @@ const ProfileImage = ({ session, status }: ProfileProps) => {
             </div>
           ) : (
             <div className="w-32 aspect-square defualt-profile max-md:w-24">
-              <svg xmlns="http://www.w3.org/2000/svg" width="75%" height="75%" viewBox="0 0 448 512">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="75%"
+                height="75%"
+                viewBox="0 0 448 512"
+              >
                 <path
                   fill="rgba(0,0,0,0.2)"
                   d="M224 256a128 128 0 1 0 0-256a128 128 0 1 0 0 256m-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512h388.6c16.4 0 29.7-13.3 29.7-29.7c0-98.5-79.8-178.3-178.3-178.3z"
@@ -216,7 +236,7 @@ const ProfileImage = ({ session, status }: ProfileProps) => {
         <div className="flex space-x-2 items-end">
           <button
             className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
-            onClick={e => {
+            onClick={() => {
               fileInputRef.current.click();
             }}
           >
@@ -232,7 +252,7 @@ const ProfileImage = ({ session, status }: ProfileProps) => {
           </button>
           <button
             className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
-            onClick={async e => {
+            onClick={async () => {
               if (!(await getSession())) return signIn();
               handleImageDelete();
             }}
@@ -314,7 +334,10 @@ export default function ProfileEdit() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId: session.user.id, expires_at: Math.floor(date.getTime() / 1000) }),
+      body: JSON.stringify({
+        userId: session.user.id,
+        expires_at: Math.floor(date.getTime() / 1000),
+      }),
     });
 
     if (!res.ok) {
@@ -361,7 +384,7 @@ export default function ProfileEdit() {
           <div className="flex space-x-4">
             <button
               className="flex text-gray-500 underline"
-              onClick={e => {
+              onClick={() => {
                 signOut({ callbackUrl: '/' });
               }}
             >

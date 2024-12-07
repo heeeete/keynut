@@ -3,7 +3,7 @@ import getUserProducts from '@/lib/getUserProducts';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
 import initRaiseCount from '@/lib/initRaiseCount';
 import raiseProduct from '@/lib/raiseProduct';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -111,7 +111,7 @@ interface SettingModalProps extends DeleteButtonProps {}
 
 const SettingModal = ({ id, setShowSetting, openDeleteModal }: SettingModalProps) => {
   return (
-    <div
+    <button
       className="fixed w-screen custom-dvh top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
       onClick={(e) => {
         if (e.currentTarget === e.target) setShowSetting(false);
@@ -121,7 +121,7 @@ const SettingModal = ({ id, setShowSetting, openDeleteModal }: SettingModalProps
         <ModifyButton id={id} />
         <DeleteButton id={id} setShowSetting={setShowSetting} openDeleteModal={openDeleteModal} />
       </div>
-    </div>
+    </button>
   );
 };
 
@@ -234,7 +234,7 @@ function ProductEdit() {
   const [raiseCount, setRaiseCount] = useState(0);
   const fetchRaiseCount = initRaiseCount(setRaiseCount);
   const invalidateFilters = useInvalidateFiltersQuery();
-  const { data, isLoading, error, refetch } = useQuery<UserData>({
+  const { data, refetch } = useQuery<UserData>({
     queryKey: ['userProducts', session?.user?.id],
     queryFn: () => getUserProducts(session?.user?.id),
     enabled: status === 'authenticated' && !!session?.user?.id,
@@ -313,7 +313,7 @@ function ProductEdit() {
         <div className="flex flex-col max-md:text-sm max-[960px]:px-10 max-md:px-0">
           {productState === 3 ? (
             data.userProducts.length ? (
-              data.userProducts.map((product, idx) => (
+              data.userProducts.map((product) => (
                 <Fragment key={product._id}>
                   <Product
                     product={product}
@@ -341,7 +341,7 @@ function ProductEdit() {
           ) : data.userProducts.filter((a) => a.state === productState).length ? (
             data.userProducts
               .filter((a) => a.state === productState)
-              .map((product, idx) => (
+              .map((product) => (
                 <Fragment key={product._id}>
                   <Product
                     product={product}

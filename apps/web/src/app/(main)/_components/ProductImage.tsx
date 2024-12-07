@@ -18,6 +18,7 @@ const ProductState = ({ state }: { state: number }) => {
   );
 };
 
+
 const ProductCondition = ({ condition }: { condition: 1 | 2 | 3 | 4 | 5 }) => {
   return (
     <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">

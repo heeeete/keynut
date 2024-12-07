@@ -1,23 +1,9 @@
 'use client';
 
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  Fragment,
-  useLayoutEffect,
-  Suspense,
-  Children,
-} from 'react';
+import React, { useState, useRef, useEffect, useCallback, Fragment, useLayoutEffect } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  useInfiniteQuery,
-  useQuery,
-  useSuspenseInfiniteQuery,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import getProducts from '../_lib/getProducts';
 import { useInView } from 'react-intersection-observer';
 import debounce from '../../../../utils/debounce';
@@ -25,7 +11,7 @@ import Link from 'next/link';
 import fetchHotProducts from '../_lib/fetchHotProducts';
 import Skeletons from './Skeletons';
 import conditions from '../../_constants/conditions';
-import { ProductData } from '@keynut/type';
+import ProductData from '@keynut/type/productData';
 import ProductImage from '../../_components/ProductImage';
 import ProductTitleAndPrice from '../../_components/ProductTitleAndPrice';
 
@@ -89,7 +75,7 @@ const prices = [
 
 interface RecentSearchProps {
   recentSearches: string[];
-  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  setSearchText: React.Dispatch<React.SetStateAction<string | null>>;
   setRecentSearches: React.Dispatch<React.SetStateAction<string[]>>;
   searchFlag: React.MutableRefObject<boolean>;
   setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
@@ -116,7 +102,7 @@ const RecentSearch = React.memo(
       // inputRef.current.blur();
     };
 
-    const deleteRecentSearch = (search) => {
+    const deleteRecentSearch = (search: string) => {
       const newRecentSearches = [...recentSearches.filter((item) => item !== search)].slice(0, 5);
       setRecentSearches(newRecentSearches);
       localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
@@ -125,30 +111,31 @@ const RecentSearch = React.memo(
       <ul className="w-full flex-1">
         {recentSearches.length ? (
           recentSearches.map((search, index) => (
-            <li
-              key={index}
-              className="flex items-center cursor-pointer justify-between py-2 min-w-9"
-              onClick={() => {
-                handleRecentSearch(search);
-              }}
-            >
-              <p className="break-all line-clamp-1 pr-3">{search}</p>
-              <svg
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteRecentSearch(search);
+            <li key={index}>
+              <button
+                onClick={() => {
+                  handleRecentSearch(search);
                 }}
-                className="min-w-3"
-                xmlns="http://www.w3.org/2000/svg"
-                width="12"
-                height="12"
-                viewBox="0 0 2048 2048"
+                className="flex w-full items-center cursor-pointer justify-between py-2 min-w-9"
               >
-                <path
-                  fill="gray"
-                  d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
-                />
-              </svg>
+                <p className="break-all line-clamp-1 pr-3">{search}</p>
+                <svg
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteRecentSearch(search);
+                  }}
+                  className="min-w-3"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 2048 2048"
+                >
+                  <path
+                    fill="gray"
+                    d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
+                  />
+                </svg>
+              </button>
             </li>
           ))
         ) : (
@@ -159,9 +146,11 @@ const RecentSearch = React.memo(
   },
 );
 
+RecentSearch.displayName = 'RecentSearch';
+
 interface SearchBarProps {
   paramsKeyword: string;
-  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  setSearchText: React.Dispatch<React.SetStateAction<string | null>>;
   searchFlag: React.MutableRefObject<boolean>;
   isFocused: boolean;
   setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
@@ -176,16 +165,16 @@ const SearchBar = React.memo(
     const searchContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-      const $nav = document.getElementById('nav');
+      const $nav: HTMLElement | null = document.getElementById('nav');
 
       const observer = new IntersectionObserver(
         ([entry]) => {
-          if (!entry.isIntersecting) {
+          if (entry && !entry.isIntersecting) {
             setIsFocused(false);
             inputRef.current?.blur();
-            $nav.style.borderBottom = '1px solid lightgray';
+            if ($nav) $nav.style.borderBottom = '1px solid lightgray';
           } else {
-            $nav.style.borderBottom = '';
+            if ($nav) $nav.style.borderBottom = '';
           }
         },
         {
@@ -204,13 +193,15 @@ const SearchBar = React.memo(
     }, []);
 
     useEffect(() => {
-      const handleTouchStart = (event) => {
-        if (searchContainerRef.current && searchContainerRef.current.contains(event.target)) {
-          return;
-        }
-        if (document.activeElement === inputRef.current) {
-          setIsFocused(false);
-          inputRef.current?.blur();
+      const handleTouchStart = (event: TouchEvent) => {
+        if (event.target instanceof HTMLElement) {
+          if (searchContainerRef.current && searchContainerRef.current.contains(event.target)) {
+            return;
+          }
+          if (document.activeElement === inputRef.current) {
+            setIsFocused(false);
+            inputRef.current?.blur();
+          }
         }
       };
 
@@ -222,7 +213,9 @@ const SearchBar = React.memo(
     }, []);
 
     useEffect(() => {
-      const storedSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+      const recentSearches = localStorage.getItem('recentSearches');
+      const storedSearches = recentSearches ? JSON.parse(recentSearches) : [];
+
       setRecentSearches(storedSearches);
       const handleClickOutside = (event: MouseEvent) => {
         if (
@@ -259,7 +252,7 @@ const SearchBar = React.memo(
       }
       setSearchText(tempSearchText.trim());
       setIsFocused(false);
-      inputRef.current.blur();
+      if (inputRef.current) inputRef.current.blur();
     };
     const deleteAllRecentSearch = () => {
       setRecentSearches([]);
@@ -291,7 +284,7 @@ const SearchBar = React.memo(
               <button
                 onClick={() => {
                   setTempSearchText('');
-                  inputRef.current.focus();
+                  if (inputRef.current) inputRef.current.focus();
                 }}
               >
                 <svg
@@ -352,19 +345,44 @@ const SearchBar = React.memo(
   },
 );
 
+SearchBar.displayName = 'SearchBar';
+
+interface categoriesStateType {
+  [key: string]: {
+    option: string;
+    checked: boolean;
+    childId?: number[];
+    parentId?: number;
+  };
+}
+
+interface pricesStateType {
+  [key: string]: {
+    option: string;
+    checked: boolean;
+  };
+}
+
+interface SelectedFiltersProps {
+  categoriesState: categoriesStateType;
+  pricesState: pricesStateType;
+  handleCategoryChange: (id: string, checked: boolean) => void;
+  handlePriceChange: (id: string, checked: boolean) => void;
+}
+
 const SelectedFilters = ({
   categoriesState,
   pricesState,
   handleCategoryChange,
   handlePriceChange,
-}) => {
+}: SelectedFiltersProps) => {
   return (
     <>
-      {Object.keys(categoriesState).filter((key) => categoriesState[key].checked).length +
-      Object.keys(pricesState).filter((key) => pricesState[key].checked).length ? (
+      {Object.keys(categoriesState).filter((key) => categoriesState[key]?.checked).length +
+      Object.keys(pricesState).filter((key) => pricesState[key]?.checked).length ? (
         <div className="flex flex-1 items-center gap-2 overflow-auto scrollbar-hide min-[960px]:flex-wrap min-[960px]:pb-4 max-[960px]:m-2">
           {Object.keys(categoriesState)
-            .filter((key) => categoriesState[key].checked)
+            .filter((key) => categoriesState[key]?.checked)
             .map((key) => (
               <div
                 className="flex space-x-1 items-center text-sm p-1 rounded min-[960px]:bg-blue-50 max-[960px]:flex-nowrap max-[960px]:whitespace-nowrap max-md:text-xs max-[960px]:bg-white"
@@ -373,7 +391,7 @@ const SelectedFilters = ({
                 <div className="flex min-[960px]:text-gray-500 max-[960px]:text-black max-[960px]:font-semibold">
                   {categoriesState[key]?.option}
                 </div>
-                <div className="cursor-pointer" onClick={() => handleCategoryChange(key, false)}>
+                <button className="cursor-pointer" onClick={() => handleCategoryChange(key, false)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="1em"
@@ -385,18 +403,18 @@ const SelectedFilters = ({
                       d="M208.49 191.51a12 12 0 0 1-17 17L128 145l-63.51 63.49a12 12 0 0 1-17-17L111 128L47.51 64.49a12 12 0 0 1 17-17L128 111l63.51-63.52a12 12 0 0 1 17 17L145 128Z"
                     />
                   </svg>
-                </div>
+                </button>
               </div>
             ))}
           {Object.keys(pricesState)
-            .filter((key) => pricesState[key].checked)
+            .filter((key) => pricesState[key]?.checked)
             .map((key) => (
               <div
                 className="flex space-x-1 items-center text-sm p-1  rounded min-[960px]:bg-gray-100  max-md:text-xs max-[960px]:flex-nowrap max-[960px]:whitespace-nowrap max-[960px]:bg-white"
                 key={key}
               >
                 <div className="flex min-[960px]:text-gray-500  max-[960px]:text-black max-[960px]:font-semibold">
-                  {pricesState[key].option}
+                  {pricesState[key]?.option}
                 </div>
 
                 <svg
@@ -429,11 +447,11 @@ const RenderProductsNum = ({
   unbookedProducts,
 }: {
   includeBooked: boolean;
-  params: string;
+  params: URLSearchParams;
   allProducts: number;
   unbookedProducts: number;
 }) => {
-  const [totalProducts, setTotalProducts] = useState(null);
+  const [totalProducts, setTotalProducts] = useState(0);
   useEffect(() => {
     if (includeBooked) setTotalProducts(allProducts);
     else setTotalProducts(unbookedProducts);
@@ -446,7 +464,7 @@ const RenderProductsNum = ({
   );
 };
 
-const Product = ({ product }) => {
+const Product = ({ product }: { product: ProductData }) => {
   return (
     <Link
       href={`/shop/product/${product._id}`}
@@ -467,6 +485,12 @@ interface ProductListResponse {
   unBookedProducts: number;
 }
 
+interface RenderProductsProps extends SelectedFiltersProps {
+  params: URLSearchParams;
+  includeBooked: boolean;
+  isMaxtb: boolean;
+}
+
 const RenderProducts = ({
   params,
   includeBooked,
@@ -475,20 +499,20 @@ const RenderProducts = ({
   pricesState,
   handleCategoryChange,
   handlePriceChange,
-}) => {
+}: RenderProductsProps) => {
   const initPageRef = useRef(true);
   const createQueryString = useCallback(() => {
     const queryParams = new URLSearchParams();
-    if (params.get('keyword')) queryParams.append('keyword', params.get('keyword'));
-    if (params.get('categories')) queryParams.append('categories', params.get('categories'));
-    if (params.get('prices')) queryParams.append('prices', params.get('prices'));
+    if (params.get('keyword')) queryParams.append('keyword', params.get('keyword')!);
+    if (params.get('categories')) queryParams.append('categories', params.get('categories')!);
+    if (params.get('prices')) queryParams.append('prices', params.get('prices')!);
     return queryParams.toString();
   }, [params]);
 
   const queryString = createQueryString();
   const useProducts = (queryString: string) => {
     return useInfiniteQuery<ProductListResponse>({
-      queryKey: ['products', !!queryString.length ? queryString : 'all'],
+      queryKey: ['products', queryString.length ? queryString : 'all'],
       initialPageParam: 1,
       queryFn: ({ pageParam }) => getProducts(queryString, pageParam),
       getNextPageParam: (
@@ -507,7 +531,7 @@ const RenderProducts = ({
 
   const [isDeferred, setIsDeferred] = useState(false);
 
-  let timeoutId;
+  let timeoutId: ReturnType<typeof setTimeout>;
 
   useEffect(() => {
     if (isFetching) {
@@ -545,8 +569,8 @@ const RenderProducts = ({
       <RenderProductsNum
         includeBooked={includeBooked}
         params={params}
-        allProducts={data?.pages[0].allProducts}
-        unbookedProducts={data?.pages[0].unBookedProducts}
+        allProducts={data?.pages[0]?.allProducts ? data.pages[0].allProducts : 0}
+        unbookedProducts={data?.pages[0]?.unBookedProducts ? data.pages[0].unBookedProducts : 0}
       />
       {!isMaxtb && (
         <SelectedFilters
@@ -601,7 +625,7 @@ const RenderProducts = ({
   );
 };
 
-const PopularProductSkeleton = ({ category }) => {
+const PopularProductSkeleton = ({ category }: { category: number }) => {
   let categoryTitle =
     category === 0
       ? '전체'
@@ -649,7 +673,7 @@ interface RenderPopularProductsProps {
 const RenderPopularProducts = React.memo(
   ({ category, paramsKeyword, setHasTop }: RenderPopularProductsProps) => {
     const useHotProducts = (category: number) => {
-      return useQuery({
+      return useQuery<ProductData[]>({
         queryKey: ['topProducts', category],
         queryFn: () => fetchHotProducts(category),
         enabled:
@@ -664,7 +688,7 @@ const RenderPopularProducts = React.memo(
         staleTime: Infinity,
       });
     };
-    const { data, error, isLoading, isFetching } = useHotProducts(category);
+    const { data, isFetching } = useHotProducts(category);
 
     useEffect(() => {
       if (data?.length) setHasTop(true);
@@ -690,7 +714,7 @@ const RenderPopularProducts = React.memo(
 
     const [isDeferred, setIsDeferred] = useState(false);
 
-    let timeoutId;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     useEffect(() => {
       if (isFetching) {
@@ -728,7 +752,7 @@ const RenderPopularProducts = React.memo(
                         className="rounded object-cover"
                         src={
                           product.images.length
-                            ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
+                            ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]?.name}`
                             : '/noImage.svg'
                         }
                         alt={product.title}
@@ -768,6 +792,17 @@ const RenderPopularProducts = React.memo(
   },
 );
 
+RenderPopularProducts.displayName = 'RenderPopularProducts';
+
+interface RenderMdFilterProps extends SelectedFiltersProps {
+  resetFilter: () => void;
+  paramsCategories: number[];
+  paramsPrices: number[];
+  params: URLSearchParams;
+  includeBooked: boolean;
+  setIncludeBooked: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const RenderMdFilter = ({
   categoriesState,
   pricesState,
@@ -779,7 +814,7 @@ const RenderMdFilter = ({
   params,
   includeBooked,
   setIncludeBooked,
-}) => {
+}: RenderMdFilterProps) => {
   const [showCategory, setShowCategory] = useState(paramsCategories.length ? true : false);
   const [showPrice, setShowPrice] = useState(paramsPrices.length ? true : false);
 
@@ -856,18 +891,18 @@ const RenderMdFilter = ({
                       type="checkbox"
                       checked={categoriesState[category.id]?.checked || false}
                       onChange={(e) => {
-                        handleCategoryChange(category.id, e.target.checked);
+                        handleCategoryChange(category.id.toString(), e.target.checked);
                       }}
                     />
                     <div
-                      className={`${categoriesState[category.id].checked ? 'font-semibold' : ''}`}
+                      className={`${categoriesState[category.id]?.checked ? 'font-semibold' : ''}`}
                     >
                       {category.option}
                     </div>
                   </label>
                   {categoriesState[category.id] &&
                     (category.subCategories?.some((sub) => categoriesState[sub.id]?.checked) ||
-                      categoriesState[category.id].checked) &&
+                      categoriesState[category.id]?.checked) &&
                     category.subCategories?.map((sub) => (
                       <div key={sub.id}>
                         <label className="flex items-center space-x-1.5 ml-5 p-1">
@@ -876,11 +911,11 @@ const RenderMdFilter = ({
                             type="checkbox"
                             checked={categoriesState[sub.id]?.checked || false}
                             onChange={(e) => {
-                              handleCategoryChange(sub.id, e.target.checked);
+                              handleCategoryChange(sub.id.toString(), e.target.checked);
                             }}
                           />
                           <div
-                            className={`${categoriesState[sub.id].checked ? 'font-semibold' : ''}`}
+                            className={`${categoriesState[sub.id]?.checked ? 'font-semibold' : ''}`}
                           >
                             {sub.option}
                           </div>
@@ -934,10 +969,10 @@ const RenderMdFilter = ({
                       type="checkbox"
                       checked={pricesState[price.id]?.checked || false}
                       onChange={(e) => {
-                        handlePriceChange(price.id, e.target.checked);
+                        handlePriceChange(price.id.toString(), e.target.checked);
                       }}
                     />
-                    <div className={`${pricesState[price.id].checked ? 'font-semibold' : ''}`}>
+                    <div className={`${pricesState[price.id]?.checked ? 'font-semibold' : ''}`}>
                       {price.option}
                     </div>
                   </label>
@@ -968,6 +1003,18 @@ const RenderMdFilter = ({
   );
 };
 
+interface FilterBarProps {
+  paramsCategories: number[];
+  paramsPrices: number[];
+  initFilter: () => void;
+  resetFilter: () => void;
+  setPriceOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setCategoryOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setFilterActive: React.Dispatch<React.SetStateAction<boolean>>;
+  includeBooked: boolean;
+  setIncludeBooked: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const FilterBar = ({
   paramsCategories,
   paramsPrices,
@@ -978,7 +1025,7 @@ const FilterBar = ({
   setFilterActive,
   includeBooked,
   setIncludeBooked,
-}) => {
+}: FilterBarProps) => {
   return (
     <>
       <div className="flex-1 space-x-2 hidden max-[960px]:flex max-[960px]:mx-8 max-md:mx-0">
@@ -1071,7 +1118,7 @@ const FilterBar = ({
           예약 포함
         </button>
       </div>
-      <button onClick={(e) => resetFilter()} className="p-1 md:hidden">
+      <button onClick={() => resetFilter()} className="p-1 md:hidden">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 21 21">
           <g
             fill="none"
@@ -1093,9 +1140,9 @@ export default function RenderShop() {
   const router = useRouter();
   const params = useSearchParams();
   const paramsCategories = params.get('categories')
-    ? params.get('categories').split(',').map(Number)
+    ? params.get('categories')?.split(',').map(Number)
     : [];
-  const paramsPrices = params.get('prices') ? params.get('prices').split(',').map(Number) : [];
+  const paramsPrices = params.get('prices') ? params.get('prices')?.split(',').map(Number) : [];
   const paramsKeyword = params.get('keyword') ? params.get('keyword') : '';
   const [filterActive, setFilterActive] = useState(false);
   const [searchText, setSearchText] = useState(paramsKeyword);
@@ -1107,7 +1154,7 @@ export default function RenderShop() {
   const pageRef = useRef<HTMLDivElement | null>(null);
 
   const [includeBooked, setIncludeBooked] = useState(true);
-  const [categoriesState, setCategoriesState] = useState({
+  const [categoriesState, setCategoriesState] = useState<categoriesStateType>({
     1: { option: '키보드', checked: false, childId: [10, 11, 12, 13, 14, 15, 16, 19] },
     10: { option: '커스텀', checked: false, parentId: 1 },
     11: { option: '기성품', checked: false, parentId: 1 },
@@ -1131,7 +1178,7 @@ export default function RenderShop() {
     5: { option: '헤드셋', checked: false },
     9: { option: '기타', checked: false },
   });
-  const [pricesState, setPricesState] = useState({
+  const [pricesState, setPricesState] = useState<pricesStateType>({
     1: { option: '5만원 이하', checked: false },
     2: { option: '5 - 10만원', checked: false },
     3: { option: '10 - 30만원', checked: false },
@@ -1141,10 +1188,10 @@ export default function RenderShop() {
 
   const [queryString, setQueryString] = useState(() => {
     const queryParams = new URLSearchParams();
-    if (paramsKeyword.length) queryParams.append('keyword', paramsKeyword);
-    if (paramsCategories.length)
+    if (paramsKeyword && paramsKeyword.length) queryParams.append('keyword', paramsKeyword);
+    if (paramsCategories && paramsCategories.length)
       queryParams.append('categories', paramsCategories.map((a) => a.toString).join(','));
-    if (paramsPrices.length)
+    if (paramsPrices && paramsPrices.length)
       queryParams.append('prices', paramsPrices.map((a) => a.toString()).join(','));
     return queryParams.toString();
   });
@@ -1153,7 +1200,7 @@ export default function RenderShop() {
   const hotProductFlag = useRef(Number(params.get('categories')));
   const currPosY = useRef(0);
   const searchFlag = useRef(true);
-  const obj = {};
+  const obj: Record<number, boolean> = {};
 
   useLayoutEffect(() => {
     if (window.innerWidth > 960) setIsMaxtb(false);
@@ -1165,15 +1212,15 @@ export default function RenderShop() {
       currPosY.current = window.scrollY;
       document.documentElement.style.setProperty('--posY', `-${currPosY.current}px`);
       document.body.classList.add('fixed');
-      footer.style.display = 'hidden';
+      if (footer) footer.style.display = 'hidden';
     } else {
-      footer.style.visibility = 'visible';
+      if (footer) footer.style.visibility = 'visible';
       document.body.classList.remove('fixed');
       window.scrollTo(0, currPosY.current);
     }
     return () => {
       document.body.classList.remove('fixed');
-      footer.style.visibility = 'visible';
+      if (footer) footer.style.visibility = 'visible';
     };
   }, [filterActive]);
 
@@ -1197,18 +1244,18 @@ export default function RenderShop() {
       const newCategoriesState = { ...categoriesState };
       const newPricesState = { ...pricesState };
       Object.keys(newCategoriesState).forEach((key) => {
-        newCategoriesState[key].checked = false;
+        if (newCategoriesState[key]) newCategoriesState[key].checked = false;
       });
       Object.keys(newPricesState).forEach((key) => {
-        newPricesState[key].checked = false;
+        if (newPricesState[key]) newPricesState[key].checked = false;
       });
-      if (paramsCategories.length > 0) {
+      if (paramsCategories && paramsCategories.length > 0) {
         paramsCategories.forEach((e) => {
           if (newCategoriesState[e]) newCategoriesState[e].checked = true;
         });
       }
 
-      if (paramsPrices.length > 0) {
+      if (paramsPrices && paramsPrices.length > 0) {
         paramsPrices.forEach((e) => {
           if (newPricesState[e]) newPricesState[e].checked = true;
         });
@@ -1222,7 +1269,7 @@ export default function RenderShop() {
 
   useEffect(() => {
     const categoriesCheck = () => {
-      paramsCategories.forEach((c) => {
+      paramsCategories?.forEach((c) => {
         if (c >= 10) {
           obj[Math.floor(c / 10)] = true;
         } else {
@@ -1241,13 +1288,13 @@ export default function RenderShop() {
 
   const createQueryString = useCallback(() => {
     const categoryQuery = Object.keys(categoriesState)
-      .filter((key) => categoriesState[key].checked)
+      .filter((key) => categoriesState[key]?.checked)
       .join(',');
     const priceQuery = Object.keys(pricesState)
-      .filter((key) => pricesState[key].checked)
+      .filter((key) => pricesState[key]?.checked)
       .join(',');
     const queryParams = new URLSearchParams();
-    if (searchText.length) queryParams.append('keyword', searchText);
+    if (searchText && searchText.length) queryParams.append('keyword', searchText);
     if (categoryQuery) queryParams.append('categories', categoryQuery);
     if (priceQuery) queryParams.append('prices', priceQuery);
     return queryParams.toString();
@@ -1271,29 +1318,29 @@ export default function RenderShop() {
     else router.push('/shop');
   }, [queryString, router]);
 
-  const handleCategoryChange = (id: number, checked: boolean) => {
+  const handleCategoryChange = (id: string, checked: boolean) => {
     searchFlag.current = true;
     const newState = { ...categoriesState };
-    newState[id].checked = checked;
+    if (newState[id]) newState[id].checked = checked;
 
-    if (newState[id].childId) {
-      newState[id].childId.forEach((childId: number) => {
-        newState[childId].checked = false;
+    if (newState[id]?.childId) {
+      newState[id]?.childId.forEach((childId: number) => {
+        if (newState[childId]) newState[childId].checked = false;
       });
     }
 
-    if (newState[id].parentId) {
+    if (newState[id]?.parentId) {
       const parentId = newState[id].parentId;
-      newState[parentId].checked = false;
+      if (newState[parentId]) newState[parentId].checked = false;
     }
 
     setCategoriesState(newState);
   };
 
-  const handlePriceChange = (id: number, checked: boolean) => {
+  const handlePriceChange = (id: string, checked: boolean) => {
     searchFlag.current = true;
     const newState = { ...pricesState };
-    newState[id].checked = checked;
+    if (newState[id]) newState[id].checked = checked;
     setPricesState(newState);
   };
 
@@ -1301,10 +1348,18 @@ export default function RenderShop() {
     const newCategoriesState = { ...categoriesState };
     const newPricesState = { ...pricesState };
 
-    Object.keys(newCategoriesState).map((key) => (newCategoriesState[key].checked = false));
-    Object.keys(newPricesState).map((key) => (newPricesState[key].checked = false));
-    paramsCategories.map((id) => (newCategoriesState[id].checked = true));
-    paramsPrices.map((id) => (newPricesState[id].checked = true));
+    Object.keys(newCategoriesState).map((key) => {
+      if (newCategoriesState[key]) newCategoriesState[key].checked = false;
+    });
+    Object.keys(newPricesState).map((key) => {
+      if (newPricesState[key]) newPricesState[key].checked = false;
+    });
+    paramsCategories?.map((id) => {
+      if (newCategoriesState[id]) newCategoriesState[id].checked = true;
+    });
+    paramsPrices?.map((id) => {
+      if (newPricesState[id]) newPricesState[id].checked = true;
+    });
     setCategoriesState(newCategoriesState);
     setPricesState(newPricesState);
   };
@@ -1319,7 +1374,7 @@ export default function RenderShop() {
       <div className="flex flex-col w-full">
         <div className="sticky top-0 flex flex-col border-b z-20 bg-white max-[960px]:z-60">
           <SearchBar
-            paramsKeyword={paramsKeyword}
+            paramsKeyword={paramsKeyword ? paramsKeyword : ''}
             setSearchText={setSearchText}
             searchFlag={searchFlag}
             isFocused={isFocused}
@@ -1330,7 +1385,7 @@ export default function RenderShop() {
           {!paramsKeyword ? (
             <RenderPopularProducts
               category={hotProductFlag.current}
-              paramsKeyword={paramsKeyword}
+              paramsKeyword={paramsKeyword ? paramsKeyword : ''}
               setHasTop={setHasTop}
             />
           ) : (
@@ -1346,8 +1401,8 @@ export default function RenderShop() {
             className={`sticky flex bg-white min-[960px]:mt-5 min-[960px]:w-48 min-[960px]:z-30 min-[960px]:top-34 md:flex-col md:h-full max-[960px]:z-50 max-[960px]:top-14 max-[960px]:w-full max-[960px]:border-b max-[960px]:p-3 max-[960px]:items-start`}
           >
             <FilterBar
-              paramsCategories={paramsCategories}
-              paramsPrices={paramsPrices}
+              paramsCategories={paramsCategories ? paramsCategories : []}
+              paramsPrices={paramsPrices ? paramsPrices : []}
               initFilter={initFilter}
               resetFilter={resetFilter}
               setPriceOpen={setPriceOpen}
@@ -1362,8 +1417,8 @@ export default function RenderShop() {
               handleCategoryChange={handleCategoryChange}
               handlePriceChange={handlePriceChange}
               resetFilter={resetFilter}
-              paramsCategories={paramsCategories}
-              paramsPrices={paramsPrices}
+              paramsCategories={paramsCategories ? paramsCategories : []}
+              paramsPrices={paramsPrices ? paramsPrices : []}
               params={params}
               includeBooked={includeBooked}
               setIncludeBooked={setIncludeBooked}
@@ -1383,19 +1438,19 @@ export default function RenderShop() {
         </div>
       </div>
       {filterActive ? (
-        <div
+        <button
           className={`flex z-60 fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 items-end`}
           onClick={() => {
             setFilterActive(false);
           }}
         >
-          <div
+          <button
             className={`flex-col bg-white w-full border border-b-0 rounded-t-2xl`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="h-10 w-full rounded-t-2xl border-b flex items-center justify-center relative font-medium text-lg">
               필터
-              <div
+              <button
                 className="absolute flex h-full w-10 right-0 z-30 cursor-pointer items-center justify-center"
                 onClick={() => {
                   setFilterActive(false);
@@ -1414,7 +1469,7 @@ export default function RenderShop() {
                     d="m1115 1024l690 691l-90 90l-691-690l-691 690l-90-90l690-691l-690-691l90-90l691 690l691-690l90 90z"
                   />
                 </svg>
-              </div>
+              </button>
             </div>
             <div className="py-3 overflow-auto scrollbar-hide max-md:h-500 max-[960px]:h-750">
               <div className="border-b">
@@ -1460,14 +1515,14 @@ export default function RenderShop() {
                         <ul className="filter-container max-[960px]:mx-10 max-md:mx-0">
                           <button
                             className={`filter-button ${
-                              categoriesState[category.id].checked
+                              categoriesState[category.id]?.checked
                                 ? 'bg-black text-white'
                                 : 'bg-white text-black'
                             }`}
-                            onClick={(e) => {
+                            onClick={() => {
                               handleCategoryChange(
-                                category.id,
-                                !categoriesState[category.id].checked,
+                                category.id.toString(),
+                                !categoriesState[category.id]?.checked,
                               );
                             }}
                           >
@@ -1477,12 +1532,15 @@ export default function RenderShop() {
                             <button
                               key={sub.id}
                               className={`filter-button ${
-                                categoriesState[sub.id].checked
+                                categoriesState[sub.id]?.checked
                                   ? 'bg-black text-white'
                                   : 'bg-white text-black'
                               }`}
-                              onClick={(e) => {
-                                handleCategoryChange(sub.id, !categoriesState[sub.id].checked);
+                              onClick={() => {
+                                handleCategoryChange(
+                                  sub.id.toString(),
+                                  !categoriesState[sub.id]?.checked,
+                                );
                               }}
                             >
                               <li>{sub.option}</li>
@@ -1536,12 +1594,12 @@ export default function RenderShop() {
                       <button
                         key={price.id}
                         className={`filter-button ${
-                          pricesState[price.id].checked
+                          pricesState[price.id]?.checked
                             ? 'bg-black text-white'
                             : 'bg-white text-black'
                         }`}
-                        onClick={(e) => {
-                          handlePriceChange(price.id, !pricesState[price.id].checked);
+                        onClick={() => {
+                          handlePriceChange(price.id.toString(), !pricesState[price.id]?.checked);
                         }}
                       >
                         <li>{price.option}</li>
@@ -1552,8 +1610,8 @@ export default function RenderShop() {
                   ''
                 )}
               </div>
-              {Object.keys(categoriesState).filter((key) => categoriesState[key].checked).length +
-              Object.keys(pricesState).filter((key) => pricesState[key].checked).length ? (
+              {Object.keys(categoriesState).filter((key) => categoriesState[key]?.checked).length +
+              Object.keys(pricesState).filter((key) => pricesState[key]?.checked).length ? (
                 <div className="h-6"></div>
               ) : (
                 ''
@@ -1589,8 +1647,8 @@ export default function RenderShop() {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+          </button>
+        </button>
       ) : (
         ''
       )}
