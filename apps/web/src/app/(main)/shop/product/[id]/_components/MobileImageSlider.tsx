@@ -11,9 +11,9 @@ interface type {
   state: number;
   initPhotoSwipe: (
     index: number,
-    imageShow: HTMLDivElement | null,
-    startTouch: (e: TouchEvent) => void,
-  ) => void;
+    imageShow: HTMLDivElement | null | undefined,
+    eventFunc: (e: TouchEvent) => void,
+  ) => Promise<void>;
 }
 
 export default function MobileImageSlider({ images, state, initPhotoSwipe }: type) {
