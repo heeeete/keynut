@@ -12,7 +12,7 @@ export default async function uploadToS3(url: string, file: FileType) {
     res = await fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': file.file.type,
+        'Content-Type': file.file!.type,
       },
       body: file.file,
     });
