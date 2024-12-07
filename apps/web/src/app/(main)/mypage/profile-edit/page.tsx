@@ -13,7 +13,7 @@ import { Session } from 'next-auth';
 const IMAGE_MAX_SIZE = 4.5 * 1024 * 1024;
 
 interface ProfileProps {
-  session: Session;
+  session: Session | null;
   status: 'authenticated' | 'loading' | 'unauthenticated';
 }
 
@@ -25,7 +25,7 @@ const ProfileName = ({ session, status }: ProfileProps) => {
   const { update } = useSession();
 
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && session) {
       setNickname(session.user.nickname);
       setTempNickname(session.user.nickname);
     }
@@ -109,15 +109,16 @@ const ProfileImage = ({ session, status }: ProfileProps) => {
   const { update } = useSession();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && session) {
       setProfileImg(session.user.image);
       setIsLoading(false);
     }
   }, [status]);
 
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
     if (!e.target.files.length) return;
-    if (e.target.files[0].size > IMAGE_MAX_SIZE) {
+    if (e.target.files[0] && e.target.files[0].size > IMAGE_MAX_SIZE) {
       openModal({ message: '이미지 용량 초과', subMessage: '4.5MB 이하로 업로드해 주세요.' });
       e.target.value = '';
       return;
@@ -126,7 +127,7 @@ const ProfileImage = ({ session, status }: ProfileProps) => {
     setIsLoading(true);
     const formData = new FormData();
     formData.append('oldImage', JSON.stringify(profileImg));
-    formData.append('newImage', e.target.files[0]);
+    formData.append('newImage', JSON.stringify(e.target.files[0]));
     const res = await fetch('/api/user', {
       method: 'PUT',
       body: formData,
@@ -237,7 +238,7 @@ const ProfileImage = ({ session, status }: ProfileProps) => {
           <button
             className="px-3 py-1 border outline-none rounded-lg text-sm text-gray-500  active:bg-gray-100"
             onClick={() => {
-              fileInputRef.current.click();
+              if (fileInputRef.current) fileInputRef.current.click();
             }}
           >
             <input
@@ -275,7 +276,7 @@ const ProfileInfo = ({ session, status }: ProfileProps) => {
   );
 };
 
-const SignInInfo = ({ session }: { session: Session }) => {
+const SignInInfo = ({ session }: { session: Session | null }) => {
   return (
     <section className="flex flex-col space-y-4 mb-6">
       <p className="font-medium border-b border-black md:text-lg">가입 정보</p>
@@ -335,7 +336,7 @@ export default function ProfileEdit() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userId: session.user.id,
+        userId: session?.user.id,
         expires_at: Math.floor(date.getTime() / 1000),
       }),
     });
