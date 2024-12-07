@@ -33,6 +33,13 @@ interface UploadImages {
   imageUrls: string[];
 }
 
+interface ImageDetails {
+  name?: string;
+  file?: File;
+  width: number;
+  height: number;
+}
+
 export default function Edit() {
   const { id } = useParams();
   const [uploadImages, setUploadImages] = useState<EditUploadImagesProps>({
@@ -103,7 +110,7 @@ export default function Edit() {
       if (file.name === undefined) {
         newImageIdx.push(idx);
         return {
-          name: `product_${new Date().getTime()}_${file.file.name}`,
+          name: `product_${new Date().getTime()}_${file.file?.name}`,
           width: file.width,
           height: file.height,
         };
@@ -113,11 +120,23 @@ export default function Edit() {
 
   const batchUploadToS3 = async (urls: string[], newImageIdx: number[]) => {
     await Promise.all(
-      urls.map((url, idx) => uploadToS3(url, uploadImages.imageFiles[newImageIdx[idx]])),
+      urls.map((url, idx) => {
+        const imageIdx = newImageIdx[idx];
+        if (imageIdx === undefined) {
+          return console.error(`newImageIdx[${idx}] is undefined`);
+        }
+
+        const file = uploadImages.imageFiles[imageIdx];
+        if (!file) {
+          return console.error(`uploadImages.imageFiles[${imageIdx}] is undefined`);
+        }
+
+        return uploadToS3(url, file);
+      }),
     );
   };
 
-  const generateFormData = (imageDetails) => {
+  const generateFormData = (imageDetails: ImageDetails[]) => {
     const tempFrom = new FormData();
     deleteImages.forEach((file) => {
       tempFrom.append('deleteFiles', file);
@@ -130,7 +149,7 @@ export default function Edit() {
     tempFrom.append('openChatUrl', openChatUrl.trim());
     tempFrom.append('price', price.replaceAll(',', ''));
     tempFrom.append('tags', JSON.stringify(tags));
-    tempFrom.append('id', id.toString());
+    tempFrom.append('id', id!.toString());
     return tempFrom;
   };
 
@@ -161,17 +180,20 @@ export default function Edit() {
     }
   };
 
-  const getSignedUrlAndUploadImages = async (imageDetails, newImageIdx: number[]) => {
+  const getSignedUrlAndUploadImages = async (
+    imageDetails: ImageDetails[],
+    newImageIdx: number[],
+  ) => {
     const { urls, status } = await getSignedUrls(
       imageDetails.filter((e, idx) => newImageIdx.includes(idx)),
     );
     if (status !== 200) {
       throw new Error('getSignedUrl 생성 실패');
     }
-    await batchUploadToS3(urls, newImageIdx);
+    await batchUploadToS3(urls!, newImageIdx);
   };
 
-  const formGenerateAndUploadProduct = async (imageDetails) => {
+  const formGenerateAndUploadProduct = async (imageDetails: ImageDetails[]) => {
     const formData = generateFormData(imageDetails);
     await uploadProduct(formData);
   };
@@ -197,8 +219,8 @@ export default function Edit() {
 
       setUploadLoading(true);
 
-      const newImageIdx = [];
-      const imageDetails = getImageDetails(newImageIdx);
+      const newImageIdx: number[] = [];
+      const imageDetails: ImageDetails[] = getImageDetails(newImageIdx);
       await getSignedUrlAndUploadImages(imageDetails, newImageIdx);
       await formGenerateAndUploadProduct(imageDetails);
     } catch (error) {
