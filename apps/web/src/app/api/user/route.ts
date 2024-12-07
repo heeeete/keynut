@@ -39,9 +39,11 @@ export async function PUT(req: Request) {
     const session = await getUserSession();
     if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
     const formData = await req.formData();
-    const oldImage = JSON.parse(formData.get('oldImage').toString());
+    const checkOldImage = formData.get('oldImage');
+    const oldImage = checkOldImage ? JSON.parse(checkOldImage.toString()) : null;
     const newImage = formData.get('newImage') as File;
-    const nickname = JSON.parse(formData.get('nickname').toString());
+    const checkNickname = formData.get('nickname');
+    const nickname = checkNickname ? JSON.parse(checkNickname.toString()) : null;
 
     const deleteImage = async () => {
       const params = {
@@ -51,7 +53,7 @@ export async function PUT(req: Request) {
       await s3Client.send(new DeleteObjectCommand(params));
     };
 
-    let Key: string;
+    let Key: string | undefined;
     const uploadImage = async () => {
       Key = `profile_${Date.now()}_${newImage.name}`;
       const arrayBuffer = await newImage.arrayBuffer();
@@ -69,7 +71,7 @@ export async function PUT(req: Request) {
     if (oldImage || newImage) {
       if (oldImage) await deleteImage();
       if (newImage) await uploadImage();
-      const res = await users.updateOne(
+      await users.updateOne(
         { _id: new ObjectId(session.user.id) },
         {
           $set: {
@@ -88,14 +90,14 @@ export async function PUT(req: Request) {
     if (nickname) {
       const now = new Date().getTime();
       const user = await users.findOne({ _id: new ObjectId(session.user.id) });
-      const lastChanged = user.nicknameChangedAt
+      const lastChanged = user?.nicknameChangedAt
         ? new Date(user.nicknameChangedAt).getTime()
         : null;
       if (lastChanged) {
         const period = Math.floor((now - lastChanged) / (1000 * 60 * 60 * 24));
         if (period < 30) return NextResponse.json({ state: 0 }, { status: 403 });
       }
-      const exisitingUser: User = await users.findOne({ nickname: nickname });
+      const exisitingUser: User | null = await users.findOne<User>({ nickname: nickname });
       if (exisitingUser) {
         return NextResponse.json('dup', { status: 409 });
       }
@@ -108,7 +110,7 @@ export async function PUT(req: Request) {
       if (!regex.test(nickname) || nickname.length < 2 || nickname.length > 10) {
         return NextResponse.json('invalid', { status: 400 });
       }
-      const res = await users.updateOne(
+      await users.updateOne(
         { _id: new ObjectId(session.user.id) },
         {
           $set: {

@@ -11,7 +11,7 @@ import { UserData } from '@/type/userData';
 import User from '@keynut/type/user';
 import ProfileImage from '../_components/ProfileImage';
 
-const MyProfileName = ({ nickname }: { nickname: string }) => {
+const MyProfileName = ({ nickname }: { nickname: string | undefined }) => {
   return (
     <>
       {nickname ? (
@@ -25,7 +25,7 @@ const MyProfileName = ({ nickname }: { nickname: string }) => {
   );
 };
 
-const MyProfileLoginDate = ({ createdAt }: { createdAt: string }) => {
+const MyProfileLoginDate = ({ createdAt }: { createdAt: string | undefined }) => {
   return (
     <div className="flex items-center space-x-1 text-sm text-gray-400 max-md:text-xs">
       <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 1024 1024">
@@ -62,14 +62,16 @@ const ManagementButton = ({ type, label }: { type: string; label: string }) => {
   );
 };
 
-const MyProfile = React.memo(({ userProfile }: { userProfile: User }) => {
+const MyProfile = React.memo(({ userProfile }: { userProfile: User | undefined }) => {
   const { data: session, status, update } = useSession();
 
   useEffect(() => {
     const checkProfile = async () => {
-      if (userProfile.nickname !== session.user.nickname)
-        update({ nickname: userProfile.nickname });
-      if (userProfile.image !== session.user.image) update({ image: userProfile.image });
+      if (userProfile) {
+        if (userProfile.nickname !== session?.user.nickname)
+          update({ nickname: userProfile.nickname });
+        if (userProfile.image !== session?.user.image) update({ image: userProfile.image });
+      }
     };
 
     if (status === 'authenticated' && userProfile) {
@@ -99,7 +101,7 @@ MyProfile.displayName = 'MyProfile';
 export default function MyPage() {
   const { data: session, status } = useSession();
 
-  const { data } = useQuery<UserData>({
+  const { data } = useQuery<UserData | null>({
     queryKey: ['userProducts', session?.user?.id],
     queryFn: () => getUserProducts(session?.user?.id),
     enabled: status === 'authenticated' && !!session?.user?.id,

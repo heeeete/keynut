@@ -114,7 +114,7 @@ const SettingModal = ({ id, setShowSetting, openDeleteModal }: SettingModalProps
     <button
       className="fixed w-screen custom-dvh top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
       onClick={(e) => {
-        if (e.currentTarget === e.target) setShowSetting(false);
+        if (e.currentTarget === e.target && setShowSetting) setShowSetting(false);
       }}
     >
       <div className="flex flex-col items-center rounded-md border space-y-1 bg-white w-52 h-32">
@@ -140,7 +140,7 @@ const Product = ({ product, openDeleteModal, openUpModal }: ProductProps) => {
             className="rounded object-cover relative"
             src={
               product.images.length
-                ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
+                ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]!.name}`
                 : '/noImage.svg'
             }
             alt={product._id}
@@ -234,7 +234,7 @@ function ProductEdit() {
   const [raiseCount, setRaiseCount] = useState(0);
   const fetchRaiseCount = initRaiseCount(setRaiseCount);
   const invalidateFilters = useInvalidateFiltersQuery();
-  const { data, refetch } = useQuery<UserData>({
+  const { data, refetch } = useQuery<UserData | null>({
     queryKey: ['userProducts', session?.user?.id],
     queryFn: () => getUserProducts(session?.user?.id),
     enabled: status === 'authenticated' && !!session?.user?.id,

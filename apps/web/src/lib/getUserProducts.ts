@@ -1,6 +1,7 @@
 import { UserData } from '@/type/userData';
 
-const getUserProducts = async (id: string) => {
+const getUserProducts = async (id: string | undefined) => {
+  if (!id) return null;
   const res = await fetch(`/api/user/${id}/products`, {
     method: 'GET',
   });
@@ -10,7 +11,6 @@ const getUserProducts = async (id: string) => {
     throw new Error('Failed to fetch products');
   }
   const data: UserData = await res.json();
-  console.log('sad', data);
   return data;
 };
 
