@@ -18,7 +18,8 @@ const ProductState = ({ state }: { state: number }) => {
   );
 };
 
-const ProductCondition = ({ condition }: { condition: number }) => {
+
+const ProductCondition = ({ condition }: { condition: 1 | 2 | 3 | 4 | 5 }) => {
   return (
     <div className="absolute bottom-1 right-1 text-xs break-all line-clamp-1 bg-gray-500 bg-opacity-55 p-1 rounded-sm font-semibold text-white max-md:text-xxs">
       {conditions[condition].option}
@@ -50,7 +51,7 @@ const ProductImage = ({ product }: { product: ProductData }) => {
         className="rounded object-cover"
         src={
           product.images.length
-            ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0].name}`
+            ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.images[0]!.name}`
             : '/noImage.svg'
         }
         alt={product.title}

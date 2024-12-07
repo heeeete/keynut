@@ -13,7 +13,7 @@ const useComplaintProductsQuery = (page = 1, PAGE_SIZE: number) => {
     queryKey: ['complaint-products', page],
     queryFn: async () => {
       const offset = (page - 1) * PAGE_SIZE;
-      const res = await fetch(`/api/admin/products/complaint?offset=${offset}&&limit=${PAGE_SIZE}`);
+      const res = await fetch(`/api/products/complaint?offset=${offset}&&limit=${PAGE_SIZE}`);
       const data = await res.json();
       return data;
     },

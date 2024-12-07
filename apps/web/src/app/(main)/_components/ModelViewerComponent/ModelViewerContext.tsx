@@ -1,12 +1,27 @@
 'use client';
-import { createContext, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 
-export const ModelViewerContext = createContext(null);
+interface ModelViewerContextType {
+  modelUrl: string | null;
+  setModelUrl: React.Dispatch<React.SetStateAction<string | null>>;
+}
 
-export const ModelViewerProvider = ({ children }) => {
+export const ModelViewerContext = createContext<ModelViewerContextType | null>(null);
+
+export const ModelViewerProvider = ({ children }: { children: ReactNode }) => {
   const [modelUrl, setModelUrl] = useState<string | null>(null);
 
-  return <ModelViewerContext.Provider value={{ modelUrl, setModelUrl }}>{children}</ModelViewerContext.Provider>;
+  return (
+    <ModelViewerContext.Provider value={{ modelUrl, setModelUrl }}>
+      {children}
+    </ModelViewerContext.Provider>
+  );
 };
 
-export const useModel = () => useContext(ModelViewerContext);
+export const useModel = () => {
+  const context = useContext(ModelViewerContext);
+  if (!context) {
+    throw new Error('Context가 없습니다.');
+  }
+  return context;
+};

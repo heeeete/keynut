@@ -1,9 +1,9 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 import { Canvas } from '@react-three/fiber';
 
 const CanvasContext = createContext<React.ReactNode | null>(null);
 
-export const CanvasProvider = ({ children }) => {
+export const CanvasProvider = ({ children }: { children: ReactNode }) => {
   return (
     <CanvasContext.Provider
       value={

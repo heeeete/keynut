@@ -5,7 +5,7 @@ import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
 import Loading from '@keynut/ui/Loading';
 import useProducts from '../_hooks/useProducts';
-import useURLSearchParams from '@/hooks/useURLSearchParams';
+import useURLSearchParams from '../_hooks/useURLSearchParams';
 import ProductData from '@keynut/type/productData';
 
 const PAGE_SIZE = 100;
@@ -22,14 +22,14 @@ interface Data {
 
 interface PageControlProps {
   page: number;
-  data: Data;
+  data: Data | undefined;
 }
 
 const PageControl = ({ page, data }: PageControlProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
-  const totalPages = Math.ceil(data?.total / PAGE_SIZE);
+  const totalPages = Math.ceil(data?.total ?? 1 / PAGE_SIZE);
   const [pageRange, setPageRange] = useState({ start: 1, end: PAGE_RANGE });
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const PageControl = ({ page, data }: PageControlProps) => {
   return (
     <div className="flex space-x-2">
       <button onClick={() => updatePage(page - 1)} disabled={page <= 1}>
-        <img src="/admin/adminPrevPage.svg" alt="adminPrevPage" />
+        <img src="/adminPrevPage.svg" alt="adminPrevPage" />
       </button>
       <div className="flex space-x-2">
         {Array(pageRange.end - pageRange.start + 1 >= 0 ? pageRange.end - pageRange.start + 1 : 0)
@@ -84,14 +84,14 @@ const PageControl = ({ page, data }: PageControlProps) => {
           })}
       </div>
       <button onClick={() => updatePage(page + 1)}>
-        <img src="/admin/adminNextPage.svg" alt="adminNextPage" />
+        <img src="/adminNextPage.svg" alt="adminNextPage" />
       </button>
     </div>
   );
 };
 
 interface TaskBarProps {
-  data: Data;
+  data: Data | undefined;
   page: number;
   selectedProducts: SelectedProducts | {};
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -105,7 +105,7 @@ const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }: Ta
     const ids = Object.values(selectedProducts).map((item) => item._id);
     formData.append('products', JSON.stringify(ids));
     try {
-      const res = await fetch('/api/admin/products', {
+      const res = await fetch('/api/products', {
         method: 'DELETE',
         body: formData,
       });
@@ -121,7 +121,7 @@ const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }: Ta
   return (
     <div className="flex flex-col sticky top-10 space-y-2 justify-center border-x px-4 py-2 bg-slate-100">
       <div className="flex space-x-4 justify-between h-9">
-        <AllProductsCnt userCnt={data?.total} />
+        <AllProductsCnt userCnt={data?.total ?? 0} />
         <div className="flex space-x-4">
           <button className="px-2 py-1 border border-black rounded bg-white" onClick={dataRefetch}>
             <svg
@@ -158,7 +158,7 @@ const Taskbar = ({ data, page, selectedProducts, setIsLoading, dataRefetch }: Ta
   );
 };
 
-const SearchInput = ({ param }) => {
+const SearchInput = ({ param }: { param: string }) => {
   const router = useRouter();
   const params = useURLSearchParams();
   const searchParams = useSearchParams();
@@ -174,7 +174,7 @@ const SearchInput = ({ param }) => {
     if (e.key === 'Enter') {
       if (value === '') params.delete(param);
       else params.set(param, value);
-      router.push(`/admin/products?` + params.toString());
+      router.push(`/products?` + params.toString());
     }
   };
 
@@ -194,10 +194,10 @@ interface SelectedProducts {
 }
 
 interface TableProps {
-  data: Data;
+  data: Data | undefined;
   selectAll: boolean;
   setSelectAll: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedProducts: SelectedProducts | {};
+  selectedProducts: SelectedProducts;
   setSelectedProducts: React.Dispatch<React.SetStateAction<SelectedProducts | {}>>;
 }
 
@@ -212,10 +212,10 @@ const Table = ({
     if (selectAll) {
       setSelectedProducts({});
     } else {
-      const obj = {};
+      const obj: Record<string, { _id: string }> = {};
       let i = 0;
-      for (let { _id } of data.products) {
-        obj[i++] = {
+      for (let { _id } of data?.products ?? []) {
+        obj[(i++).toString()] = {
           _id: _id,
         };
       }
@@ -226,7 +226,7 @@ const Table = ({
 
   const handleSelectUser = useCallback(
     (idx: number, userId: string) => {
-      if (selectedProducts[idx]) {
+      if (selectedProducts[idx.toString()]) {
         const newObj = { ...selectedProducts };
         delete newObj[idx];
         setSelectedProducts(newObj);
@@ -317,15 +317,15 @@ const AllProductsCnt = ({ userCnt }: { userCnt: number }) => {
 
 export default function Products() {
   const searchParams = useSearchParams();
-  const page = parseInt(searchParams.get('page')) || 1;
+  const page = parseInt(searchParams.get('page') ?? '1');
   const nickname = searchParams.get('nickname') || '';
   const keyword = searchParams.get('keyword') || '';
   const price = searchParams.get('price') || '';
-  const { data, error, refetch } = useProducts(page, nickname, keyword, price, PAGE_SIZE);
+  const { data, refetch } = useProducts(page, nickname, keyword, price, PAGE_SIZE);
   const [selectedProducts, setSelectedProducts] = useState<SelectedProducts | {}>({});
   const [selectAll, setSelectAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { navStatus, setNavStatus } = useNav();
+  const { navStatus } = useNav();
 
   useEffect(() => {
     setSelectAll(false);

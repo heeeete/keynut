@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useEffect, Suspense, Fragment } from 'react';
+
+import React, { useState, useEffect, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, OrbitControls, useGLTF } from '@react-three/drei';
 import { useModel } from './ModelViewerContext';
@@ -7,6 +8,7 @@ import { useModel } from './ModelViewerContext';
 function Model({ url }: { url: string }) {
   const { scene } = useGLTF(url) as any;
 
+  // eslint-disable-next-line
   return <primitive object={scene} />;
 }
 
@@ -60,10 +62,17 @@ export default function ModelViewer() {
           <Environment files="/textures/shanghai_bund_1k.hdr" />
         </Suspense>
         {modelUrl && <Model url={modelUrl} />}
-        {modelUrl && <OrbitControls autoRotate enableZoom={false} />}
+        {/* @ts-ignore */}
+        {modelUrl && <OrbitControls autoRotate={true} enableZoom={false} />}
       </Canvas>
       <div className={`absolute transition-opacity ${modelUrl ? 'opacity-0' : 'opacity-100'}`}>
-        <progress value={progress} max="100" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}></progress>
+        <progress
+          value={progress}
+          max="100"
+          aria-valuenow={progress}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        ></progress>
       </div>
     </div>
   );

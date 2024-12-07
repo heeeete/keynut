@@ -5,6 +5,7 @@ import RQProvider from './(main)/_components/RQProvider';
 import { userAgent } from 'next/server';
 import { headers } from 'next/headers';
 import { UserProvider } from './(main)/_components/UserProvider';
+import { ReactNode } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -12,7 +13,7 @@ export const viewport = {
   viewportFit: 'cover',
 };
 
-export async function generateMetadata({}) {
+export async function generateMetadata() {
   const { isBot } = userAgent({ headers: headers() });
   const title = isBot
     ? 'KEYNUT - 커스텀 키보드등 다양한 전자기기 중고거래는 키넛'
@@ -62,7 +63,7 @@ export async function generateMetadata({}) {
   };
 }
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   const user = userAgent({ headers: headers() });
 
   return (

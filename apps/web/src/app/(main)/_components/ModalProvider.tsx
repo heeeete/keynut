@@ -17,28 +17,29 @@ interface ModalContextType {
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
-export const useModal = () => useContext(ModalContext);
-
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalSubMessage, setModalSubMessage] = useState('');
   const [isSelect, setIsSelect] = useState(false);
   const [size, setSize] = useState('w-72');
-  const [resolvePromise, setResolvePromise] = useState(null);
+  const [resolvePromise, setResolvePromise] = useState<((value: boolean) => void) | null>(null);
   const pathName = usePathname();
 
-  const openModal = useCallback(({ message, subMessage = '', isSelect = false, size }) => {
-    setModalMessage(message);
-    setModalSubMessage(subMessage);
-    setIsSelect(isSelect);
-    setIsModalOpen(true);
-    if (size) setSize(size);
+  const openModal = useCallback(
+    ({ message = '', subMessage = '', isSelect = false, size = '' }) => {
+      setModalMessage(message);
+      setModalSubMessage(subMessage);
+      setIsSelect(isSelect);
+      setIsModalOpen(true);
+      if (size) setSize(size);
 
-    return new Promise<boolean>(resolve => {
-      setResolvePromise(() => resolve);
-    });
-  }, []);
+      return new Promise<boolean>((resolve) => {
+        setResolvePromise(() => resolve);
+      });
+    },
+    [],
+  );
 
   const resetModalState = useCallback(() => {
     setModalMessage('');
@@ -69,9 +70,26 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <ModalContext.Provider
-      value={{ isModalOpen, modalMessage, modalSubMessage, openModal, closeModal, confirmModal, isSelect, size }}
+      value={{
+        isModalOpen,
+        modalMessage,
+        modalSubMessage,
+        openModal,
+        closeModal,
+        confirmModal,
+        isSelect,
+        size,
+      }}
     >
       {children}
     </ModalContext.Provider>
   );
+};
+
+export const useModal = () => {
+  const context = useContext(ModalContext);
+  if (!context) {
+    throw new Error('컨텍스트 값이 없습니다.');
+  }
+  return context;
 };

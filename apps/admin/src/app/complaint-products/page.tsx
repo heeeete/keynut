@@ -1,13 +1,16 @@
 'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNav } from '../_contexts/NavContext';
 import renderEmptyRows from '../_utils/renderEmptyRows';
-import Loading from '@/app/(main)/_components/Loading';
 import useComplaintProductsQuery from '../_hooks/useComplaintProductsQuery';
-import { deleteProduct, userBanHandler } from '@keynut/lib';
 import Link from 'next/link';
-import { User, ProductData, KakaoAccounts, NaverAccounts } from '@keynut/type';
+import { KakaoAccounts, NaverAccounts } from '@keynut/type/accounts';
+import Loading from '@keynut/ui/Loading';
+import User from '@keynut/type/user';
+import ProductData from '@keynut/type/productData';
+import deleteProduct from '@keynut/lib/deleteProduct';
+import userBanHandler from '@keynut/lib/userBanHandler';
 
 interface SelectedProduct {
   _id: string;
@@ -23,82 +26,10 @@ interface Data extends ProductData {
 }
 
 const PAGE_SIZE = 100;
-const PAGE_RANGE = 10;
 
-// interface PageControlProps {
-//   page: number;
-//   data: Products;
+// interface ProductsType {
+//   products: Data[] | [];
 // }
-
-// const PageControl = ({ page, data }: PageControlProps) => {
-//   console.log(data);
-//   const router = useRouter();
-//   const searchParams = useSearchParams();
-//   const params = new URLSearchParams(searchParams.toString());
-//   const totalPages = Math.ceil(data?.total / PAGE_SIZE);
-//   const [pageRange, setPageRange] = useState({ start: 1, end: PAGE_RANGE });
-
-//   useEffect(() => {
-//     if (totalPages)
-//       if (page > totalPages) {
-//         params.set('page', '1');
-//         router.push(`/admin/products?${params.toString()}`);
-//       }
-//   }, [totalPages]);
-
-//   useEffect(() => {
-//     const initTotalPage = () => {
-//       if (data) {
-//         const newStart = ~~((page - 1) / PAGE_RANGE) * PAGE_RANGE + 1;
-//         const newEnd = Math.min(newStart + PAGE_RANGE - 1, totalPages);
-//         setPageRange({ start: newStart, end: newEnd });
-//       }
-//     };
-//     initTotalPage();
-//   }, [data]);
-
-//   const updatePage = useCallback(
-//     newPage => {
-//       if (newPage < 1 || newPage > totalPages) return;
-//       params.set('page', newPage);
-//       router.push(`/admin/products?${params.toString()}`);
-//     },
-//     [totalPages],
-//   );
-
-//   return (
-//     <div className="flex space-x-2">
-//       <button onClick={() => updatePage(page - 1)} disabled={page <= 1}>
-//         <img src="/admin/adminPrevPage.svg" alt="adminPrevPage" />
-//       </button>
-//       <div className="flex space-x-2">
-//         {Array(pageRange.end - pageRange.start + 1 >= 0 ? pageRange.end - pageRange.start + 1 : 0)
-//           .fill(0)
-//           .map((_, idx) => {
-//             const pageNumber = pageRange.start + idx;
-//             return (
-//               <button
-//                 key={pageNumber}
-//                 onClick={() => updatePage(pageNumber)}
-//                 className={`${
-//                   page === pageNumber ? 'font-bold border text-black' : 'text-gray-600'
-//                 } px-2 py-1 font-semibold`}
-//               >
-//                 {pageNumber}
-//               </button>
-//             );
-//           })}
-//       </div>
-//       <button onClick={() => updatePage(page + 1)}>
-//         <img src="/admin/adminNextPage.svg" alt="adminNextPage" />
-//       </button>
-//     </div>
-//   );
-// };
-
-interface Products {
-  products: Data[] | [];
-}
 
 interface TaskbarProps {
   selectedProducts: SelectedProducts;
@@ -113,7 +44,7 @@ const Taskbar = ({ selectedProducts, setIsLoading, dataRefetch }: TaskbarProps) 
     const ids = Object.values(selectedProducts).map((item) => item._id);
     formData.append('products', JSON.stringify(ids));
     try {
-      const res = await fetch('/api/admin/products', {
+      const res = await fetch('/api/products', {
         method: 'DELETE',
         body: formData,
       });
@@ -166,6 +97,16 @@ const Taskbar = ({ selectedProducts, setIsLoading, dataRefetch }: TaskbarProps) 
   );
 };
 
+interface TableProps {
+  data: { products: [] | Data[] } | undefined;
+  selectAll: boolean;
+  setSelectAll: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedProducts: SelectedProducts;
+  setSelectedProducts: React.Dispatch<React.SetStateAction<SelectedProducts | {}>>;
+  setDetailProduct: React.Dispatch<React.SetStateAction<Data | null>>;
+  setIsDetailModal: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const Table = ({
   data,
   selectAll,
@@ -174,14 +115,15 @@ const Table = ({
   setSelectedProducts,
   setDetailProduct,
   setIsDetailModal,
-}) => {
+}: TableProps) => {
+  console.log(data);
   const handleSelectAll = useCallback(() => {
     if (selectAll) {
       setSelectedProducts({});
     } else {
-      const obj = {};
+      const obj: Record<string, { _id: string }> = {};
       let i = 0;
-      for (let { _id } of data.products) {
+      for (let { _id } of data?.products ?? []) {
         obj[i++] = {
           _id: _id,
         };
@@ -208,7 +150,7 @@ const Table = ({
     [selectedProducts],
   );
 
-  const onClickProduct = (e, product) => {
+  const onClickProduct = (e: React.MouseEvent, product: Data) => {
     setDetailProduct(product);
     setIsDetailModal(true);
   };
@@ -278,25 +220,30 @@ const Table = ({
   );
 };
 
-const AllProductsCnt = ({ userCnt }) => {
-  const [total, setTotal] = useState(0);
+// const AllProductsCnt = ({ userCnt }: { userCnt: number }) => {
+//   const [total, setTotal] = useState(0);
 
-  useEffect(() => {
-    const initTotal = () => {
-      setTotal(userCnt);
-    };
-    if (userCnt || userCnt === 0) initTotal();
-  }, [userCnt]);
+//   useEffect(() => {
+//     const initTotal = () => {
+//       setTotal(userCnt);
+//     };
+//     if (userCnt || userCnt === 0) initTotal();
+//   }, [userCnt]);
 
-  return (
-    <div className="flex text-lg">
-      <p className="font-semibold whitespace-nowrap">신고 게시물&nbsp;</p>
-      <p className="text-gray-600">({total})</p>
-    </div>
-  );
-};
+//   return (
+//     <div className="flex text-lg">
+//       <p className="font-semibold whitespace-nowrap">신고 게시물&nbsp;</p>
+//       <p className="text-gray-600">({total})</p>
+//     </div>
+//   );
+// };
 
-const DetailModal = ({ setIsDetailModal, detailProduct }) => {
+interface DetailModalProps {
+  setIsDetailModal: React.Dispatch<React.SetStateAction<boolean>>;
+  detailProduct: Data;
+}
+
+const DetailModal = ({ setIsDetailModal, detailProduct }: DetailModalProps) => {
   return (
     <div
       className="fixed left-0 top-0 flex justify-center items-center w-d-screen custom-dvh bg-black bg-opacity-50 z-90"
@@ -325,7 +272,7 @@ const DetailModal = ({ setIsDetailModal, detailProduct }) => {
             className="border"
             onClick={async () => {
               const { email } = detailProduct.userInfo;
-              const status = await userBanHandler(email, 0);
+              const status = await userBanHandler(email as string, 0);
               if (status === 200) alert('성공');
               else alert('실패');
             }}
@@ -354,13 +301,13 @@ const DetailModal = ({ setIsDetailModal, detailProduct }) => {
 
 export default function Products() {
   const searchParams = useSearchParams();
-  const page = parseInt(searchParams.get('page')) || 1;
-  const { data, error, refetch } = useComplaintProductsQuery(page, PAGE_SIZE);
+  const page = parseInt(searchParams.get('page') ?? '1');
+  const { data, refetch } = useComplaintProductsQuery(page, PAGE_SIZE);
   const [selectedProducts, setSelectedProducts] = useState<SelectedProducts | {}>({});
   const [selectAll, setSelectAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [detailProduct, setDetailProduct] = useState(null);
-  const [isDetailModal, setIsDetailModal] = useState(false);
+  const [detailProduct, setDetailProduct] = useState<Data | null>(null);
+  const [isDetailModal, setIsDetailModal] = useState<boolean>(false);
   const { navStatus } = useNav();
 
   useEffect(() => {
@@ -398,7 +345,7 @@ export default function Products() {
       </div>
       {isLoading && <Loading />}
       {isDetailModal && (
-        <DetailModal setIsDetailModal={setIsDetailModal} detailProduct={detailProduct} />
+        <DetailModal setIsDetailModal={setIsDetailModal} detailProduct={detailProduct as Data} />
       )}
     </div>
   );

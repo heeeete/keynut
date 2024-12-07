@@ -6,8 +6,9 @@ import Modal from './_components/Modal';
 import { RecentViewProvider } from './_components/RecentViewComponent/RecentViewContext';
 import RightBar from './_components/RightBar';
 import { ModelViewerProvider } from './_components/ModelViewerComponent/ModelViewerContext';
+import { ReactNode } from 'react';
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <ModalProvider>
       <Nav />

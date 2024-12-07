@@ -1,8 +1,8 @@
-interface Condition {
-  option: string;
-}
+// interface Condition {
+//   option: string;
+// }
 
-type ConditionKeys = 1 | 2 | 3 | 4 | 5;
+// type ConditionKeys = 1 | 2 | 3 | 4 | 5;
 
 const conditions = {
   1: { option: '미사용' },
