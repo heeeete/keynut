@@ -27,7 +27,7 @@ import { OpenModal } from '@/type/modal';
 import { RecentViewContext } from '@/app/(main)/_components/RecentViewComponent/RecentViewContext';
 import ProductData from '@keynut/type/productData';
 import User from '@keynut/type/user';
-import deleteProduct from '@/lib/deleteProduct';
+import deleteProduct from '@keynut/lib/deleteProduct';
 import { Session } from 'next-auth';
 
 const Condition = ({ condition }: { condition: 1 | 2 | 3 | 4 | 5 }) => {

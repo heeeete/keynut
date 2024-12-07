@@ -12,8 +12,10 @@ interface SignedUrlsResponse {
   status: number;
 }
 
-export default async function getSignedUrls(imageDetails: ImageDetails[]): Promise<SignedUrlsResponse> {
-  let res: Response;
+export default async function getSignedUrls(
+  imageDetails: ImageDetails[],
+): Promise<SignedUrlsResponse> {
+  let res: Response | undefined;
 
   try {
     res = await fetch('/api/s3/get-signed-urls', {
@@ -27,7 +29,7 @@ export default async function getSignedUrls(imageDetails: ImageDetails[]): Promi
     if (!res.ok) throw new Error(data.error);
     return { urls: data.urls, status: res.status };
   } catch (error) {
-    console.error(error.message);
+    console.error(error);
     return { status: res ? res.status : 500 };
   }
 }

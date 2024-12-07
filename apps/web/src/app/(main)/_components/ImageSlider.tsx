@@ -24,7 +24,7 @@ export default function ImageSlider({ images, state }: Props) {
 
   const initPhotoSwipe = async (
     index: number,
-    imageShow: HTMLDivElement,
+    imageShow: HTMLDivElement | null | undefined,
     eventFunc: (e: TouchEvent) => void,
   ) => {
     if (imageShow) imageShow.removeEventListener('touchstart', eventFunc);

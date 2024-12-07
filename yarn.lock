@@ -6214,6 +6214,9 @@ __metadata:
   dependencies:
     "@eslint/js": "npm:^9.16.0"
     "@types/eslint-plugin-jsx-a11y": "npm:^6"
+    "@types/node": "npm:^22.10.1"
+    "@types/react": "npm:^18.3.12"
+    "@types/react-dom": "npm:^18.3.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.17.0"
     "@typescript-eslint/parser": "npm:^8.17.0"
     eslint: "npm:^9.16.0"
@@ -8716,7 +8719,7 @@ __metadata:
     "@react-three/fiber": "npm:^8.17.10"
     "@tanstack/react-query": "npm:^5.45.0"
     "@tanstack/react-query-devtools": "npm:^5.45.0"
-    "@types/node": "npm:^20"
+    "@types/node": "npm:^22.10.1"
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
     "@types/three": "npm:^0"

@@ -22,6 +22,17 @@ import validateProductForm from '@/app/(main)/sell/utils/validateProductForm';
 import { EditUploadImagesProps } from './_type/editUploadImagesProps';
 import DNDImages from './_components/DNDImages';
 
+interface Image {
+  name: string;
+  width: number;
+  height: number;
+}
+
+interface UploadImages {
+  imageFiles: Image[];
+  imageUrls: string[];
+}
+
 export default function Edit() {
   const { id } = useParams();
   const [uploadImages, setUploadImages] = useState<EditUploadImagesProps>({
@@ -37,7 +48,7 @@ export default function Edit() {
   const [price, setPrice] = useState('');
   const [uploadLoading, setUploadLoading] = useState(false);
   const [openChatUrl, setOpenChatUrl] = useState('');
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [isValidOpenChat, setIsValidOpenChat] = useState(true);
   const router = useRouter();
   const { data: session, update, status } = useSession();
@@ -45,9 +56,11 @@ export default function Edit() {
   const { openModal } = useModal();
   const { data } = useQuery<ProductData>({
     queryKey: ['product', id],
-    queryFn: () => getProductWithUser(id),
+    queryFn: () => getProductWithUser(id as string),
     staleTime: Infinity,
   });
+
+  console.log(uploadImages.imageFiles);
 
   useEffect(() => {
     const errorHandler = async () => {
@@ -61,12 +74,12 @@ export default function Edit() {
 
   useEffect(() => {
     const originalDataInit = async () => {
-      if ((session && data.userId !== session.user.id) || status === 'unauthenticated') {
+      if ((session && data && data.userId !== session.user.id) || status === 'unauthenticated') {
         await openModal({ message: '비정상적인 접근입니다.' });
         return router.push('/');
-      } else {
+      } else if (data) {
         setTitle(data.title);
-        const originalUploadImages = { imageFiles: [], imageUrls: [] };
+        const originalUploadImages: UploadImages = { imageFiles: [], imageUrls: [] };
         data.images.map((img) => {
           originalUploadImages.imageFiles.push(img);
           originalUploadImages.imageUrls.push(img.name);
@@ -82,7 +95,7 @@ export default function Edit() {
       }
     };
 
-    if (data) originalDataInit();
+    originalDataInit();
   }, [status, session, data]);
 
   const getImageDetails = (newImageIdx: number[]) => {

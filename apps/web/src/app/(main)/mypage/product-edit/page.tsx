@@ -9,7 +9,6 @@ import raiseProduct from '@/lib/raiseProduct';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInvalidateFiltersQuery } from '@/hooks/useInvalidateFiltersQuery';
 import Link from 'next/link';
-import deleteProduct from '@/lib/deleteProduct';
 import ProductEditSkeleton from '../_components/ProductEditSkeleton';
 import timeAgo from '@/utils/timeAgo';
 import DropdownMenu from '../../_components/DropdownMenu';
@@ -17,6 +16,7 @@ import { useModal } from '../../_components/ModalProvider';
 import conditions from '../../_constants/conditions';
 import { UserData } from '@/type/userData';
 import ProductData from '@keynut/type/productData';
+import deleteProduct from '@keynut/lib/deleteProduct';
 
 interface SettingButtonProps {
   id: string;

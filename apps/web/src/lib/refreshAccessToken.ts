@@ -2,14 +2,24 @@
 
 async function refreshAccessToken(provider: string, refreshToken: string) {
   try {
-    const url = provider === 'kakao' ? 'https://kauth.kakao.com/oauth/token' : 'https://nid.naver.com/oauth2.0/token';
+    const url =
+      provider === 'kakao'
+        ? 'https://kauth.kakao.com/oauth/token'
+        : 'https://nid.naver.com/oauth2.0/token';
 
     const params = new URLSearchParams();
     params.append('grant_type', 'refresh_token');
-    params.append('client_id', provider === 'kakao' ? process.env.KAKAO_CLIENT_ID : process.env.NAVER_CLIENT_ID);
+    params.append(
+      'client_id',
+      provider === 'kakao'
+        ? (process.env.KAKAO_CLIENT_ID as string)
+        : (process.env.NAVER_CLIENT_ID as string),
+    );
     params.append(
       'client_secret',
-      provider === 'kakao' ? process.env.KAKAO_CLIENT_SECRET : process.env.NAVER_CLIENT_SECRET,
+      provider === 'kakao'
+        ? (process.env.KAKAO_CLIENT_SECRET as string)
+        : (process.env.NAVER_CLIENT_SECRET as string),
     );
     params.append('refresh_token', refreshToken);
 

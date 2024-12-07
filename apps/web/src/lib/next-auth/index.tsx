@@ -4,11 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ReactNode, useEffect } from 'react';
 import { useUser } from '@/app/(main)/_components/UserProvider';
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
   useEffect(() => {
     const initVh = () => {

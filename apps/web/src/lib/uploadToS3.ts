@@ -6,7 +6,7 @@ interface FileType {
 }
 
 export default async function uploadToS3(url: string, file: FileType) {
-  let res: Response;
+  let res: Response | undefined;
 
   try {
     res = await fetch(url, {
@@ -20,7 +20,7 @@ export default async function uploadToS3(url: string, file: FileType) {
     if (!res.ok) throw new Error('Failed to upload file to S3');
     return url.split('?')[0]; // 업로드된 파일의 URL 반환
   } catch (error) {
-    console.error(error.message);
+    console.error(error);
     return { status: res ? res.status : 500 };
   }
 }
