@@ -8,7 +8,7 @@ interface Params {
   };
 }
 
-export async function GET(req, { params }: Params) {
+export async function GET(req: Request, { params }: Params) {
   const { userId } = params;
   if (!ObjectId.isValid(userId)) {
     return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
@@ -27,7 +27,11 @@ export async function GET(req, { params }: Params) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const { provider } = await accounts.findOne({ userId: new ObjectId(userId) });
+    const account = await accounts.findOne({ userId: new ObjectId(userId) });
+    if (!account) {
+      return NextResponse.json({ error: 'Account Not Found' }, { status: 404 });
+    }
+    const { provider } = account;
 
     // 사용자 제품 정보를 가져옴
     const userProducts = await products

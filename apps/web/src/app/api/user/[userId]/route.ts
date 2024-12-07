@@ -3,7 +3,6 @@ import connectDB from '@keynut/lib/mongodb';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { ObjectId, UpdateResult } from 'mongodb';
 import { revalidateTag } from 'next/cache';
-import User from '@keynut/type/user';
 import s3Client from '@keynut/lib/s3Client';
 
 interface Params {
@@ -13,7 +12,7 @@ interface Params {
 }
 
 //회원탈퇴
-export async function DELETE(req, { params }: Params) {
+export async function DELETE(req: Request, { params }: Params) {
   const { userId: id } = params;
   const userId = new ObjectId(id);
   try {
@@ -21,7 +20,7 @@ export async function DELETE(req, { params }: Params) {
     const db = client.db(process.env.MONGODB_NAME);
     const userCollection = db.collection('users');
 
-    const user: User | null = await userCollection.findOne({ _id: userId });
+    const user = await userCollection.findOne({ _id: userId });
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
@@ -29,8 +28,10 @@ export async function DELETE(req, { params }: Params) {
     const { bookmarked, products } = user;
 
     // 사용자가 북마크한 상품의 북마크 목록에서 해당 유저 제거
-    const updateBookmarkedPromises = bookmarked.map((productId) =>
-      db.collection('products').updateOne({ _id: productId }, { $pull: { bookmarked: userId } }),
+    const updateBookmarkedPromises = bookmarked.map((productId: string) =>
+      db
+        .collection('products')
+        .updateOne({ _id: new ObjectId(productId) }, { $pull: { bookmarked: userId } }),
     );
     await Promise.all(updateBookmarkedPromises);
 
@@ -45,7 +46,7 @@ export async function DELETE(req, { params }: Params) {
       const updateProductBookmarksPromises: Promise<UpdateResult>[] = (
         product.bookmarked || []
       ).map((uId: string) =>
-        userCollection.updateOne({ _id: uId }, { $pull: { bookmarked: productId } }),
+        userCollection.updateOne({ _id: new ObjectId(uId) }, { $pull: { bookmarked: productId } }),
       );
       await Promise.all(updateProductBookmarksPromises);
 
@@ -69,7 +70,7 @@ export async function DELETE(req, { params }: Params) {
       }
     }
 
-    const deleteUserPromises: Promise<void>[] = [
+    const deleteUserPromises = [
       userCollection.deleteOne({ _id: userId }),
       db.collection('accounts').deleteMany({ userId: userId }),
       db.collection('products').deleteMany({ userId: userId }),

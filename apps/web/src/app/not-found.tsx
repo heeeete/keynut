@@ -8,7 +8,7 @@ function NotFoundPage() {
   useEffect(() => {
     router.push('/');
   }, []);
-  return <h1></h1>;
+  return <div></div>;
 }
 
 export default NotFoundPage;

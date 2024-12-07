@@ -26,8 +26,6 @@ async function naverUnlink(access_token: string) {
       method: 'POST',
     },
   );
-  if (res.status === 401) {
-  }
 
   const data = await res.json();
 
@@ -42,23 +40,23 @@ interface Req {
   expires_at: number;
 }
 
-interface Account {
-  provider: string;
-  access_token: string;
-  refresh_token: string;
-  expires_at: number; // Unix 타임스탬프 (초 또는 밀리초)
-}
-
 export async function POST(req: Request) {
   try {
     const { userId, expires_at: time }: Req = await req.json();
 
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
-    let { provider, access_token, refresh_token, expires_at }: Account = await db
-      .collection('accounts')
-      .findOne({ userId: new ObjectId(userId) });
-    const { email } = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+    const account = await db.collection('accounts').findOne({ userId: new ObjectId(userId) });
+    if (!account) {
+      return NextResponse.json({ message: 'Not Found User' }, { status: 404 });
+    }
+    let { provider, access_token, refresh_token, expires_at } = account;
+
+    const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      return NextResponse.json({ message: 'Not Found User' }, { status: 404 });
+    }
+    const { email } = user;
 
     if (new Date(expires_at * 1000) <= new Date()) {
       const tokenData = await refreshAccessToken(provider, refresh_token);

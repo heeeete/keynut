@@ -1,6 +1,5 @@
 import getUserSession from '@/lib/getUserSession';
 import connectDB from '@keynut/lib/mongodb';
-import User from '@keynut/type/user';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 
@@ -8,12 +7,18 @@ export const dynamic = 'force-dynamic'; // 동적 생성 모드 설정
 
 export async function GET() {
   try {
-    const { user: session }: { user: User } = await getUserSession();
-    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
+    const serverSession = await getUserSession();
+    if (!serverSession) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 404 });
+    }
+    const { user: session } = serverSession;
 
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
-    const user: User = await db.collection('users').findOne({ _id: new ObjectId(session.id) });
+    const user = await db.collection('users').findOne({ _id: new ObjectId(session.id) });
+    if (!user) {
+      return NextResponse.json({ message: 'Not Found User' }, { status: 404 });
+    }
     const { lastRaiseReset, raiseCount } = user;
 
     const now = new Date();
