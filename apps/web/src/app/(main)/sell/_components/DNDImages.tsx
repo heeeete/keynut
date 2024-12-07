@@ -29,8 +29,8 @@ const DNDImages = React.memo(({ uploadImages, setUploadImages }: UploadImagesHoo
       const [removedFile] = newImageFiles.splice(result.source.index, 1);
       const [removedUrl] = newImageUrls.splice(result.source.index, 1);
 
-      newImageFiles.splice(result.destination.index, 0, removedFile);
-      newImageUrls.splice(result.destination.index, 0, removedUrl);
+      newImageFiles.splice(result.destination.index, 0, removedFile!);
+      newImageUrls.splice(result.destination.index, 0, removedUrl!);
 
       setUploadImages({
         imageFiles: newImageFiles,
@@ -43,11 +43,15 @@ const DNDImages = React.memo(({ uploadImages, setUploadImages }: UploadImagesHoo
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable" direction="horizontal">
-        {(provided, snapshot) => (
-          <div ref={provided.innerRef} className="flex  overflow-auto  scrollbar-hide" {...provided.droppableProps}>
+        {(provided) => (
+          <div
+            ref={provided.innerRef}
+            className="flex  overflow-auto  scrollbar-hide"
+            {...provided.droppableProps}
+          >
             {uploadImages.imageUrls.map((url, idx) => (
               <Draggable key={idx} draggableId={`draggable-${idx}`} index={idx}>
-                {(provided, snapshot) => (
+                {(provided) => (
                   <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
@@ -91,5 +95,7 @@ const DNDImages = React.memo(({ uploadImages, setUploadImages }: UploadImagesHoo
     </DragDropContext>
   );
 });
+
+DNDImages.displayName = 'DNDImages';
 
 export default DNDImages;

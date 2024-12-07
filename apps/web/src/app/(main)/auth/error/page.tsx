@@ -12,8 +12,8 @@ function ErrorComponent() {
         <p className="font-bold text-white bg-black px-2">Your account has been banned.</p>
       </div>
     );
-  else if (error.startsWith('Your account is banned until:')) {
-    const [msg, expires_at] = error.split(': ');
+  else if (error?.startsWith('Your account is banned until:')) {
+    const expires_at = error.split(': ')[1];
     const date = new Date(Number(expires_at));
 
     // 한국 시간대의 날짜와 시간으로 변환

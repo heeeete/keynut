@@ -52,7 +52,7 @@ export async function GET(req: Request) {
     if (prices.length > 0) {
       const priceConditions = prices.map((priceId) => {
         const range = priceRanges.find((range) => range.id === priceId);
-        return { price: { $gte: range.min, $lte: range.max } };
+        return { price: { $gte: range?.min, $lte: range?.max } };
       });
       query.$and = [{ $or: priceConditions }];
     }

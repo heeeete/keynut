@@ -14,6 +14,6 @@ export default interface User {
   products?: string[];
   memo?: { [key: string]: string };
   nicknameChangedAt?: string;
-  bookmarked?: string[];
+  bookmarked?: string[] | [];
   provider?: 'kakao' | 'naver';
 }

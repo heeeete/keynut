@@ -23,6 +23,12 @@ import validateProductForm from './utils/validateProductForm';
 import useAutoSaveDraft from './_hooks/useAutoSaveDraft';
 import useValidateAndRemoveDraft from './_hooks/useValidateAndRemoveDraft';
 
+interface ImageDetails {
+  name: string;
+  width: number;
+  height: number;
+}
+
 export default function Sell() {
   const [uploadImages, setUploadImages] = useState<UploadImagesProps>({
     imageFiles: [],
@@ -36,13 +42,14 @@ export default function Sell() {
   const [price, setPrice] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [openChatUrl, setOpenChatUrl] = useState('');
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [isValidOpenChat, setIsValidOpenChat] = useState(true);
   const router = useRouter();
   const { data: session, status, update } = useSession();
   const invalidateFilters = useInvalidateFiltersQuery();
   const isInitialRender = useRef<boolean>(true); // 첫 번째 렌더링인지 확인하는 ref
   const { openModal } = useModal();
+
   // 자동 임시저장
   useAutoSaveDraft(isInitialRender, {
     title,
@@ -60,7 +67,7 @@ export default function Sell() {
   // 처음 페이지 진입시 초안 체크
   useEffect(() => {
     const checkAndRestoreDraft = async () => {
-      const draft = JSON.parse(sessionStorage.getItem('draft'));
+      const draft = JSON.parse(sessionStorage.getItem('draft') || '');
       if (!draft) return;
 
       const proceed = await openModal({
@@ -81,9 +88,10 @@ export default function Sell() {
     };
 
     const updateOpenChatUrl = async () => {
-      const user = await getUserProfile(session.user.id);
-      if (session.user.openChatUrl !== user?.openChatUrl) update({ openChatUrl: user.openChatUrl });
-      setOpenChatUrl(user.openChatUrl || '');
+      const user = await getUserProfile(session!.user.id!);
+      if (session?.user.openChatUrl !== user?.openChatUrl)
+        update({ openChatUrl: user?.openChatUrl });
+      setOpenChatUrl(user?.openChatUrl || '');
     };
 
     const initializeData = async () => {
@@ -99,7 +107,7 @@ export default function Sell() {
   }, [status]);
 
   const getImageDetails = () => {
-    return uploadImages.imageFiles.map(file => ({
+    return uploadImages.imageFiles.map((file) => ({
       name: `product_${new Date().getTime()}_${file.file.name}`,
       width: file.width,
       height: file.height,
@@ -107,10 +115,10 @@ export default function Sell() {
   };
 
   const batchUploadToS3 = async (urls: string[]) => {
-    await Promise.all(urls.map((url, idx) => uploadToS3(url, uploadImages.imageFiles[idx])));
+    await Promise.all(urls.map((url, idx) => uploadToS3(url, uploadImages.imageFiles[idx]!)));
   };
 
-  const generationFormData = imageDetails => {
+  const generationFormData = (imageDetails: ImageDetails[]) => {
     const tempFrom = new FormData();
     tempFrom.append('imageDetails', JSON.stringify(imageDetails));
     tempFrom.append('title', title.replace(/ +/g, ' ').trim());
@@ -155,15 +163,15 @@ export default function Sell() {
     await openModal({ message: '상품 업로드를 실패했습니다.\n나중에 다시 시도해주세요.' });
   };
 
-  const getSignedUrlAndUploadImages = async imageDetails => {
+  const getSignedUrlAndUploadImages = async (imageDetails: ImageDetails[]) => {
     const { urls, status } = await getSignedUrls(imageDetails);
     if (status !== 200) {
       throw new Error('이미지 URL 생성 실패');
     }
-    await batchUploadToS3(urls);
+    await batchUploadToS3(urls as string[]);
   };
 
-  const formGenerateAndUploadProduct = async imageDetails => {
+  const formGenerateAndUploadProduct = async (imageDetails: ImageDetails[]) => {
     const formData = generationFormData(imageDetails);
     await uploadProduct(formData);
   };
@@ -217,7 +225,11 @@ export default function Sell() {
         <Condition condition={condition} setCondition={setCondition} />
       </div>
 
-      <DescriptionInput description={description} setDescription={setDescription} subCategory={subCategory} />
+      <DescriptionInput
+        description={description}
+        setDescription={setDescription}
+        subCategory={subCategory}
+      />
       <OpenChatUrlInput
         openChatUrl={openChatUrl}
         setOpenChatUrl={setOpenChatUrl}
@@ -227,7 +239,10 @@ export default function Sell() {
       <PriceInput price={price} setPrice={setPrice} />
 
       <div className="w-full flex justify-end">
-        <button className="bg-black text-white font-extrabold px-7 py-4 rounded ml-auto" onClick={handleUpload}>
+        <button
+          className="bg-black text-white font-extrabold px-7 py-4 rounded ml-auto"
+          onClick={handleUpload}
+        >
           <p>업로드</p>
         </button>
       </div>

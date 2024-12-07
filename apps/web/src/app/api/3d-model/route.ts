@@ -16,7 +16,7 @@ export async function GET() {
     const fileStream = fs.createReadStream(filePath);
 
     // Node.js ReadableStream을 Web Stream으로 변환
-    const webStream = Readable.toWeb(fileStream);
+    const webStream = Readable.toWeb(fileStream) as unknown as ReadableStream;
 
     // 응답 헤더 설정
     const headers = new Headers({

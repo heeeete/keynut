@@ -2,18 +2,9 @@
 
 import React, { useCallback, useRef } from 'react';
 import { useModal } from '../ModalProvider';
+import { UploadImagesHookProps } from '../../sell/_type/uploadImagesProps';
 
-interface UploadImages {
-  imageFiles: { name?: string; file?: File; width: number; height: number }[];
-  imageUrls: string[];
-}
-
-interface Props {
-  uploadImages: UploadImages;
-  setUploadImages: React.Dispatch<React.SetStateAction<UploadImages>>;
-}
-
-const ImageUploadButton = React.memo(({ uploadImages, setUploadImages }: Props) => {
+const ImageUploadButton = React.memo(({ uploadImages, setUploadImages }: UploadImagesHookProps) => {
   const { openModal } = useModal();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
