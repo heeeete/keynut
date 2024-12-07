@@ -11,7 +11,7 @@ const getProducts = async (queryString: string, pageParam: unknown) => {
       url += `?${queryString}`;
     }
 
-    url += `${queryString ? '&' : '?'}lastPage=${pageParam === undefined || pageParam === 0 ? 1 : pageParam}`;
+    url += `${queryString ? '&' : '?'}lastPage=${pageParam === undefined ? 1 : pageParam}`;
 
     const res = await fetch(url, {
       next: { tags: ['products'] },
