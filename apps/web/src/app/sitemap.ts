@@ -8,7 +8,7 @@ async function getAllProducts() {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const products: ProductData[] = await db
-      .collection('products')
+      .collection<ProductData>('products')
       .find({ state: { $in: [1, 2] } })
       .toArray();
 

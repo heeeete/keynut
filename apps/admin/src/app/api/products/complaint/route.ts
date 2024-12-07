@@ -53,7 +53,7 @@ export async function GET(req: Request) {
       { $limit: limit },
     ];
 
-    const products: Data[] | [] = await productsCollection.aggregate(pipeline).toArray();
+    const products: Data[] | [] = await productsCollection.aggregate<Data>(pipeline).toArray();
     return NextResponse.json({ products }, { status: 200 });
   } catch (error) {
     console.error(error);

@@ -10,9 +10,6 @@ html {
   overflow-y: scroll;
 }
 
-body {
-}
-
 body.fixed {
   position: fixed;
   top: var(--posY);
@@ -56,7 +53,7 @@ button {
 
 @media (max-width: 768px) {
   .header-gradient::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -69,7 +66,7 @@ button {
 
 @media (min-width: 769px) {
   .header-gradient::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
