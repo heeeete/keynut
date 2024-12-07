@@ -4,7 +4,7 @@ import getProducts from './_lib/getProducts';
 import { Suspense } from 'react';
 import fetchHotProducts from './_lib/fetchHotProducts';
 
-export default async function Shop({}) {
+export default async function Shop() {
   const queryClient = new QueryClient();
   try {
     await queryClient.prefetchInfiniteQuery({

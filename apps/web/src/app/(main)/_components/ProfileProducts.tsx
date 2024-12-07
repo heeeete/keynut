@@ -112,7 +112,7 @@ const ProductStateButton = ({
   }, []);
 
   return (
-    <li
+    <button
       className={`flex justify-center py-2 text-lg space-x-2 max-md:text-sm border-gray-200 border-r cursor-pointer ${
         productOption === buttonState ? 'bg-white text-black' : 'text-gray-400'
       }`}
@@ -120,7 +120,7 @@ const ProductStateButton = ({
     >
       <p>{buttonName}</p>
       <p className="font-medium">{data?.filter((a) => a.state === buttonState).length}</p>
-    </li>
+    </button>
   );
 };
 
@@ -133,7 +133,7 @@ export default function ProfileProducts({ data }: { data: ProductData[] }) {
       <section className="space-y-2">
         <h2 className="text-xl max-md:text-base max-md:px-3">상품</h2>
         <nav className="mb-2">
-          <ul className="grid grid-cols-3 items-center bg-gray-100 border-gray-200 border-t border-r border-l">
+          <div className="grid grid-cols-3 items-center bg-gray-100 border-gray-200 border-t border-r border-l">
             <ProductStateButton
               productOption={productOption}
               buttonState={1}
@@ -155,15 +155,15 @@ export default function ProfileProducts({ data }: { data: ProductData[] }) {
               params={params}
               data={data}
             />
-          </ul>
+          </div>
         </nav>
-        <div className="">
+        <div>
           {data ? (
             data.filter((a) => a.state === productOption).length ? (
               <div className="grid grid-cols-3 gap-3 max-[960px]:grid-cols-2 max-md:grid-cols-1 max-md:gap-0">
                 {data
                   .filter((a) => a.state === productOption)
-                  .map((product, index) => {
+                  .map((product) => {
                     return (
                       <Fragment key={product._id}>
                         <Product product={product} />

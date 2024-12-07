@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-const ProfileImage = ({ image }) => {
+const ProfileImage = ({ image }: { image: string }) => {
   return (
     <>
       {image ? (

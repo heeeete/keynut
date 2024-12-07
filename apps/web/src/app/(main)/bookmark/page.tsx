@@ -4,7 +4,7 @@ import { getSession, signIn } from 'next-auth/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import getBookmarkedProducts from './_lib/getBookmarkedProducts';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import React, { Fragment } from 'react';
 import conditions from '../_constants/conditions';
 import timeAgo from '@/utils/timeAgo';
 import ProductData from '@keynut/type/productData';
@@ -37,7 +37,7 @@ const HandleBookMark = ({ productId }: { productId: string }) => {
     onError: (err, variables, context) => {
       queryClient.setQueryData(['bookmarkedProducts'], context.previousProduct);
     },
-    onSettled: (data, error, variables) => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['bookmarkedProducts'] });
     },
   });
@@ -136,7 +136,7 @@ const ABookMark = ({ item }: { item: ProductData }) => {
 };
 
 export default function Bookmark() {
-  const { data, error, isLoading } = useQuery<ProductData[]>({
+  const { data, isLoading } = useQuery<ProductData[]>({
     queryKey: ['bookmarkedProducts'],
     queryFn: () => getBookmarkedProducts(),
   });
@@ -188,7 +188,7 @@ export default function Bookmark() {
         <div className="flex flex-col max-w-screen-lg mx-auto px-10 space-y-2 max-md:px-2 max-[960px]:mt-3 max-[960px]:pb-3">
           <p className="text-gray-500 max-md:text-sm">전체 {data.length}</p>
           <div className="grid grid-cols-2 gap-3  max-md:grid-cols-1">
-            {data.map((item, index) => (
+            {data.map((item) => (
               <Fragment key={item._id}>
                 <ABookMark item={item} />
               </Fragment>
