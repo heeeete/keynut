@@ -9,7 +9,7 @@ export default async function Shop() {
   try {
     await queryClient.prefetchInfiniteQuery({
       queryKey: ['products', 'all'],
-      queryFn: getProducts,
+      queryFn: () => getProducts('', undefined),
       initialPageParam: 0,
       staleTime: 60 * 1000,
     });

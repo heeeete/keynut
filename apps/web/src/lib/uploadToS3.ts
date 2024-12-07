@@ -9,6 +9,7 @@ export default async function uploadToS3(url: string, file: FileType) {
   let res: Response | undefined;
 
   try {
+    if (!file.file) throw Error('');
     res = await fetch(url, {
       method: 'PUT',
       headers: {

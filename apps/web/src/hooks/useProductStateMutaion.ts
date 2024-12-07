@@ -38,7 +38,7 @@ const useProductStateMutation = () => {
       return { previousProduct };
     },
     onError: (err, variables, context) => {
-      queryClient.setQueryData(['product', variables.productId], context.previousProduct);
+      queryClient.setQueryData(['product', variables.productId], context?.previousProduct);
     },
     onSettled: (data, error, variables) => {
       invalidateFilters();

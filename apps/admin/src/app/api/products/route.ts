@@ -39,14 +39,14 @@ export async function GET(req: Request) {
 
       if (keyword) {
         searchQuery = {
-          userId: user._id,
+          userId: user._id.toString(),
           $or: [
             { title: { $regex: keyword, $options: 'i' } },
             { tags: { $elemMatch: { $regex: keyword, $options: 'i' } } },
           ],
         };
       } else {
-        searchQuery.userId = user._id;
+        searchQuery.userId = user._id.toString();
       }
     } else if (keyword) {
       searchQuery = {
@@ -125,8 +125,8 @@ export async function DELETE(req: Request) {
 
     const deleteProduct = async (id: number) => {
       const target: ProductData = await db
-        .collection('products')
-        .findOne({ _id: new ObjectId(id) });
+        .collection<ProductData>('products')
+        .findOne({ _id: id.toString() });
       if (!target) {
         return NextResponse.json({ error: 'Product not found' }, { status: 404 });
       }
@@ -143,7 +143,7 @@ export async function DELETE(req: Request) {
       await db.collection('products').deleteOne({ _id: new ObjectId(id) });
       await db
         .collection('users')
-        .updateOne({ _id: target.userId }, { $pull: { products: new ObjectId(id) } });
+        .updateOne({ _id: new ObjectId(target.userId) }, { $pull: { products: new ObjectId(id) } });
       await db
         .collection('users')
         .updateMany({ bookmarked: new ObjectId(id) }, { $pull: { bookmarked: new ObjectId(id) } });

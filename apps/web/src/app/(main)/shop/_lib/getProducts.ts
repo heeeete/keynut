@@ -7,11 +7,11 @@ const getProducts = async (queryString: string, pageParam: unknown) => {
     let url = `${baseUrl}/api/products`;
     console.log(url);
 
-    if (queryString) {
+    if (queryString && queryString.length) {
       url += `?${queryString}`;
     }
 
-    url += `${queryString ? '&' : '?'}lastPage=${pageParam === undefined ? 1 : pageParam}`;
+    url += `${queryString && queryString.length ? '&' : '?'}lastPage=${pageParam === undefined ? 1 : pageParam}`;
 
     const res = await fetch(url, {
       next: { tags: ['products'] },

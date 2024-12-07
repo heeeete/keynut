@@ -1,6 +1,6 @@
 import connectDB from '@keynut/lib/mongodb';
 import userBanHandler from '@keynut/lib/userBanHandler';
-import { ObjectId } from 'mongodb';
+import User from '@keynut/type/user';
 import { NextResponse } from 'next/server';
 
 interface RequestBody {
@@ -34,9 +34,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: errorData }, { status: res.status });
     }
 
-    const { email }: { email: string } = await db
-      .collection('users')
-      .findOne({ _id: new ObjectId(_id) });
+    const { email }: { email: string } = await db.collection<User>('users').findOne({ _id: _id });
     const date = new Date();
     date.setMonth(date.getMonth() + 3);
     const expiresAt = Math.floor(date.getTime() / 1000);
