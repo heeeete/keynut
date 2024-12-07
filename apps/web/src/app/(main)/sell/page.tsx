@@ -29,6 +29,17 @@ interface ImageDetails {
   height: number;
 }
 
+interface Draft {
+  condition: number;
+  description: string;
+  mainCategory: number;
+  openChatUrl: string;
+  price: string;
+  subCategory: number;
+  tags: string[];
+  title: string;
+}
+
 export default function Sell() {
   const [uploadImages, setUploadImages] = useState<UploadImagesProps>({
     imageFiles: [],
@@ -67,8 +78,15 @@ export default function Sell() {
   // 처음 페이지 진입시 초안 체크
   useEffect(() => {
     const checkAndRestoreDraft = async () => {
-      const draft = JSON.parse(sessionStorage.getItem('draft') || '');
-      if (!draft) return;
+      const draft = sessionStorage.getItem('draft');
+      if (!draft) {
+        return;
+      }
+
+      const parseDraft: Draft = JSON.parse(draft);
+      if (!parseDraft) {
+        return;
+      }
 
       const proceed = await openModal({
         message: '이전에 작성 중인 글이 있습니다.',
@@ -76,14 +94,14 @@ export default function Sell() {
         isSelect: true,
       });
       if (proceed) {
-        setTitle(draft.title);
-        setMainCategory(draft.mainCategory);
-        setSubCategory(draft.subCategory);
-        setCondition(draft.condition);
-        setDescription(draft.description);
-        setPrice(draft.price);
-        setOpenChatUrl(draft.openChatUrl);
-        setTags(draft.tags);
+        setTitle(parseDraft.title);
+        setMainCategory(parseDraft.mainCategory);
+        setSubCategory(parseDraft.subCategory);
+        setCondition(parseDraft.condition);
+        setDescription(parseDraft.description);
+        setPrice(parseDraft.price);
+        setOpenChatUrl(parseDraft.openChatUrl);
+        setTags(parseDraft.tags);
       } else sessionStorage.removeItem('draft');
     };
 

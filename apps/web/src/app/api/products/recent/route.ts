@@ -1,5 +1,4 @@
 import connectDB from '@keynut/lib/mongodb';
-import ProductData from '@keynut/type/productData';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +8,7 @@ export async function GET() {
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const products = db.collection('products');
-    const recentProducts: ProductData[] = await products
+    const recentProducts = await products
       .find({ $or: [{ state: 1 }, { state: 2 }] })
       .sort({ createdAt: -1 })
       .limit(5)
@@ -17,6 +16,6 @@ export async function GET() {
 
     return NextResponse.json(recentProducts, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(error, { status: 500 });
   }
 }

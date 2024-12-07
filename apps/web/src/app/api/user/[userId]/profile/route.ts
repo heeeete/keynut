@@ -1,7 +1,6 @@
 import connectDB from '@keynut/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import User from '@keynut/type/user';
 
 interface Params {
   params: {
@@ -9,7 +8,7 @@ interface Params {
   };
 }
 
-export async function GET(req, { params }: Params) {
+export async function GET(req: Request, { params }: Params) {
   try {
     // const session = await getUserSession();
     // if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
@@ -17,7 +16,7 @@ export async function GET(req, { params }: Params) {
     const db = client.db(process.env.MONGODB_NAME);
     const users = db.collection('users');
     const { userId } = params;
-    const user: User = await users.findOne({ _id: new ObjectId(userId) });
+    const user = await users.findOne({ _id: new ObjectId(userId) });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }

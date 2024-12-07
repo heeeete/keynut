@@ -5,7 +5,13 @@ import s3Client from '@keynut/lib/s3Client';
 import connectDB from '@keynut/lib/mongodb';
 import { revalidateTag } from 'next/cache';
 
-export async function DELETE(req, { params }) {
+interface Image {
+  name: string;
+  width: number;
+  height: number;
+}
+
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
 
@@ -16,10 +22,10 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    const deletePromises = target.images.map((file) => {
+    const deletePromises = target.images.map((image: Image) => {
       const params = {
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: file.name,
+        Key: image.name,
       };
       return s3Client.send(new DeleteObjectCommand(params));
     });
@@ -28,9 +34,9 @@ export async function DELETE(req, { params }) {
     await db
       .collection('users')
       .updateOne({ _id: target.userId }, { $pull: { products: new ObjectId(id) } });
-    db.collection('users').updateMany(
-      { bookmarked: new ObjectId(id) },
-      { $pull: { bookmarked: new ObjectId(id) } },
+    await db.collection('users').updateMany(
+      { bookmarked: { $in: [new ObjectId(id)] } }, // 조건
+      { $pull: { bookmarked: new ObjectId(id) } as any }, // 강제 타입 단언
     );
     db.collection('viewHistory').deleteMany({ productId: new ObjectId(id) });
     revalidateTag('products');

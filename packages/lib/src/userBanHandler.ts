@@ -4,7 +4,7 @@ const userBanHandler = async (email: string, state: number, expires_at?: number)
     return 500;
   }
 
-  let res: Response;
+  let res: Response | undefined;
 
   try {
     res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/ban-user`, {

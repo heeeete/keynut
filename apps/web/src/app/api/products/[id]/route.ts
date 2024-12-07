@@ -9,7 +9,7 @@ interface Params {
   id: string;
 }
 
-export async function GET(req, { params }) {
+export async function GET(req: Response, { params }: { params: Params }) {
   try {
     const { id }: Params = params;
     console.log(id);
@@ -68,21 +68,11 @@ export async function GET(req, { params }) {
     else return NextResponse.json({ message: 'Product not found' }, { status: 404 });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      { message: 'Failed to fetch product', error: error.message },
-      { status: 500 },
-    );
+    return NextResponse.json(error, { status: 500 });
   }
 }
 
-interface ViewHistory {
-  _id: string;
-  productId: string;
-  userId: string;
-  lastViewed: string;
-}
-
-export async function PUT(req, { params }) {
+export async function PUT(req: Response, { params }: { params: Params }) {
   try {
     const { id }: Params = params;
     const session = await getUserSession();
@@ -93,7 +83,7 @@ export async function PUT(req, { params }) {
     let shouldIncrementView = true;
 
     if (session) {
-      const lastView: ViewHistory = await db.collection('viewHistory').findOne({
+      const lastView = await db.collection('viewHistory').findOne({
         userId: new ObjectId(session.user.id),
         productId: new ObjectId(id),
       });

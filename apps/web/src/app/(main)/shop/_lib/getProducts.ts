@@ -1,6 +1,7 @@
 const getProducts = async (queryString: string, pageParam: unknown) => {
   try {
-    console.log(queryString, pageParam);
+    console.log('queryString = ', queryString);
+    console.log('pageParam = ', pageParam);
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
     let url = `${baseUrl}/api/products`;
@@ -10,7 +11,7 @@ const getProducts = async (queryString: string, pageParam: unknown) => {
       url += `?${queryString}`;
     }
 
-    url += `${queryString ? '&' : '?'}lastPage=${pageParam === undefined ? 1 : pageParam}`;
+    url += `${queryString ? '&' : '?'}lastPage=${pageParam === undefined || pageParam === 0 ? 1 : pageParam}`;
 
     const res = await fetch(url, {
       next: { tags: ['products'] },

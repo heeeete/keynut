@@ -1,6 +1,5 @@
 import getUserSession from '@/lib/getUserSession';
 import connectDB from '@keynut/lib/mongodb';
-import User from '@keynut/type/user';
 import { ObjectId } from 'mongodb';
 import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
@@ -13,8 +12,9 @@ interface Params {
 
 export async function PATCH(req: Request, { params }: Params) {
   try {
-    const { user: session }: { user: User } = await getUserSession();
-    if (!session) return NextResponse.json({ error: 'No session found' }, { status: 401 });
+    const serverSession = await getUserSession();
+    if (!serverSession) return NextResponse.json({ error: 'No session found' }, { status: 401 });
+    const { user: session } = serverSession;
 
     const { id } = params;
     const client = await connectDB;
