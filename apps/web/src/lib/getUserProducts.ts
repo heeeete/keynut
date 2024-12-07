@@ -10,7 +10,7 @@ const getUserProducts = async (id: string) => {
     throw new Error('Failed to fetch products');
   }
   const data: UserData = await res.json();
-
+  console.log('sad', data);
   return data;
 };
 

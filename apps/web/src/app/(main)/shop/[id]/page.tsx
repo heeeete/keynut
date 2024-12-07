@@ -4,7 +4,7 @@ import getUserProfile from '@/lib/getUserProfile';
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const { id }: { id: string } = params;
-  const data: User = await getUserProfile(id);
+  const data: User | null = await getUserProfile(id);
   return {
     title: data ? `${data.nickname}ㅣKEYNUT - 키넛` : 'KEYNUT - 키넛',
     openGraph: {
