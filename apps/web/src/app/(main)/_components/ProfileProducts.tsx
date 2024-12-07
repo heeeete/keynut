@@ -92,7 +92,7 @@ interface ProductStateButtonProps {
   buttonState: number;
   buttonName: string;
   params: URLSearchParams;
-  data: ProductData[];
+  data: ProductData[] | undefined;
 }
 
 const ProductStateButton = ({
@@ -124,7 +124,7 @@ const ProductStateButton = ({
   );
 };
 
-export default function ProfileProducts({ data }: { data: ProductData[] }) {
+export default function ProfileProducts({ data }: { data: ProductData[] | undefined }) {
   const params = useSearchParams();
   const productOption = params.get('state') === null ? 1 : Number(params.get('state'));
 

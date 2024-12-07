@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useState, useCallback, useRef, useContext } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useContext, SetStateAction } from 'react';
 import ImageSlider from '@/app/(main)/_components/ImageSlider';
 import Image from 'next/image';
 import timeAgo from '@/utils/timeAgo';
 import OpenChatLink from './OpenChatLink';
-import { useQuery } from '@tanstack/react-query';
+import { QueryClient, useQuery } from '@tanstack/react-query';
 import getProductWithUser from '../_lib/getProductWithUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getSession, signIn, useSession } from 'next-auth/react';
@@ -28,8 +28,9 @@ import { RecentViewContext } from '@/app/(main)/_components/RecentViewComponent/
 import ProductData from '@keynut/type/productData';
 import User from '@keynut/type/user';
 import deleteProduct from '@/lib/deleteProduct';
+import { Session } from 'next-auth';
 
-const Condition = ({ condition }) => {
+const Condition = ({ condition }: { condition: 1 | 2 | 3 | 4 | 5 }) => {
   return (
     <div className="flex space-x-2 justify-center items-center">
       <div className="flex  items-center space-x-2">
@@ -41,7 +42,7 @@ const Condition = ({ condition }) => {
   );
 };
 
-const Category = ({ category }) => {
+const Category = ({ category }: { category: number }) => {
   let mainCategory = { key: 0, value: '' };
 
   if (category >= 10 && category <= 19) mainCategory = { key: 1, value: '키보드' };
@@ -79,8 +80,8 @@ const Category = ({ category }) => {
   );
 };
 
-const RenderTimeAgo = ({ date }) => {
-  const [clientTime, setClientTime] = useState(null);
+const RenderTimeAgo = ({ date }: { date: string }) => {
+  const [clientTime, setClientTime] = useState<string | null>(null);
 
   useEffect(() => {
     setClientTime(timeAgo(date));
@@ -89,7 +90,7 @@ const RenderTimeAgo = ({ date }) => {
   return <p>{clientTime || timeAgo(date)}</p>;
 };
 
-const RenderBookMark = ({ bookmarked }) => {
+const RenderBookMark = ({ bookmarked }: { bookmarked: string[] }) => {
   return (
     <div className="flex items-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
@@ -100,7 +101,7 @@ const RenderBookMark = ({ bookmarked }) => {
   );
 };
 
-const RenderViews = ({ views }) => {
+const RenderViews = ({ views }: { views: number }) => {
   return (
     <div className="flex items-center justify-center space-x-1">
       <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24">
@@ -114,10 +115,10 @@ const RenderViews = ({ views }) => {
   );
 };
 
-const RenderProfile = ({ user, id }) => {
+const RenderProfile = ({ user, id }: { user: User | null; id: string | undefined }) => {
   if (!user) return;
 
-  const LoginDate = ({ createdAt }) => {
+  const LoginDate = ({ createdAt }: { createdAt: string }) => {
     return (
       <div className="flex items-center space-x-1 text-sm text-gray-400 max-[960px]:text-xs">
         <svg
@@ -141,7 +142,7 @@ const RenderProfile = ({ user, id }) => {
     );
   };
 
-  const Provider = ({ provider }) => {
+  const Provider = ({ provider }: { provider: 'kakao' | 'naver' | undefined }) => {
     return (
       <div className="flex text-gray-400 items-center space-x-1 text-sm max-[960px]:text-xs">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
@@ -196,7 +197,7 @@ const RenderProfile = ({ user, id }) => {
               <p className="text-lg font-semibold max-[960px]:text-base line-clamp-1">
                 {user.nickname}
               </p>
-              {user.memo && user.memo[id] ? (
+              {user.memo && id && user.memo[id] ? (
                 <p className="text-sm text-gray-400">{user.memo[id]}</p>
               ) : (
                 ''
@@ -240,8 +241,21 @@ const RenderProfile = ({ user, id }) => {
   );
 };
 
-const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) => {
-  const isBookmarked = session && bookmarked?.includes(session.user.id);
+interface RenderBookmarkButtonProps {
+  productId: string;
+  bookmarked: string[];
+  session: Session | null;
+  queryClient: QueryClient;
+}
+
+const RenderBookmarkButton = ({
+  productId,
+  bookmarked,
+  session,
+  queryClient,
+}: RenderBookmarkButtonProps) => {
+  const isBookmarked =
+    session && session.user.id && bookmarked?.includes(session.user.id) ? true : false;
   const color = isBookmarked ? 'black' : 'white';
 
   const mutation = useMutation({
@@ -260,21 +274,21 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
       return data;
     },
     onMutate: async ({ productId, isBookmarked }: { productId: string; isBookmarked: boolean }) => {
-      await queryClient.cancelQueries(['product', productId]);
+      await queryClient.cancelQueries({ queryKey: ['product', productId] });
       const previousProduct = queryClient.getQueryData(['product', productId]);
       queryClient.setQueryData(['product', productId], (old: ProductData) => ({
         ...old,
         bookmarked: isBookmarked
-          ? old.bookmarked.filter((id) => id !== session.user.id)
-          : [...old.bookmarked, session.user.id],
+          ? old.bookmarked.filter((id) => id !== session?.user.id)
+          : [...old.bookmarked, session?.user.id],
       }));
       return { previousProduct };
     },
     onError: (err, variables, context) => {
-      queryClient.setQueryData(['product', variables.productId], context.previousProduct);
+      queryClient.setQueryData(['product', variables.productId], context?.previousProduct);
     },
     onSettled: (data, error, variables) => {
-      queryClient.invalidateQueries(['product', variables.productId]);
+      queryClient.invalidateQueries({ queryKey: ['product', variables.productId] });
     },
   });
 
@@ -307,10 +321,10 @@ const RenderBookmarkButton = ({ productId, bookmarked, session, queryClient }) =
   );
 };
 
-const RenderHashTag = ({ product }) => {
+const RenderHashTag = ({ tags }: { tags: string[] }) => {
   return (
     <div className="flex text-gray-500 flex-wrap">
-      {product.tags?.map((e, idx) => (
+      {tags?.map((e, idx) => (
         <Link
           href={`/shop?keyword=${encodeURIComponent(e)}`}
           key={idx}
@@ -323,7 +337,7 @@ const RenderHashTag = ({ product }) => {
   );
 };
 
-const RenderDescriptor = ({ product }) => {
+const RenderDescriptor = ({ description }: { description: string }) => {
   return (
     <div className="min-[960px]:mt-5 px-0 py-1 rounded min-h-24 break-all">
       <p className="text-xl font-semibold  max-[960px]:text-lg">상품 설명</p>
@@ -331,7 +345,7 @@ const RenderDescriptor = ({ product }) => {
         className="w-full bg-gray-300 rounded-full my-4 max-[960px]:my-2"
         style={{ height: '2px' }}
       ></div>
-      <p className="whitespace-pre-wrap min-h-28 px-2">{product.description}</p>
+      <p className="whitespace-pre-wrap min-h-28 px-2">{description}</p>
     </div>
   );
 };
@@ -347,12 +361,7 @@ const UpButton = ({
   raiseCount: number;
   state: number;
   raiseHandler: () => Promise<void>;
-  openModal: (props: {
-    message: string;
-    subMessage?: string;
-    isSelect?: boolean;
-    size?: string | number;
-  }) => Promise<boolean>;
+  openModal: OpenModal;
 }) => {
   const openUpModal = async () => {
     if (!(await getSession())) return signIn();
@@ -410,7 +419,7 @@ const DeleteButton = ({
   );
 };
 
-const ModifyButton = ({ id }) => {
+const ModifyButton = ({ id }: { id: string }) => {
   return (
     <Link
       className="min-[480px]:flex-1 min-[480px]:max-w-44 min-[480px]:px-4 min-[480px]:py-1 min-[480px]:border min-[480px]:rounded min-[480px]:border-gray-300 flex items-center justify-center w-full max-[480px]:py-4 max-[480px]:border-b font-semibold"
@@ -421,6 +430,16 @@ const ModifyButton = ({ id }) => {
   );
 };
 
+interface SettingModalProps {
+  id: string;
+  setSettingModal: React.Dispatch<SetStateAction<boolean>>;
+  state: number;
+  raiseHandler: () => Promise<void>;
+  raiseCount: number;
+  deleteHandler: () => Promise<void>;
+  openModal: OpenModal;
+}
+
 const SettingModal = ({
   id,
   setSettingModal,
@@ -429,7 +448,7 @@ const SettingModal = ({
   raiseCount,
   deleteHandler,
   openModal,
-}) => {
+}: SettingModalProps) => {
   return (
     <div
       className="fixed w-screen custom-dvh top-0 left-0 z-50 flex flex-col justify-center items-center bg-black bg-opacity-50"
@@ -456,7 +475,13 @@ const SettingModal = ({
   );
 };
 
-const MobileSettingModal = ({ writer, session, setSettingModal }) => {
+interface MobileSettindModalProps {
+  writer: boolean;
+  session: Session | null;
+  setSettingModal: React.Dispatch<SetStateAction<boolean>>;
+}
+
+const MobileSettingModal = ({ writer, session, setSettingModal }: MobileSettindModalProps) => {
   if (writer || session?.admin)
     return (
       <button
@@ -475,7 +500,13 @@ const MobileSettingModal = ({ writer, session, setSettingModal }) => {
     );
 };
 
-const ComplainModal = ({ setComplainModal, productId }) => {
+const ComplainModal = ({
+  setComplainModal,
+  productId,
+}: {
+  setComplainModal: React.Dispatch<React.SetStateAction<boolean>>;
+  productId: string;
+}) => {
   const [state, setState] = useState(0);
   const [text, setText] = useState('');
   const placeholder = '신고 유형을 선택해주세요.';
@@ -558,14 +589,14 @@ const ComplainModal = ({ setComplainModal, productId }) => {
   );
 };
 
-const incrementViewCount = async (productId) => {
+const incrementViewCount = async (productId: string) => {
   const res = await fetch(`/api/products/${productId}`, {
     method: 'PUT',
   });
   return res.json();
 };
 
-const onPaste = async (id, openModal) => {
+const onPaste = async (id: string, openModal: OpenModal) => {
   try {
     await navigator.clipboard.writeText(`https://keynut.co.kr/shop/product/${id}`);
     openModal({
@@ -573,6 +604,7 @@ const onPaste = async (id, openModal) => {
       subMessage: `URL이 복사되었습니다.\n다른 곳에 공유해 보세요!`,
     });
   } catch (error) {
+    console.error(error);
     openModal({
       message: 'URL복사',
       subMessage: `에러가 발생했습니다.\n잠시 후 다시 시도해 주세요`,
@@ -580,15 +612,18 @@ const onPaste = async (id, openModal) => {
   }
 };
 
-const modifyRecentView = (data: ProductWithUserData, setRecentViewChange) => {
+const modifyRecentView = (
+  data: ProductWithUserData,
+  setRecentViewChange: React.Dispatch<SetStateAction<boolean>>,
+) => {
   let item = localStorage.getItem('recentView');
-  let curList = item && item !== '' ? JSON.parse(item) : null;
+  let curList: ProductData[] | null = item && item !== '' ? JSON.parse(item) : null;
   if (!curList || curList.length === 0) {
     localStorage.setItem('recentView', JSON.stringify([data]));
     setRecentViewChange(true);
     return;
   }
-  if (curList[0]._id === data._id) return;
+  if (curList[0]!._id === data._id) return;
   curList = curList.filter((product) => product._id !== data._id);
   if (curList.length === 6) curList.pop();
   localStorage.setItem('recentView', JSON.stringify([data, ...curList]));
@@ -599,16 +634,18 @@ interface ProductWithUserData extends ProductData {
   user: User | null;
 }
 
-export default function RenderProduct({ id }): JSX.Element {
+export default function RenderProduct({ id }: { id: string }) {
   const queryClient = useQueryClient();
-  const { setRecentViewChange } = useContext(RecentViewContext);
-  const [settingModal, setSettingModal] = useState(null);
+  const context = useContext(RecentViewContext);
+  if (!context) throw new Error('');
+  const { setRecentViewChange } = context;
+  const [settingModal, setSettingModal] = useState<boolean>(false);
   const [complainModal, setComplainModal] = useState(false);
   const [raiseCount, setRaiseCount] = useState(0);
   const posY = useRef(0);
   const router = useRouter();
   const { data: session, status }: SessionData = useSession();
-  const { data, error, isLoading } = useQuery<ProductWithUserData>({
+  const { data, isLoading } = useQuery<ProductWithUserData>({
     queryKey: ['product', id],
     queryFn: () => getProductWithUser(id),
     staleTime: Infinity,
@@ -621,7 +658,7 @@ export default function RenderProduct({ id }): JSX.Element {
   const { openModal } = useModal();
 
   useEffect(() => {
-    modifyRecentView(data, setRecentViewChange);
+    if (data) modifyRecentView(data, setRecentViewChange);
   }, []);
 
   useEffect(() => {
@@ -730,7 +767,7 @@ export default function RenderProduct({ id }): JSX.Element {
               <p className="text-2xl font-bold break-all max-[960px]:text-lg max-[960px]:mb-4">
                 {product.title}
               </p>
-              <RenderHashTag product={product} />
+              <RenderHashTag tags={product.tags} />
             </div>
             <div className="space-y-6">
               <div className="flex justify-between max-[960px]:items-center space-x-2">
@@ -770,7 +807,7 @@ export default function RenderProduct({ id }): JSX.Element {
                 </div>
               </div>
               <div className="flex w-full justify-between text-sm text-gray-500 font-semibold">
-                <Condition condition={Number(product.condition)} />
+                <Condition condition={Number(product.condition) as 1 | 2 | 3 | 4 | 5} />
                 <div className="flex space-x-2 font-normal text-gray-400">
                   <RenderTimeAgo date={product.createdAt} />
                   <RenderBookMark bookmarked={product.bookmarked} />
@@ -802,7 +839,7 @@ export default function RenderProduct({ id }): JSX.Element {
         </div>
       </div>
       <div className="max-[960px]:px-3 mt-3">
-        <RenderDescriptor product={product} />
+        <RenderDescriptor description={product.description} />
       </div>
       {settingModal && (
         <SettingModal

@@ -11,8 +11,9 @@ import { useSession } from 'next-auth/react';
 import { UserData } from '@/type/userData';
 import User from '@keynut/type/user';
 import ProfileImage from '../../_components/ProfileImage';
+import { Session } from 'next-auth';
 
-const ProfileName = ({ name }: { name: string }) => {
+const ProfileName = ({ name }: { name: string | undefined }) => {
   return (
     <div className="flex flex-1">
       {name ? (
@@ -28,7 +29,7 @@ const ProfileName = ({ name }: { name: string }) => {
   );
 };
 
-const LoginDate = ({ createdAt }: { createdAt: string }) => {
+const LoginDate = ({ createdAt }: { createdAt: string | undefined }) => {
   return (
     <div className="flex items-center space-x-1 text-sm text-gray-400 max-md:text-xs">
       <svg
@@ -52,7 +53,7 @@ const LoginDate = ({ createdAt }: { createdAt: string }) => {
   );
 };
 
-const Provider = ({ provider }: { provider: 'kakao' | 'naver' }) => {
+const Provider = ({ provider }: { provider: 'kakao' | 'naver' | undefined }) => {
   return (
     <div className="flex text-gray-400 items-center space-x-1 text-sm max-md:text-xs">
       <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24">
@@ -90,8 +91,6 @@ const uploadMemo = async (userId: string, tempMemo: string) => {
     console.log('error', res.statusText);
     return;
   }
-
-  const data = await res.json();
 };
 
 const MemoDescription = () => {
@@ -110,18 +109,24 @@ const MemoDescription = () => {
   );
 };
 
-const MemoForm = ({ status, session, data }) => {
+interface MemoProps {
+  status: 'loading' | 'authenticated' | 'unauthenticated';
+  data: User | undefined;
+  session: Session | null;
+}
+
+const MemoForm = ({ status, session, data }: MemoProps) => {
   const router = useRouter();
-  const memoRef = useRef(null);
+  const memoRef = useRef<HTMLInputElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [memo, setMemo] = useState('');
   const [tempMemo, setTempMemo] = useState('');
 
   useEffect(() => {
     if (status === 'authenticated' && data) {
-      if (data.memo && session.user.id && data.memo[session.user.id]) {
-        setMemo(data.memo[session.user.id]);
-        setTempMemo(data.memo[session.user.id]);
+      if (data.memo && session && session.user.id && data.memo[session.user.id]) {
+        setMemo(data.memo[session.user.id]!);
+        setTempMemo(data.memo[session.user.id]!);
       }
     }
   }, [status, data]);
@@ -131,7 +136,7 @@ const MemoForm = ({ status, session, data }) => {
       className="flex items-end text-gray-400 max-md:mb-1"
       onSubmit={(e) => {
         e.preventDefault();
-        memoRef.current.blur();
+        if (memoRef.current) memoRef.current.blur();
       }}
     >
       <input
@@ -146,7 +151,7 @@ const MemoForm = ({ status, session, data }) => {
           if (isFocused === true) {
             setIsFocused(false);
             if (memo !== tempMemo) {
-              uploadMemo(data._id, tempMemo);
+              uploadMemo(data?._id!, tempMemo);
               setMemo(tempMemo);
               router.refresh();
             }
@@ -161,7 +166,7 @@ const MemoForm = ({ status, session, data }) => {
   );
 };
 
-const Memo = ({ status, data, session }) => {
+const Memo = ({ status, data, session }: MemoProps) => {
   return (
     <div className="flex items-end">
       <MemoForm status={status} session={session} data={data} />
@@ -170,39 +175,45 @@ const Memo = ({ status, data, session }) => {
   );
 };
 
-const UserProfile = React.memo(
-  ({ data, provider }: { data: User; provider: 'kakao' | 'naver' }) => {
-    const { data: session, status } = useSession();
+const UserProfile = ({
+  data,
+  provider,
+}: {
+  data: User | undefined;
+  provider: 'kakao' | 'naver' | undefined;
+}) => {
+  const { data: session, status } = useSession();
 
-    return (
-      <div className="flex h-28 border border-gray-300 rounded-md px-6 space-x-4 max-md:px-3 max-md:h-36 max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
-        <div className="flex flex-1 items-center space-x-5">
-          <ProfileImage image={data?.image} />
-          <div className="flex flex-1 md:items-center max-md:flex-col max-md:space-y-1">
-            <div className="flex flex-1 flex-col">
-              <ProfileName name={data?.nickname} />
-              {session && <Memo status={status} data={data} session={session} />}
-            </div>
-            <div className="flex flex-col">
-              <LoginDate createdAt={data?.createdAt} />
-              <Provider provider={provider} />
-            </div>
+  return (
+    <div className="flex h-28 border border-gray-300 rounded-md px-6 space-x-4 max-md:px-3 max-md:h-36 max-md:border-0 max-md:border-b-8 max-md:rounded-none max-md:border-gray-100">
+      <div className="flex flex-1 items-center space-x-5">
+        <ProfileImage image={data?.image} />
+        <div className="flex flex-1 md:items-center max-md:flex-col max-md:space-y-1">
+          <div className="flex flex-1 flex-col">
+            <ProfileName name={data?.nickname} />
+            {session && <Memo status={status} data={data} session={session} />}
+          </div>
+          <div className="flex flex-col">
+            <LoginDate createdAt={data?.createdAt} />
+            <Provider provider={provider} />
           </div>
         </div>
       </div>
-    );
-  },
-);
+    </div>
+  );
+};
 
 export default function RenderProfile() {
   const { id } = useParams<{ id: string }>();
   if (id.length !== 24) return <Warning message={'사용자를 찾을 수 없습니다'} />;
 
-  const { data, isLoading, error } = useQuery<UserData>({
+  const { data, isLoading } = useQuery<UserData | null>({
     queryKey: ['userProducts', id],
     queryFn: () => getUserProducts(id),
     enabled: !!id,
   });
+
+  console.log(data);
 
   if (!isLoading && !data) {
     return <Warning message={'사용자를 찾을 수 없습니다'} />;

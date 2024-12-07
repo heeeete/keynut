@@ -1,4 +1,4 @@
-export default async function getProductWithUser(productId) {
+export default async function getProductWithUser(productId: string) {
   if (productId?.length !== 24) {
     console.error('고유 ID의 값이 24글자가 아닙니다.');
     return null;

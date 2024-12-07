@@ -28,14 +28,14 @@ const HandleBookMark = ({ productId }: { productId: string }) => {
     },
     onMutate: async ({ productId }) => {
       await queryClient.cancelQueries({ queryKey: ['bookmarkedProducts'] });
-      const previousProduct: ProductData[] = queryClient.getQueryData(['bookmarkedProducts']);
-      queryClient.setQueryData(['bookmarkedProducts'], (old: ProductData[] | undefined) => {
+      const previousProduct = queryClient.getQueryData(['bookmarkedProducts']);
+      queryClient.setQueryData(['bookmarkedProducts'], (old: ProductData[]) => {
         return old.filter((product) => product._id !== productId);
       });
       return { previousProduct };
     },
     onError: (err, variables, context) => {
-      queryClient.setQueryData(['bookmarkedProducts'], context.previousProduct);
+      queryClient.setQueryData(['bookmarkedProducts'], context?.previousProduct);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['bookmarkedProducts'] });
@@ -78,7 +78,7 @@ const ABookMark = ({ item }: { item: ProductData }) => {
             className="rounded object-cover"
             src={
               item.images.length
-                ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${item.images[0].name}`
+                ? `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${item.images[0]!.name}`
                 : '/noImage.svg'
             }
             alt={item.title}

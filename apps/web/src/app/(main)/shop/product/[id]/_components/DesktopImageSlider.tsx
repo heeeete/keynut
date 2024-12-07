@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import 'photoswipe/style.css';
@@ -22,7 +22,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }: Pr
     e.stopPropagation();
     if (!isTransitioning) {
       setIsTransitioning(true);
-      setCurrentImageIndex(prevIndex => (prevIndex + 1) % images.length);
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
       setTimeout(() => setIsTransitioning(false), 200);
     }
   };
@@ -31,7 +31,7 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }: Pr
     e.stopPropagation();
     if (!isTransitioning) {
       setIsTransitioning(true);
-      setCurrentImageIndex(prevIndex => (prevIndex - 1 + images.length) % images.length);
+      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
       setTimeout(() => setIsTransitioning(false), 200);
     }
   };
@@ -76,7 +76,11 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }: Pr
               className={`absolute transition-opacity duration-200 cursor-pointer tb:rounded-xl ${
                 currentImageIndex === idx ? 'opacity-100' : 'opacity-0'
               }`}
-              style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
+              style={
+                pathname.startsWith('/shop/product')
+                  ? { objectFit: 'cover' }
+                  : { objectFit: 'contain' }
+              }
             />
           ))
         ) : (
@@ -86,7 +90,11 @@ export default function DesktopImageSlider({ images, state, initPhotoSwipe }: Pr
             fill
             sizes="(max-width: 24rem) 100vw, 50rem"
             className={`absolute transition-opacity duration-200 cursor-pointer tb:rounded-xl`}
-            style={pathname.startsWith('/shop/product') ? { objectFit: 'cover' } : { objectFit: 'contain' }}
+            style={
+              pathname.startsWith('/shop/product')
+                ? { objectFit: 'cover' }
+                : { objectFit: 'contain' }
+            }
           />
         )}
         {images && images.length > 1 && (
