@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import RecentViewProducts from './RecentViewComponent/RecentViewProducts';
+import { usePathname } from 'next/navigation';
 
 const ScrollToTopBtn = () => {
   return (
@@ -11,12 +12,22 @@ const ScrollToTopBtn = () => {
       }}
     >
       <p className="max-[960px]:hidden">TOP</p>
-      <Image className="min-[960px]:hidden" src="/arrowTop.svg" alt="arrowTop" width={20} height={20} />
+      <Image
+        className="min-[960px]:hidden"
+        src="/arrowTop.svg"
+        alt="arrowTop"
+        width={20}
+        height={20}
+      />
     </button>
   );
 };
 
 const RightBar = () => {
+  const pathname = usePathname();
+  const isRenderablePath = !pathname.startsWith('/sell') && !pathname.startsWith('/auth');
+
+  if (!isRenderablePath) return;
   return (
     <div className="flex flex-col fixed z-50  space-y-3 max-[960px]:right-2 max-[960px]:bottom-14 min-[960px]:right-0 min-[960px]:bottom-2">
       <RecentViewProducts />
