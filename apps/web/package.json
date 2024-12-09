@@ -1,0 +1,46 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.596.0",
+    "@aws-sdk/s3-request-presigner": "^3.626.0",
+    "@ducanh2912/next-pwa": "^10.2.8",
+    "@hello-pangea/dnd": "^16.6.0",
+    "@keynut/api": "workspace:^",
+    "@keynut/lib": "workspace:^",
+    "@keynut/ui": "workspace:^",
+    "@next-auth/mongodb-adapter": "^1.1.3",
+    "@react-three/drei": "^9.120.0",
+    "@react-three/fiber": "^8.17.10",
+    "@tanstack/react-query": "^5.45.0",
+    "mongodb": "^5.9.2",
+    "next": "^14.2.5",
+    "next-auth": "^4.24.7",
+    "photoswipe": "^5.4.4",
+    "plaiceholder": "^3.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-intersection-observer": "^9.10.3",
+    "sharp": "^0.33.4",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@keynut/type": "workspace:^",
+    "@tanstack/react-query-devtools": "^5.45.0",
+    "@types/node": "^22.10.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/three": "^0",
+    "postcss": "^8",
+    "tailwind-scrollbar-hide": "^1.1.7",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.7.2"
+  }
+}
