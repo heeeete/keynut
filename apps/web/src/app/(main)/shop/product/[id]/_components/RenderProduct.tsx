@@ -477,12 +477,11 @@ const SettingModal = ({
 
 interface MobileSettindModalProps {
   writer: boolean;
-  session: Session | null;
   setSettingModal: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const MobileSettingModal = ({ writer, session, setSettingModal }: MobileSettindModalProps) => {
-  if (writer || session?.admin)
+const MobileSettingModal = ({ writer, setSettingModal }: MobileSettindModalProps) => {
+  if (writer)
     return (
       <button
         onClick={() => {
@@ -745,8 +744,8 @@ export default function RenderProduct({ id }: { id: string }) {
       {session?.admin && <div className="font-extrabold text-3xl">ADMIN ACCOUNT</div>}
       <div className="flex items-end justify-between max-[960px]:py-3 max-[960px]:px-3">
         <Category category={Number(product.category)} />
-        {/* 글쓴이 || 어드민 계정 */}
-        <MobileSettingModal writer={writer} session={session} setSettingModal={setSettingModal} />
+        {/* 글쓴이  */}
+        <MobileSettingModal writer={writer} setSettingModal={setSettingModal} />
         {!writer && status !== 'loading' && (
           <button onClick={onClickComplain} className="flex items-center h-6 space-x-1">
             <img src="/product/complain.svg" width={20} height={20} alt="complain" />

@@ -5,6 +5,7 @@ import { revalidateTag } from 'next/cache';
 import ProductData from '@keynut/type/productData';
 import s3Client from '@keynut/lib/s3Client';
 import connectDB from '@keynut/lib/mongodb';
+import User from '@keynut/type/user';
 
 interface SearchQuery {
   userId?: string;
@@ -145,7 +146,7 @@ export async function DELETE(req: Request) {
         .collection('users')
         .updateOne({ _id: new ObjectId(target.userId) }, { $pull: { products: new ObjectId(id) } });
       await db
-        .collection('users')
+        .collection<User[]>('users')
         .updateMany({ bookmarked: new ObjectId(id) }, { $pull: { bookmarked: new ObjectId(id) } });
       await db.collection('viewHistory').deleteMany({ productId: new ObjectId(id) });
     };

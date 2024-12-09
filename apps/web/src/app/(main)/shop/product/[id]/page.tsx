@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: ProductProps) {
   };
 }
 
-export default async function Product({ params }: ProductProps): Promise<JSX.Element> {
+export default async function Product({ params }: ProductProps) {
   const { id } = params;
   if (id.length !== 24) return <Warning message={'존재하지 않는 상품입니다.'} />;
   const queryClient = new QueryClient();
