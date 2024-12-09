@@ -9,7 +9,7 @@ interface Params {
   id: string;
 }
 
-export async function GET(req: Response, { params }: { params: Params }) {
+export async function GET(req: Request, { params }: { params: Params }) {
   try {
     const { id }: Params = params;
     console.log(id);
@@ -72,7 +72,7 @@ export async function GET(req: Response, { params }: { params: Params }) {
   }
 }
 
-export async function PUT(req: Response, { params }: { params: Params }) {
+export async function PUT(req: Request, { params }: { params: Params }) {
   try {
     const { id }: Params = params;
     const session = await getUserSession();

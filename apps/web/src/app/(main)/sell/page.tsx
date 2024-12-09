@@ -125,10 +125,10 @@ export default function Sell() {
   }, [status]);
 
   const getImageDetails = () => {
-    return uploadImages.imageFiles.map((file) => ({
-      name: `product_${new Date().getTime()}_${file.file.name}`,
-      width: file.width,
-      height: file.height,
+    return uploadImages.imageFiles.map((e) => ({
+      name: `product_${new Date().getTime()}_${e.file!.name}`,
+      width: e.width,
+      height: e.height,
     }));
   };
 
