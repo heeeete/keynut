@@ -38,7 +38,7 @@ export default function Nav() {
           <span className="text-center font-semibold text-gray-400">유저 관리</span>
           <li>
             <Link
-              href={'users'}
+              href={'/dashboard/users'}
               className={`${pathname === 'users' ? 'font-semibold' : 'text-gray-600'}`}
             >
               전체 유저
@@ -46,7 +46,7 @@ export default function Nav() {
           </li>
           <li>
             <Link
-              href={'suspended-users'}
+              href={'/dashboard/suspended-users'}
               className={`${pathname === 'suspended-users' ? 'font-semibold' : 'text-gray-600'}`}
             >
               정지 유저
@@ -55,7 +55,7 @@ export default function Nav() {
           <span className="text-center font-semibold text-gray-400">게시물 관리</span>
           <li>
             <Link
-              href={'products'}
+              href={'/dashboard/products'}
               className={`${pathname === 'products' ? 'font-semibold' : 'text-gray-600'}`}
             >
               전체 게시물
@@ -63,7 +63,7 @@ export default function Nav() {
           </li>
           <li>
             <Link
-              href={'complaint-products'}
+              href={'/dashboard/complaint-products'}
               className={`${pathname === 'complaint-products' ? 'font-semibold' : 'text-gray-600'}`}
             >
               신고 게시물
