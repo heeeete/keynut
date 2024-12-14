@@ -34,7 +34,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: errorData }, { status: res.status });
     }
 
-    const { email }: { email: string } = await db.collection<User>('users').findOne({ _id: _id });
+    const user = await db.collection<User>('users').findOne({ _id: _id });
+    if (!user) {
+      return NextResponse.json({ message: '유저를 찾을 수 없습니다.' }, { status: 404 });
+    }
+    const { email } = user;
     const date = new Date();
     date.setMonth(date.getMonth() + 3);
     const expiresAt = Math.floor(date.getTime() / 1000);
@@ -52,6 +56,6 @@ export async function POST(req: Request) {
     return NextResponse.json({}, { status: 200 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error }, { status: 500 });
   }
 }

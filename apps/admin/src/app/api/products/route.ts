@@ -19,8 +19,8 @@ interface SearchQuery {
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url, process.env.NEXT_PUBLIC_BASE_URL);
-    const offset = parseInt(searchParams.get('offset')) || 0;
-    const limit = parseInt(searchParams.get('limit')) || 10;
+    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = parseInt(searchParams.get('limit') || '10');
     const nickname = searchParams.get('nickname');
     const keyword = searchParams.get('keyword');
     const price = searchParams.get('price');
@@ -72,9 +72,9 @@ export async function GET(req: Request) {
             return null;
           }
         })
-        .filter(Boolean);
+        .filter(Boolean) as Array<{ price: { $gte?: number; $lte?: number } }>;
 
-      if (priceConditions.length > 0) {
+      if (priceConditions && priceConditions.length > 0) {
         searchQuery.$and = (searchQuery.$and || []).concat(priceConditions);
       }
     }
@@ -125,9 +125,7 @@ export async function DELETE(req: Request) {
     const ids = JSON.parse(formData.get('products') as string);
 
     const deleteProduct = async (id: number) => {
-      const target: ProductData = await db
-        .collection<ProductData>('products')
-        .findOne({ _id: id.toString() });
+      const target = await db.collection<ProductData>('products').findOne({ _id: id.toString() });
       if (!target) {
         return NextResponse.json({ error: 'Product not found' }, { status: 404 });
       }

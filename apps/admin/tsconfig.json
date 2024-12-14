@@ -8,9 +8,15 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "strict": false
+    }
   },
-  "include": ["next-env.d.ts", "next.config.js", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "next.config.js",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/(authenticated)/dashboard/_utils/hashPassword.mjs"
+  ],
   "exclude": ["node_modules"]
 }

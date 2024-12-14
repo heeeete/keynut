@@ -135,7 +135,7 @@ interface SelectedUsers {
 interface TaskbarProps {
   data: Data;
   page: number;
-  selectedUsers: SelectedUsers | {};
+  selectedUsers: SelectedUsers;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   dataRefetch: () => void;
 }
@@ -156,13 +156,15 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }: Taskb
   const onClickWithdrawal = async () => {
     setIsLoading(true);
     const selectedUsersKeys = Object.keys(selectedUsers);
+    if (selectedUsersKeys.length === 0) return;
     try {
       for (let key of selectedUsersKeys) {
-        const {
-          _id,
-          provider,
-          providerAccountId,
-        }: { _id: string; provider: string; providerAccountId: string } = selectedUsers[key];
+        const selectedUser = selectedUsers[key];
+        if (!selectedUser) {
+          continue;
+        }
+
+        const { _id, provider, providerAccountId } = selectedUser;
 
         if (provider === 'kakao') {
           await handleKakaoWithdrawal(_id, providerAccountId);
@@ -194,10 +196,10 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }: Taskb
   const banHandler = async (state: number) => {
     setIsLoading(true);
     const selectedUsersKeys = Object.keys(selectedUsers);
-    let status: number;
+    let status: number | undefined;
     try {
       for (let key of selectedUsersKeys) {
-        const { email } = selectedUsers[key];
+        const { email } = selectedUsers[key]!;
         status = await userBanHandler(email, state);
         if (status !== 200) throw '수정중 에러 발생';
       }
@@ -264,19 +266,20 @@ const Taskbar = ({ data, page, selectedUsers, setIsLoading, dataRefetch }: Taskb
 };
 
 interface TableProps {
-  data: Partial<Data>;
+  data: Data | undefined;
   selectAll: boolean;
   setSelectAll: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedUsers: SelectedUsers | {};
+  selectedUsers: SelectedUsers;
   setSelectedUsers: React.Dispatch<React.SetStateAction<SelectedUsers | {}>>;
 }
 
 const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers }: TableProps) => {
+  console.log(data);
   const handleSelectAll = useCallback(() => {
     if (selectAll) {
       setSelectedUsers({});
-    } else {
-      const obj = {};
+    } else if (data) {
+      const obj: Record<string, { _id?: string; provider?: string; email?: string }> = {};
       let i = 0;
       for (let { _id, provider, email } of data.users) {
         obj[i++] = {
@@ -299,16 +302,18 @@ const Table = ({ data, selectAll, setSelectAll, selectedUsers, setSelectedUsers 
       } else {
         const newObj = { ...selectedUsers };
         newObj[idx] = {
-          _id: user._id,
-          provider: user.provider,
-          providerAccountId: user.providerAccountId,
-          email: user.email,
+          _id: user._id!,
+          provider: user.provider!,
+          providerAccountId: user.providerAccountId!,
+          email: user.email!,
         };
         setSelectedUsers(newObj);
       }
     },
     [selectedUsers],
   );
+
+  console.log(selectedUsers);
 
   return (
     <table className="w-full bg-slate-50 table-auto border-x border-separate border-spacing-0">
@@ -383,7 +388,7 @@ const AllUsersCnt = ({ userCnt }: { userCnt: number }) => {
 
 export default function Users() {
   const searchParams = useSearchParams();
-  const page = parseInt(searchParams.get('page')) || 1;
+  const page = parseInt(searchParams.get('page') || '1');
   const keyword = searchParams.get('keyword') || '';
   const { data, refetch } = useUsers(page, keyword, PAGE_SIZE);
   const [selectedUsers, setSelectedUsers] = useState<SelectedUsers>({});
@@ -409,7 +414,7 @@ export default function Users() {
       >
         <article className="py-7 h-full">
           <Taskbar
-            data={data}
+            data={data!}
             page={page}
             selectedUsers={selectedUsers}
             setIsLoading={setIsLoading}

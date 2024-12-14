@@ -13,7 +13,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "apps/admin/next.config.mts"
+    "apps/admin/next.config.mts",
+    "apps/admin/src/app/(authenticated)/dashboard/_utils/hashPassword.mjs"
   ],
   "exclude": ["node_modules"]
 }
