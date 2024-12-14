@@ -14,8 +14,8 @@ interface Data extends ProductData {
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url, process.env.NEXT_PUBLIC_BASE_URL);
-    const offset = parseInt(searchParams.get('offset')) || 0;
-    const limit = parseInt(searchParams.get('limit')) || 10;
+    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = parseInt(searchParams.get('limit') || '10');
     const client = await connectDB;
     const db = client.db(process.env.MONGODB_NAME);
     const productsCollection = await db.collection('products');

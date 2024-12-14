@@ -4,8 +4,8 @@ import connectDB from '@keynut/lib/mongodb';
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url, process.env.NEXT_PUBLIC_BASE_URL);
-    const offset = parseInt(searchParams.get('offset')) || 0;
-    const limit = parseInt(searchParams.get('limit')) || 10;
+    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = parseInt(searchParams.get('limit') || '10');
     const keyword = searchParams.get('keyword');
 
     const client = await connectDB;
@@ -67,7 +67,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ users, total }, { status: 200 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json(error, { status: 500 });
+    return NextResponse.json({ error }, { status: 500 });
   }
 }
 

@@ -16,7 +16,7 @@ const handleKakaoWithdrawal = async (_id: string, providerAccountId: string) => 
       throw new Error(errorData.error);
     }
   } catch (error) {
-    console.error('Caught Error:', error.message); // 에러 메시지를 출력
+    console.error(error); // 에러 메시지를 출력
     throw error;
   }
 };
