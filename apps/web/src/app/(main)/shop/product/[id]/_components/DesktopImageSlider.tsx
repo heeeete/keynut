@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import 'photoswipe/style.css';
 
 interface Props {
   images: {

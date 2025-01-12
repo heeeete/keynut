@@ -3,8 +3,8 @@
 import { useEffect, useRef } from 'react';
 import DesktopImageSlider from '../shop/product/[id]/_components/DesktopImageSlider';
 import MobileImageSlider from '../shop/product/[id]/_components/MobileImageSlider';
-// @ts-expect-error
 import PhotoSwipe from 'photoswipe';
+import 'photoswipe/style.css';
 import { useUser } from './UserProvider';
 
 interface Image {

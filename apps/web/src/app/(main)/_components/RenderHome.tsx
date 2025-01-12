@@ -6,9 +6,14 @@ import React, { Fragment } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import getRecentProducts from '../_lib/getRecentProducts';
 import ProductData from '@keynut/type/productData';
-import ModelViewer from './ModelViewerComponent/ModelViewer';
+// import ModelViewer from './ModelViewerComponent/ModelViewer';
 import ProductImage from './ProductImage';
 import ProductTitleAndPrice from './ProductTitleAndPrice';
+import dynamic from 'next/dynamic';
+
+const ModelViewer = dynamic(() => import('./ModelViewerComponent/ModelViewer'), {
+  ssr: false,
+});
 
 const JustInProduct = ({ product }: { product: ProductData }) => {
   return (

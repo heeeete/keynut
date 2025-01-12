@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.596.0",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@keynut/type": "workspace:^",
+    "@next/bundle-analyzer": "^15.1.4",
     "@tanstack/react-query-devtools": "^5.45.0",
     "@types/node": "^22.10.1",
     "@types/react": "^18.3.12",
