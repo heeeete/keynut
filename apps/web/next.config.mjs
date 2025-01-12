@@ -1,4 +1,5 @@
 import withPWA from '@ducanh2912/next-pwa';
+import withBundleAnalyzer from '@next/bundle-analyzer';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -17,9 +18,16 @@ const nextConfig = {
     ],
   },
 };
-export default withPWA({
-  dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
-  register: true,
-  skipWaiting: true,
-})(nextConfig);
+
+const bundleAnalyzerConfig = {
+  enabled: process.env.ANALYZE === 'true', // ANALYZE 환경 변수로 활성화 여부 결정
+};
+
+export default withBundleAnalyzer(bundleAnalyzerConfig)(
+  withPWA({
+    dest: 'public',
+    disable: process.env.NODE_ENV === 'development',
+    register: true,
+    skipWaiting: true,
+  })(nextConfig),
+);
