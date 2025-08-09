@@ -1,20 +1,6 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": false,
-    "noEmit": true,
-    "incremental": true,
-    "module": "esnext",
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
     "plugins": [
       {
         "name": "next"
@@ -23,12 +9,12 @@
   },
   "include": [
     "next-env.d.ts",
-    ".next/types/**/*.ts",
+    "next.config.js",
     "**/*.ts",
     "**/*.tsx",
-    "src/app/(main)/bookmark/page.jsx",
-    "src/app/(main)/shop/[id]/RenderProfile.jsx",
-    "src/app/(admin)/admin/_utils/renderEmptyRows.js"
+    ".next/types/**/*.ts",
+    "apps/admin/next.config.mts",
+    "apps/admin/src/app/(authenticated)/dashboard/_utils/hashPassword.mjs"
   ],
   "exclude": ["node_modules"]
 }

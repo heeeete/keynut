@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: content-box;
+}
+
+html {
+  overflow: hidden;
+  width: 100dvw;
+  height: 100dvh;
+}
+
+body {
+}
