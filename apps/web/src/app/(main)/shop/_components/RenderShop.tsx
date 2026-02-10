@@ -8,12 +8,14 @@ import getProducts from '../_lib/getProducts';
 import { useInView } from 'react-intersection-observer';
 import debounce from '../../../../utils/debounce';
 import Link from 'next/link';
-import fetchHotProducts from '../_lib/fetchHotProducts';
+// import fetchHotProducts from '../_lib/fetchHotProducts';
 import Skeletons from './Skeletons';
 import conditions from '../../_constants/conditions';
 import ProductData from '@keynut/type/productData';
 import ProductImage from '../../_components/ProductImage';
 import ProductTitleAndPrice from '../../_components/ProductTitleAndPrice';
+
+export const dynamic = 'force-dynamic';
 
 const categories = [
   {
@@ -675,7 +677,7 @@ const RenderPopularProducts = React.memo(
     const useHotProducts = (category: number) => {
       return useQuery<ProductData[]>({
         queryKey: ['topProducts', category],
-        queryFn: () => fetchHotProducts(category),
+        // queryFn: () => fetchHotProducts(category),
         enabled:
           !paramsKeyword &&
           (category === 1 ||
